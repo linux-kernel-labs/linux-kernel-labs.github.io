@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Linux device driver labs &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="#"/>
+        <link rel="next" title="Virtual Machine Setup" href="vm.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> The Linux Kernel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.12.0-rc4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">The Linux Kernel</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Linux device driver labs</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="linux-device-driver-labs">
+<h1>Linux device driver labs<a class="headerlink" href="#linux-device-driver-labs" title="Permalink to this headline">¶</a></h1>
+<p>This is a collection of &#8220;howtos&#8221; for various device driver topics. For
+each topic there are two parts:</p>
+<ul class="simple">
+<li>a walk-through the topic which contains an overview, the main
+abstractions, simple examples and pointers to APIs</li>
+<li>a hands-on part which contains a few exercises that should be
+resolved by the student; to focus on the topic at hand, the student
+is presented with a starting coding skeleton and with in-depth tips
+on how to solve the exercises</li>
+</ul>
+<p>They are based on the labs of the <a class="reference external" href="http://ocw.cs.pub.ro/courses/so2">Operatings Systems 2</a> course, Computer Science
+department, Faculty of Automatic Control and Computers, Politehnica
+Univesity of Bucharest.</p>
+<p>You can get the latest version at <a class="reference external" href="http://github.com/linux-kernel-labs">http://github.com/linux-kernel-labs</a>.</p>
+<p>To get started build the documentation from the sources:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">cd</span> <span class="n">tools</span><span class="o">/</span><span class="n">labs</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">docs</span>
+</pre></div>
+</div>
+<p>then point your browser at <strong>Documentation/output/labs/index.html</strong>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vm.html#starting-the-vm">Starting the VM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vm.html#connecting-to-the-vm">Connecting to the VM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vm.html#connecting-a-debugger-to-the-vm-kernel">Connecting a debugger to the VM kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vm.html#rebuild-the-kernel-image">Rebuild the kernel image</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#an-example-of-kernel-module">An example of kernel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#compiling-kernel-modules">Compiling kernel modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#debugging">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#objdump">objdump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#addr2line">addr2line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#minicom">minicom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#netconsole">netconsole</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#printk-debugging">Printk debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#dynamic-debugging">Dynamic debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="kernel_modules.html#dyndbg-options">Dyndbg Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_modules.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#module">1. Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#printk">2. Printk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#error">3. Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#sub-modules">4. Sub-modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#id1">5. Kernel oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#module-parameters">6. Module parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_modules.html#proc-info">7. Proc info</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#accessing-memory">Accessing memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#contexts-of-execution">Contexts of execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#locking">Locking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#preemptivity">Preemptivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#linux-kernel-api">Linux Kernel API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#convention-indicating-errors">Convention indicating errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#strings-of-characters">Strings of characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#printk">printk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#memory-allocation">Memory allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#lists">lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#spinlock">Spinlock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#mutex">mutex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#atomic-variables">Atomic variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="kernel_api.html#use-of-atomic-variables">Use of atomic variables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#atomic-bitwise-operations">Atomic bitwise operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernel_api.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#memory-allocation-in-linux-kernel">1. Memory allocation in Linux kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#sleeping-in-atomic-context">2. Sleeping in atomic context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#working-with-kernel-memory">3. Working with kernel memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#working-with-kernel-lists">4. Working with kernel lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#working-with-kernel-lists-for-process-handling">5. Working with kernel lists for process handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#synchronizing-list-work">6. Synchronizing list work</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernel_api.html#test-module-calling-in-our-list-module">7. Test module calling in our list module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#laboratory-objectives">Laboratory objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#majors-and-minors">Majors and minors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#data-structures-for-a-character-device">Data structures for a character device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#struct-file-operations"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#inode-and-file-structures"><code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">file</span></code> structures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#implementation-of-operations">Implementation of operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#registration-and-unregistration-of-character-devices">Registration and unregistration of character devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#access-to-the-address-space-of-the-process">Access to the address space of the process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#open-and-release">Open and release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#read-and-write">Read and write</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#ioctl">ioctl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#waiting-queues">Waiting queues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_drivers.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#register-unregister">1. Register/unregister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#register-an-already-registered-major">2. Register an already registered major</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#open-and-close">3. Open and close</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#access-restriction">4. Access restriction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#read-operation">5. Read operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#write-operation">6. Write operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_drivers.html#ioctl-operation">7. ioctl operation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interrupts.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interrupts.html#background-information">Background information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interrupts.html#accessing-the-hardware">Accessing the hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#request-access-to-i-o-ports">Request access to I/O ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#accessing-i-o-ports">Accessing I/O ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#accessing-i-o-ports-from-userspace">5. Accessing I/O ports from userspace</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interrupts.html#interrupt-handling">Interrupt handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#requesting-an-interrupt">Requesting an interrupt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#implementing-an-interrupt-handler">Implementing an interrupt handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#locking">Locking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#interrupt-statistics">Interrupt statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interrupts.html#further-reading">Further reading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#serial-port">Serial Port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#parallel-port">Parallel port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#keyboard-controller">Keyboard controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#linux-device-drivers">Linux device drivers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interrupts.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#keyboard-driver">Keyboard driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#request-the-i-o-ports">1. Request the I/O ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#interrupt-handling-routine">2. Interrupt handling routine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupts.html#store-ascii-keys-to-buffer">3. Store ASCII keys to buffer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="interrupts.html#reading-the-data-register">Reading the data register</a></li>
+<li class="toctree-l4"><a class="reference internal" href="interrupts.html#interpreting-the-scancode">Interpreting the scancode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="interrupts.html#store-characters-to-the-buffer">Store characters to the buffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="interrupts.html#reset-the-buffer">Reset the buffer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deferred_work.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deferred_work.html#background-information">Background information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deferred_work.html#softirqs">Softirqs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#tasklets">Tasklets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#timers">Timers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#locking">Locking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#workqueues">Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#kernel-threads">Kernel threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deferred_work.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deferred_work.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#timer">1.Timer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#periodic-timer">2. Periodic timer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#timer-control-using-ioctl">3. Timer control using ioctl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#blocking-operations">4. Blocking operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#id3">5. Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#kernel-thread">6. Kernel thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deferred_work.html#buffer-shared-between-timer-and-process">7. Buffer shared between timer and process</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memory_mapping.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_mapping.html#background-information">Background information</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#memory-structures">Memory Structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#struct-page"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#struct-vm-area-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#struct-mm-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="memory_mapping.html#device-driver-memory-mapping">Device driver memory mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_mapping.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_mapping.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#mapping-contiguous-physical-memory-to-userspace">1. Mapping contiguous physical memory to userspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#mapping-non-contiguous-physical-memory-to-userspace">2. Mapping non-contiguous physical memory to userspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#read-write-operations-in-mapped-memory">3. Read / write operations in mapped memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory_mapping.html#display-memory-mapped-in-procfs">4. Display memory mapped in procfs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="device_model.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_model.html#sysfs">sysfs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_model.html#basic-structures-in-linux-devices">Basic Structures in Linux Devices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#the-kobject-structure">The kobject structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#buses">Buses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#devices">Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#drivers">Drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#hotplug">Hotplug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#plug-and-play">Plug and Play</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#pnp-bus">PNP bus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#pnp-operations">PNP operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#add-driver">Add driver</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="device_model.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#bus-implementation">1. Bus implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#add-type-and-version-device-attributes">2. Add type and version device attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#add-del-and-add-bus-attributes">3. Add del and add bus attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#register-the-bex-misc-driver">4. Register the bex misc driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#register-misc-device-in-the-bex-misc-probe-function">5. Register misc device in the bex_misc probe function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_model.html#monitor-uevent-notifications">6. Monitor uevent notifications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The kernel development community.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'4.11.0+',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
