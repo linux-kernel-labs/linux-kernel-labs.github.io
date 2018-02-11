@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>I/O access and Interrupts &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  <title>I/O access and Interrupts &mdash; The Linux Kernel  documentation</title>
   
 
+  
+  
   
   
 
@@ -32,7 +34,10 @@
   
 
   
-    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
         <link rel="next" title="Deferred work" href="deferred_work.html"/>
         <link rel="prev" title="Character device drivers" href="device_drivers.html"/> 
 
@@ -43,6 +48,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +68,7 @@
             
             
               <div class="version">
-                4.12.0-rc4
+                4.15.0
               </div>
             
           
@@ -83,13 +89,16 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">I/O access and Interrupts</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">I/O access and Interrupts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#background-information">Background information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#accessing-the-hardware">Accessing the hardware</a><ul>
@@ -143,8 +152,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">The Linux Kernel</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">The Linux Kernel</a>
+        
       </nav>
 
 
@@ -153,23 +164,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>I/O access and Interrupts</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>I/O access and Interrupts</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/interrupts.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -255,20 +283,20 @@ there are several APIs that can be used.</p>
 <p>Before accessing I/O ports we first must request access to them, to
 make sure there is only one user. In order to do so, one must use the
 <code class="xref c c-func docutils literal"><span class="pre">request_region()</span></code> function:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/ioport.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/ioport.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">resource</span> <span class="o">*</span><span class="nf">request_region</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">first</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">,</span>
                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>To release a reserved region one must use the <code class="xref c c-func docutils literal"><span class="pre">release_region()</span></code> function:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">release_region</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">start</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">release_region</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">start</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>For example, the serial port COM1 has the base address 0x3F8 and it
 has 8 ports and this is a code snippet of how to request access to
 these ports:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/ioport.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/ioport.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define MY_BASEPORT 0x3F8</span>
 <span class="cp">#define MY_NR_PORTS 8</span>
@@ -280,27 +308,27 @@ these ports:</p>
 </pre></div>
 </div>
 <p>To release the ports one would use something like:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">release_region</span><span class="p">(</span><span class="n">MY_BASEPORT</span><span class="p">,</span> <span class="n">MY_NR_PORTS</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">release_region</span><span class="p">(</span><span class="n">MY_BASEPORT</span><span class="p">,</span> <span class="n">MY_NR_PORTS</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Most of the time, port requests are done at the driver initialization
 or probe time and the port releasing is done at the removal of the
 device or module.</p>
 <p>All of the port requests can be seen from userspace via the /proc/ioports file:</p>
-<div class="highlight-shell"><div class="highlight"><pre>$ cat /proc/ioports
-0000-001f : dma1
-0020-0021 : pic1
-0040-005f : timer
-0060-006f : keyboard
-0070-0077 : rtc
-0080-008f : dma page reg
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ cat /proc/ioports
+<span class="m">0000</span>-001f : dma1
+<span class="m">0020</span>-0021 : pic1
+<span class="m">0040</span>-005f : timer
+<span class="m">0060</span>-006f : keyboard
+<span class="m">0070</span>-0077 : rtc
+<span class="m">0080</span>-008f : dma page reg
 00a0-00a1 : pic2
 00c0-00df : dma2
 00f0-00ff : fpu
-0170-0177 : ide1
+<span class="m">0170</span>-0177 : ide1
 01f0-01f7 : ide0
-0376-0376 : ide1
-0378-037a : parport0
+<span class="m">0376</span>-0376 : ide1
+<span class="m">0378</span>-037a : parport0
 037b-037f : parport0
 03c0-03df : vga+
 03f6-03f6 : ide0
@@ -335,7 +363,7 @@ those described above, with the exception that it ends in _p: inb_p,
 outb_p, etc.</p>
 <p>For example, the following sequence writes a byte on COM1 serial port
 and then reads it:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/io.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/io.h&gt;</span><span class="cp"></span>
 <span class="cp">#define MY_BASEPORT 0x3F8</span>
 
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">value</span> <span class="o">=</span> <span class="mh">0xFF</span><span class="p">;</span>
@@ -354,7 +382,7 @@ permission for individual ports, while iopl for the entire I/O address
 space. To use these features, the user must be root.</p>
 <p>The following sequence used in user space gets permission for the
 first 3 ports of the serial port, and then releases them:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;sys/io.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;sys/io.h&gt;</span><span class="cp"></span>
 <span class="cp">#define MY_BASEPORT 0x3F8</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="n">ioperm</span><span class="p">(</span><span class="n">MY_BASEPORT</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
@@ -378,7 +406,7 @@ release port permission: 1 to get permission and 0 to release.</p>
 line before it can use it and release it at the end of the execution.</p>
 <p>In Linux, the request to obtain and release an interrupt is done using
 the <code class="xref c c-func docutils literal"><span class="pre">requests_irq()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">free_irq()</span></code> functions:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
 
 <span class="k">typedef</span> <span class="nf">irqreturn_t</span> <span class="p">(</span><span class="o">*</span><span class="n">irq_handler_t</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="p">);</span>
 
@@ -423,7 +451,7 @@ such a situation is relatively common, the kernel provides the
 <code class="xref c c-func docutils literal"><span class="pre">request_threaded_irq()</span></code> function to write interrupt handling
 routines running in two phases: a process-phase and an interrupt
 context phase:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">request_threaded_irq</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">irq</span><span class="p">,</span> <span class="n">irq_handler_t</span> <span class="n">handler</span><span class="p">,</span>
                          <span class="n">irq_handler_t</span> <span class="n">thread_fn</span><span class="p">,</span>
@@ -461,7 +489,7 @@ the driver (<code class="xref c c-func docutils literal"><span class="pre">init_
 the device is used (e.g. during <em>open</em>).</p>
 <p>The following example performs the interrupt request for the COM1
 serial port:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define MY_BASEPORT 0x3F8</span>
 <span class="cp">#define MY_IRQ 4</span>
@@ -491,7 +519,7 @@ shared mode (IRQF_SHARED).</p>
 </div>
 <p>To release the interrupt associated with the serial port, the
 following operations will be executed:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">free_irq</span> <span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">free_irq</span> <span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>During the initialization functiom (c:func:<cite>init_module</cite>), or in the
@@ -500,7 +528,7 @@ device. This operation is dependent on the device, but most often
 involves setting a bit from the control register.</p>
 <p>As an example, for the 8250 serial port, the following operations must
 be performed to enable interrupts:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/io.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/io.h&gt;</span><span class="cp"></span>
 <span class="cp">#define MY_BASEPORT 0x3F8</span>
 
 <span class="n">outb</span><span class="p">(</span><span class="mh">0x08</span><span class="p">,</span> <span class="n">MY_BASEPORT</span><span class="o">+</span><span class="mi">4</span><span class="p">);</span>
@@ -519,7 +547,7 @@ Register.</li>
 <div class="section" id="implementing-an-interrupt-handler">
 <h3>Implementing an interrupt handler<a class="headerlink" href="#implementing-an-interrupt-handler" title="Permalink to this headline">¶</a></h3>
 <p>Lets take a look at the signature of the interrupt handler function:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">irqreturn_t</span> <span class="p">(</span><span class="o">*</span><span class="n">handler</span><span class="p">)(</span><span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">irqreturn_t</span> <span class="p">(</span><span class="o">*</span><span class="n">handler</span><span class="p">)(</span><span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The function receives as parameters the number of the interrupt
@@ -534,7 +562,7 @@ if the interrupt can be handled directly from the interrupt context or
 <em>IRQ_WAKE_THREAD</em> to schedule the running of the process context
 processing function.</p>
 <p>The skeleton for an interrupt handler is:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">irqreturn_t</span> <span class="nf">my_handler</span><span class="p">(</span><span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">irqreturn_t</span> <span class="nf">my_handler</span><span class="p">(</span><span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
 
@@ -578,7 +606,7 @@ that disable and enable interrupts acquiring and release a spinlock at
 the same time: <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code>,
 <code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irqrestore()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irq()</span></code>, and
 <code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irq()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">spin_lock_irqsave</span> <span class="p">(</span><span class="n">spinlock_t</span> <span class="o">*</span> <span class="n">lock</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">spin_unlock_irqrestore</span> <span class="p">(</span><span class="n">spinlock_t</span> <span class="o">*</span> <span class="n">lock</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">);</span>
@@ -619,7 +647,7 @@ races with the interrupts handler, so when not sure use
 <code class="xref c c-func docutils literal"><span class="pre">disable_irq()</span></code>.</p>
 <p>The following sequence disables and then enables the interrupt for
 the COM1 serial port:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#define MY_IRQ 4</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define MY_IRQ 4</span>
 
 <span class="n">disable_irq</span> <span class="p">(</span><span class="n">MY_IRQ</span><span class="p">);</span>
 <span class="n">enable_irq</span> <span class="p">(</span><span class="n">MY_IRQ</span><span class="p">);</span>
@@ -640,7 +668,7 @@ the local processor are <code class="xref c c-func docutils literal"><span class
 <p>In order to use a resource shared between process context and the
 interrupt handling routine, the functions described above will be used
 as follows:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="n">spinlock_t</span> <span class="n">lock</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">spinlock_t</span> <span class="n">lock</span><span class="p">;</span>
 
 <span class="cm">/* IRQ handling routine: interrupt context */</span>
 <span class="n">irqreturn_t</span> <span class="nf">kbd_interrupt_handle</span><span class="p">(</span><span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">dev_id</span><span class="p">)</span>
@@ -691,21 +719,21 @@ the flag, since this is actually a macro.</p>
 <p>Information and statistics about system interrupts can be found in
 <em>/proc/interrupts</em> or <em>/proc/stat</em>. Only system interrupts with
 associated interrupt handlers appear in <em>/proc/interrupts</em>:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span class="c1"># cat /proc/interrupts</span>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># cat /proc/interrupts</span>
                 CPU0
-0:           <span class="m">7514294</span>       IO-APIC-edge   timer
-1:              <span class="m">4528</span>       IO-APIC-edge   i8042
-6:                 <span class="m">2</span>       IO-APIC-edge   floppy
-8:                 <span class="m">1</span>       IO-APIC-edge   rtc
-9:                 <span class="m">0</span>       IO-APIC-level  acpi
-12:             <span class="m">2301</span>       IO-APIC-edge   i8042
-15:               <span class="m">41</span>       IO-APIC-edge   ide1
-16:             <span class="m">3230</span>       IO-APIC-level  ioc0
-17:             <span class="m">1016</span>       IO-APIC-level  vmxnet ether
-NMI:               0
-LOC:         7229438
-ERR:               0
-MIS:               0
+<span class="m">0</span>:           <span class="m">7514294</span>       IO-APIC-edge   timer
+<span class="m">1</span>:              <span class="m">4528</span>       IO-APIC-edge   i8042
+<span class="m">6</span>:                 <span class="m">2</span>       IO-APIC-edge   floppy
+<span class="m">8</span>:                 <span class="m">1</span>       IO-APIC-edge   rtc
+<span class="m">9</span>:                 <span class="m">0</span>       IO-APIC-level  acpi
+<span class="m">12</span>:             <span class="m">2301</span>       IO-APIC-edge   i8042
+<span class="m">15</span>:               <span class="m">41</span>       IO-APIC-edge   ide1
+<span class="m">16</span>:             <span class="m">3230</span>       IO-APIC-level  ioc0
+<span class="m">17</span>:             <span class="m">1016</span>       IO-APIC-level  vmxnet ether
+NMI:               <span class="m">0</span>
+LOC:         <span class="m">7229438</span>
+ERR:               <span class="m">0</span>
+MIS:               <span class="m">0</span>
 </pre></div>
 </div>
 <p>The first column specifies the IRQ associated with the interrupt. The
@@ -716,13 +744,13 @@ registered the handler for that interrupt.</p>
 <p>The <em>/proc/state</em> file provides information about system activity,
 including the number of interruptions generated since the last (re)boot
 of the system:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span class="c1"># cat /proc/stat | grep in</span>
-intr <span class="m">7765626</span> <span class="m">7754228</span> <span class="m">4620</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">2</span> <span class="m">0</span> <span class="m">1</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">2377</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41</span> <span class="m">3259</span> <span class="m">1098</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> 0
-<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> 0
-<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> 0
-<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> 0
-<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> 0
-<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> 0
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># cat /proc/stat | grep in</span>
+intr <span class="m">7765626</span> <span class="m">7754228</span> <span class="m">4620</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">2</span> <span class="m">0</span> <span class="m">1</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">2377</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41</span> <span class="m">3259</span> <span class="m">1098</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>
+<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>
+<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>
+<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>
+<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>
+<span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>
 </pre></div>
 </div>
 <p>Each line in the <em>/proc/state</em> file begins with a keyword that
@@ -781,13 +809,13 @@ system.</p>
 </ul>
 </div></blockquote>
 <p>The current lab name is interrupts. See the exercises for the task name.</p>
-<div class="toggle docutils container">
-<div class="header docutils container">
+<div class="toggle container">
+<div class="header container">
 <strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks start by generating
 the skeleton code:</p>
-<div class="highlight-none"><div class="highlight"><pre>shell
+<div class="highlight-none"><div class="highlight"><pre><span></span>shell
 
 tools/labs $ make clean
 tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
@@ -795,11 +823,11 @@ tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
 </div>
 <p>Where task name is defined for each task. Once the skelton drivers are
 generated build the source:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make build
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
 <p>Then copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make copy
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
 tools/labs $ make boot
 </pre></div>
 </div>
@@ -839,12 +867,12 @@ ports we need are I8042_STATUS_REG and I8042_DATA_REG.</p>
 for errors and to properly clean-up in case of errors. Also add code
 to release the I/O ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
 <p>Now build the module and copy it to the VM image:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make build
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 tools/labs $ make copy
 </pre></div>
 </div>
 <p>Now start the VM and insert the module:</p>
-<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# skels/interrupts/kbd.ko
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/interrupts/kbd.ko
 kbd: loading out-of-tree module taints kernel.
 insmod: can&#39;t insert &#39;skels/interrupts/kbd.ko&#39;: Device or resource busy
 </pre></div>
@@ -853,14 +881,14 @@ insmod: can&#39;t insert &#39;skels/interrupts/kbd.ko&#39;: Device or resource b
 ports. This is because we already have a driver that has requestedthe
 I/O ports. To validate check the /proc/ioports file for the STATUS_REG
 and DATA_REG values:</p>
-<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# cat /proc/ioports <span class="p">|</span> egrep <span class="s2">&quot;(0060|0064)&quot;</span>
-0060-0060 : keyboard
-0064-0064 : keyboard
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# cat /proc/ioports <span class="p">|</span> egrep <span class="s2">&quot;(0060|0064)&quot;</span>
+<span class="m">0060</span>-0060 : keyboard
+<span class="m">0064</span>-0064 : keyboard
 </pre></div>
 </div>
 <p>Lets find out which driver register these ports and try to remove the
 module associated with it.</p>
-<div class="highlight-shell"><div class="highlight"><pre>$ find -name <span class="se">\*</span>.c <span class="p">|</span> xargs grep <span class="se">\&quot;</span>keyboard<span class="se">\&quot;</span>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ find -name <span class="se">\*</span>.c <span class="p">|</span> xargs grep <span class="se">\&quot;</span>keyboard<span class="se">\&quot;</span>
 
 find -name <span class="se">\*</span>.c <span class="p">|</span> xargs grep <span class="se">\&quot;</span>keyboard<span class="se">\&quot;</span> <span class="p">|</span> egrep <span class="s1">&#39;(0x60|0x64)&#39;</span>
 ...
@@ -873,16 +901,16 @@ boot and we won&#8217;t be able to remove the associated module. Instead
 lets trick the kernel and register ports 0x61 and 0x65.</p>
 <p>This time we can load the module and <em>/proc/ioports</em> shows that the
 owner of these ports are our module:</p>
-<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# insmod skels/interrupts/kbd.ko
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# insmod skels/interrupts/kbd.ko
 kbd: loading out-of-tree module taints kernel.
 Driver kbd loaded
 root@qemux86:~# cat /proc/ioports <span class="p">|</span> grep kbd
-0061-0061 : kbd
-0065-0065 : kbd
+<span class="m">0061</span>-0061 : kbd
+<span class="m">0065</span>-0065 : kbd
 </pre></div>
 </div>
 <p>Lets remove the module and check that the I/O ports are released:</p>
-<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# rmmod kbd
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# rmmod kbd
 Driver kbd unloaded
 root@qemux86:~# cat /proc/ioports <span class="p">|</span> grep kbd
 root@qemux86:~#
@@ -967,7 +995,7 @@ keystroke.</p>
 <p class="last">Read the I8042_DATA_REG register using <code class="xref c c-func docutils literal"><span class="pre">inb()</span></code>.</p>
 </div>
 <p>Then print information about the keystrokes int the following format:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ:% d, scancode = 0x% x (% u,% c) \ n&quot;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ:% d, scancode = 0x% x (% u,% c) \ n&quot;</span>
         <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1081,7 +1109,7 @@ ASCII code. Both functions expects the scancode.</p>
 <p class="first admonition-title">Hint</p>
 <p>To display the received information use the following
 format.</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ %d: scancode=0x%x (%u) pressed=%d ch=%c</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ %d: scancode=0x%x (%u) pressed=%d ch=%c</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
         <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">pressed</span><span class="p">,</span> <span class="n">ch</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1102,7 +1130,7 @@ discarded.</p>
 <p class="first admonition-title">Hint</p>
 <p>To get the device data from the interrupt handler use the
 following construct:</p>
-<div class="last highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
+<div class="last highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
@@ -1132,7 +1160,7 @@ userpace access is not permitted from atomic contexts.</p>
 <p>For testing, you will need to create the <em>/dev/kbd</em> character device
 driver using the mknod before reading from it. The device master and
 minor are defined as <code class="docutils literal"><span class="pre">KBD_MAJOR</span></code> and <code class="docutils literal"><span class="pre">KBD_MINOR</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">mknod</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span> <span class="n">c</span> <span class="mi">42</span> <span class="mi">0</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">mknod</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span> <span class="n">c</span> <span class="mi">42</span> <span class="mi">0</span>
 <span class="n">cat</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span>
 </pre></div>
 </div>
@@ -1149,15 +1177,18 @@ sections marked with <strong>TODO 5</strong> in the skeleton.</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="deferred_work.html" class="btn btn-neutral float-right" title="Deferred work" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="deferred_work.html" class="btn btn-neutral float-right" title="Deferred work" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="device_drivers.html" class="btn btn-neutral" title="Character device drivers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="device_drivers.html" class="btn btn-neutral" title="Character device drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1188,10 +1219,11 @@ sections marked with <strong>TODO 5</strong> in the skeleton.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'4.11.0+',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Deferred work &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  <title>Deferred work &mdash; The Linux Kernel  documentation</title>
   
 
+  
+  
   
   
 
@@ -32,7 +34,10 @@
   
 
   
-    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
         <link rel="next" title="Memory mapping" href="memory_mapping.html"/>
         <link rel="prev" title="I/O access and Interrupts" href="interrupts.html"/> 
 
@@ -43,6 +48,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +68,7 @@
             
             
               <div class="version">
-                4.12.0-rc4
+                4.15.0
               </div>
             
           
@@ -83,14 +89,17 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Deferred work</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deferred work</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#background-information">Background information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#softirqs">Softirqs</a><ul>
@@ -129,8 +138,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">The Linux Kernel</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">The Linux Kernel</a>
+        
       </nav>
 
 
@@ -139,23 +150,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Deferred work</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Deferred work</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/deferred_work.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -235,7 +263,7 @@ contain <em>bh</em> in their name.</p>
 various kernel subsystems. Because of this there is a fixed number of
 softirqs defined at compile time. For the current kernel version we
 have the following types defined:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">enum</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="p">{</span>
     <span class="n">HI_SOFTIRQ</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">TIMER_SOFTIRQ</span><span class="p">,</span>
     <span class="n">NET_TX_SOFTIRQ</span><span class="p">,</span>
@@ -290,7 +318,7 @@ by device drivers. A tasklet is represented by <code class="xref c c-type docuti
 <span class="pre">tasklet</span></code> and as many other kernel structures it needs to be
 initialized before being used. A pre-initialized tasklet can defined
 as following:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">handler</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">handler</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
 
 <span class="n">DECLARE_TASKLET</span><span class="p">(</span><span class="n">tasklet</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
 <span class="n">DECLARE_TASKLET_DISABLED</span><span class="p">(</span><span class="n">tasklet</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
@@ -298,7 +326,7 @@ as following:</p>
 </div>
 <p>If we want to initialize the tasklet manually we can use the following
 approach:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">handler</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">handler</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
 
 <span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="n">tasklet</span><span class="p">;</span>
 
@@ -308,7 +336,7 @@ approach:</p>
 <p>The <em>data</em> parameter will be sent to the handler when it is executed.</p>
 <p>Programming tasklets for running is called scheduling. Tasklets are
 running from softirqs. Tasklets scheduling is done with:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">tasklet_schedule</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span><span class="n">tasklet</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">tasklet_schedule</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span><span class="n">tasklet</span><span class="p">);</span>
 
 <span class="kt">void</span> <span class="nf">tasklet_hi_schedule</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span><span class="n">tasklet</span><span class="p">);</span>
 </pre></div>
@@ -321,7 +349,7 @@ schedules, it will run once.  Once the tasklet has run, it can be
 re-scheduled, and will run again at a later timer. Tasklets can be
 re-scheduled from their handlers.</p>
 <p>Tasklets can be masked and the following functions can be used:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">tasklet_enable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span> <span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">tasklet_enable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span> <span class="p">);</span>
 <span class="kt">void</span> <span class="nf">tasklet_disable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span> <span class="p">);</span>
 </pre></div>
 </div>
@@ -334,7 +362,7 @@ can not be used in the handler function.</p>
 are defined by <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">timer_list</span></code>. They run in interrupt
 context and are implemented on top of softirqs.</p>
 <p>To be used, a timer must first be initialized by calling <code class="xref c c-func docutils literal"><span class="pre">setup_timer()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux / sched.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux / sched.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">setup_timer</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span> <span class="n">timer</span><span class="p">,</span>
                  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">),</span>
@@ -347,7 +375,7 @@ will be passed to the treatment function. Since timers are planned
 over softirqs, blocking calls can not be used in the code associated
 with the treatment function.</p>
 <p>Scheduling a timer is done with <code class="xref c c-func docutils literal"><span class="pre">mod_timer()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">mod_timer</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">timer</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">expires</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">mod_timer</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">timer</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">expires</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Where <em>expires</em> is the time (in the future) to run the handler
@@ -357,7 +385,7 @@ is dependent on the platform and it can be found using the
 <code class="xref c c-type docutils literal"><span class="pre">HZ</span></code> macro that defines the number of jiffies for 1 second. To
 convert between jiffies (<em>jiffies_value</em>) and seconds (<em>seconds_value</em>),
 the following formulas are used:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">jiffies_value</span> <span class="o">=</span> <span class="n">seconds_value</span> <span class="o">*</span> <span class="n">HZ</span> <span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">jiffies_value</span> <span class="o">=</span> <span class="n">seconds_value</span> <span class="o">*</span> <span class="n">HZ</span> <span class="p">;</span>
 <span class="n">seconds_value</span> <span class="o">=</span> <span class="n">jiffies_value</span> <span class="o">/</span> <span class="n">HZ</span> <span class="p">;</span>
 </pre></div>
 </div>
@@ -365,7 +393,7 @@ the following formulas are used:</p>
 since the last boot, which can be accessed via the <code class="xref c c-macro docutils literal"><span class="pre">jiffies</span></code>
 global variable or macro. We can use it to calculate a time in the
 future for timers:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/jiffies.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/jiffies.h&gt;</span><span class="cp"></span>
 
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">current_jiffies</span><span class="p">,</span> <span class="n">next_jiffies</span><span class="p">;</span>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">seconds</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
@@ -375,7 +403,7 @@ future for timers:</p>
 </pre></div>
 </div>
 <p>To stop a timer, use <code class="xref c c-func docutils literal"><span class="pre">del_timer()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">del_timer_sync()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">del_timer</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">timer</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">del_timer</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">timer</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">del_timer_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">timer</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -391,7 +419,7 @@ function will no longer be loaded into the kernel and a kernel oops
 will be generated.</p>
 <p>The usual sequence used to initialize and schedule a one second
 timeout is:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">timer_function</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
 
@@ -403,7 +431,7 @@ timeout is:</p>
 </pre></div>
 </div>
 <p>And to stop it:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">del_timer_sync</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">del_timer_sync</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -420,14 +448,14 @@ on the same CPU where we already acquired a spinlock.</p>
 <p>We can use the <code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code> to disable and enable softirqs handlers (and
 since they run on top of softirqs also timers and tasklets):</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">local_bh_disable</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">local_bh_disable</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">local_bh_enable</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Nested calls are allowed, the actual reactivation of the softirqs is
 done only when all local_bh_disable() calls have been complemented by
 local_bh_enable() calls:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cm">/* We assume that softirqs are enabled */</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* We assume that softirqs are enabled */</span>
 <span class="n">local_bh_disable</span><span class="p">();</span>  <span class="cm">/* Softirqs are now disabled */</span>
 <span class="n">local_bh_disable</span><span class="p">();</span>  <span class="cm">/* Softirqs remain disabled */</span>
 
@@ -444,7 +472,7 @@ complemented with spinlocks.</p>
 <p>Most of the time device drivers will use special versions of spinlocks
 calls for synchronization like <code class="xref c c-func docutils literal"><span class="pre">spin_lock_bh()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">spin_unlock_bh()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">spin_lock_bh</span><span class="p">(</span><span class="n">spinlock_t</span> <span class="o">*</span><span class="n">lock</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">spin_lock_bh</span><span class="p">(</span><span class="n">spinlock_t</span> <span class="o">*</span><span class="n">lock</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">spin_unlock_bh</span><span class="p">(</span><span class="n">spinlock_t</span> <span class="o">*</span><span class="n">lock</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -468,7 +496,7 @@ names.</p>
 of macros that can be used, one that declares and initializes the work
 item at the same time and one that only initializes the work item (and
 the declaration must be done separately):</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/workqueue.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/workqueue.h&gt;</span><span class="cp"></span>
 
 <span class="n">DECLARE_WORK</span><span class="p">(</span><span class="n">name</span> <span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="p">));</span>
 <span class="n">DECLARE_DELAYED_WORK</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="p">));</span>
@@ -481,7 +509,7 @@ the declaration must be done separately):</p>
 initialize a work item, and <code class="xref c c-func docutils literal"><span class="pre">INIT_WORK()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">INIT_DELAYED_WORK()</span></code> initialize an already declared work item.</p>
 <p>The following sequence declares and initiates a work item:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/workqueue.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/workqueue.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 
@@ -489,7 +517,7 @@ initialize a work item, and <code class="xref c c-func docutils literal"><span c
 </pre></div>
 </div>
 <p>Or, if we want to initialize the work item separately:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span> <span class="n">work</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span> <span class="n">work</span><span class="p">);</span>
 
 <span class="k">struct</span> <span class="n">work_struct</span> <span class="n">my_work</span><span class="p">;</span>
 
@@ -498,7 +526,7 @@ initialize a work item, and <code class="xref c c-func docutils literal"><span c
 </div>
 <p>Once declared and initialized, we can schedule the task using
 <code class="xref c c-func docutils literal"><span class="pre">schedule_work()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">schedule_delayed_work()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">schedule_work</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">schedule_work</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 
 <span class="n">schedule_delayed_work</span><span class="p">(</span><span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">delay</span><span class="p">);</span>
 </pre></div>
@@ -507,7 +535,7 @@ initialize a work item, and <code class="xref c c-func docutils literal"><span c
 execution with a given delay. The delay time unit is jiffies.</p>
 <p>Work items can not be masked by they can be canceled by calling
 <code class="xref c c-func docutils literal"><span class="pre">cancel_delayed_work_sync()</span></code> or <code class="xref c c-func docutils literal"><span class="pre">cancel_work_sync()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">cancel_work_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">cancel_work_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">cancel_delayed_work_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -523,7 +551,7 @@ use them when you are performing cleanup work otherwise
 race condition could occur.</p>
 </div>
 <p>We can wait for a workqueue to complete running all of its work items by calling <code class="xref c c-func docutils literal"><span class="pre">flush_scheduled_work()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">flush_scheduled_work</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">flush_scheduled_work</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This function is blocking and, therefore, can not be used in interrupt
@@ -533,12 +561,12 @@ before <code class="xref c c-func docutils literal"><span class="pre">flush_sche
 <p>Finally, the following functions can be used to schedule work items on
 a particular processor (<code class="xref c c-func docutils literal"><span class="pre">schedule_delayed_work_on()</span></code>), or on all
 processors (<code class="xref c c-func docutils literal"><span class="pre">schedule_on_each_cpu()</span></code>):</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">schedule_delayed_work_on</span><span class="p">(</span><span class="kt">int</span> <span class="n">cpu</span><span class="p">,</span> <span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">delay</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">schedule_delayed_work_on</span><span class="p">(</span><span class="kt">int</span> <span class="n">cpu</span><span class="p">,</span> <span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">delay</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">schedule_on_each_cpu</span><span class="p">(</span><span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>A usual sequence to initialize and schedule a work item is the following:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 
 <span class="k">struct</span> <span class="n">work_struct</span> <span class="n">my_work</span><span class="p">;</span>
 
@@ -548,13 +576,13 @@ processors (<code class="xref c c-func docutils literal"><span class="pre">sched
 </pre></div>
 </div>
 <p>And for waiting for termination of a work item:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">flush_scheduled_work</span><span class="p">();</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">flush_scheduled_work</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>As you can see, the <em>my_work_handler</em> function receives the task as
 the parameter. To be able to access the module&#8217;s private data, you can
 use <code class="xref c c-func docutils literal"><span class="pre">container_of()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">work_struct</span> <span class="n">my_work</span><span class="p">;</span>
     <span class="c1">// ...</span>
 <span class="p">};</span>
@@ -572,15 +600,15 @@ use <code class="xref c c-func docutils literal"><span class="pre">container_of(
 the context of a thread kernel called <em>events/x</em>, where x is the
 processor number. The kernel will initialize a kernel thread (or a
 pool of workers) for each processor present in the system:</p>
-<div class="highlight-shell"><div class="highlight"><pre>$ ps -e
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ ps -e
 PID TTY TIME CMD
-1?  00:00:00 init
-<span class="m">2</span> ?  00:00:00 ksoftirqd / 0
-<span class="m">3</span> ?  00:00:00 events / <span class="m">0</span> &lt;--- kernel thread that runs work items
-<span class="m">4</span> ?  00:00:00 khelper
-<span class="m">5</span> ?  00:00:00 kthread
-7?  00:00:00 kblockd / 0
-8?  00:00:00 kacpid
+<span class="m">1</span>?  <span class="m">00</span>:00:00 init
+<span class="m">2</span> ?  <span class="m">00</span>:00:00 ksoftirqd / <span class="m">0</span>
+<span class="m">3</span> ?  <span class="m">00</span>:00:00 events / <span class="m">0</span> &lt;--- kernel thread that runs work items
+<span class="m">4</span> ?  <span class="m">00</span>:00:00 khelper
+<span class="m">5</span> ?  <span class="m">00</span>:00:00 kthread
+<span class="m">7</span>?  <span class="m">00</span>:00:00 kblockd / <span class="m">0</span>
+<span class="m">8</span>?  <span class="m">00</span>:00:00 kacpid
 </pre></div>
 </div>
 <p>The above functions use a predefined workqueue (called events), and
@@ -591,7 +619,7 @@ other queue users. For this reason there are functions for creating
 additional queues.</p>
 <p>A workqueue is represented by <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">workqueue_struct</span></code>. A new
 workqueue can be created with these functions:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span><span class="nf">create_workqueue</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span><span class="nf">create_workqueue</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
 <span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span><span class="nf">create_singlethread_workqueue</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -600,7 +628,7 @@ system, and <code class="xref c c-func docutils literal"><span class="pre">creat
 thread.</p>
 <p>To add a task in the new queue, use <code class="xref c c-func docutils literal"><span class="pre">queue_work()</span></code> or
 <code class="xref c c-func docutils literal"><span class="pre">queue_delayed_work()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">queue_work</span><span class="p">(</span><span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span> <span class="n">queue</span><span class="p">,</span> <span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">queue_work</span><span class="p">(</span><span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span> <span class="n">queue</span><span class="p">,</span> <span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 
 <span class="kt">int</span> <span class="nf">queue_delayed_work</span><span class="p">(</span><span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span><span class="n">queue</span><span class="p">,</span>
                        <span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span> <span class="n">work</span> <span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">delay</span><span class="p">);</span>
@@ -609,16 +637,16 @@ thread.</p>
 <p><code class="xref c c-func docutils literal"><span class="pre">queue_delayed_work()</span></code> can be used to plan a work for execution
 with a given delay. The time unit for the delay is jiffies.</p>
 <p>To wait for all work item to finish call <code class="xref c c-func docutils literal"><span class="pre">flush_workqueue()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">flush_workqueue</span><span class="p">(</span><span class="k">struct</span> <span class="n">worksqueue_struct</span> <span class="o">*</span> <span class="n">queue</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">flush_workqueue</span><span class="p">(</span><span class="k">struct</span> <span class="n">worksqueue_struct</span> <span class="o">*</span> <span class="n">queue</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>And to destroy the workqueue call <code class="xref c c-func docutils literal"><span class="pre">destroy_workqueue()</span></code></p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">destroy_workqueue</span><span class="p">(</span><span class="n">structure</span> <span class="n">workqueque_struct</span> <span class="o">*</span><span class="n">queue</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">destroy_workqueue</span><span class="p">(</span><span class="n">structure</span> <span class="n">workqueque_struct</span> <span class="o">*</span><span class="n">queue</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The next sequence declares and initializes an additional workqueue,
 declares and initializes a work item and adds it to the queue:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 
 <span class="k">struct</span> <span class="n">work_struct</span> <span class="n">my_work</span><span class="p">;</span>
 <span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span> <span class="n">my_workqueue</span><span class="p">;</span>
@@ -630,7 +658,7 @@ declares and initializes a work item and adds it to the queue:</p>
 </pre></div>
 </div>
 <p>And the next code sample shows how to remove the workqueue:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">flush_workqueue</span><span class="p">(</span><span class="n">my_workqueue</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">flush_workqueue</span><span class="p">(</span><span class="n">my_workqueue</span><span class="p">);</span>
 <span class="n">destroy_workqueue</span><span class="p">(</span><span class="n">my_workqueue</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -645,7 +673,7 @@ process context. Kernel threads are the basis of the workqueue
 mechanism. Essentially, a thread kernel is a thread that only runs in
 kernel mode and has no user address space or other user attributes.</p>
 <p>To create a thread kernel, use <code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
 
 <span class="n">structure</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">kthread_create</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">),</span>
                                       <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">namefmt</span><span class="p">[],</span> <span class="p">...);</span>
@@ -659,21 +687,21 @@ ps/top ; Can contain sequences %d , %s etc. Which will be replaced
 according to the standard printf syntax.</li>
 </ul>
 <p>For example, the following call:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">kthread_create</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot;%skthread%d&quot;</span><span class="p">,</span> <span class="s">&quot;my&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">kthread_create</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot;%skthread%d&quot;</span><span class="p">,</span> <span class="s">&quot;my&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Will create a thread kernel with the name mykthread0.</p>
 <p>The kernel thread created with this function will stopped (in the
 <em>TASK_INTERRUPTIBLE</em> state). To start the kernel thread, call the
 <code class="xref c c-func docutils literal"><span class="pre">wake_up_process()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">wake_up_process</span><span class="p">(</span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Alternatively, you can use <code class="xref c c-func docutils literal"><span class="pre">kthread_run()</span></code> to create and run a
 kernel thread:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span> <span class="nf">kthread_run</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span> <span class="nf">kthread_run</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
                                  <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">namefmt</span><span class="p">[],</span> <span class="p">...);</span>
 </pre></div>
 </div>
@@ -696,13 +724,13 @@ it is recommended to use mutexes</li>
 </ul>
 <p>The termination of a thread kernel is done voluntarily, within the
 function running in the thread kernel, by calling <code class="xref c c-func docutils literal"><span class="pre">do_exit()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">fastcall</span> <span class="n">NORET_TYPE</span> <span class="kt">void</span> <span class="nf">do_exit</span><span class="p">(</span><span class="kt">long</span> <span class="n">code</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">fastcall</span> <span class="n">NORET_TYPE</span> <span class="kt">void</span> <span class="nf">do_exit</span><span class="p">(</span><span class="kt">long</span> <span class="n">code</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Most of the implementations of kernel threads handlers use the same
 model and it is recommended to start using the same model to avoid
 common mistakes:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
 
 <span class="n">DECLARE_WAIT_QUEUE_HEAD</span><span class="p">(</span><span class="n">wq</span><span class="p">);</span>
 
@@ -751,7 +779,7 @@ common mistakes:</p>
 </div>
 <p>With the template above, the kernel thread requests can be issued
 with:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">send_event</span><span class="p">(</span><span class="k">struct</span> <span class="n">event</span> <span class="o">*</span><span class="n">ev</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">send_event</span><span class="p">(</span><span class="k">struct</span> <span class="n">event</span> <span class="o">*</span><span class="n">ev</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
     <span class="n">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">list_events</span><span class="p">);</span>
@@ -837,7 +865,7 @@ process identifier (PID) and the process executable image name.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">You can find the current process identifier using the <em>pid</em>
 and <em>comm</em> fields of the current process. For details,
-review <a class="reference internal" href="kernel_modules.html#proc-info"><span>7. Proc info</span></a>.</p>
+review <a class="reference internal" href="kernel_modules.html#proc-info"><span class="std std-ref">7. Proc info</span></a>.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -856,11 +884,11 @@ type operation and its parameters (if any) on the command line.</p>
 <p>Run the test executable without arguments to observe the
 command line options it accepts.</p>
 <p>To enable the timer after 3 seconds use:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">test</span> <span class="n">with</span> <span class="mi">3</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">test</span> <span class="n">with</span> <span class="mi">3</span>
 </pre></div>
 </div>
 <p>To disable the timer use:</p>
-<div class="last highlight-c"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">test</span> <span class="n">c</span>
+<div class="last highlight-c"><div class="highlight"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">test</span> <span class="n">c</span>
 </pre></div>
 </div>
 </div>
@@ -938,7 +966,7 @@ with with unloading</li>
 <p class="first admonition-title">Hint</p>
 <p>For synchronization use two wait queues and two flags.</p>
 <p>Review <span class="xref std std-ref">waiting-queues</span> on how to use waiting queue.</p>
-<p class="last">Use atomic variables for flags. Review <a class="reference internal" href="kernel_api.html#atomic-variables"><span>Atomic variables</span></a>.</p>
+<p class="last">Use atomic variables for flags. Review <a class="reference internal" href="kernel_api.html#atomic-variables"><span class="std std-ref">Atomic variables</span></a>.</p>
 </div>
 </div>
 <div class="section" id="buffer-shared-between-timer-and-process">
@@ -1007,15 +1035,18 @@ we may need to remove an item from the list.</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memory_mapping.html" class="btn btn-neutral float-right" title="Memory mapping" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="memory_mapping.html" class="btn btn-neutral float-right" title="Memory mapping" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="interrupts.html" class="btn btn-neutral" title="I/O access and Interrupts" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="interrupts.html" class="btn btn-neutral" title="I/O access and Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1046,10 +1077,11 @@ we may need to remove an item from the list.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'4.11.0+',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

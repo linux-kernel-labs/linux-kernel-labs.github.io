@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Linux device driver labs &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  <title>Linux device driver labs &mdash; The Linux Kernel  documentation</title>
   
 
+  
+  
   
   
 
@@ -32,7 +34,10 @@
   
 
   
-    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="#"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="#"/>
         <link rel="next" title="Virtual Machine Setup" href="vm.html"/> 
 
   
@@ -42,6 +47,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -61,7 +67,7 @@
             
             
               <div class="version">
-                4.12.0-rc4
+                4.15.0
               </div>
             
           
@@ -82,7 +88,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
@@ -104,8 +113,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">The Linux Kernel</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">The Linux Kernel</a>
+        
       </nav>
 
 
@@ -114,23 +125,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>Linux device driver labs</li>
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Linux device driver labs</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/index.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -153,7 +181,7 @@ department, Faculty of Automatic Control and Computers, Politehnica
 Univesity of Bucharest.</p>
 <p>You can get the latest version at <a class="reference external" href="http://github.com/linux-kernel-labs">http://github.com/linux-kernel-labs</a>.</p>
 <p>To get started build the documentation from the sources:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">cd</span> <span class="n">tools</span><span class="o">/</span><span class="n">labs</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">docs</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">tools</span><span class="o">/</span><span class="n">labs</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">docs</span>
 </pre></div>
 </div>
 <p>then point your browser at <strong>Documentation/output/labs/index.html</strong>.</p>
@@ -380,12 +408,15 @@ Univesity of Bucharest.</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -417,10 +448,11 @@ Univesity of Bucharest.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'4.11.0+',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
