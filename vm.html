@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Virtual Machine Setup &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  <title>Virtual Machine Setup &mdash; The Linux Kernel  documentation</title>
   
 
+  
+  
   
   
 
@@ -32,7 +34,10 @@
   
 
   
-    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
         <link rel="next" title="Exercises" href="exercises.html"/>
         <link rel="prev" title="Linux device driver labs" href="index.html"/> 
 
@@ -43,6 +48,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +68,7 @@
             
             
               <div class="version">
-                4.12.0-rc4
+                4.15.0
               </div>
             
           
@@ -83,8 +89,11 @@
           
             
             
-                <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Virtual Machine Setup</a><ul>
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Virtual Machine Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#starting-the-vm">Starting the VM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#connecting-to-the-vm">Connecting to the VM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#connecting-a-debugger-to-the-vm-kernel">Connecting a debugger to the VM kernel</a></li>
@@ -111,8 +120,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">The Linux Kernel</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">The Linux Kernel</a>
+        
       </nav>
 
 
@@ -121,23 +132,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Virtual Machine Setup</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Virtual Machine Setup</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/vm.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -170,10 +198,10 @@ itself. The following images are supported:</p>
 <p>The virtual machine scripts are available in tools/labs/qemeu and you
 can can start the virtual machine by using the <strong>boot</strong> make target in
 tools/labs:</p>
-<div class="highlight-shell"><div class="highlight"><pre>~/src/linux/tools/labs$ make boot
+<div class="highlight-shell"><div class="highlight"><pre><span></span>~/src/linux/tools/labs$ make boot
 <span class="nv">ARCH</span><span class="o">=</span>x86 qemu/qemu.sh -kernel zImage.x86 -device virtio-serial <span class="se">\</span>
              -chardev pty,id<span class="o">=</span>virtiocon0 -device virtconsole,chardev<span class="o">=</span>virtiocon0 <span class="se">\</span>
-             -net nic,model<span class="o">=</span>virtio,vlan<span class="o">=</span><span class="m">0</span> -net tap,ifname<span class="o">=</span>tap0,vlan<span class="o">=</span>0,script<span class="o">=</span>no,downscript<span class="o">=</span>no<span class="se">\</span>
+             -net nic,model<span class="o">=</span>virtio,vlan<span class="o">=</span><span class="m">0</span> -net tap,ifname<span class="o">=</span>tap0,vlan<span class="o">=</span><span class="m">0</span>,script<span class="o">=</span>no,downscript<span class="o">=</span>no<span class="se">\</span>
              -drive <span class="nv">file</span><span class="o">=</span>rootfs.img,if<span class="o">=</span>virtio,format<span class="o">=</span>raw --append <span class="s2">&quot;root=/dev/vda console=hvc0&quot;</span> <span class="se">\</span>
              --display none -s
 char device redirected to /dev/pts/19 <span class="o">(</span>label virtiocon0<span class="o">)</span>
@@ -192,9 +220,9 @@ access to the standard keyboard.</p>
 link named <em>serial.pts</em> is created to the right emulated serial port
 and you can use <strong>minicom</strong>, <strong>picocom</strong> to connect to the virtual
 machine from the host:</p>
-<div class="highlight-shell"><div class="highlight"><pre>$ minicom -D serial.pts
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ minicom -D serial.pts
 
-Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</span> 2.3 qemux86 /dev/hvc0
+Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</span> <span class="m">2</span>.3 qemux86 /dev/hvc0
 
 qemux86 login: root
 root@qemux86:~#
@@ -202,7 +230,7 @@ root@qemux86:~#
 </div>
 <p>Networking is also setup and you can use ssh to connect to the virtual
 machine after finding out the allocated IP address:</p>
-<div class="highlight-shell"><div class="highlight"><pre>$ mincom -D serial.pts
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ mincom -D serial.pts
 
 Poky (Yocto Project Reference Distro) 2.3 qemux86 /dev/hvc0
 
@@ -244,10 +272,10 @@ you are using this image.</p>
 <h2>Connecting a debugger to the VM kernel<a class="headerlink" href="#connecting-a-debugger-to-the-vm-kernel" title="Permalink to this headline">¶</a></h2>
 <p>You can connect gdb to the running VM kernel and inspect the state of
 the kernel by running the <em>gdb</em> target from tools/labs:</p>
-<div class="highlight-shell"><div class="highlight"><pre>$ make gdb
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ make gdb
 ln -fs /home/tavi/src/linux/vmlinux vmlinux
 gdb -ex <span class="s2">&quot;target remote localhost:1234&quot;</span> vmlinux
-GNU gdb <span class="o">(</span>Ubuntu 7.11.1-0ubuntu1~16.04<span class="o">)</span> 7.11.1
+GNU gdb <span class="o">(</span>Ubuntu <span class="m">7</span>.11.1-0ubuntu1~16.04<span class="o">)</span> <span class="m">7</span>.11.1
 Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2016</span> Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version <span class="m">3</span> or later &lt;http://gnu.org/licenses/gpl.html&gt;
 This is free software: you are free to change and redistribute it.
@@ -292,15 +320,18 @@ start the VM again).</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="exercises.html" class="btn btn-neutral float-right" title="Exercises" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="exercises.html" class="btn btn-neutral float-right" title="Exercises" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Linux device driver labs" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Linux device driver labs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -331,10 +362,11 @@ start the VM again).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'4.11.0+',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

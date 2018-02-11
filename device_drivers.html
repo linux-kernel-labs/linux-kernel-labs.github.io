@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Character device drivers &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  <title>Character device drivers &mdash; The Linux Kernel  documentation</title>
   
 
+  
+  
   
   
 
@@ -32,7 +34,10 @@
   
 
   
-    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
         <link rel="next" title="I/O access and Interrupts" href="interrupts.html"/>
         <link rel="prev" title="Kernel API" href="kernel_api.html"/> 
 
@@ -43,6 +48,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +68,7 @@
             
             
               <div class="version">
-                4.12.0-rc4
+                4.15.0
               </div>
             
           
@@ -83,12 +89,15 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Character device drivers</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Character device drivers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#laboratory-objectives">Laboratory objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#majors-and-minors">Majors and minors</a></li>
@@ -133,8 +142,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">The Linux Kernel</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">The Linux Kernel</a>
+        
       </nav>
 
 
@@ -143,23 +154,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Character device drivers</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Character device drivers</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/device_drivers.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -218,11 +246,11 @@ etc.). Most times, the major identifies the driver, while the minor identifies
 each physical device served by the driver. In general, a driver will have a
 major associate and will be responsible for all minors associated with that
 major.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># ls -la /dev/hda? /dev/ttyS?</span>
-brw-rw----  <span class="m">1</span> root disk    3,  <span class="m">1</span> 2004-09-18 14:51 /dev/hda1
-brw-rw----  <span class="m">1</span> root disk    3,  <span class="m">2</span> 2004-09-18 14:51 /dev/hda2
-crw-rw----  <span class="m">1</span> root dialout 4, <span class="m">64</span> 2004-09-18 14:52 /dev/ttyS0
-crw-rw----  <span class="m">1</span> root dialout 4, <span class="m">65</span> 2004-09-18 14:52 /dev/ttyS1
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># ls -la /dev/hda? /dev/ttyS?</span>
+brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">1</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda1
+brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">2</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda2
+crw-rw----  <span class="m">1</span> root dialout <span class="m">4</span>, <span class="m">64</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:52 /dev/ttyS0
+crw-rw----  <span class="m">1</span> root dialout <span class="m">4</span>, <span class="m">65</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:52 /dev/ttyS1
 </pre></div>
 </div>
 <p>As can be seen from the example above, device-type information can be found
@@ -239,12 +267,12 @@ loaded devices, along with the major identifier.</p>
 type (<code class="docutils literal"><span class="pre">block</span></code> or <code class="docutils literal"><span class="pre">character</span></code>), <code class="docutils literal"><span class="pre">major</span></code> and <code class="docutils literal"><span class="pre">minor</span></code> of the device
 (<code class="docutils literal"><span class="pre">mknod</span> <span class="pre">name</span> <span class="pre">type</span> <span class="pre">major</span> <span class="pre">minor</span></code>). Thus, if you want to create a character device
 named <code class="docutils literal"><span class="pre">mycdev</span></code> with the major <code class="docutils literal"><span class="pre">42</span></code> and minor <code class="docutils literal"><span class="pre">0</span></code>, use the command:</p>
-<div class="highlight-bash"><div class="highlight"><pre>$ mknod /dev/mycdev c <span class="m">42</span> 0
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ mknod /dev/mycdev c <span class="m">42</span> <span class="m">0</span>
 </pre></div>
 </div>
 <p>To create the block device with the name mybdev with the 240 and minor 0
 command used will be:</p>
-<div class="highlight-bash"><div class="highlight"><pre>$ <span class="c1"># mknod /dev/mybdev b 240 0</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="c1"># mknod /dev/mybdev b 240 0</span>
 </pre></div>
 </div>
 <p>Next, we&#8217;ll refer drivers for character devices.</p>
@@ -262,7 +290,7 @@ made by users over device-type files. Consequently, implementation of a characte
 device drivers means implementing the system calls specific to files: <code class="docutils literal"><span class="pre">open</span></code>,
 <code class="docutils literal"><span class="pre">close</span></code>, <code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code>, <code class="docutils literal"><span class="pre">lseek</span></code>, <code class="docutils literal"><span class="pre">mmap</span></code>, etc. These operations are
 described in the fields of the file_operations structure:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">file_operations</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
@@ -347,7 +375,7 @@ that contains information about the device, information used in the module. In
 the case of a driver for a character device, the structure will contain a cdev
 structure field to refer to the device. The following example uses the struct
 my_device_data:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
@@ -391,7 +419,7 @@ minor. The <code class="docutils literal"><span class="pre">dev_t</span></code> 
 and minor) and can be obtained using the MKDEV macro.</p>
 <p>For the static assignment and unallocation of device identifiers, the
 <code class="docutils literal"><span class="pre">register_chrdev_region</span></code> and <code class="docutils literal"><span class="pre">unregister_chrdev_region</span></code> functions are used:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">register_chrdev_region</span><span class="p">(</span><span class="kt">dev_t</span> <span class="n">first</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">unregister_chrdev_region</span><span class="p">(</span><span class="kt">dev_t</span> <span class="n">first</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">);</span>
@@ -402,7 +430,7 @@ and minor) and can be obtained using the MKDEV macro.</p>
 <p>The <code class="docutils literal"><span class="pre">my_minor_count</span></code> sequence reserves my_minor_count devices, starting with
 <code class="docutils literal"><span class="pre">my_major</span></code> major and my_first_minor minor (if the max value for minor is
 exceeded, move to the next major):</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 <span class="p">...</span>
 
 <span class="n">err</span> <span class="o">=</span> <span class="n">register_chrdev_region</span><span class="p">(</span><span class="n">MKDEV</span><span class="p">(</span><span class="n">my_major</span><span class="p">,</span> <span class="n">my_first_minor</span><span class="p">),</span> <span class="n">my_minor_count</span><span class="p">,</span>
@@ -418,7 +446,7 @@ exceeded, move to the next major):</p>
 initialized (cdev_init) and the cdev_add kernel will have to be notified. The
 <code class="docutils literal"><span class="pre">cdev_add</span></code> function must be called only after the device is ready to receive
 calls. Removing a device is done using the <code class="docutils literal"><span class="pre">cdev_del</span></code> function.</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">cdev_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">cdev</span> <span class="o">*</span><span class="n">cdev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="o">*</span><span class="n">fops</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">cdev_add</span><span class="p">(</span><span class="k">struct</span> <span class="n">cdev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="kt">dev_t</span> <span class="n">num</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">);</span>
@@ -426,7 +454,7 @@ calls. Removing a device is done using the <code class="docutils literal"><span 
 </pre></div>
 </div>
 <p>The following sequence registers and initializes MY_MAX_MINORS devices:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define MY_MAJOR       42</span>
@@ -471,7 +499,7 @@ calls. Removing a device is done using the <code class="docutils literal"><span 
 </pre></div>
 </div>
 <p>While the following sequence deletes and registers them:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">cleanup_module</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">cleanup_module</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 
@@ -504,7 +532,7 @@ pointer). Direct access of a user-space pointer can lead to incorrect behavior
 kernel-space), a kernel oops (the user-mode pointer can refer to a non-resident
 memory area) or security issues. Proper access to user-space data is done by
 calling the macros / functions below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
 
 <span class="n">put_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
 <span class="n">get_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
@@ -528,7 +556,7 @@ in kernel-space to the address referenced by <code class="docutils literal"><spa
 </ul>
 </div></blockquote>
 <p>A common section of code that works with these functions is:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
 
 <span class="cm">/*</span>
 <span class="cm"> * Copy at most size bytes to user space.</span>
@@ -549,7 +577,7 @@ these operations refer to initializing the device and filling in specific data
 device-specific resources: unlocking specific data and closing the device if
 the last call is close.</p>
 <p>In most cases, the open function will have the following structure:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_open</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_open</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span>
             <span class="n">container_of</span><span class="p">(</span><span class="n">inode</span><span class="o">-&gt;</span><span class="n">i_cdev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">my_device_data</span><span class="p">,</span> <span class="n">cdev</span><span class="p">);</span>
@@ -572,7 +600,7 @@ an error (<code class="docutils literal"><span class="pre">-EBUSY</span></code>)
 the device before do the open .</p>
 <p>At the user-space call of the open and close functions on the device, call
 my_open and my_release in the driver. An example of a user-space call:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/dev/my_device&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/dev/my_device&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* handle error */</span>
 <span class="p">}</span>
@@ -588,7 +616,7 @@ my_open and my_release in the driver. An example of a user-space call:</p>
 <h2>Read and write<a class="headerlink" href="#read-and-write" title="Permalink to this headline">¶</a></h2>
 <p>The read and write operations are reaching the device driver as a
 result of a userpsace program calling the read of write system calls:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* handle error */</span>
 <span class="p">}</span>
 
@@ -629,7 +657,7 @@ next read / write data will begin;</li>
 </div></blockquote>
 <p>The sequence below shows an example for the read function that takes
 into account the internal buffer size, user buffer size and the offset:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
                    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
@@ -663,7 +691,7 @@ userpace read request. In this case, the driver is responsible for advancing
 the offset according to how much it reads and returning the read size (which
 may be less than what is required).</p>
 <p>The structure of the write function is similar:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
                     <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
@@ -695,7 +723,7 @@ implementing a ioctl function. Initially, the ioctl system call used Big Kernel
 Lock. That&#8217;s why the call was gradually replaced with its unlocked version
 called unlocked_ioctl . You can read more on LWN:
 <a class="reference external" href="http://lwn.net/Articles/119652/">http://lwn.net/Articles/119652/</a></p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>cmd is the command sent from user-space. If a whole is being sent to the
@@ -716,7 +744,7 @@ to generate ioctl codes. The macrodefinition parameters are as follows:</p>
 </ul>
 </div></blockquote>
 <p>The following example shows an implementation for a ioctl function:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/ioctl.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/ioctl.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define MY_IOCTL_IN _IOC(_IOC_WRITE, &#39;k&#39;, 1, sizeof(my_ioctl_data))</span>
 
@@ -745,7 +773,7 @@ to generate ioctl codes. The macrodefinition parameters are as follows:</p>
 </div>
 <p>At the user-space call for the ioctl function, the my_ioctl function of the
 driver will be called. An example of such a user-space call:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">if</span> <span class="p">(</span><span class="n">ioctl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">MY_IOCTL_IN</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">ioctl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">MY_IOCTL_IN</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* handle error */</span>
 <span class="p">}</span>
 </pre></div>
@@ -761,7 +789,7 @@ interrupt or deferrable work, we will wake-up the process.</p>
 <p>A waiting queue is a list of processes that are waiting for a specific
 event. A queue is defined with the <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> type and can
 be used by the functions/macros:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/wait.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/wait.h&gt;</span><span class="cp"></span>
 
 <span class="n">DECLARE_WAIT_QUEUE_HEAD</span><span class="p">(</span><span class="n">wq_name</span><span class="p">);</span>
 
@@ -801,7 +829,7 @@ status are TASK_INTERRUPTIBLE .</li>
 </div></blockquote>
 <p>A simple example is that of a thread waiting to change the value of a flag. The
 initializations are done by the sequence:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
 <span class="n">wait_queue_head_t</span> <span class="n">wq</span><span class="p">;</span>
 <span class="kt">int</span> <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -810,11 +838,11 @@ initializations are done by the sequence:</p>
 </pre></div>
 </div>
 <p>A thread will wait for the flag to be changed to a value other than zero:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">wait_event_interruptible</span><span class="p">(</span><span class="n">wq</span><span class="p">,</span> <span class="n">flag</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">wait_event_interruptible</span><span class="p">(</span><span class="n">wq</span><span class="p">,</span> <span class="n">flag</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>While another thread will change the flag value and wake up the waiting threads:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">flag</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">flag</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
 <span class="n">wake_up_interruptible</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">wq</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -833,13 +861,13 @@ initializations are done by the sequence:</p>
 </ul>
 </div></blockquote>
 <p>The current lab name is device_drivers. See the exercises for the task name.</p>
-<div class="toggle last docutils container">
-<div class="header docutils container">
+<div class="toggle last container">
+<div class="header container">
 <strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks start by generating
 the skeleton code:</p>
-<div class="highlight-none"><div class="highlight"><pre>shell
+<div class="highlight-none"><div class="highlight"><pre><span></span>shell
 
 tools/labs $ make clean
 tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
@@ -847,11 +875,11 @@ tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
 </div>
 <p>Where task name is defined for each task. Once the skelton drivers are
 generated build the source:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make build
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
 <p>Then copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make copy
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
 tools/labs $ make boot
 </pre></div>
 </div>
@@ -899,11 +927,11 @@ of the following symbols in the Linux kernel:</p>
 </li>
 <li><p class="first">Display, using <code class="docutils literal"><span class="pre">pr_info</span></code>, a message after the registration and unregistration
 operations to confirm that they were successful. Then load the module into the kernel:</p>
-<div class="highlight-bash"><div class="highlight"><pre>$ insmod so2_cdev.ko
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ insmod so2_cdev.ko
 </pre></div>
 </div>
 <p>And see character devices in <code class="docutils literal"><span class="pre">/proc/devices</span></code>:</p>
-<div class="highlight-bash"><div class="highlight"><pre>$ cat /proc/devices <span class="p">|</span> less
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ cat /proc/devices <span class="p">|</span> less
 </pre></div>
 </div>
 <p>Identify the device type registered with major 42 . Note that <code class="docutils literal"><span class="pre">/proc/devices</span></code>
@@ -921,7 +949,7 @@ in two ways:</p>
 </div>
 </li>
 <li><p class="first">Unload the kernel module</p>
-<div class="highlight-bash"><div class="highlight"><pre>rmmod so2_cdev
+<div class="highlight-bash"><div class="highlight"><pre><span></span>rmmod so2_cdev
 </pre></div>
 </div>
 </li>
@@ -982,8 +1010,8 @@ recommend using atomic_cmpxchg.</p>
 </li>
 <li><p class="first">To test your deployment, you&#8217;ll need to simulate a long-term use of your
 device. Call the scheduler at the end of the device opening:</p>
-<div class="highlight-bash"><div class="highlight"><pre>set_current_state<span class="o">(</span>TASK_INTERRUPTIBLE<span class="o">)</span><span class="p">;</span>
-schedule_timeout<span class="o">(</span>1000<span class="o">)</span><span class="p">;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>set_current_state<span class="o">(</span>TASK_INTERRUPTIBLE<span class="o">)</span><span class="p">;</span>
+schedule_timeout<span class="o">(</span><span class="m">1000</span><span class="o">)</span><span class="p">;</span>
 </pre></div>
 </div>
 </li>
@@ -1059,7 +1087,7 @@ size argument.</p>
 <p>The prototype of a device driver&#8217;s operations is in the file_operations
 structure.
 Test using commands:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nb">echo</span> <span class="s2">&quot;arpeggio&quot;</span>&gt; /dev/so2_cdev
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;arpeggio&quot;</span>&gt; /dev/so2_cdev
 cat /dev/so2_cdev
 </pre></div>
 </div>
@@ -1094,15 +1122,18 @@ then you need to install <code class="docutils literal"><span class="pre">gcc-mu
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="interrupts.html" class="btn btn-neutral float-right" title="I/O access and Interrupts" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="interrupts.html" class="btn btn-neutral float-right" title="I/O access and Interrupts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="kernel_api.html" class="btn btn-neutral" title="Kernel API" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="kernel_api.html" class="btn btn-neutral" title="Kernel API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1133,10 +1164,11 @@ then you need to install <code class="docutils literal"><span class="pre">gcc-mu
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'4.11.0+',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

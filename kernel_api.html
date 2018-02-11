@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Kernel API &mdash; The Linux Kernel 4.11.0+ documentation</title>
+  <title>Kernel API &mdash; The Linux Kernel  documentation</title>
   
 
+  
+  
   
   
 
@@ -32,7 +34,10 @@
   
 
   
-    <link rel="top" title="The Linux Kernel 4.11.0+ documentation" href="index.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
         <link rel="next" title="Character device drivers" href="device_drivers.html"/>
         <link rel="prev" title="Kernel modules" href="kernel_modules.html"/> 
 
@@ -43,6 +48,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +68,7 @@
             
             
               <div class="version">
-                4.12.0-rc4
+                4.15.0
               </div>
             
           
@@ -83,11 +89,14 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Kernel API</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Kernel API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#accessing-memory">Accessing memory</a></li>
@@ -139,8 +148,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">The Linux Kernel</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">The Linux Kernel</a>
+        
       </nav>
 
 
@@ -149,23 +160,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Kernel API</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Kernel API</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/kernel_api.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -288,7 +316,7 @@ synchronization primitives, even with the single processor.</p>
 <p>For Linux kernel programming, the convention used to call functions to indicate
 success is the same as UNIX programming: 0 for success, or a value other than 0
 for failure. For failures negative values are returned as shown in the example below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">if</span> <span class="p">(</span><span class="n">alloc_memory</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">alloc_memory</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="n">user_parameter_valid</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
@@ -312,7 +340,7 @@ kernel in the <code class="docutils literal"><span class="pre">lib/string.c</spa
 <p>The printf equivalent in the kernel is printk , defined in
 <code class="docutils literal"><span class="pre">include/linux/printk.h</span></code>. The printk syntax is very similar to printf. The first
 parameter of printk decides the message category in which the current message falls:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#define KERN_EMERG   &quot;&lt;0&gt;&quot;  </span><span class="cm">/* system is unusable */</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define KERN_EMERG   &quot;&lt;0&gt;&quot;  </span><span class="cm">/* system is unusable */</span><span class="cp"></span>
 <span class="cp">#define KERN_ALERT   &quot;&lt;1&gt;&quot;  </span><span class="cm">/* action must be taken immediately */</span><span class="cp"></span>
 <span class="cp">#define KERN_CRIT    &quot;&lt;2&gt;&quot;  </span><span class="cm">/* critical conditions */</span><span class="cp"></span>
 <span class="cp">#define KERN_ERR     &quot;&lt;3&gt;&quot;  </span><span class="cm">/* error conditions */</span><span class="cp"></span>
@@ -323,7 +351,7 @@ parameter of printk decides the message category in which the current message fa
 </pre></div>
 </div>
 <p>Thus, a warning message in the kernel would be sent with:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">printk</span><span class="p">(</span><span class="n">KERN_WARNING</span> <span class="s">&quot;my_module input string %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">buff</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">printk</span><span class="p">(</span><span class="n">KERN_WARNING</span> <span class="s">&quot;my_module input string %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">buff</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>If the logging level is missing from the printk call, logging is done with the
@@ -332,7 +360,7 @@ messages sent with printk are only visible on the console and only if their
 level exceeds the default level set on the console.</p>
 <p>To reduce the size of lines when using printk, it is recommended to use the
 following help functions instead of directly using the printk call:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">pr_emerg</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar with printk(KERN_EMERG pr_fmt(fmt), ...); */</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_emerg</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar with printk(KERN_EMERG pr_fmt(fmt), ...); */</span>
 <span class="n">pr_alert</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar with printk(KERN_ALERT pr_fmt(fmt), ...); */</span>
 <span class="n">pr_crit</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar with printk(KERN_CRIT pr_fmt(fmt), ...); */</span>
 <span class="n">pr_err</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar with printk(KERN_ERR pr_fmt(fmt), ...); */</span>
@@ -349,7 +377,7 @@ macro is defined or if dynamic debugging is used.</p>
 <h3>Memory allocation<a class="headerlink" href="#memory-allocation" title="Permalink to this headline">¶</a></h3>
 <p>In Linux only resident memory can be allocated, using kmalloc call. A typical kmalloc
 call is presented below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/slab.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/slab.h&gt;</span><span class="cp"></span>
 
 <span class="n">string</span> <span class="o">=</span> <span class="n">kmalloc</span> <span class="p">(</span><span class="n">string_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">string</span><span class="p">)</span> <span class="p">{</span>
@@ -382,7 +410,7 @@ list_head is defined in <code class="docutils literal"><span class="pre">include
 functions that work on the lists. The following code shows the definition of
 the list_head list_head and the use of an element of this type in another
 well-known structure in the Linux kernel:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">list_head</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">list_head</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">list_head</span> <span class="o">*</span><span class="n">next</span><span class="p">,</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
 <span class="p">};</span>
 
@@ -412,7 +440,7 @@ and <code class="docutils literal"><span class="pre">n</span></code> as a tempor
 </ul>
 </div></blockquote>
 <p>The following code shows how to use these routines:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/slab.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/slab.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;linux/list.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">pid_list</span> <span class="p">{</span>
@@ -484,7 +512,7 @@ in the include/linux/list.h header.</p>
 the spinlock concept in Linux. It describes a spinlock, and the operations
 associated with a spinlock are spin_lock_init, spin_lock, spin_unlock . An
 example of use is given below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
 
 <span class="n">DEFINE_SPINLOCK</span><span class="p">(</span><span class="n">lock1</span><span class="p">);</span>
 <span class="n">spinlock_t</span> <span class="n">lock2</span><span class="p">;</span>
@@ -504,7 +532,7 @@ example of use is given below:</p>
 These types of locks are identified by <code class="docutils literal"><span class="pre">rwlock_t</span></code>, and the functions that can
 work on a read / write spinlock are <code class="docutils literal"><span class="pre">rwlock_init</span></code>, <code class="docutils literal"><span class="pre">read_lock</span></code>, <code class="docutils literal"><span class="pre">write_lock</span></code>.
 An example of use:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
 
 <span class="n">DEFINE_RWLOCK</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
 
@@ -544,7 +572,7 @@ An example of use:</p>
 <h3>mutex<a class="headerlink" href="#mutex" title="Permalink to this headline">¶</a></h3>
 <p>A mutex is a variable of the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">mutex</span></code> type (defined in linux/mutex.h ).
 Functions and macros for working with mutex are listed below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/mutex.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/mutex.h&gt;</span><span class="cp"></span>
 
 <span class="cm">/* functions for mutex initialization */</span>
 <span class="kt">void</span> <span class="nf">mutex_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
@@ -568,7 +596,7 @@ used in process context.</p>
 counter. For this, an <code class="docutils literal"><span class="pre">atomic_t</span></code> can be used (defined in include/linux/atomic.h
 ) that holds an integer value. Below are some operations that can be  performed on
 an atomic_t variable.</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/atomic.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/atomic.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">atomic_set</span><span class="p">(</span><span class="n">atomic_t</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">atomic_read</span><span class="p">(</span><span class="n">atomic_t</span> <span class="o">*</span><span class="n">v</span><span class="p">);</span>
@@ -588,7 +616,7 @@ an atomic_t variable.</p>
 example, we consider that an atomic variable can have the LOCKED and UNLOCKED
 values, and if LOCKED then a specific function -EBUSY with an -EBUSY message.
 The mode of use is shown schematically in the code below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#define LOCKED               0</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define LOCKED               0</span>
 <span class="cp">#define UNLOCKED     1</span>
 
 <span class="k">static</span> <span class="n">atomic_t</span> <span class="n">flag</span><span class="p">;</span>
@@ -635,7 +663,7 @@ The mode of use is shown schematically in the code below:</p>
 <p>The above code is the equivalent of using a trylock (such as pthread_mutex_trylock).</p>
 <p>We can also use a variable to remember the size of a buffer and for atomic
 updates. For example, the code below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">MAX_SIZE</span><span class="p">];</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">MAX_SIZE</span><span class="p">];</span>
 <span class="k">static</span> <span class="n">atomic_t</span> <span class="n">size</span><span class="p">;</span>
 
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">add_to_buffer</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">value</span><span class="p">)</span>
@@ -676,7 +704,7 @@ updates. For example, the code below:</p>
 <h3>Atomic bitwise operations<a class="headerlink" href="#atomic-bitwise-operations" title="Permalink to this headline">¶</a></h3>
 <p>The kernel provides a set of functions (in <code class="docutils literal"><span class="pre">asm/bitops.h</span></code>) that modify or test
 bits in an atomic way.</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;asm/bitops.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/bitops.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">set_bit</span><span class="p">(</span><span class="kt">int</span> <span class="n">nr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">clear_bit</span><span class="p">(</span><span class="kt">int</span> <span class="n">nr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">);</span>
@@ -704,13 +732,13 @@ tested and the nr is the bit on which the operation is performed.</p>
 </ul>
 </div></blockquote>
 <p>The current lab name is kernel_api. See the exercises for the task name.</p>
-<div class="toggle last docutils container">
-<div class="header docutils container">
+<div class="toggle last container">
+<div class="header container">
 <strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks start by generating
 the skeleton code:</p>
-<div class="highlight-none"><div class="highlight"><pre>shell
+<div class="highlight-none"><div class="highlight"><pre><span></span>shell
 
 tools/labs $ make clean
 tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
@@ -718,11 +746,11 @@ tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
 </div>
 <p>Where task name is defined for each task. Once the skelton drivers are
 generated build the source:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make build
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
 <p>Then copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make copy
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
 tools/labs $ make boot
 </pre></div>
 </div>
@@ -838,17 +866,19 @@ the next process of <code class="docutils literal"><span class="pre">struct</spa
 <p class="first admonition-title">Note</p>
 <p>The task_struct struct contains two fields to designate the
 parent of a task:</p>
-<ul class="simple">
+<ul>
 <li><dl class="first docutils">
 <dt><code class="docutils literal"><span class="pre">real_parent</span></code> points to the process that created the</dt>
-<dd>task or to process with pid 1 (init) if the parent
-completed its execution.</dd>
+<dd><p class="first last">task or to process with pid 1 (init) if the parent
+completed its execution.</p>
+</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt><code class="docutils literal"><span class="pre">parent</span></code> indicates to the current task parent (the</dt>
-<dd>process that will be reported if the task completes
-execution).</dd>
+<dd><p class="first last">process that will be reported if the task completes
+execution).</p>
+</dd>
 </dl>
 </li>
 </ul>
@@ -993,15 +1023,18 @@ test)? What if you use another order?</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="device_drivers.html" class="btn btn-neutral float-right" title="Character device drivers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="device_drivers.html" class="btn btn-neutral float-right" title="Character device drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="kernel_modules.html" class="btn btn-neutral" title="Kernel modules" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="kernel_modules.html" class="btn btn-neutral" title="Kernel modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1032,10 +1065,11 @@ test)? What if you use another order?</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'4.11.0+',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
