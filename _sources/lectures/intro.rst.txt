@@ -56,7 +56,7 @@ processor execution mode. Code that runs in kernel mode can fully
 [#hypervisor]_ control the CPU while code that runs in user mode has
 certain limitations. For example, local CPU interrupts can only be
 disabled or enable while running in kernel mode. If such an operation
-is attempted while running in user mode a exception will be generated
+is attempted while running in user mode an exception will be generated
 and the kernel will take over to handle it.
 
 .. [#hypervisor] some processors may have even higher privileges then
@@ -267,7 +267,7 @@ goal:
 
 There are a class of operating systems that (used to) claim to be
 hybrid kernels, in between monolithic and micro-kernels (e.g. Windows,
-Max OS X). However, since all of the typical monolithic services run
+Mac OS X). However, since all of the typical monolithic services run
 in kernel-mode in these operating systems, there is little merit to
 qualify them other then monolithic kernels.
 
@@ -350,14 +350,21 @@ access to the kernel space from user mode.
 
    .. ditaa::
 
-                  +--------------+  ^
-      0xFFFFFFFF  |              |  |
-                  |              |  | Kernel space
-                  +--------------+  v
-      0xC0000000  |              |  ^
-                  |              |  | User space
-                  |              |  |
-      0x00000000  +--------------+  v
+                  +-------------------+  ^
+      0xFFFFFFFF  |                   |  |
+                  |                   |  | Kernel space
+                  |                   |  |
+                  +-------------------+  v
+      0xC0000000  |                   |  ^
+                  |                   |  | User space
+                  |                   |  |
+                  |                   |  |
+                  |                   |  |
+		  |                   |  |
+		  |                   |  |
+		  |                   |  |
+                  |                   |  |
+      0x00000000  +-------------------+  v
 
             32bit Virtual Address Space
 
@@ -589,8 +596,8 @@ executing a critical section.
 CPU Scalability
 ---------------
 
-CPU scalability refers to wow well does that performance scales with
-the number of core. There are a few things that the kernel developer
+CPU scalability refers to how well does the performance scales with
+the number of cores. There are a few things that the kernel developer
 should keep in mind with regard to CPU scalability:
 
 .. slide:: Execution contexts

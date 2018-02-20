@@ -18,9 +18,9 @@ style documentation. Each topic has two parts:
   on how to solve the exercises
 
 This content is based on the `Operatings Systems 2
-<http://ocw.cs.pub.ro/courses/so2>`_ course, Computer Science
-department, Faculty of Automatic Control and Computers, Politehnica
-Univesity of Bucharest.
+<http://ocw.cs.pub.ro/courses/so2>`_ course from the Computer Science
+and Engineering Department, the Faculty of Automatic Control and
+Computers, University POLITEHNICA of Bucharest.
 
 You can get the latest version at http://github.com/linux-kernel-labs.
 

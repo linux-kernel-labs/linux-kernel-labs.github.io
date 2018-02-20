@@ -29,18 +29,24 @@ Where do we stand?
            | system programming (PC, SO, CPL) |
            +----------------------------------+
                                                      user space
-   ------------------------------------------------------------
+   ----------------------------------------------------------=-
                                                    kernel space
              +--------------------------+
              | kernel programming (SO2) |
              +--------------------------+
 
+   ----------------------------------------------------------=-
+
+           +----------------------------------+
+           |   hardware (PM, CN1, CN2, PL )   |
+           +----------------------------------+
 
 Resources
 =========
 
 * wiki: http://ocw.cs.pub.ro/courses/so2
 * NeedToKnow: http://ocw.cs.pub.ro/courses/so2/need-to-know
+* Linux Kernel Labs: https://linux-kernel-labs.github.io/
 * mailing list: so2@cursuri.cs.pub.ro
 * Facebook
 * vmchecker
@@ -52,12 +58,9 @@ Resources
 Community
 =========
 
-* laboratoarele (din wiki) sunt editabile
-* folosiți contul de pe cs.curs.pub.ro
+* contribuții via https://github.com/linux-kernel-labs/linux (PR sau
+  issues)
 * corecții, ajustări, precizări, informații utile
-* cursurile sunt în format Google Docs
-* Pentru corecţii adaugați comentarii
-* pentru detalii folosiți "Speaker Notes"
 * listă de discuții
 * răspundeți la întrebările colegilor voștri
 * propuneți subiecte de discuție care au legătură cu disciplina

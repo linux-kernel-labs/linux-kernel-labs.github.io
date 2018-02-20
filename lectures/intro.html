@@ -232,7 +232,7 @@ processor execution mode. Code that runs in kernel mode can fully
 <a class="footnote-reference" href="#hypervisor" id="id1">[1]</a> control the CPU while code that runs in user mode has
 certain limitations. For example, local CPU interrupts can only be
 disabled or enable while running in kernel mode. If such an operation
-is attempted while running in user mode a exception will be generated
+is attempted while running in user mode an exception will be generated
 and the kernel will take over to handle it.</p>
 <table class="docutils footnote" frame="void" id="hypervisor" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
@@ -332,7 +332,7 @@ inline functions, function pointers</li>
 </ul>
 <p>There are a class of operating systems that (used to) claim to be
 hybrid kernels, in between monolithic and micro-kernels (e.g. Windows,
-Max OS X). However, since all of the typical monolithic services run
+Mac OS X). However, since all of the typical monolithic services run
 in kernel-mode in these operating systems, there is little merit to
 qualify them other then monolithic kernels.</p>
 <p class="admonition-hybrid-kernels">Many operating systems and kernel experts have dismissed the label
@@ -376,7 +376,7 @@ virtual address space is shared between user processes and the kernel.</p>
 while user space at the bottom. In order to avoid the user processes
 from access kernel space, the kernel creates mappings that prevent
 access to the kernel space from user mode.</p>
-<img alt="../_images/ditaa-baaa109b8331bba68c32ece4a0f6f05e74f54f22.png" class="admonition-user-and-kernel-sharing-the-virtual-address-space" src="../_images/ditaa-baaa109b8331bba68c32ece4a0f6f05e74f54f22.png" />
+<img alt="../_images/ditaa-00760697e2d08607719269ad7b81254e597c09f8.png" class="admonition-user-and-kernel-sharing-the-virtual-address-space" src="../_images/ditaa-00760697e2d08607719269ad7b81254e597c09f8.png" />
 </div>
 <div class="section" id="execution-contexts">
 <h3>Execution contexts<a class="headerlink" href="#execution-contexts" title="Permalink to this headline">¶</a></h3>
@@ -473,8 +473,8 @@ executing a critical section.</p>
 </div>
 <div class="section" id="cpu-scalability">
 <h3>CPU Scalability<a class="headerlink" href="#cpu-scalability" title="Permalink to this headline">¶</a></h3>
-<p>CPU scalability refers to wow well does that performance scales with
-the number of core. There are a few things that the kernel developer
+<p>CPU scalability refers to how well does the performance scales with
+the number of cores. There are a few things that the kernel developer
 should keep in mind with regard to CPU scalability:</p>
 <ul class="admonition-execution-contexts simple">
 <li>Use lock free algorithms when possible</li>
