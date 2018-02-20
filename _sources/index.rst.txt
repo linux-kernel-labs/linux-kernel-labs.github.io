@@ -1,8 +1,13 @@
-Linux device driver labs
-========================
+=====================
+Linux Kernel Teaching
+=====================
 
-This is a collection of "howtos" for various device driver topics. For
-each topic there are two parts:
+This is a collection of lectures and labs Linux kernel topics. The
+lectures focus on theoretical and Linux kernel exploration.
+
+
+The labs focus on device drivers topics and they resemble "howto"
+style documentation. Each topic has two parts:
 
 * a walk-through the topic which contains an overview, the main
   abstractions, simple examples and pointers to APIs
@@ -12,7 +17,7 @@ each topic there are two parts:
   is presented with a starting coding skeleton and with in-depth tips
   on how to solve the exercises
 
-They are based on the labs of the `Operatings Systems 2
+This content is based on the `Operatings Systems 2
 <http://ocw.cs.pub.ro/courses/so2>`_ course, Computer Science
 department, Faculty of Automatic Control and Computers, Politehnica
 Univesity of Bucharest.
@@ -23,18 +28,20 @@ To get started build the documentation from the sources:
 
 .. code-block:: c
    
-   cd tools/labs && make docs
+   cd tools/teaching && make docs
 
 then point your browser at **Documentation/output/labs/index.html**.
 
 .. toctree::
 
-   vm.rst
-   exercises.rst
-   kernel_modules.rst
-   kernel_api.rst
-   device_drivers.rst
-   interrupts.rst
-   deferred_work.rst
-   memory_mapping.rst
-   device_model.rst
+   lectures/so2.cs.pub.ro.rst
+   lectures/intro.rst
+   labs/vm.rst
+   labs/exercises.rst
+   labs/kernel_modules.rst
+   labs/kernel_api.rst
+   labs/device_drivers.rst
+   labs/interrupts.rst
+   labs/deferred_work.rst
+   labs/memory_mapping.rst
+   labs/device_model.rst

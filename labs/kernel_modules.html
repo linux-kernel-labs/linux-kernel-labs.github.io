@@ -26,23 +26,23 @@
 
   
   
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
-    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   
 
   
         <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html"/>
         <link rel="next" title="Kernel API" href="kernel_api.html"/>
         <link rel="prev" title="Exercises" href="exercises.html"/> 
 
   
-  <script src="_static/js/modernizr.min.js"></script>
+  <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -58,7 +58,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
           
 
           
@@ -75,7 +75,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -93,6 +93,8 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Kernel modules</a><ul>
@@ -146,7 +148,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">The Linux Kernel</a>
+          <a href="../index.html">The Linux Kernel</a>
         
       </nav>
 
@@ -174,7 +176,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
       <li>Kernel modules</li>
     
@@ -182,7 +184,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/kernel_modules.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/labs/kernel_modules.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -222,9 +224,9 @@ on the test / development tool machine.</p>
 <div class="section" id="an-example-of-kernel-module">
 <h2>An example of kernel module<a class="headerlink" href="#an-example-of-kernel-module" title="Permalink to this headline">¶</a></h2>
 <p>Below is a very simple example of kernel module. When loading into the kernel,
-it will generate the message &#8220;Hi&#8221;. When unloading the kernel module, the &#8220;Bye&#8221;
+it will generate the message “Hi”. When unloading the kernel module, the “Bye”
 message will be generated.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;linux/init.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp"></span>
 
@@ -251,9 +253,9 @@ message will be generated.</p>
 in a specially reserved memory area for this, from where they will be extracted
 by the logging daemon (syslog). To display kernel messages, you can use the dmesg
 command or inspect the logs:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># cat /var/log/syslog | tail -2</span>
-Feb <span class="m">20</span> <span class="m">13</span>:57:38 asgard kernel: Hi
-Feb <span class="m">20</span> <span class="m">13</span>:57:43 asgard kernel: Bye
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># cat /var/log/syslog | tail -2</span>
+Feb <span class="m">20</span> 13:57:38 asgard kernel: Hi
+Feb <span class="m">20</span> 13:57:43 asgard kernel: Bye
 
 <span class="c1"># dmesg | tail -2</span>
 Hi
@@ -270,7 +272,7 @@ the kernel in which we load the module. For these reasons, there is a standard
 compilation method (kbuild). This method requires the use of two files:
 a Makefile and a Kbuild file.</p>
 <p>Below is an example of a Makefile:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">KDIR</span> <span class="o">=</span> /lib/modules/<span class="sb">`</span>uname -r<span class="sb">`</span>/build
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">KDIR</span> <span class="o">=</span> /lib/modules/<span class="sb">`</span>uname -r<span class="sb">`</span>/build
 
 kbuild:
         make -C <span class="k">$(</span>KDIR<span class="k">)</span> <span class="nv">M</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>
@@ -280,7 +282,7 @@ clean:
 </pre></div>
 </div>
 <p>And the example of a Kbuild file used to compile a module:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">EXTRA_CFLAGS</span> <span class="o">=</span> -Wall -g
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">EXTRA_CFLAGS</span> <span class="o">=</span> -Wall -g
 
 obj-m        <span class="o">=</span> modul.o
 </pre></div>
@@ -292,7 +294,7 @@ leads to reading the Kbuild file from the current directory  and compiling
 the module as instructed in this file.</p>
 <p>For labs we will configure different KDIR, according to the virtual machine
 specifications:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">KDIR</span> <span class="o">=</span> /usr/src/linux-so2
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">KDIR</span> <span class="o">=</span> /usr/src/linux-so2
 <span class="o">[</span>...<span class="o">]</span>
 </pre></div>
 </div>
@@ -300,10 +302,10 @@ specifications:</p>
 The easiest example of such a directive is <code class="docutils literal"><span class="pre">obj-m</span> <span class="pre">=</span> <span class="pre">modul.o</span></code>. Following this
 directive, a kernel module (ko - kernel object) will be created,
 starting from the <code class="docutils literal"><span class="pre">module.o</span></code> file. <code class="docutils literal"><span class="pre">module.o</span></code> will be created starting from
-<code class="docutils literal"><span class="pre">module.c</span></code> or <code class="docutils literal"><span class="pre">module.S</span></code>. All of these files can be found in the Kbuild&#8217;s
+<code class="docutils literal"><span class="pre">module.c</span></code> or <code class="docutils literal"><span class="pre">module.S</span></code>. All of these files can be found in the Kbuild’s
 directory.</p>
 <p>An example of a Kbuild file that uses several sub-modules is shown below:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">EXTRA_CFLAGS</span> <span class="o">=</span> -Wall -g
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">EXTRA_CFLAGS</span> <span class="o">=</span> -Wall -g
 
 obj-m        <span class="o">=</span> supermodul.o
 supermodul-y <span class="o">=</span> module-a.o module-b.o
@@ -345,7 +347,7 @@ the kernel sources.</p>
 parameter the path to the .ko file in which the module was compiled and linked.
 Unloading the module from the kernel is done using the rmmod command, which receives
 the module name as a parameter.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ insmod module.ko
+<div class="highlight-bash"><div class="highlight"><pre>$ insmod module.ko
 $ rmmod module.ko
 </pre></div>
 </div>
@@ -353,12 +355,12 @@ $ rmmod module.ko
 <code class="docutils literal"><span class="pre">module_init</span></code> macro will be executed. Similarly, when the module is unloaded
 the routine specified as a parameter of the <code class="docutils literal"><span class="pre">module_exit</span></code> will be executed.</p>
 <p>A complete example of compiling and loading/unloading mode is presented below:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-lin# ls
+<div class="highlight-bash"><div class="highlight"><pre>faust:~/lab-01/modul-lin# ls
 Kbuild  Makefile  modul.c
 
 faust:~/lab-01/modul-lin# make
 make -C /lib/modules/<span class="sb">`</span>uname -r<span class="sb">`</span>/build <span class="nv">M</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>
-make<span class="o">[</span><span class="m">1</span><span class="o">]</span>: Entering directory <span class="sb">`</span>/usr/src/linux-2.6.28.4<span class="s1">&#39;</span>
+make<span class="o">[</span>1<span class="o">]</span>: Entering directory <span class="sb">`</span>/usr/src/linux-2.6.28.4<span class="s1">&#39;</span>
 <span class="s1">  LD      /root/lab-01/modul-lin/built-in.o</span>
 <span class="s1">  CC [M]  /root/lab-01/modul-lin/modul.o</span>
 <span class="s1">  Building modules, stage 2.</span>
@@ -408,7 +410,7 @@ because of a programming error, but also a hardware error.</p>
 <p>If a fatal error occurs, after which the system can not return to a stable
 state, a panic kernel is generated.</p>
 <p>Look at the kernel module below that contains a bug to generate an oops:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="cm">/*</span>
 <span class="cm"> * Oops generating kernel module</span>
 <span class="cm"> */</span>
 
@@ -449,26 +451,26 @@ state, a panic kernel is generated.</p>
 </pre></div>
 </div>
 <p>Inserting this module into the kernel will generate an oops:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# insmod oops.ko
+<div class="highlight-bash"><div class="highlight"><pre>faust:~/lab-01/modul-oops# insmod oops.ko
 <span class="o">[</span>...<span class="o">]</span>
 
 faust:~/lab-01/modul-oops# dmesg <span class="p">|</span> tail -32
-BUG: unable to handle kernel paging request at <span class="m">00001234</span>
+BUG: unable to handle kernel paging request at 00001234
 IP: <span class="o">[</span>&lt;c89d4005&gt;<span class="o">]</span> my_oops_init+0x5/0x20 <span class="o">[</span>oops<span class="o">]</span>
-  *de <span class="o">=</span> <span class="m">00000000</span>
+  *de <span class="o">=</span> 00000000
 Oops: <span class="m">0002</span> <span class="o">[</span><span class="c1">#1] PREEMPT DEBUG_PAGEALLOC</span>
 last sysfs file: /sys/devices/virtual/net/lo/operstate
 Modules linked in: oops<span class="o">(</span>+<span class="o">)</span> netconsole ide_cd_mod pcnet32 crc32 cdrom <span class="o">[</span>last unloaded: modul<span class="o">]</span>
 
-Pid: <span class="m">4157</span>, comm: insmod Not tainted <span class="o">(</span><span class="m">2</span>.6.28.4 <span class="c1">#2) VMware Virtual Platform</span>
-EIP: <span class="m">0060</span>:<span class="o">[</span>&lt;c89d4005&gt;<span class="o">]</span> EFLAGS: <span class="m">00010246</span> CPU: <span class="m">0</span>
+Pid: 4157, comm: insmod Not tainted <span class="o">(</span>2.6.28.4 <span class="c1">#2) VMware Virtual Platform</span>
+EIP: 0060:<span class="o">[</span>&lt;c89d4005&gt;<span class="o">]</span> EFLAGS: <span class="m">00010246</span> CPU: 0
 EIP is at my_oops_init+0x5/0x20 <span class="o">[</span>oops<span class="o">]</span>
-EAX: <span class="m">00000000</span> EBX: fffffffc ECX: c89d4300 EDX: <span class="m">00000001</span>
+EAX: <span class="m">00000000</span> EBX: fffffffc ECX: c89d4300 EDX: 00000001
 ESI: c89d4000 EDI: <span class="m">00000000</span> EBP: c5799e24 ESP: c5799e24
- DS: 007b ES: 007b FS: <span class="m">0000</span> GS: <span class="m">0033</span> SS: <span class="m">0068</span>
-Process insmod <span class="o">(</span>pid: <span class="m">4157</span>, <span class="nv">ti</span><span class="o">=</span>c5799000 <span class="nv">task</span><span class="o">=</span>c665c780 task.ti<span class="o">=</span>c5799000<span class="o">)</span>
+ DS: 007b ES: 007b FS: <span class="m">0000</span> GS: <span class="m">0033</span> SS: 0068
+Process insmod <span class="o">(</span>pid: 4157, <span class="nv">ti</span><span class="o">=</span>c5799000 <span class="nv">task</span><span class="o">=</span>c665c780 task.ti<span class="o">=</span>c5799000<span class="o">)</span>
 Stack:
- c5799f8c c010102d c72b51d8 0000000c c5799e58 c01708e4 <span class="m">00000124</span> <span class="m">00000000</span>
+ c5799f8c c010102d c72b51d8 0000000c c5799e58 c01708e4 <span class="m">00000124</span> 00000000
  c89d4300 c5799e58 c724f448 <span class="m">00000001</span> c89d4300 c5799e60 c0170981 c5799f8c
  c014b698 <span class="m">00000000</span> <span class="m">00000000</span> c5799f78 c5799f20 <span class="m">00000500</span> c665cb00 c89d4300
 Call Trace:
@@ -482,14 +484,14 @@ Call Trace:
  <span class="o">[</span>&lt;c0140da6&gt;<span class="o">]</span> ? trace_hardirqs_on_caller+0x106/0x150
  <span class="o">[</span>&lt;c0240a08&gt;<span class="o">]</span> ? trace_hardirqs_on_thunk+0xc/0x10
  <span class="o">[</span>&lt;c0103407&gt;<span class="o">]</span> ? sysenter_do_call+0x12/0x43
-Code: &lt;c7&gt; <span class="m">05</span> <span class="m">34</span> <span class="m">12</span> <span class="m">00</span> <span class="m">00</span> <span class="m">03</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 5d c3 eb 0d <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span>
-EIP: <span class="o">[</span>&lt;c89d4005&gt;<span class="o">]</span> my_oops_init+0x5/0x20 <span class="o">[</span>oops<span class="o">]</span> SS:ESP <span class="m">0068</span>:c5799e24
+Code: &lt;c7&gt; <span class="m">05</span> <span class="m">34</span> <span class="m">12</span> <span class="m">00</span> <span class="m">00</span> <span class="m">03</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 5d c3 eb 0d <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> <span class="m">90</span> 90
+EIP: <span class="o">[</span>&lt;c89d4005&gt;<span class="o">]</span> my_oops_init+0x5/0x20 <span class="o">[</span>oops<span class="o">]</span> SS:ESP 0068:c5799e24
 ---<span class="o">[</span> end trace 2981ce73ae801363 <span class="o">]</span>---
 </pre></div>
 </div>
 <p>Although relatively cryptic, the message provided by the kernel to the
 appearance of an oops provides valuable information about the error. First line:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>BUG: unable to handle kernel paging request at <span class="m">00001234</span>
+<div class="highlight-bash"><div class="highlight"><pre>BUG: unable to handle kernel paging request at 00001234
 EIP: <span class="o">[</span>&lt;c89d4005&gt;<span class="o">]</span> my_oops_init + 0x5 / 0x20 <span class="o">[</span>oops<span class="o">]</span>
 </pre></div>
 </div>
@@ -498,7 +500,7 @@ In our case this is an invalid access to memory.</p>
 <p>Next line</p>
 <blockquote>
 <div><code class="docutils literal"><span class="pre">Oops:</span> <span class="pre">0002</span> <span class="pre">[#</span> <span class="pre">1]</span> <span class="pre">PREEMPT</span> <span class="pre">DEBUG_PAGEALLOC</span></code></div></blockquote>
-<p>Tells us that it&#8217;s the first oops (#1). This is important in the context that
+<p>Tells us that it’s the first oops (#1). This is important in the context that
 an oops can lead to other oopses. Usually only the first oops is relevant.
 Furthermore, the oops code (0002) provides information about the error type
 (in memory manager -&gt; fault.c ):</p>
@@ -516,25 +518,25 @@ value and notes that the bug appeared in the my_oops_init function with a
 the stack content and a backtrace of calls until then.</p>
 <p>If an invalid read call is generated ( <code class="docutils literal"><span class="pre">#define</span> <span class="pre">OP_OOPS</span> <span class="pre">OP_READ</span></code>), the message
 will be the same, but the oops code will differ, which would now be 0000 :</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# dmesg <span class="p">|</span> tail -33
-BUG: unable to handle kernel paging request at <span class="m">00001234</span>
+<div class="highlight-bash"><div class="highlight"><pre>faust:~/lab-01/modul-oops# dmesg <span class="p">|</span> tail -33
+BUG: unable to handle kernel paging request at 00001234
 IP: <span class="o">[</span>&lt;c89c3016&gt;<span class="o">]</span> my_oops_init+0x6/0x20 <span class="o">[</span>oops<span class="o">]</span>
-  *de <span class="o">=</span> <span class="m">00000000</span>
+  *de <span class="o">=</span> 00000000
 Oops: <span class="m">0000</span> <span class="o">[</span><span class="c1">#1] PREEMPT DEBUG_PAGEALLOC</span>
 last sysfs file: /sys/devices/virtual/net/lo/operstate
 Modules linked in: oops<span class="o">(</span>+<span class="o">)</span> netconsole pcnet32 crc32 ide_cd_mod cdrom
 
-Pid: <span class="m">2754</span>, comm: insmod Not tainted <span class="o">(</span><span class="m">2</span>.6.28.4 <span class="c1">#2) VMware Virtual Platform</span>
-EIP: <span class="m">0060</span>:<span class="o">[</span>&lt;c89c3016&gt;<span class="o">]</span> EFLAGS: <span class="m">00010292</span> CPU: <span class="m">0</span>
+Pid: 2754, comm: insmod Not tainted <span class="o">(</span>2.6.28.4 <span class="c1">#2) VMware Virtual Platform</span>
+EIP: 0060:<span class="o">[</span>&lt;c89c3016&gt;<span class="o">]</span> EFLAGS: <span class="m">00010292</span> CPU: 0
 EIP is at my_oops_init+0x6/0x20 <span class="o">[</span>oops<span class="o">]</span>
-EAX: <span class="m">00000000</span> EBX: fffffffc ECX: c89c3380 EDX: <span class="m">00000001</span>
+EAX: <span class="m">00000000</span> EBX: fffffffc ECX: c89c3380 EDX: 00000001
 ESI: c89c3010 EDI: <span class="m">00000000</span> EBP: c57cbe24 ESP: c57cbe1c
- DS: 007b ES: 007b FS: <span class="m">0000</span> GS: <span class="m">0033</span> SS: <span class="m">0068</span>
-Process insmod <span class="o">(</span>pid: <span class="m">2754</span>, <span class="nv">ti</span><span class="o">=</span>c57cb000 <span class="nv">task</span><span class="o">=</span>c66ec780 task.ti<span class="o">=</span>c57cb000<span class="o">)</span>
+ DS: 007b ES: 007b FS: <span class="m">0000</span> GS: <span class="m">0033</span> SS: 0068
+Process insmod <span class="o">(</span>pid: 2754, <span class="nv">ti</span><span class="o">=</span>c57cb000 <span class="nv">task</span><span class="o">=</span>c66ec780 task.ti<span class="o">=</span>c57cb000<span class="o">)</span>
 Stack:
  c57cbe34 <span class="m">00000282</span> c57cbf8c c010102d c57b9280 0000000c c57cbe58 c01708e4
  <span class="m">00000124</span> <span class="m">00000000</span> c89c3380 c57cbe58 c5db1d38 <span class="m">00000001</span> c89c3380 c57cbe60
- c0170981 c57cbf8c c014b698 <span class="m">00000000</span> <span class="m">00000000</span> c57cbf78 c57cbf20 <span class="m">00000580</span>
+ c0170981 c57cbf8c c014b698 <span class="m">00000000</span> <span class="m">00000000</span> c57cbf78 c57cbf20 00000580
 Call Trace:
  <span class="o">[</span>&lt;c010102d&gt;<span class="o">]</span> ? _stext+0x2d/0x170
  <span class="o">[</span>&lt;c01708e4&gt;<span class="o">]</span> ? __vunmap+0xa4/0xf0
@@ -547,8 +549,8 @@ Call Trace:
  <span class="o">[</span>&lt;c0140da6&gt;<span class="o">]</span> ? trace_hardirqs_on_caller+0x106/0x150
  <span class="o">[</span>&lt;c0240a08&gt;<span class="o">]</span> ? trace_hardirqs_on_thunk+0xc/0x10
  <span class="o">[</span>&lt;c0103407&gt;<span class="o">]</span> ? sysenter_do_call+0x12/0x43
-Code: &lt;a1&gt; <span class="m">34</span> <span class="m">12</span> <span class="m">00</span> <span class="m">00</span> c7 <span class="m">04</span> <span class="m">24</span> <span class="m">54</span> <span class="m">30</span> 9c c8 <span class="m">89</span> <span class="m">44</span> <span class="m">24</span> <span class="m">04</span> e8 <span class="m">58</span> a0 <span class="m">99</span> f7 <span class="m">31</span>
-EIP: <span class="o">[</span>&lt;c89c3016&gt;<span class="o">]</span> my_oops_init+0x6/0x20 <span class="o">[</span>oops<span class="o">]</span> SS:ESP <span class="m">0068</span>:c57cbe1c
+Code: &lt;a1&gt; <span class="m">34</span> <span class="m">12</span> <span class="m">00</span> <span class="m">00</span> c7 <span class="m">04</span> <span class="m">24</span> <span class="m">54</span> <span class="m">30</span> 9c c8 <span class="m">89</span> <span class="m">44</span> <span class="m">24</span> <span class="m">04</span> e8 <span class="m">58</span> a0 <span class="m">99</span> f7 31
+EIP: <span class="o">[</span>&lt;c89c3016&gt;<span class="o">]</span> my_oops_init+0x6/0x20 <span class="o">[</span>oops<span class="o">]</span> SS:ESP 0068:c57cbe1c
 ---<span class="o">[</span> end trace 45eeb3d6ea8ff1ed <span class="o">]</span>---
 </pre></div>
 </div>
@@ -559,9 +561,9 @@ using the objdump utility. Useful options to use are <code class="docutils liter
 code and <code class="docutils literal"><span class="pre">-S</span></code> for interleaving code C in assembly language code.
 For efficient decoding, however, we need the address where the kernel module was
 loaded. This can be found in /proc/modules.</p>
-<p>Here&#8217;s an example of using objdump on the above module to identify the instruction
+<p>Here’s an example of using objdump on the above module to identify the instruction
 that generated the oops:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# cat /proc/modules
+<div class="highlight-bash"><div class="highlight"><pre>faust:~/lab-01/modul-oops# cat /proc/modules
 oops <span class="m">1280</span> <span class="m">1</span> - Loading 0xc89d4000
 netconsole <span class="m">8352</span> <span class="m">0</span> - Live 0xc89ad000
 pcnet32 <span class="m">33412</span> <span class="m">0</span> - Live 0xc895a000
@@ -588,7 +590,7 @@ c89d4000:       <span class="m">55</span>                      push   %ebp
 <span class="c1">#error &quot;Unknown op for oops!&quot;</span>
 <span class="c1">#endif</span>
 
-        <span class="k">return</span> <span class="m">0</span><span class="p">;</span>
+        <span class="k">return</span> 0<span class="p">;</span>
 <span class="o">}</span>
 c89d4001:       <span class="m">31</span> c0                   xor    %eax,%eax
 <span class="c1">#define OP_READ         0</span>
@@ -602,14 +604,14 @@ c89d4003:       <span class="m">89</span> e5                   mov    %esp,%ebp
 
         <span class="nv">a</span> <span class="o">=</span> <span class="o">(</span>int *<span class="o">)</span> 0x00001234<span class="p">;</span>
 <span class="c1">#if OP_OOPS == OP_WRITE</span>
-        *a <span class="o">=</span> <span class="m">3</span><span class="p">;</span>
+        *a <span class="o">=</span> 3<span class="p">;</span>
 c89d4005:       c7 <span class="m">05</span> <span class="m">34</span> <span class="m">12</span> <span class="m">00</span> <span class="m">00</span> <span class="m">03</span>    movl   <span class="nv">$0</span>x3,0x1234
-c89d400c:       <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>
+c89d400c:       <span class="m">00</span> <span class="m">00</span> 00
 <span class="c1">#else</span>
 <span class="c1">#error &quot;Unknown op for oops!&quot;</span>
 <span class="c1">#endif</span>
 
-        <span class="k">return</span> <span class="m">0</span><span class="p">;</span>
+        <span class="k">return</span> 0<span class="p">;</span>
 <span class="o">}</span>
 c89d400f:       5d                      pop    %ebp
 c89d4010:       c3                      ret
@@ -648,7 +650,7 @@ earlier) is:</p>
 <div><code class="docutils literal"><span class="pre">C89d4005:</span> <span class="pre">c7</span> <span class="pre">05</span> <span class="pre">34</span> <span class="pre">12</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">03</span> <span class="pre">movl</span> <span class="pre">$</span> <span class="pre">0x3,0x1234</span></code></div></blockquote>
 <p>That is exactly what was expected - storing value 3 at 0x0001234.</p>
 <p>The /proc/modules is used to find the address where a kernel module is loaded.
-The &#8211;adjust-vma option allows you to display instructions relative to
+The –adjust-vma option allows you to display instructions relative to
 <code class="docutils literal"><span class="pre">0xc89d4000</span></code>. The <code class="docutils literal"><span class="pre">-l</span></code> option displays the number of each line in the source code
 interleaved with the assembly language code.</p>
 </div>
@@ -656,7 +658,7 @@ interleaved with the assembly language code.</p>
 <h3>addr2line<a class="headerlink" href="#addr2line" title="Permalink to this headline">¶</a></h3>
 <p>A more simplistic way to find the code that generated an oops is to use the
 addr2line utility:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# addr2line -e oops.o 0x5
+<div class="highlight-bash"><div class="highlight"><pre>faust:~/lab-01/modul-oops# addr2line -e oops.o 0x5
 /root/lab-01/modul-oops/oops.c:23
 </pre></div>
 </div>
@@ -677,7 +679,7 @@ system in the development phase. There are two more common ways to connect:</p>
 displayed after the virtual machine starts:</p>
 <p><code class="docutils literal"><span class="pre">char</span> <span class="pre">device</span> <span class="pre">redirected</span> <span class="pre">to</span> <span class="pre">/dev/pts/20</span> <span class="pre">(label</span> <span class="pre">virtiocon0)</span></code></p>
 <p>Minicom use:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1">#for connecting via COM1 and using a speed of 115,200 characters per second</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1">#for connecting via COM1 and using a speed of 115,200 characters per second</span>
 minicom -b <span class="m">115200</span> -D /dev/ttyS0
 
 <span class="c1">#For USB serial port connection</span>
@@ -706,7 +708,7 @@ messages will be sent</li>
 or even while the module is inserted if it has been compiled with the
 CONFIG_NETCONSOLE_DYNAMIC option.</p>
 <p>An example configuration when inserting is as follows:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>alice:~# modprobe netconsole <span class="nv">netconsole</span><span class="o">=</span><span class="m">6666</span>@192.168.191.130/eth0,6000@192.168.191.1/00:50:56:c0:00:08
+<div class="highlight-bash"><div class="highlight"><pre>alice:~# modprobe netconsole <span class="nv">netconsole</span><span class="o">=</span>6666@192.168.191.130/eth0,6000@192.168.191.1/00:50:56:c0:00:08
 </pre></div>
 </div>
 <p>Thus, the debug messages on the station that has the address 192.168.191.130
@@ -714,7 +716,7 @@ will be sent to the eth0 interface, having source port 6666. The messages will
 be sent to 192.168.191.1 with the MAC address 00: 50: 56: c0: 00: 08, on port
 6000.</p>
 <p>Messages can be played on the destination station using netcat :</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>bob:~ <span class="c1"># nc -l -p 6000 -u</span>
+<div class="highlight-bash"><div class="highlight"><pre>bob:~ <span class="c1"># nc -l -p 6000 -u</span>
 </pre></div>
 </div>
 <p>Alternatively, the destination station can configure syslogd to intercept these
@@ -733,11 +735,11 @@ module, there are a lot of unknowns in the equation: multiple contexts (we have
 multiple processes and threads running at a time), interruptions, virtual
 memory, etc.</p>
 <p>You can use printk to display kernel messages to user space. It is similar to
-printf&#8217;s functionality; The only difference is that the transmitted message
-can be prefixed with a string of &#8220;&lt;n&gt;&#8221;, where n indicates the error level
-(loglevel) and has values between 0 and 7. Instead of &#8220;&lt;n&gt;&#8221;, the levels</p>
+printf’s functionality; The only difference is that the transmitted message
+can be prefixed with a string of “&lt;n&gt;”, where n indicates the error level
+(loglevel) and has values between 0 and 7. Instead of “&lt;n&gt;”, the levels</p>
 <p>Can also be coded by symbolic constants:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">KERN_EMERG</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">KERN_EMERG</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">KERN_ALERT</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">KERN_CRIT</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">KERN_ERR</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
@@ -766,13 +768,13 @@ from the virtual file system mounted in /proc. In principle, with syslogd and
 klogd turned on, all messages coming from the kernel will go to /var/log/kern.log.</p>
 <p>A simpler version for debugging is using the /var/log/debug file. It is populated
 only with the printk messages from the kernel with the KERN_DEBUG log level.</p>
-<p>Given that a production kernel (similar to the one we&#8217;re probably running with)
+<p>Given that a production kernel (similar to the one we’re probably running with)
 contains only release code, our module is among the few that send messages
 prefixed with KERN_DEBUG . In this way, we can easily navigate through the
 /var/log/debug information by finding the messages corresponding to a debugging
 session for our module.</p>
 <p>An example of use would be the following:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Clear the debug file of previous information (or possibly a backup)</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># Clear the debug file of previous information (or possibly a backup)</span>
 $ <span class="nb">echo</span> <span class="s2">&quot;New debug session&quot;</span> &gt; /var/log/debug
 <span class="c1"># Run the tests</span>
 <span class="c1"># If there is no critical error causing a panic kernel, check the output</span>
@@ -781,7 +783,7 @@ $ <span class="nb">echo</span> <span class="s2">&quot;New debug session&quot;</s
 </pre></div>
 </div>
 <p>The format of the messages must obviously contain all the information of
-interest in order to detect the error, but inserting in the code &#8220;printk&#8221; to
+interest in order to detect the error, but inserting in the code “printk” to
 provide detailed information can be as time-consuming as writing the code to
 solve the problem. This is usually a trade-off between the completeness of the
 debugging messages displayed using printk and the time it takes to insert these
@@ -804,12 +806,12 @@ function in which the current instruction is found.</li>
 extension and is not portable; However, since we write code for the Linux kernel,
 we can use it without any problems.</p>
 <p>The following macrodefinition can be used in this case:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define PRINT_DEBUG \</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#define PRINT_DEBUG \</span>
 <span class="cp">       printk (KERN_DEBUG &quot;[% s]: FUNC:% s: LINE:% d \ n&quot;, __FILE__,</span>
                <span class="n">__FUNCTION__</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then, at each point where we want to see if it is &#8220;reached&#8221; in execution,
+<p>Then, at each point where we want to see if it is “reached” in execution,
 insert PRINT_DEBUG; This is a simple and quick way, and can yield by carefully
 analyzing the output.</p>
 <p>The dmesg command is used to view the messages printed with printk but not
@@ -830,18 +832,18 @@ enabled per call.</p>
 <p>The <code class="docutils literal"><span class="pre">/sys/kernel/debug/dynamic_debug/control</span></code> file from the debugfs file debugfs
 (where /sys/kernel/debug is the path to which debugfs were mounted) is used to
 filter messages or view existing filters.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">mount</span> <span class="o">-</span><span class="n">t</span> <span class="n">debugfs</span> <span class="n">none</span> <span class="o">/</span><span class="n">debug</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">mount</span> <span class="o">-</span><span class="n">t</span> <span class="n">debugfs</span> <span class="n">none</span> <span class="o">/</span><span class="n">debug</span>
 </pre></div>
 </div>
 <p>Debugfs is a simple file system, used as a kernel-space interface and
 user-space interface to configure different debug options. Any debug utility
 can create and use its own files / folders in debugfs.</p>
 <p>For example, to display existing filters in dyndbg, you will use:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>cat /debug/dynamic_debug/control
+<div class="highlight-bash"><div class="highlight"><pre>cat /debug/dynamic_debug/control
 </pre></div>
 </div>
 <p>And to enable the debug message from line 1603 in the svcsock.c file:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s1">&#39;file svcsock.c line 1603 +p&#39;</span> &gt; /debug/dynamic_debug/control
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">echo</span> <span class="s1">&#39;file svcsock.c line 1603 +p&#39;</span> &gt; /debug/dynamic_debug/control
 </pre></div>
 </div>
 <p>The /debug/dynamic_debug/control file is not a regular file. Its display shows
@@ -853,33 +855,33 @@ contains settings for dyndbg debugging messages. Do not log in this file.</p>
 <ul>
 <li><p class="first"><code class="docutils literal"><span class="pre">func</span></code> - just the debug messages from the functions that have the same
 name as the one defined in the filter.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s1">&#39;func svc_tcp_accept +p&#39;</span> &gt; /debug/dynamic_debug/control
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">echo</span> <span class="s1">&#39;func svc_tcp_accept +p&#39;</span> &gt; /debug/dynamic_debug/control
 </pre></div>
 </div>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">file</span></code> - the name of the file(s) for which we want to display the debug
 messages. It can be just the source name, but also the absolute path or
 kernel-tree path.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>file svcsock.c
+<div class="highlight-bash"><div class="highlight"><pre>file svcsock.c
 file kernel/freezer.c
 file /usr/src/packages/BUILD/sgi-enhancednfs-1.4/default/net/sunrpc/svcsock.c
 </pre></div>
 </div>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">module</span></code> - module name.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>Modules sunrpc
+<div class="highlight-bash"><div class="highlight"><pre>Modules sunrpc
 </pre></div>
 </div>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">format</span></code> - only messages whose display format contains the specified string.</p>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>format <span class="s2">&quot;nfsd: SETATTR&quot;</span>
+<div><div class="highlight-bash"><div class="highlight"><pre>format <span class="s2">&quot;nfsd: SETATTR&quot;</span>
 </pre></div>
 </div>
 </div></blockquote>
 </li>
 <li><p class="first">line - the line or lines for which we want to enable debug calls.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Triggers debug messages between lines 1603 and 1605 in the svcsock.c file</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># Triggers debug messages between lines 1603 and 1605 in the svcsock.c file</span>
 $ <span class="nb">echo</span> <span class="s1">&#39;file svcsock.c line 1603-1605 +p&#39;</span> &gt; /sys/kernel/debug/dynamic_debug/control
 <span class="c1"># Enables debug messages from the beginning of the file to line 1605</span>
 $ <span class="nb">echo</span> <span class="s1">&#39;file svcsock.c line -1605 +p&#39;</span> &gt; /sys/kernel/debug/dynamic_debug/control
@@ -916,13 +918,13 @@ be added, removed, or set with operators +, - or = :</p>
 </ul>
 </div></blockquote>
 <p>The current lab name is kernel_modules. See the exercises for the task name.</p>
-<div class="toggle last container">
-<div class="header container">
+<div class="toggle last docutils container">
+<div class="header docutils container">
 <strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks start by generating
 the skeleton code:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>shell
+<div class="highlight-none"><div class="highlight"><pre>shell
 
 tools/labs $ make clean
 tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
@@ -930,11 +932,11 @@ tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
 </div>
 <p>Where task name is defined for each task. Once the skelton drivers are
 generated build the source:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make build
 </pre></div>
 </div>
 <p>Then copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make copy
 tools/labs $ make boot
 </pre></div>
 </div>
@@ -944,7 +946,7 @@ tools/labs $ make boot
 </div>
 <div class="section" id="intro">
 <h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
-<p>Using <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> find the definitions of the following symbols in the Linux kernel:</p>
+<p>Using <a href="#id7"><span class="problematic" id="id8">|LXR|_</span></a> find the definitions of the following symbols in the Linux kernel:</p>
 <ul class="simple">
 <li><code class="xref c c-func docutils literal"><span class="pre">module_init()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">module_exit()</span></code><ul>
 <li>what does the two macros do? What is <code class="docutils literal"><span class="pre">init_module</span></code> and <code class="docutils literal"><span class="pre">cleanup_module</span></code>?</li>
@@ -1045,7 +1047,7 @@ the instructions pointer (EIP) register.</p>
 <p class="last">Use the /proc/modules information to get the load address of
 the kernel module.  Use, on the physical machine, objdump
 and/or addr2line . Objdump needs debugging support for
-compilation!  Read the lab&#8217;s <a class="reference internal" href="#objdump">objdump</a> and <a class="reference internal" href="#addr2line">addr2line</a>
+compilation!  Read the lab’s <a class="reference internal" href="#objdump">objdump</a> and <a class="reference internal" href="#addr2line">addr2line</a>
 sections.</p>
 </div>
 <p>Try to unload the kernel module. Notice that the operation does not
@@ -1078,10 +1080,10 @@ module.</p>
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
 <li>In the Linux kernel, a process is described by the
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> to find the
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a href="#id9"><span class="problematic" id="id10">|LXR|_</span></a> to find the
 definition of <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
 <li>To find the structure field that contains the name of the
-executable, look for the &#8220;executable&#8221; comment.</li>
+executable, look for the “executable” comment.</li>
 <li>The pointer to the structure of the current process
 running at a given time in the kernel is given by the
 <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> variable (of the type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span>
@@ -1090,7 +1092,7 @@ running at a given time in the kernel is given by the
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">To use c:macro:<cite>current</cite> you&#8217;ll need to include the header
+<p class="last">To use c:macro:<cite>current</cite> you’ll need to include the header
 in which the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
 <code class="docutils literal"><span class="pre">linux/sched.h</span></code>.</p>
 </div>
@@ -1147,23 +1149,23 @@ when the module is unloaded a process is created from the executable
 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
+            URL_ROOT:'../',
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: ''
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
 
   
 
   
   
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
   

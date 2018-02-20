@@ -26,22 +26,22 @@
 
   
   
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
-    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   
 
   
         <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html"/>
         <link rel="prev" title="Memory mapping" href="memory_mapping.html"/> 
 
   
-  <script src="_static/js/modernizr.min.js"></script>
+  <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -57,7 +57,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
           
 
           
@@ -74,7 +74,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -92,6 +92,8 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
@@ -142,7 +144,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">The Linux Kernel</a>
+          <a href="../index.html">The Linux Kernel</a>
         
       </nav>
 
@@ -170,7 +172,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
       <li>Linux Device Model</li>
     
@@ -178,7 +180,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/device_model.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/labs/device_model.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -303,7 +305,7 @@ usually integrated into a larger structure. A kobject structure actually
 incorporates a set of features that will be offered to a higher abstraction
 object in the Linux Device Model hierarchy.</p>
 <p>For example, the cdev structure has the following definition:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">cdev</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre> <span class="k">struct</span> <span class="n">cdev</span> <span class="p">{</span>
         <span class="k">struct</span> <span class="n">kobject</span> <span class="n">kobj</span> <span class="p">;</span>
         <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span> <span class="n">owner</span> <span class="p">;</span>
         <span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="o">*</span> <span class="n">ops</span> <span class="p">;</span>
@@ -315,7 +317,7 @@ object in the Linux Device Model hierarchy.</p>
 </div>
 <p>Note that this structure includes a kobject structure field.</p>
 <p>A kobject structure structure is defined as follows:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">kobject</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre> <span class="k">struct</span> <span class="n">kobject</span> <span class="p">{</span>
         <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span> <span class="p">;</span>
         <span class="k">struct</span> <span class="n">list_head</span> <span class="n">entry</span> <span class="p">;</span>
         <span class="k">struct</span> <span class="n">kobject</span> <span class="o">*</span> <span class="n">parent</span> <span class="p">;</span>
@@ -358,7 +360,7 @@ without a physical hardware correspondent).</p>
 As with kobjects, buses can be organized into hierarchies and will be represented
 in sysfs.</p>
 <p>In the Linux Device Model, a bus is represented by the struct bus_type:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">bus_type</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre> <span class="k">struct</span> <span class="n">bus_type</span> <span class="p">{</span>
         <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
         <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">dev_name</span><span class="p">;</span>
         <span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev_root</span> <span class="p">;</span>
@@ -376,7 +378,7 @@ in sysfs.</p>
 </pre></div>
 </div>
 <p>It is noticed that a bus is associated with a name, lists of default
-attributes, a number of specific functions, and the driver&#8217;s private data. The
+attributes, a number of specific functions, and the driver’s private data. The
 uevent function (formerly hotplug) is used with hotplug devices.</p>
 <p>Bus operations are the registration operations, the implementation of the
 operations described in the bus_type structure structure and the scrolling and
@@ -385,7 +387,7 @@ inspection operations of the devices connected to the bus.</p>
 <p>Show example implementation</p>
 <p>The functions that will normally be initialized within a bus_type structure are
 match and uevent :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="cpf">&lt;linux/device.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include</span><span class="cpf">&lt;linux/device.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="cpf">&lt;linux/string.h&gt;</span><span class="cp"></span>
 
 <span class="cm">/* match devices to drivers;  Just do a simple name test */</span>
@@ -415,7 +417,7 @@ macrodefines .</p>
 associated objects. These attributes will have a corresponding file in the
 subdirectory of the sysfs bus. The attributes associated with a bus are
 described by the bus_attribute structure :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bus_attribute</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">bus_attribute</span> <span class="p">{</span>
         <span class="n">attribute</span> <span class="n">attribute</span> <span class="n">attr</span> <span class="p">;</span>
         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">show</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">);</span>
         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">store</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span> <span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span>
@@ -426,7 +428,7 @@ described by the bus_attribute structure :</p>
 delete an attribute within the bus structure, the bus_create_file and
 bus_remove_file functions are used.</p>
 <p>An example of defining an attribute for my_bus is shown below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">ssize_t</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">ssize_t</span>
 <span class="nf">del_store</span><span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">)</span>
 <span class="p">{</span>
      <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
@@ -464,7 +466,7 @@ system initialization) and are recorded in the system. All devices present in
 the kernel have an entry in /sys/devices .</p>
 <p>At the bottom level, a device in Linux Device Model is a struct structure
 device :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
 
       <span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">parent</span> <span class="p">;</span>
       <span class="k">struct</span> <span class="n">device_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
@@ -489,7 +491,7 @@ DEVICE_ATTR macrodefine for definition, and device_create_file and
 device_remove_file functions to add the attribute to the device.</p>
 <p>One important thing to note is that it usually does not work directly with a
 struct device structure, but with a structure that contains it, like:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* my device type */</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="cm">/* my device type */</span>
  <span class="k">struct</span> <span class="n">my_device</span> <span class="p">{</span>
        <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span> <span class="p">;</span>
        <span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">;</span>
@@ -499,7 +501,7 @@ struct device structure, but with a structure that contains it, like:</p>
 </div>
 <p>Typically, a bus driver will export function to add or remove such a
 device, as shown below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">bex_add_dev</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">version</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">int</span> <span class="nf">bex_add_dev</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">version</span><span class="p">)</span>
 <span class="p">{</span>
      <span class="k">struct</span> <span class="n">bex_device</span> <span class="o">*</span><span class="n">bex_dev</span><span class="p">;</span>
 
@@ -547,7 +549,7 @@ is the loaded module, in the devices you can find the driver associated with
 each device, in the classes belonging to the drivers in the /sys/bus drivers
 associated to each bus .</p>
 <p>A device driver is identified by the structure structure of device_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device_driver</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">device_driver</span> <span class="p">{</span>
         <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
         <span class="n">structure</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bus</span><span class="p">;</span>
 
@@ -566,7 +568,7 @@ associated to each bus .</p>
 </div>
 <p>Among the structure fields we find the name of the driver (appears in sysfs ),
 the bus with which the driver works, and functions called at various times in a
-device&#8217;s operation.</p>
+device’s operation.</p>
 <p>As before, we have the registration / registration functions of driver_register
 and driver_unregister .</p>
 <p>To work with attributes, we have the driver_attribute structure , the macro
@@ -574,7 +576,7 @@ definition of DRIVER_ATTR for definition, and the driver_create_file and
 driver_remove_file functions for adding the attribute to the device.</p>
 <p>As with devices, the device_driver structure structure is usually incorporated
 into another structure specific to a particular bus (PCI, USB, etc.):</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bex_driver</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">bex_driver</span> <span class="p">{</span>
      <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="p">;</span>
 
      <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bex_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
@@ -586,7 +588,7 @@ into another structure specific to a particular bus (PCI, USB, etc.):</p>
 </div>
 <p>Driver registration / registration operations are exported for use in
 other modules:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bex_driver</span> <span class="n">bex_misc_driver</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">bex_driver</span> <span class="n">bex_misc_driver</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&quot;misc&quot;</span><span class="p">,</span>
     <span class="p">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">bex_misc_probe</span><span class="p">,</span>
     <span class="p">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">bex_misc_remove</span><span class="p">,</span>
@@ -632,7 +634,7 @@ directory based on class information.</p>
 <p>For this reason, we will continue to present a small set of functions that work
 with classes to simplify the use of the plug and play mechanism.</p>
 <p>A generic class is described by structure class structure:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">class</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre> <span class="k">struct</span> <span class="n">class</span> <span class="p">{</span>
          <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span> <span class="p">;</span>
          <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span> <span class="p">;</span>
          <span class="k">struct</span> <span class="n">kobject</span> <span class="o">*</span><span class="n">dev_kobj</span> <span class="p">;</span>
@@ -652,7 +654,7 @@ with classes to simplify the use of the plug and play mechanism.</p>
 </div>
 <p>The class_register and class_unregister functions for initialization /
 and cleanup :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">class</span> <span class="n">my_class</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="k">struct</span> <span class="n">class</span> <span class="n">my_class</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;myclass&quot;</span><span class="p">,</span>
 <span class="p">};</span>
 
@@ -690,7 +692,7 @@ can read the necessary data from this attribute file to create a node in the
 cdev cdev struct ;
 struct device dev ;</p>
 <p>// init class for device cdev.dev
-my_classdev = device_create (&amp;my_class, NULL, cdev.dev, &amp;dev, &#8220;myclass0&#8221;);</p>
+my_classdev = device_create (&amp;my_class, NULL, cdev.dev, &amp;dev, “myclass0”);</p>
 <p class="last">// destroy class for device cdev.dev
 device_destroy (&amp;my_class, cdev.dev);</p>
 </dd>
@@ -729,8 +731,8 @@ udevmonitor, udevinfoand udevtest.</p>
 <p>For a quick example, consider the situation where we want to automatically load
 a driver for a device at the time of an event. We can create a new file
 /etc/udev/rules.d/myrules.rules, we will have the following line:</p>
-<p>Subsystem == &#8220;PNP&#8221; , attrs {  id  } == &#8220;PNP0400&#8221; , RUN + = &#8220;/ sbin / insmod
-/root/mydriver.ko&#8221;</p>
+<p>Subsystem == “PNP” , attrs {  id  } == “PNP0400” , RUN + = “/ sbin / insmod
+/root/mydriver.ko”</p>
 <p>This will choose between events generated only those belonging subsystem
 pnp(connected to bus PNP) and an id attribute value PNP0400. When will find
 this rule will execute the command that inserts the appropriate driver in the
@@ -774,7 +776,7 @@ device driver. One mechanism is to use a static tables spread each driver,
 containing information about supported devices and driver bus will be used for
 comparison. For example, a parallel port driver will be making
 parport_pc_pnp_tbl:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_device_id</span> <span class="n">parport_pc_pnp_tbl</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_device_id</span> <span class="n">parport_pc_pnp_tbl</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
          <span class="cm">/* Standard LPT Printer Port */</span>
          <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0400&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
          <span class="cm">/* ECP Printer Port */</span>
@@ -786,7 +788,7 @@ parport_pc_pnp_tbl:</p>
 </div>
 <p>It declares and initializes a structure pnp_driver such as
 parport_pc_pnp_driver:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="kt">int</span> <span class="nf">parport_pc_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre> <span class="k">static</span> <span class="kt">int</span> <span class="nf">parport_pc_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
                                  <span class="k">const</span>  <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
                                  <span class="k">const</span>  <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">;</span>
 
@@ -803,7 +805,7 @@ parport_pc_pnp_driver:</p>
 <p>As can be seen, the structure has as parameters a pointer to the table above
 stated two functions is called a detection device or to remove it from the
 system. Like all layouts, the driver must be registered in the system:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span>  <span class="kt">int</span> <span class="n">__init</span> <span class="nf">parport_pc_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span>  <span class="kt">int</span> <span class="n">__init</span> <span class="nf">parport_pc_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
       <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
       <span class="k">if</span>  <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="p">{</span>
@@ -835,7 +837,7 @@ purpose. Usually, the bus provides the driver a particular structure containing
 a structure device_driver , that driver must initialize and record a function
 *_register_driver. For example, the bus PNPdriver must declare and initialize a
 structure type pnp_driver which to register with pnp_register_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span>  <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span>  <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span>  <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span>  <span class="p">{</span>
         <span class="p">.</span><span class="n">name</span>     <span class="o">=</span> <span class="s">&quot;mydriver&quot;</span><span class="p">,</span>
         <span class="p">.</span><span class="n">id_table</span> <span class="o">=</span> <span class="n">my_pnp_tbl</span><span class="p">,</span>
         <span class="p">.</span><span class="n">samples</span>  <span class="o">=</span> <span class="n">my_pnp_probe</span><span class="p">,</span>
@@ -878,7 +880,7 @@ Add device</p>
 This operation will take the position probethat will appeal to a detection
 device. In the case of a driver for a device attached to the bus PNP, the
 addition will be carried out in function probeof the structure pnp_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_pnp_probe</span> <span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_pnp_probe</span> <span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span>
                          <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
                          <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">{</span>
         <span class="kt">int</span> <span class="n">err</span><span class="p">,</span> <span class="n">iobase</span><span class="p">,</span> <span class="n">nr_ports</span><span class="p">,</span> <span class="n">irq</span><span class="p">;</span>
@@ -917,7 +919,7 @@ Unregistering driver. This operation will take the position removethat will
 appeal to eliminate detection device in the kernel. In the case of a driver for
 a device attached to the bus PNP, the addition will be carried out in function
 removeof the structure pnp_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
          <span class="cm">/* unregister device dev */</span>
 <span class="p">}</span>
 
@@ -946,13 +948,13 @@ udevand dispose entries sysfs.</p>
 </ul>
 </div></blockquote>
 <p>The current lab name is device_model. See the exercises for the task name.</p>
-<div class="toggle container">
-<div class="header container">
+<div class="toggle docutils container">
+<div class="header docutils container">
 <strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks start by generating
 the skeleton code:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>shell
+<div class="highlight-none"><div class="highlight"><pre>shell
 
 tools/labs $ make clean
 tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
@@ -960,11 +962,11 @@ tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
 </div>
 <p>Where task name is defined for each task. Once the skelton drivers are
 generated build the source:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make build
 </pre></div>
 </div>
 <p>Then copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+<div class="highlight-shell"><div class="highlight"><pre>tools/labs $ make copy
 tools/labs $ make boot
 </pre></div>
 </div>
@@ -987,8 +989,8 @@ tools/labs $ make boot
 <h3>1. Bus implementation<a class="headerlink" href="#bus-implementation" title="Permalink to this headline">¶</a></h3>
 <p>Analyze the contents of the <strong>bex.c</strong>, a modul that implements a bus
 driver. Implement the missing functionality marked by <strong>TODO 1</strong>:
-register the bus driver and add a new device named &#8220;root&#8221; with the
-type &#8220;none&#8221; and version 1.</p>
+register the bus driver and add a new device named “root” with the
+type “none” and version 1.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">See <code class="xref c c-func docutils literal"><span class="pre">bex_add_dev()</span></code>.</p>
@@ -1021,7 +1023,7 @@ and create a new device.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p>Use echo to write into the bus attributes:</p>
-<div class="last highlight-shell"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> <span class="s2">&quot;name type 1&quot;</span> &gt; /sys/bus/bex/add
+<div class="last highlight-shell"><div class="highlight"><pre>$ <span class="nb">echo</span> <span class="s2">&quot;name type 1&quot;</span> &gt; /sys/bus/bex/add
 
 $ <span class="nb">echo</span> <span class="s2">&quot;name&quot;</span> &gt; /sys/bus/bex/del
 </pre></div>
@@ -1032,10 +1034,10 @@ $ <span class="nb">echo</span> <span class="s2">&quot;name&quot;</span> &gt; /sy
 <h3>4. Register the bex misc driver<a class="headerlink" href="#register-the-bex-misc-driver" title="Permalink to this headline">¶</a></h3>
 <p>Modify <strong>bex-misc.c</strong> so that it registers the driver with the bex
 bus. Insert the bmx_misc.ko module and create a new bex device from
-sysfs with the name &#8220;test&#8221;, type &#8220;misc&#8221;, version 2. Follow the <strong>TODO
+sysfs with the name “test”, type “misc”, version 2. Follow the <strong>TODO
 4</strong> markings.</p>
 <p>Observe that the driver is visible in /sys/bus/bex/drivers.</p>
-<p>Why isn&#8217;t the probe function called?</p>
+<p>Why isn’t the probe function called?</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">notice that the bus match function in <strong>bex.c</strong> is not
@@ -1054,9 +1056,9 @@ bex_misc_remove. Follow the <strong>TODO 6</strong> markings.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-func docutils literal"><span class="pre">misc_register()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">misc_deregister()</span></code>.</p>
 </div>
-<p>Create a new device with the name &#8220;test&#8221;, type &#8220;misc&#8221; and version 2
+<p>Create a new device with the name “test”, type “misc” and version 2
 and observe that the probe fails. Create a new device with the name
-&#8220;test&#8221;, type &#8220;misc&#8221; and version 1 and observe that the probe is
+“test”, type “misc” and version 1 and observe that the probe is
 succesfull.</p>
 <p>Inspect the /sys/bus/bex/devices/test and observe that we have a new
 entry. Identify the major and minor for the misc device, create a
@@ -1073,9 +1075,9 @@ of the misc device</p>
 <p>Use the <strong>udevadm monitor</strong> command and observe what happens when:</p>
 <ul class="simple">
 <li>the bex.ko and bex_misc.ko modeules are inserted</li>
-<li>a new device with the type &#8220;test&#8221; is created</li>
-<li>a new device with the type &#8220;misc&#8221; and version 2 is created</li>
-<li>a new device with the type &#8220;misc&#8221; and version 1 is created</li>
+<li>a new device with the type “test” is created</li>
+<li>a new device with the type “misc” and version 2 is created</li>
+<li>a new device with the type “misc” and version 1 is created</li>
 <li>all of the above devices are removed</li>
 </ul>
 </div>
@@ -1123,23 +1125,23 @@ of the misc device</p>
 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
+            URL_ROOT:'../',
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: ''
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
 
   
 
   
   
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
   

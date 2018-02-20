@@ -26,23 +26,23 @@
 
   
   
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
-    <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   
 
   
         <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="The Linux Kernel  documentation" href="index.html"/>
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html"/>
         <link rel="next" title="Linux Device Model" href="device_model.html"/>
         <link rel="prev" title="Deferred work" href="deferred_work.html"/> 
 
   
-  <script src="_static/js/modernizr.min.js"></script>
+  <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -58,7 +58,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
           
 
           
@@ -75,7 +75,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -93,6 +93,8 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
@@ -135,7 +137,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">The Linux Kernel</a>
+          <a href="../index.html">The Linux Kernel</a>
         
       </nav>
 
@@ -163,7 +165,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
       <li>Memory mapping</li>
     
@@ -171,7 +173,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/memory_mapping.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/labs/memory_mapping.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -204,7 +206,7 @@ user address space. This eliminates the overhead of copying user-space
 information into the kernel-space and vice versa. This can be done
 through a device driver and the user-space device interface (/dev).</p>
 <p>This feature can be used by implementing the mmap operation in the
-device driver&#8217;s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and using the mmap
+device driver’s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and using the mmap
 system call in user-space.</p>
 <p>Before discussing how we can the device driver map memory we will
 first review a few important memory management concepts and
@@ -219,7 +221,7 @@ physical address with the help of page tables.</p>
 (PFN). The PFN can be easily computed from the physical address by
 dividing it with the size of the page (or by shifting the physical
 address with PAGE_SHIFT bits to the right).</p>
-<a class="reference internal image-reference" href="_images/paging.png"><img alt="_images/paging.png" src="_images/paging.png" style="width: 49%;" /></a>
+<a class="reference internal image-reference" href="../_images/paging.png"><img alt="../_images/paging.png" src="../_images/paging.png" style="width: 49%;" /></a>
 <p>For efficiency reasons, the virtual address space is divided into
 user-space and kernel-space. For the same reason, the kernel-space
 contains memory mapped zone. called lowmem, which is contiguously
@@ -233,7 +235,7 @@ highmem which can be used to arbitrarily map physical memory.</p>
 physically contiguous. Memory allocated with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code> is not
 contiguous and does not reside in lowmem (it has a dedicated zone in
 high mem).</p>
-<a class="reference internal image-reference" href="_images/kernel-virtmem-map.png"><img alt="_images/kernel-virtmem-map.png" src="_images/kernel-virtmem-map.png" style="width: 49%;" /></a>
+<a class="reference internal image-reference" href="../_images/kernel-virtmem-map.png"><img alt="../_images/kernel-virtmem-map.png" src="../_images/kernel-virtmem-map.png" style="width: 49%;" /></a>
 <div class="section" id="memory-structures">
 <h3>Memory Structures<a class="headerlink" href="#memory-structures" title="Permalink to this headline">¶</a></h3>
 <p>Before discussing the mechanism of memory-mapping a device, we will
@@ -266,23 +268,23 @@ used to directly reference the page</li>
 <p><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code> holds information about a contiguous
 virtual memory area. The memory areas of a process can be viewed by
 inspecting the <em>maps</em> attribute the process via procfs:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# cat /proc/1/maps
+<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# cat /proc/1/maps
 <span class="c1">#address          perms offset  device inode     pathname</span>
-<span class="m">08048000</span>-08050000 r-xp <span class="m">00000000</span> fe:00 <span class="m">761</span>        /sbin/init.sysvinit
-<span class="m">08050000</span>-08051000 r--p <span class="m">00007000</span> fe:00 <span class="m">761</span>        /sbin/init.sysvinit
-<span class="m">08051000</span>-08052000 rw-p <span class="m">00008000</span> fe:00 <span class="m">761</span>        /sbin/init.sysvinit
-092e1000-09302000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>heap<span class="o">]</span>
+08048000-08050000 r-xp <span class="m">00000000</span> fe:00 <span class="m">761</span>        /sbin/init.sysvinit
+08050000-08051000 r--p <span class="m">00007000</span> fe:00 <span class="m">761</span>        /sbin/init.sysvinit
+08051000-08052000 rw-p <span class="m">00008000</span> fe:00 <span class="m">761</span>        /sbin/init.sysvinit
+092e1000-09302000 rw-p <span class="m">00000000</span> 00:00 <span class="m">0</span>          <span class="o">[</span>heap<span class="o">]</span>
 4480c000-4482e000 r-xp <span class="m">00000000</span> fe:00 <span class="m">576</span>        /lib/ld-2.25.so
 4482e000-4482f000 r--p <span class="m">00021000</span> fe:00 <span class="m">576</span>        /lib/ld-2.25.so
 4482f000-44830000 rw-p <span class="m">00022000</span> fe:00 <span class="m">576</span>        /lib/ld-2.25.so
-<span class="m">44832000</span>-449a9000 r-xp <span class="m">00000000</span> fe:00 <span class="m">581</span>        /lib/libc-2.25.so
+44832000-449a9000 r-xp <span class="m">00000000</span> fe:00 <span class="m">581</span>        /lib/libc-2.25.so
 449a9000-449ab000 r--p <span class="m">00176000</span> fe:00 <span class="m">581</span>        /lib/libc-2.25.so
 449ab000-449ac000 rw-p <span class="m">00178000</span> fe:00 <span class="m">581</span>        /lib/libc-2.25.so
-449ac000-449af000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
-b7761000-b7763000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
-b7763000-b7766000 r--p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>vvar<span class="o">]</span>
-b7766000-b7767000 r-xp <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>vdso<span class="o">]</span>
-bfa15000-bfa36000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>stack<span class="o">]</span>
+449ac000-449af000 rw-p <span class="m">00000000</span> 00:00 0
+b7761000-b7763000 rw-p <span class="m">00000000</span> 00:00 0
+b7763000-b7766000 r--p <span class="m">00000000</span> 00:00 <span class="m">0</span>          <span class="o">[</span>vvar<span class="o">]</span>
+b7766000-b7767000 r-xp <span class="m">00000000</span> 00:00 <span class="m">0</span>          <span class="o">[</span>vdso<span class="o">]</span>
+bfa15000-bfa36000 rw-p <span class="m">00000000</span> 00:00 <span class="m">0</span>          <span class="o">[</span>stack<span class="o">]</span>
 </pre></div>
 </div>
 <p>A memory area is characterized by a start address, a stop address,
@@ -293,7 +295,7 @@ complete and initialize the associated <code class="xref c c-type docutils liter
 <span class="pre">vm_area_struct</span></code>. The most important fields of this structure are:</p>
 <ul class="simple">
 <li><em>vm_start</em>, <em>vm_end</em> - the beginning and end of the memory area
-respectively (these fields also appear in /proc/.../maps );</li>
+respectively (these fields also appear in /proc/…/maps );</li>
 <li>vm_file - the pointer to the associated file structure (if any);</li>
 <li>vm_pgoff - the offset of the area within the file;</li>
 <li>vm_flags - a set of flags;</li>
@@ -312,21 +314,21 @@ pointer to the <code class="xref c c-type docutils literal"><span class="pre">st
 <div class="section" id="device-driver-memory-mapping">
 <h2>Device driver memory mapping<a class="headerlink" href="#device-driver-memory-mapping" title="Permalink to this headline">¶</a></h2>
 <p>Memory mapping is one of the most interesting features of a Unix
-system. From a driver&#8217;s point of view, the memory-mapping facility
+system. From a driver’s point of view, the memory-mapping facility
 allows direct memory access to a user-space device.</p>
 <p>To assign a mmap operation to a driver, the mmap field of the device
-driver&#8217;s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> must be implemented. If that
+driver’s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> must be implemented. If that
 is the case, the user-space process issues can then issue the <em>mmap</em>
 system call of a file descriptor associated with the device.</p>
 <p>The mmap system call takes the following parameters:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">mmap</span><span class="p">(</span><span class="n">caddr_t</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prot</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="o">*</span><span class="nf">mmap</span><span class="p">(</span><span class="n">caddr_t</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prot</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>To map memory between a device and user-space, the user process must
 open the device and issue the <em>mmap</em> system call with the resulting
 file descriptor.</p>
 <p>The device driver mmap operation has the following signature:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mmap</span><span class="p">)(</span><span class="n">structure</span> <span class="n">file</span> <span class="o">*</span><span class="n">filp</span><span class="p">,</span> <span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">vma</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mmap</span><span class="p">)(</span><span class="n">structure</span> <span class="n">file</span> <span class="o">*</span><span class="n">filp</span><span class="p">,</span> <span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">vma</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The <em>filp</em> field is a pointer to a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code> created when
@@ -338,7 +340,7 @@ map it to the user address space as indicated by the <em>vma</em> parameter
 using helper functions such as <code class="xref c c-func docutils literal"><span class="pre">remap_pfn_range()</span></code>.</p>
 <p><code class="xref c c-func docutils literal"><span class="pre">remap_pfn_range()</span></code> will map a contiguous physical address space
 into the virtual space represented by <code class="xref c c-type docutils literal"><span class="pre">vm_area_struct</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">remap_pfn_range</span> <span class="p">(</span><span class="n">structure</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">vma</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">remap_pfn_range</span> <span class="p">(</span><span class="n">structure</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">vma</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span>
                      <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pfn</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">size</span><span class="p">,</span> <span class="n">pgprot_t</span> <span class="n">prot</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -356,7 +358,7 @@ mapped</li>
 <p>Here is an example of using this function that contiguously maps the
 physical memory starting at page frame number <em>pfn</em> (memory that was
 previously allocated) to the <em>vma-&gt;vm_start</em> virtual address:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">vma</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">vma</span><span class="p">;</span>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">len</span> <span class="o">=</span> <span class="n">vma</span><span class="o">-&gt;</span><span class="n">vm_end</span> <span class="o">-</span> <span class="n">vma</span><span class="o">-&gt;</span><span class="n">vm_start</span><span class="p">;</span>
 <span class="kt">int</span> <span class="n">ret</span> <span class="p">;</span>
 
@@ -372,19 +374,19 @@ consider how the memory allocation was performed. For each
 :c:func`kmalloc`, <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">alloc_pages()</span></code>, we must
 used a different approach. For <code class="xref c c-func docutils literal"><span class="pre">kmalloc()</span></code> we can use something
 like:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">kmalloc_area</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">kmalloc_area</span><span class="p">;</span>
 
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pfn</span> <span class="o">=</span> <span class="n">virt_to_phys</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">kmalloc_area</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="n">PAGE_SHIFT</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>while for <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">vmalloc_area</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">vmalloc_area</span><span class="p">;</span>
 
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pfn</span> <span class="o">=</span> <span class="n">vmalloc_to_pfn</span><span class="p">(</span><span class="n">vmalloc_area</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>and finally for <code class="xref c c-func docutils literal"><span class="pre">alloc_pages()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">;</span>
 
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pfn</span> <span class="o">=</span> <span class="n">page_to_pfn</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
 </pre></div>
@@ -401,7 +403,7 @@ out. To avoid this we must set the PG_reserved bit on the page.
 Enabling is done using <code class="xref c c-func docutils literal"><span class="pre">SetPageReserved()</span></code> while reseting it
 (which must be done before freeing the memory) is done with
 <code class="xref c c-func docutils literal"><span class="pre">ClearPageReserved()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">alloc_mmap_pages</span><span class="p">(</span><span class="kt">int</span> <span class="n">npages</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">alloc_mmap_pages</span><span class="p">(</span><span class="kt">int</span> <span class="n">npages</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
     <span class="kt">char</span> <span class="o">*</span><span class="n">mem</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="n">PAGE_SIZE</span> <span class="o">*</span> <span class="n">npages</span><span class="p">);</span>
@@ -475,11 +477,11 @@ bytes of each page with the following values: 0xaa , 0xbb , 0xcc ,
 argument for remap_pfn_range is a page number number (PFN)</p>
 <p>To convert from virtual kernel address to physical address,
 use <code class="xref c c-func docutils literal"><span class="pre">virt_to_phys()</span></code>.</p>
-<p class="last">To convert a physical address to it&#8217;s PFN shift the address
+<p class="last">To convert a physical address to it’s PFN shift the address
 with PAGE_SHIFT bits to the right.</p>
 </div>
 <p>For testing, use <em>test/mmap-test</em>. If everything goes well the test
-will show &#8220;matched&#8221; messages.</p>
+will show “matched” messages.</p>
 </div>
 <div class="section" id="mapping-non-contiguous-physical-memory-to-userspace">
 <h3>2. Mapping non-contiguous physical memory to userspace<a class="headerlink" href="#mapping-non-contiguous-physical-memory-to-userspace" title="Permalink to this headline">¶</a></h3>
@@ -526,7 +528,7 @@ each time and that you use a range of one page for
 mapping.</p>
 </div>
 <p>For testing, use <em>test/mmap-test</em>. If everything goes well the test
-will show &#8220;matched&#8221; messages.</p>
+will show “matched” messages.</p>
 </div>
 <div class="section" id="read-write-operations-in-mapped-memory">
 <h3>3. Read / write operations in mapped memory<a class="headerlink" href="#read-write-operations-in-mapped-memory" title="Permalink to this headline">¶</a></h3>
@@ -541,7 +543,7 @@ be ignore as all reads / writes from the test program will
 be done with 0 offsets.</p>
 </div>
 <p>For testing run <em>test/mmap-test</em> with 2 as parameter:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/kmmap/mmap-test <span class="m">2</span>
+<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# skels/memory_mapping/kmmap/mmap-test 2
 </pre></div>
 </div>
 </div>
@@ -567,7 +569,7 @@ and for the parent parameter use NULL. Use
 <span class="pre">seq_file</span></code> interface can be found here in this <a class="reference external" href="http://tldp.org/LDP/lkmpg/2.6/html/x861.html">example</a> .</p>
 <p class="last">For this exercise, just a simple use of the interface
 described <a class="reference external" href="http://lwn.net/Articles/22355/">here</a> is
-sufficient. Check the &#8220;extra-simple&#8221; API described there.</p>
+sufficient. Check the “extra-simple” API described there.</p>
 </div>
 <p>In the my_seq_show display my_seq_show you will need to:</p>
 <ul>
@@ -589,7 +591,7 @@ the list of memory areas. Stop when you reach NULL.</p>
 </li>
 <li><p class="first">Use <em>vm_start</em> and <em>vm_end</em> for each area to compute the total size</p>
 </li>
-<li><p class="first">Use pr_info(&#8220;%lx %lxn, ... ) to print <em>vm_start</em> and <em>vm_end</em> for each area</p>
+<li><p class="first">Use pr_info(“%lx %lxn, … ) to print <em>vm_start</em> and <em>vm_end</em> for each area</p>
 </li>
 <li><p class="first">To release <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code>, decrement the reference
 counter of the structure using mmput</p>
@@ -605,7 +607,7 @@ other messages. Do not even show newline (n).</p>
 <p class="last">single_open can use NULL the third argument for single_open</p>
 </div>
 <p>For testing run <em>test/mmap-test</em> with 3 as parameter:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/kmmap/mmap-test <span class="m">2</span>
+<div class="highlight-shell"><div class="highlight"><pre>root@qemux86:~# skels/memory_mapping/kmmap/mmap-test 2
 </pre></div>
 </div>
 <div class="admonition note">
@@ -662,23 +664,23 @@ and compare it to the test results.</p>
 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
+            URL_ROOT:'../',
             VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: ''
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
 
   
 
   
   
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
   
