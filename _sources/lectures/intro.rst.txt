@@ -255,7 +255,7 @@ goal:
    :level: 2
    :inline-contents: True
 
-   * Components can enabled or disabled at compile time
+   * Components can be enabled or disabled at compile time
 
    * Support of loadable kernel modules (at runtime)
 
