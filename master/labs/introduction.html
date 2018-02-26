@@ -261,7 +261,7 @@ Drivers</a></li>
 <h3>cscope<a class="headerlink" href="#cscope" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://cscope.sourceforge.net/">Cscope</a> is a tool for
 efficient navigation of C sources. To use it, a cscope database must
-be geberated from the existing sources. In a Linux tree, the command
+be generated from the existing sources. In a Linux tree, the command
 <strong class="command">make ARCH = x86 cscope</strong> is sufficient. Specification of the
 architecture through the ARCH variable is optional but recommended;
 otherwise, some architecture dependent functions will appear multiple
@@ -321,7 +321,7 @@ file you are currently editing.</p>
 (for example <code class="code docutils literal"><span class="pre">vim</span> <span class="pre">-t</span> <span class="pre">task_struct</span></code>). Otherwise, if you started <strong class="command">vim</strong> and want
 to search for a symbol by name, use <code class="code docutils literal"><span class="pre">cs</span> <span class="pre">find</span> <span class="pre">g</span> <span class="pre">&lt;symbol_name&gt;</span></code> (for example
 <code class="code docutils literal"><span class="pre">cs</span> <span class="pre">find</span> <span class="pre">g</span> <span class="pre">task_struct</span></code>).</p>
-<p>If you fond more than one results and opened a panel showing all the matches
+<p>If you found more than one results and opened a panel showing all the matches
 (using <code class="code docutils literal"><span class="pre">:copen</span></code>) and you want to find a symbol of type structure,
 it is recommended to search in the results panel (using <code class="code docutils literal"><span class="pre">/</span></code> – slash)
 the character <code class="code docutils literal"><span class="pre">{</span></code> (opening brace).</p>
@@ -384,8 +384,8 @@ for C and C++. It uses the
 <a class="reference external" href="http://clang.llvm.org/docs/IntroductionToTheClangAST.html">framework</a>
 provided by the Clang compiler to index the code.</p>
 <p>The main difference between cscope and SourceWeb is the fact that SourceWeb
-is, in a way, a compiper pass. SourceWeb doesn’t index all the code, but
-only the coe that was efectively compiled by the compiler. This way, some
+is, in a way, a compiler pass. SourceWeb doesn’t index all the code, but
+only the code that was efectively compiled by the compiler. This way, some
 problems are eliminated, such as ambiguities about which variant of a function
 defined in multiple places is used. This also means that the indexing takes
 more time, because the compiled files must pass one more time through
@@ -398,7 +398,7 @@ sw-clang-indexer --index-project
 sourceweb index
 </pre></div>
 </div>
-<p><code class="file docutils literal"><span class="pre">sw-btrace</span></code> is a scrit that adds the <code class="file docutils literal"><span class="pre">libsw-btrace.so</span></code>
+<p><code class="file docutils literal"><span class="pre">sw-btrace</span></code> is a script that adds the <code class="file docutils literal"><span class="pre">libsw-btrace.so</span></code>
 library to <code class="code docutils literal"><span class="pre">LD_PRELOAD</span></code>. This way, the library is loaded by
 every process started by <code class="code docutils literal"><span class="pre">make</span></code> (basically, the compiler),
 registers the commands used to start the processes and generates
@@ -502,12 +502,12 @@ for <strong class="command">gdb</strong>. The image can be found in the root of 
 after compilation.</p>
 <p>A few commands used for debugging using <strong class="command">gdb</strong> are:</p>
 <ul class="simple">
-<li><strong class="command">x</strong> (examine) – used to show the contents of the memory area
+<li><strong class="command">x</strong> (examine) – Used to show the contents of the memory area
 whose address is specified as an argument to the command (this address
 can be the value of a physical address, a symbol or the address of a
 symbol). It can take as arguments (preceded by <code class="code docutils literal"><span class="pre">/</span></code>): the format
 to display the data in (<code class="code docutils literal"><span class="pre">x</span></code> for hexadecimal, <code class="code docutils literal"><span class="pre">d</span></code> for
-decimal, etc), how many memory units to display and the size of a
+decimal, etc.), how many memory units to display and the size of a
 memory unit.</li>
 <li><strong class="command">disassemble</strong> - Used to disassemble a function.</li>
 <li><strong class="command">p</strong> (print) - Used to evaluate and show the value of an
@@ -543,7 +543,7 @@ $3 = 0xc02e535c
 </div>
 <div class="section" id="getting-a-stack-trace">
 <h3>Getting a stack trace<a class="headerlink" href="#getting-a-stack-trace" title="Permalink to this headline">¶</a></h3>
-<p>Somethimes, you will want information about the trace the execution
+<p>Sometimes, you will want information about the trace the execution
 reaches a certain point. You can determine this information using
 <strong class="command">cscope</strong> or LXR, but some function are called from many
 execution paths, which makes this method difficult.</p>
@@ -593,7 +593,7 @@ eventually test programs.</li>
 <li>When using cscope, use <code class="file docutils literal"><span class="pre">~/src/linux</span></code>.
 If there is no <code class="file docutils literal"><span class="pre">cscope.out</span></code> file, you can generate it using
 the command <strong class="command">make ARCH=x86 cscope</strong>.</li>
-<li>You cand find more details about the virtual machine at
+<li>You can find more details about the virtual machine at
 <a class="reference internal" href="vm.html#vm-link"><span class="std std-ref">Virtual Machine Setup</span></a>.</li>
 </ul>
 </div>
