@@ -263,16 +263,15 @@ dup2 system call and inspect the state.</p>
 <ul class="admonition-system-call-flow-summary simple">
 <li>The application is setting up the system call number and
 parameters and it issues a trap instruction</li>
-<li>The execution mode switches from user to kernel</li>
-<li>During this process, the CPU switches to a kernel stack, while
-saving the user stack and return address to userspace</li>
+<li>The execution mode switches from user to kernel; the CPU switches
+to a kernel stack; the user stack and the return address to user
+space is saved on the kernel stack</li>
 <li>The kernel entry point saves registers on the kernel stack</li>
 <li>The system call dispatcher identifies the system call function
 and runs it</li>
-<li>When the system call function returns the userspace registers are
-restored and execution is switched back to user mode by executing
-an architecture specific instruction (e.g. IRET)</li>
-<li>userspace application resumes</li>
+<li>The userspace registers are restored and execution is switched
+back to user (e.g. calling IRET)</li>
+<li>Userspace application resumes</li>
 </ul>
 <div class="section" id="system-call-table">
 <h3>System call table<a class="headerlink" href="#system-call-table" title="Permalink to this headline">¶</a></h3>
