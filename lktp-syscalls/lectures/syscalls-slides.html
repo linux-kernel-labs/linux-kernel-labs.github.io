@@ -77,14 +77,13 @@
 
 
 </article>
-<article class="admonition-system-call-phases slide level-2">
+<article class="admonition-system-call-setup slide level-2">
 
-<h2>System Call Phases</h2>
+<h2>System Call Setup</h2>
 
 <ul class="simple">
 <li>setup information to identify the system call and its parameters</li>
-<li>switch the execution to kernel mode to a specific kernel entry
-point</li>
+<li>trigger a kernel mode switch</li>
 <li>retrieve the result of the system call</li>
 </ul>
 
@@ -169,11 +168,12 @@ parameters and it issues a trap instruction</li>
 <li>During this process, the CPU switches to a kernel stack, while
 saving the user stack and return address to userspace</li>
 <li>The kernel entry point saves registers on the kernel stack</li>
-<li>The system call dispatches identifies the system call function and
-runs it</li>
+<li>The system call dispatcher identifies the system call function
+and runs it</li>
 <li>When the system call function returns the userspace registers are
-restored, execution is switched back to user mode and the
-userspace application resumes</li>
+restored and execution is switched back to user mode by executing
+an architecture specific instruction (e.g. IRET)</li>
+<li>userspace application resumes</li>
 </ul>
 
 
@@ -234,14 +234,16 @@ userspace application resumes</li>
 
 
 </article>
-<article class="admonition-invalid-pointers slide level-2">
+<article class="admonition-invalid-pointers-handling-approaches slide level-2">
 
-<h2>Invalid pointers</h2>
+<h2>Invalid pointers handling approaches</h2>
 
 <ul class="simple">
-<li>Check the pointer against the user address space</li>
-<li>Rely on the MMU to avoid checking the pointer for the case when
-it is correct and handle the fault for the invalid case</li>
+<li>Check the pointer against the user address space before using it,
+or</li>
+<li>Avoid checking the pointer and rely on the MMU to detect when the
+pointer is invalid and use the page fault handler to determine
+that the pointer was invalid</li>
 </ul>
 
 
@@ -257,9 +259,10 @@ it is correct and handle the fault for the invalid case</li>
 <li>Copy on write, demand paging, swapping: both the fault and
 faulting addresses are in userspace; the fault address is
 valid (checked against the user address space)</li>
-<li>Invalid syscall pointer: the faulting address is in kernel
-space; the fault address is in userspace and it is invalid</li>
-<li>Kernel bug: same as above</li>
+<li>Invalid pointer used in system call: the faulting address is
+in kernel space; the fault address is in userspace and it is
+invalid</li>
+<li>Kernel bug (kernel accesses invalid pointer): same as above</li>
 </ul>
 </div></blockquote>
 
@@ -272,8 +275,8 @@ space; the fault address is in userspace and it is invalid</li>
 <h2>Marking kernel code that accesses user space</h2>
 
 <ul class="simple">
-<li>The exact instructions that accesses user space are recorded in
-a table (exception table)</li>
+<li>The exact instructions that access user space are recorded in a
+table (exception table)</li>
 <li>When a page fault occurs the faulting address is checked against
 this table</li>
 </ul>
@@ -301,7 +304,7 @@ this table</li>
 <tbody valign="top">
 <tr class="row-even"><td>Valid address</td>
 <td>address space search</td>
-<td>0</td>
+<td>negligible</td>
 </tr>
 <tr class="row-odd"><td>Invalid address</td>
 <td>address space search</td>

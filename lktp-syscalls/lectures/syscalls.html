@@ -202,10 +202,9 @@ described as a function call with a name, parameters and return value.</p>
 <p>However, on a closer look, we can see that system calls are actually
 not function calls, but specific assembly instructions (architecture
 and kernel specific) that do the following:</p>
-<ul class="admonition-system-call-phases simple">
+<ul class="admonition-system-call-setup simple">
 <li>setup information to identify the system call and its parameters</li>
-<li>switch the execution to kernel mode to a specific kernel entry
-point</li>
+<li>trigger a kernel mode switch</li>
 <li>retrieve the result of the system call</li>
 </ul>
 <p>In Linux, system calls are identified by numbers and the parameters
@@ -218,11 +217,20 @@ EDX, ESI, EDI, EBP.</p>
 <span class="admonition-linux-system-call-setup"></span><p>System libraries (e.g. libc) offers functions that implement the
 actual system calls in order to make it easier for applications to use
 them.</p>
-<p>For security reasons, when a user to kernel mode transitions occurs,
-the CPU’s PC is set at specific kernel entry points. For system calls,
-this entry point will push the parameters on stack so that they are
-accesible by the system call functions and then it will run the system
-call dispatcher.</p>
+<p>When a user to kernel mode transitions occurs the execution flow is
+interrupted and it is transfered to a kernel entry point. This is
+similar with how interrupts and exception are handled (in fact on some
+architectures this transition happens as a result of an exception).</p>
+<p>The system call entry point will save registers (which contains values
+from userspace, including system call number and system call
+parameters) on stack and then it will continue with executing the
+system call dispatcher.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">During the user - kernel mode transition the stack is also
+switched from ther user stack to the kernel stack. This is
+explained in more details in the interrupts lecture.</p>
+</div>
 <img alt="../_images/ditaa-ff42ece4d0e8f54447df36efcbbfb8dd51a1362b.png" class="admonition-example-of-linux-system-call-setup-and-handling" src="../_images/ditaa-ff42ece4d0e8f54447df36efcbbfb8dd51a1362b.png" />
 <p>The purpose of the system call dispatcher is to verify the system call
 number and run the kernel function associated with the system call.</p>
@@ -259,11 +267,12 @@ parameters and it issues a trap instruction</li>
 <li>During this process, the CPU switches to a kernel stack, while
 saving the user stack and return address to userspace</li>
 <li>The kernel entry point saves registers on the kernel stack</li>
-<li>The system call dispatches identifies the system call function and
-runs it</li>
+<li>The system call dispatcher identifies the system call function
+and runs it</li>
 <li>When the system call function returns the userspace registers are
-restored, execution is switched back to user mode and the
-userspace application resumes</li>
+restored and execution is switched back to user mode by executing
+an architecture specific instruction (e.g. IRET)</li>
+<li>userspace application resumes</li>
 </ul>
 <div class="section" id="system-call-table">
 <h3>System call table<a class="headerlink" href="#system-call-table" title="Permalink to this headline">¶</a></h3>
@@ -304,29 +313,33 @@ kernel space and if pointers are not properly checked user
 applications might get read or write access to kernel space.</p>
 <p>For example, lets consider the case where such a check is not made for
 the read or write system calls. If the user passes a kernel-space
-pointer to a write sysytem call then it can get access to kernel data
+pointer to a write system call then it can get access to kernel data
 by later reading the file. If it passes an kernel-space pointer to a
 read system call then it can corrupt kernel memory.</p>
 <span class="admonition-pointers-to-kernel-space"></span><p>Likewise, if a pointer passed by the application is invalid
 (e.g. unmaped, read-only for cases where its need to be written), it
 could “crash” the kernel. There two approaches that could be used:</p>
-<ul class="admonition-invalid-pointers simple">
-<li>Check the pointer against the user address space</li>
-<li>Rely on the MMU to avoid checking the pointer for the case when
-it is correct and handle the fault for the invalid case</li>
+<ul class="admonition-invalid-pointers-handling-approaches simple">
+<li>Check the pointer against the user address space before using it,
+or</li>
+<li>Avoid checking the pointer and rely on the MMU to detect when the
+pointer is invalid and use the page fault handler to determine
+that the pointer was invalid</li>
 </ul>
 <p>Although it sounds tempting, the second approach is not that easy to
-implement. The page fault handler uses the fault and faulting
-addresses as well as information from the user address space to
-determine the cause:</p>
+implement. The page fault handler uses the fault address (the address
+that was accessed), the faulting address (the address of the
+instruction that did the access) and information from the user address
+space to determine the cause:</p>
 <blockquote class="admonition-page-fault-handling">
 <div><ul class="simple">
 <li>Copy on write, demand paging, swapping: both the fault and
 faulting addresses are in userspace; the fault address is
 valid (checked against the user address space)</li>
-<li>Invalid syscall pointer: the faulting address is in kernel
-space; the fault address is in userspace and it is invalid</li>
-<li>Kernel bug: same as above</li>
+<li>Invalid pointer used in system call: the faulting address is
+in kernel space; the fault address is in userspace and it is
+invalid</li>
+<li>Kernel bug (kernel accesses invalid pointer): same as above</li>
 </ul>
 </div></blockquote>
 <p>But in the last two cases we don’t have enough information to
@@ -335,14 +348,15 @@ determine the cause of the fault.</p>
 <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>) to accesses userspace that are specially
 crafted:</p>
 <ul class="admonition-marking-kernel-code-that-accesses-user-space simple">
-<li>The exact instructions that accesses user space are recorded in
-a table (exception table)</li>
+<li>The exact instructions that access user space are recorded in a
+table (exception table)</li>
 <li>When a page fault occurs the faulting address is checked against
 this table</li>
 </ul>
 <p>Although the fault handling case may be more costly overall depending
 on the address space vs exception table size, and it is more complex,
-it does optimizes for the common case and that is why it is preferred.</p>
+it does optimizes for the common case and that is why it is preferred
+and used in Linux.</p>
 <table border="1" class="admonition-cost-analysis-for-pointer-checks-vs-fault-handling docutils">
 <colgroup>
 <col width="28%" />
@@ -358,7 +372,7 @@ it does optimizes for the common case and that is why it is preferred.</p>
 <tbody valign="top">
 <tr class="row-even"><td>Valid address</td>
 <td>address space search</td>
-<td>0</td>
+<td>negligible</td>
 </tr>
 <tr class="row-odd"><td>Invalid address</td>
 <td>address space search</td>

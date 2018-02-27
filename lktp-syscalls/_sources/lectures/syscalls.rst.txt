@@ -54,14 +54,13 @@ However, on a closer look, we can see that system calls are actually
 not function calls, but specific assembly instructions (architecture
 and kernel specific) that do the following:
 
-.. slide:: System Call Phases
+.. slide:: System Call Setup
    :inline-contents: True
    :level: 2
 
    * setup information to identify the system call and its parameters
 
-   * switch the execution to kernel mode to a specific kernel entry
-     point
+   * trigger a kernel mode switch
 
    * retrieve the result of the system call
 
@@ -90,12 +89,19 @@ System libraries (e.g. libc) offers functions that implement the
 actual system calls in order to make it easier for applications to use
 them.
 
-For security reasons, when a user to kernel mode transitions occurs,
-the CPU's PC is set at specific kernel entry points. For system calls,
-this entry point will push the parameters on stack so that they are
-accesible by the system call functions and then it will run the system
-call dispatcher.
+When a user to kernel mode transitions occurs the execution flow is
+interrupted and it is transfered to a kernel entry point. This is
+similar with how interrupts and exception are handled (in fact on some
+architectures this transition happens as a result of an exception).
 
+The system call entry point will save registers (which contains values
+from userspace, including system call number and system call
+parameters) on stack and then it will continue with executing the
+system call dispatcher.
+
+.. note:: During the user - kernel mode transition the stack is also
+          switched from ther user stack to the kernel stack. This is
+          explained in more details in the interrupts lecture.
 
 .. slide:: Example of Linux system call setup and handling
    :inline-contents: True
@@ -195,12 +201,14 @@ In summary, this is what happens during a system call:
 
    * The kernel entry point saves registers on the kernel stack
 
-   * The system call dispatches identifies the system call function and
-     runs it
+   * The system call dispatcher identifies the system call function
+     and runs it
 
    * When the system call function returns the userspace registers are
-     restored, execution is switched back to user mode and the
-     userspace application resumes
+     restored and execution is switched back to user mode by executing
+     an architecture specific instruction (e.g. IRET)
+
+   * userspace application resumes
 
 
 System call table
@@ -260,7 +268,7 @@ applications might get read or write access to kernel space.
 
 For example, lets consider the case where such a check is not made for
 the read or write system calls. If the user passes a kernel-space
-pointer to a write sysytem call then it can get access to kernel data
+pointer to a write system call then it can get access to kernel data
 by later reading the file. If it passes an kernel-space pointer to a
 read system call then it can corrupt kernel memory.
 
@@ -277,19 +285,23 @@ Likewise, if a pointer passed by the application is invalid
 (e.g. unmaped, read-only for cases where its need to be written), it
 could "crash" the kernel. There two approaches that could be used:
 
-.. slide:: Invalid pointers
+.. slide:: Invalid pointers handling approaches
    :inline-contents: True
    :level: 2
 
-   * Check the pointer against the user address space
+   * Check the pointer against the user address space before using it,
+     or
 
-   * Rely on the MMU to avoid checking the pointer for the case when
-     it is correct and handle the fault for the invalid case
+   * Avoid checking the pointer and rely on the MMU to detect when the
+     pointer is invalid and use the page fault handler to determine
+     that the pointer was invalid
+
 
 Although it sounds tempting, the second approach is not that easy to
-implement. The page fault handler uses the fault and faulting
-addresses as well as information from the user address space to
-determine the cause:
+implement. The page fault handler uses the fault address (the address
+that was accessed), the faulting address (the address of the
+instruction that did the access) and information from the user address
+space to determine the cause:
 
 .. slide:: Page fault handling
    :inline-contents: True
@@ -299,10 +311,11 @@ determine the cause:
 	faulting addresses are in userspace; the fault address is
 	valid (checked against the user address space)
 
-      * Invalid syscall pointer: the faulting address is in kernel
-	space; the fault address is in userspace and it is invalid
+      * Invalid pointer used in system call: the faulting address is
+	in kernel space; the fault address is in userspace and it is
+	invalid
 
-      * Kernel bug: same as above
+      * Kernel bug (kernel accesses invalid pointer): same as above
 
 But in the last two cases we don't have enough information to
 determine the cause of the fault.
@@ -315,8 +328,8 @@ crafted:
    :inline-contents: True
    :level: 2
 
-   * The exact instructions that accesses user space are recorded in
-     a table (exception table)
+   * The exact instructions that access user space are recorded in a
+     table (exception table)
 
    * When a page fault occurs the faulting address is checked against
      this table
@@ -324,7 +337,8 @@ crafted:
 
 Although the fault handling case may be more costly overall depending
 on the address space vs exception table size, and it is more complex,
-it does optimizes for the common case and that is why it is preferred.
+it does optimizes for the common case and that is why it is preferred
+and used in Linux.
 
 
 .. slide:: Cost analysis for pointer checks vs fault handling
@@ -334,7 +348,7 @@ it does optimizes for the common case and that is why it is preferred.
    +------------------+-----------------------+------------------------+
    | Cost             |  Pointer checks       | Fault handling         |
    +==================+=======================+========================+
-   | Valid address    | address space search  | 0                      |
+   | Valid address    | address space search  | negligible             |
    +------------------+-----------------------+------------------------+
    | Invalid address  | address space search  | exception table search |
    +------------------+-----------------------+------------------------+
