@@ -30,6 +30,8 @@
   
 
   
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  
     <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   
 
@@ -38,7 +40,7 @@
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="The Linux Kernel  documentation" href="../index.html"/>
-        <link rel="next" title="Virtual Machine Setup" href="../labs/vm.html"/>
+        <link rel="next" title="System Calls" href="syscalls.html"/>
         <link rel="prev" title="Sisteme de operare 2" href="so2.cs.pub.ro.html"/> 
 
   
@@ -134,6 +136,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
@@ -257,7 +260,7 @@ can be directly accessed from code running in kernel mode.</p>
 <h3>Typical operating system architecture<a class="headerlink" href="#typical-operating-system-architecture" title="Permalink to this headline">¶</a></h3>
 <p>In the typical operating system architecture (see the figure below)
 the operating system kernel is responsible for access and sharing the
-hardware in a secure and fair manner with with multiple applications.</p>
+hardware in a secure and fair manner with multiple applications.</p>
 <img alt="../_images/ditaa-12614a4afe93c9e1ae68861a79f14afe4f3e4b3e.png" class="admonition-typical-operating-system-architecture" src="../_images/ditaa-12614a4afe93c9e1ae68861a79f14afe4f3e4b3e.png" />
 <p>The kernel offers a set of APIs that applications issue which are
 generally referred to as “System Calls”. These APIs are different from
@@ -266,7 +269,7 @@ execution mode switch from user mode to kernel mode.</p>
 <p>In order to provide application compatibility, system calls are rarely
 changed. Linux particularly enforces this (as opposed to in kernel
 APIs that can change as needed).</p>
-<p>The kernel code itself can be logically be separated in core kernel
+<p>The kernel code itself can be logically separated in core kernel
 code and device drivers code. Device drivers code is responsible of
 accessing particular devices while the core kernel code is
 generic. The core kernel can be further divided into multiple logical
@@ -374,8 +377,8 @@ mode.</p>
 <p>A typical implementation for user and kernel spaces is one where the
 virtual address space is shared between user processes and the kernel.</p>
 <p>In this case kernel space is located at the top of the address space,
-while user space at the bottom. In order to avoid the user processes
-from access kernel space, the kernel creates mappings that prevent
+while user space at the bottom. In order to prevent the user processes
+from accessing kernel space, the kernel creates mappings that prevent
 access to the kernel space from user mode.</p>
 <img alt="../_images/ditaa-00760697e2d08607719269ad7b81254e597c09f8.png" class="admonition-user-and-kernel-sharing-the-virtual-address-space" src="../_images/ditaa-00760697e2d08607719269ad7b81254e597c09f8.png" />
 </div>
@@ -401,12 +404,12 @@ or in kernel mode (executing a system call).</p>
 “simultaneously” execute multiple programs. It does so by quickly
 switching between running processes.</p>
 <p>Cooperative multitasking requires the programs to cooperate to achieve
-multitasking. A program will run into it relinquish CPU control back
+multitasking. A program will run and relinquish CPU control back
 to the OS, which will then schedule another program.</p>
 <p>With preemptive multitasking the kernel will enforce strict limits for
-each process, so that all processes have a fair change of
+each process, so that all processes have a fair chance of
 running. Each process is allowed to run a time slice (e.g. 100ms)
-after which, if it is still running, it is forcefully preempted an
+after which, if it is still running, it is forcefully preempted and
 another task is scheduled.</p>
 </div>
 <div class="section" id="preemptive-kernel">
@@ -414,7 +417,7 @@ another task is scheduled.</p>
 <p class="admonition-execution-contexts">Preemptive multitasking and preemptive kernels are different terms.</p>
 <p>A kernel is preemptive if a process can be preempted while running
 in kernel mode.</p>
-<p>However, not that non-preemptive kernels may support preemptive
+<p>However, note that non-preemptive kernels may support preemptive
 multitasking.</p>
 </div>
 <div class="section" id="pageable-kernel-memory">
@@ -435,7 +438,7 @@ that are not properly bounded.</p>
 <div class="section" id="portability">
 <h3>Portability<a class="headerlink" href="#portability" title="Permalink to this headline">¶</a></h3>
 <p>In order to increase portability across various architectures and
-hardware configurations modern kernels are organized as follows at the
+hardware configurations, modern kernels are organized as follows at the
 top level:</p>
 <ul class="admonition-execution-contexts simple">
 <li>Architecture and machine specific code (C &amp; ASM)</li>
@@ -450,13 +453,13 @@ different architectures and machine configurations.</p>
 </div>
 <div class="section" id="asymmetric-multiprocessing-asmp">
 <h3>Asymmetric MultiProcessing (ASMP)<a class="headerlink" href="#asymmetric-multiprocessing-asmp" title="Permalink to this headline">¶</a></h3>
-<p>Asymmetric MultiProcessing (ASMP) is way of supporting multiple
-processors (cores) by a kernel where a processor is dedicated to the
+<p>Asymmetric MultiProcessing (ASMP) is a way of supporting multiple
+processors (cores) by a kernel, where a processor is dedicated to the
 kernel and all other processors run user space programs.</p>
-<p>The disadvantage of this approach is the kernel throughput
+<p>The disadvantage of this approach is that the kernel throughput
 (e.g. system calls, interrupt handling, etc.) does not scale with the
 number of processors and hence typical processes frequently use system
-calls the scalability of the approach is limited to very specific
+calls. The scalability of the approach is limited to very specific
 systems (e.g. scientific applications).</p>
 <img alt="../_images/ditaa-b705b1e00a45dab8a2425a4bd02e9b79b03c06e8.png" class="admonition-asymmetric-multiprocessing-asmp" src="../_images/ditaa-b705b1e00a45dab8a2425a4bd02e9b79b03c06e8.png" />
 </div>
@@ -464,7 +467,7 @@ systems (e.g. scientific applications).</p>
 <h3>Symmetric MultiProcessing (SMP)<a class="headerlink" href="#symmetric-multiprocessing-smp" title="Permalink to this headline">¶</a></h3>
 <p>As opposed to ASMP, in SMP mode the kernel can run on any of the
 existing processes, just as user processes. This approach is more
-difficult to implement, because it create race conditions in the
+difficult to implement, because it creates race conditions in the
 kernel if two processes run kernel functions that access the same
 memory locations.</p>
 <p>In order to support SMP the kernel must implement synchronization
@@ -474,7 +477,7 @@ executing a critical section.</p>
 </div>
 <div class="section" id="cpu-scalability">
 <h3>CPU Scalability<a class="headerlink" href="#cpu-scalability" title="Permalink to this headline">¶</a></h3>
-<p>CPU scalability refers to how well does the performance scales with
+<p>CPU scalability refers to how well the performance scales with
 the number of cores. There are a few things that the kernel developer
 should keep in mind with regard to CPU scalability:</p>
 <ul class="admonition-execution-contexts simple">
@@ -489,9 +492,9 @@ should keep in mind with regard to CPU scalability:</p>
 <div class="section" id="linux-development-model">
 <h3>Linux development model<a class="headerlink" href="#linux-development-model" title="Permalink to this headline">¶</a></h3>
 <span class="admonition-linux-development-model"></span><p>The Linux kernel is one the largest open source projects in the world
-with thousands of developer contributing code and millions of lines of
+with thousands of developers contributing code and millions of lines of
 code changed for each release.</p>
-<p>It is distributed under the GPLv2 license, which simply put, it
+<p>It is distributed under the GPLv2 license, which simply put,
 requires that any modification of the kernel done on software that is
 shipped to customer should be made available to them (the customers),
 although in practice most companies make the source code publicly
@@ -502,11 +505,11 @@ developers.</p>
 <p>The current development model is based on doing releases at fixed
 intervals of time (usually 3 - 4 months). New features are merged into
 the kernel during a one or two week merge window. After the merge
-window a release candidate is done on a weekly basis (rc1, rc2, etc.)</p>
+window, a release candidate is done on a weekly basis (rc1, rc2, etc.)</p>
 </div>
 <div class="section" id="maintainer-hierarchy">
 <h3>Maintainer hierarchy<a class="headerlink" href="#maintainer-hierarchy" title="Permalink to this headline">¶</a></h3>
-<p>In order to scale the development process Linux uses a hierarchical
+<p>In order to scale the development process, Linux uses a hierarchical
 maintainership model:</p>
 <ul class="admonition-maintainer-hierarchy simple">
 <li>Linus Torvalds is the maintainer of the Linux kernel and merges pull
@@ -534,10 +537,8 @@ upstream maintainer regularly, for every release candidate.</p>
 <img alt="../_images/ditaa-c5a3d9943ec8b9c9f94c6d49caae3811d23063b0.png" class="admonition-linux-source-code-layout" src="../_images/ditaa-c5a3d9943ec8b9c9f94c6d49caae3811d23063b0.png" />
 <p>These are the top level of the Linux source code folders:</p>
 <ul class="simple">
-<li>arch - contains architecture specific code; each architecture is</li>
-</ul>
-<p>implemented in a specific sub-folder (e.g. arm, arm64, x86)</p>
-<ul class="simple">
+<li>arch - contains architecture specific code; each architecture is
+implemented in a specific sub-folder (e.g. arm, arm64, x86)</li>
 <li>block - contains the block subsystem code that deals with reading
 and writing data from block devices: creating block I/O requests,
 scheduling them (there are several I/O schedulers available),
@@ -622,7 +623,7 @@ string operations, etc.)</p>
 </div>
 <div class="section" id="device-drivers">
 <h4>Device drivers<a class="headerlink" href="#device-drivers" title="Permalink to this headline">¶</a></h4>
-<span class="admonition-arch"></span><p>The Linux kernel uses an unified device model who’s purpose is to
+<span class="admonition-arch"></span><p>The Linux kernel uses a unified device model whose purpose is to
 maintain internal data structures that reflect the state and structure
 of the system. Such information includes what devices are present,
 what is their status, what bus they are attached to, to what driver
@@ -733,7 +734,7 @@ metadata</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../labs/vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="syscalls.html" class="btn btn-neutral float-right" title="System Calls" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="so2.cs.pub.ro.html" class="btn btn-neutral" title="Sisteme de operare 2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -777,6 +778,7 @@ metadata</li>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/asciinema-player.js"></script>
 
   
 
