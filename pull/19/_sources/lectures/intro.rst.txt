@@ -69,10 +69,10 @@ protection or to virtual address spaces associated with either the
 kernel or user applications.
 
 Grossly simplifying, the kernel space is the memory area that is
-reserved to the kernel while user space is the memory area
-reserved to a particular user process. The kernel space is accessed
-protected so that user applications can not access it directly, while
-user space can be directly accessed from code running in kernel mode.
+reserved to the kernel while user space is the memory area reserved to
+a particular user process. The kernel space is accessed protected so
+that user applications can not access it directly, while user space
+can be directly accessed from code running in kernel mode.
 
 
 Typical operating system architecture

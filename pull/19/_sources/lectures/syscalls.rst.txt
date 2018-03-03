@@ -326,8 +326,8 @@ crafted:
    :inline-contents: True
    :level: 2
 
-   * The exact instructions that access user space are recorded
-     in a table (exception table)
+   * The exact instructions that access user space are recorded in a
+     table (exception table)
 
    * When a page fault occurs the faulting address is checked against
      this table
