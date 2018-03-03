@@ -638,7 +638,7 @@ it from the address <a class="reference external" href="http://elf.cs.pub.ro/so2
 <p>In the <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs/qemu</span></code> directory, you have a new virtual
 machine disk, in the file <code class="file docutils literal"><span class="pre">mydisk.img</span></code>. We want to add the disk
 to the virtual machine and use it within the virtual machine.</p>
-<p>Edit the <code class="file docutils literal"><span class="pre">Makefile</span></code> to add the following <code class="code docutils literal"><span class="pre">-drive</span> <span class="pre">file=mydisk.img,format=raw</span></code>
+<p>Edit the <code class="file docutils literal"><span class="pre">Makefile</span></code> to add the following <code class="code docutils literal"><span class="pre">-drive</span> <span class="pre"> file=qemu/mydisk.img,if=virtio,format=raw</span></code>
 to the <strong class="command">run</strong> target. Run <code class="code docutils literal"><span class="pre">make</span></code> to boot the virtual machine.</p>
 <p>Within the virtual machine, configure access to the virtual disk.</p>
 <div class="admonition hint">
@@ -648,7 +648,7 @@ because the virtual machine uses <strong class="command">devtmpfs</strong>.</p>
 </div>
 <p>Create <code class="file docutils literal"><span class="pre">/test</span></code> directory and try to mount the new disk:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>mkdir /test
-mount /dev/sda /test
+mount /dev/vdb /test
 </pre></div>
 </div>
 <p>The reason why we can not mount the virtual disk is because we do not have support in the
