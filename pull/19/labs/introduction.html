@@ -265,12 +265,12 @@ Drivers</a></li>
 <p><a class="reference external" href="http://cscope.sourceforge.net/">Cscope</a> is a tool for
 efficient navigation of C sources. To use it, a cscope database must
 be geberated from the existing sources. In a Linux tree, the command
-<strong class="command">make ARCH = x86 cscope</strong> is sufficient. Specification of the
+<strong class="command">make ARCH=x86 cscope</strong> is sufficient. Specification of the
 architecture through the ARCH variable is optional but recommended;
 otherwise, some architecture dependent functions will appear multiple
 times in the database.</p>
-<p>You can build the cscope database with the command <strong class="command">make ARCH
-= x86 COMPILED_SOURCE = 1 cscope</strong>. This way, the cscope database will
+<p>You can build the cscope database with the command <strong class="command">make
+ARCH=x86 COMPILED_SOURCE=1 cscope</strong>. This way, the cscope database will
 only contain symbols that have already been used in the compile
 process before, thus resulting in better performance when searching
 for symbols.</p>
