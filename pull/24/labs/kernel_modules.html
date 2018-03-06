@@ -1132,19 +1132,19 @@ module.</p>
 <ul class="last simple">
 <li>In the Linux kernel, a process is described by the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> to find the
-definition of <code class="code docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
+definition of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
 <li>To find the structure field that contains the name of the
 executable, look for the “executable” comment.</li>
 <li>The pointer to the structure of the current process
 running at a given time in the kernel is given by the
-<code class="xref c c-macro docutils literal"><span class="pre">current</span></code> variable (of the type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span>
-<span class="pre">*</span></code>).</li>
+<code class="xref c c-macro docutils literal"><span class="pre">current</span></code> variable (of the type
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct*</span></code>).</li>
 </ul>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">To use <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> you’ll need to include the header
-in which the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
+in which the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
 <code class="docutils literal"><span class="pre">linux/sched.h</span></code>.</p>
 </div>
 <p>Compile, copy and load the module. Unload the kernel module.</p>
@@ -1156,22 +1156,23 @@ when the module is unloaded a process is created from the executable
 </div>
 <div class="section" id="kdb">
 <h3>1. KDB<a class="headerlink" href="#kdb" title="Permalink to this headline">¶</a></h3>
-<p>Go to the <strong>9-kdb</strong> directory. Activate KDB the over serial port and enter KDB mode using
-<strong class="command">SysRq</strong>. Connect to the pseudo-terminal linked to virtiocon0 using <strong class="command">minicom</strong>,
-configure KDB to use the hvc0 serial port:</p>
+<p>Go to the <strong>9-kdb</strong> directory. Activate KDB the over serial port and enter KDB
+mode using <strong class="command">SysRq</strong>. Connect to the pseudo-terminal linked to virtiocon0
+using <strong class="command">minicom</strong>, configure KDB to use the hvc0 serial port:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
 </pre></div>
 </div>
 <p>and enable it using SysRq (<strong class="command">Ctrl + O g</strong>).
-Review the current system status (<strong class="command">help</strong> to see the available KDB commands).
-Continue the kernel execution using the <strong class="command">go</strong> command.</p>
+Review the current system status (<strong class="command">help</strong> to see the available KDB
+commands). Continue the kernel execution using the <strong class="command">go</strong> command.</p>
 <p>Load the <code class="file docutils literal"><span class="pre">hello_kdb</span></code> module.
-The module will simulate a bug when writing to the <code class="file docutils literal"><span class="pre">/proc/hello_kdb_bug</span></code> file.
-To simulate a bug, use the below command:</p>
+The module will simulate a bug when writing to the <code class="file docutils literal"><span class="pre">/proc/hello_kdb_bug</span></code>
+file. To simulate a bug, use the below command:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/hello_kdb_bug
 </pre></div>
 </div>
-<p>After running the above command, at every oops/panic the kernel stops the execution and enters debug mode.</p>
+<p>After running the above command, at every oops/panic the kernel stops the
+execution and enters debug mode.</p>
 <p>Analyze the stacktrace and determine the code that generated the bug.
 How can we find out from KDB the address where the module was loaded?</p>
 <p>In parallel, use GDB in a new window to view the code based on KDB information.</p>
@@ -1179,68 +1180,103 @@ How can we find out from KDB the address where the module was loaded?</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">Load the symbol file. Use <strong class="command">info line</strong>.</p>
 </div>
-<p>When writing to <code class="file docutils literal"><span class="pre">/proc/hello_kdb_break</span></code>, the module will increment the <code class="code docutils literal"><span class="pre">kdb_write_address</span></code> variable. Enter KDB and set a breakpoint for each write access of the <code class="code docutils literal"><span class="pre">kdb_write_address</span></code> variable. Return to kernel to trigger a write using:</p>
+<p>When writing to <code class="file docutils literal"><span class="pre">/proc/hello_kdb_break</span></code>, the module will increment the
+<code class="xref c c-data docutils literal"><span class="pre">kdb_write_address</span></code> variable. Enter KDB and set a breakpoint for each
+write access of the <code class="xref c c-data docutils literal"><span class="pre">kdb_write_address</span></code> variable.
+Return to kernel to trigger a write using:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/hello_kdb_break
 </pre></div>
 </div>
 </div>
 <div class="section" id="ps-module">
 <h3>2. PS Module<a class="headerlink" href="#ps-module" title="Permalink to this headline">¶</a></h3>
-<p>Update the created kernel module at <a class="reference internal" href="#proc-info"><span class="std std-ref">7. Proc info</span></a> in order to display information about all the processes from the system, when inserting the kernel module, not just about the current process. Afterwards, compare the obtained result with the output of the <strong class="command">ps</strong> command.</p>
+<p>Update the created kernel module at <a class="reference internal" href="#proc-info"><span class="std std-ref">7. Proc info</span></a> in order to display
+information about all the processes from the system, when inserting the kernel
+module, not just about the current process. Afterwards, compare the obtained
+result with the output of the <strong class="command">ps</strong> command.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <ul class="last simple">
 <li>Processes in the system are structured in a circular list.</li>
-<li><code class="code docutils literal"><span class="pre">for_each</span> <span class="pre">_...</span></code> macros (such as <code class="code docutils literal"><span class="pre">for_each_process</span></code>) are useful when you want to navigate the items in a list.</li>
-<li>To understand how to use a feature or a macro, use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> or Vim and <strong class="command">cscope</strong> and search for usage scenarios.</li>
+<li><code class="xref c c-macro docutils literal"><span class="pre">for_each</span> <span class="pre">_...</span></code> macros (such as <code class="xref c c-macro docutils literal"><span class="pre">for_each_process</span></code>) are
+useful when you want to navigate the items in a list.</li>
+<li>To understand how to use a feature or a macro, use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> or Vim and
+<strong class="command">cscope</strong> and search for usage scenarios.</li>
 </ul>
 </div>
 </div>
 <div class="section" id="memory-info">
 <h3>3. Memory Info<a class="headerlink" href="#memory-info" title="Permalink to this headline">¶</a></h3>
-<p>Create a kernel module that displays the virtual memory areas of the current process; for each memory area it will display the start address and the end address.</p>
+<p>Create a kernel module that displays the virtual memory areas of the current
+process; for each memory area it will display the start address and the end
+address.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <ul class="last simple">
 <li>Start from an existing kernel module.</li>
-<li>Investigate the structures <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/sched.h#L520">struct task_struct</a>, <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/mm_types.h#L356">struct mm_struct</a> and <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/mm_types.h#L274">struct vm_area_struct</a>. A memory area is indicated by a structure of type <code class="code docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code>.</li>
-<li>Don’t forget to include the headers where the necessary structures are defined.</li>
+<li>Investigate the structures
+<a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/sched.h#L520">struct task_struct</a>,
+<a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/mm_types.h#L356">struct mm_struct</a>
+and <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/mm_types.h#L274">struct vm_area_struct</a>.
+A memory area is indicated by a structure of type
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code>.</li>
+<li>Don’t forget to include the headers where the necessary structures are
+defined.</li>
 </ul>
 </div>
 </div>
 <div class="section" id="id4">
 <h3>4. Dynamic Debugging<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>Go to the <strong>10-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
-<p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in <code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file <code class="file docutils literal"><span class="pre">/debug/dynamic_debug/control</span></code>. Insert the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module and notice the new content of the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file.</p>
+<p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in
+<code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file
+<code class="file docutils literal"><span class="pre">/debug/dynamic_debug/control</span></code>. Insert the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module and
+notice the new content of the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file.</p>
 <p>What appears extra in the respective file? Run the following command:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>grep dyndbg /debug/dynamic_debug/control
 </pre></div>
 </div>
-<p>Configure <strong class="command">dyndbg</strong> so that only messages marked as “Important” in <code class="code docutils literal"><span class="pre">my_debug_func</span></code> function are displayed when the module is unloaded. The exercise will only filter out the <code class="code docutils literal"><span class="pre">pr_debug</span></code> calls; <code class="code docutils literal"><span class="pre">printk</span></code> calls being always displayed.</p>
+<p>Configure <strong class="command">dyndbg</strong> so that only messages marked as “Important” in
+<code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code> function are displayed when the module is unloaded.
+The exercise will only filter out the <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls; <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
+calls being always displayed.</p>
 <p>Specify two ways to filter.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Read the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and look at the <strong class="command">dyndbg</strong> options (for example, <strong class="command">line</strong>, <strong class="command">format</strong>).</p>
+<p class="last">Read the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and look at the <strong class="command">dyndbg</strong>
+options (for example, <strong class="command">line</strong>, <strong class="command">format</strong>).</p>
 </div>
-<p>Perform the filtering and revise the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file. What has changed? How do you know which calls are activated?</p>
+<p>Perform the filtering and revise the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file. What
+has changed? How do you know which calls are activated?</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Check the <strong class="command">dyndbg</strong> flags. Unload the kernel module and observe the log messages.</p>
+<p class="last">Check the <strong class="command">dyndbg</strong> flags. Unload the kernel module and observe the
+log messages.</p>
 </div>
 </div>
 <div class="section" id="dynamic-debugging-during-initialization">
 <h3>5. Dynamic Debugging During Initialization<a class="headerlink" href="#dynamic-debugging-during-initialization" title="Permalink to this headline">¶</a></h3>
-<p>As you have noticed, <code class="code docutils literal"><span class="pre">pr_debug</span></code> calls can only be activated /filtered after module insertion. In some situations, it might be helpful to view the messages from the initialization of the module. This can be done by using a default (fake) parameter called <strong class="command">dyndbg</strong> that can be passed as an argument to initialize the module. With this parameter you can add /delete <strong class="command">dyndbg</strong> flags.</p>
+<p>As you have noticed, <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls can only be activated /filtered
+after module insertion. In some situations, it might be helpful to view the
+messages from the initialization of the module. This can be done by using a
+default (fake) parameter called <strong class="command">dyndbg</strong> that can be passed as an
+argument to initialize the module. With this parameter you can add /delete
+<strong class="command">dyndbg</strong> flags.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Read the last part of the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and see the available flags (e.g.: <strong class="command">+/- p</strong>).</p>
+<p class="last">Read the last part of the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and see the available
+flags (e.g.: <strong class="command">+/- p</strong>).</p>
 </div>
-<p>Read the <a class="reference external" href="https://01.org/linuxgraphics/gfx-docs/drm/admin-guide/dynamic-debug-howto.html#debug-messages-at-module-initialization-time">Debug Messages section at Module Initialization Time</a> and insert the module so that the messages in <code class="code docutils literal"><span class="pre">my_debug_func</span></code> (called <code class="code docutils literal"><span class="pre">dyndbg_init</span></code>) are also displayed during initialization.</p>
+<p>Read the
+<a class="reference external" href="https://01.org/linuxgraphics/gfx-docs/drm/admin-guide/dynamic-debug-howto.html#debug-messages-at-module-initialization-time">Debug Messages section at Module Initialization Time</a>
+and insert the module so that the messages in <code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code>
+(called <code class="xref c c-func docutils literal"><span class="pre">dyndbg_init()</span></code>) are also displayed during initialization.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">In the VM from the lab, you will need to use <strong class="command">insmod</strong> instead of <strong class="command">modprobe</strong>.</p>
+<p class="last">In the VM from the lab, you will need to use <strong class="command">insmod</strong> instead of
+<strong class="command">modprobe</strong>.</p>
 </div>
-<p>Without unloading the module, deactivate <code class="code docutils literal"><span class="pre">pr_debug</span></code> calls.</p>
+<p>Without unloading the module, deactivate <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">You can delete the set flags. Unload the kernel module.</p>
