@@ -19,7 +19,7 @@ Lecture objectives
 
    * Interrupts and exceptions (Linux)
 
-   * Defferable work
+   * Deferrable work
 
    * Timers
 
@@ -99,15 +99,15 @@ Programmable Interrupt Controller
         
         +-----------+   NMI
         |           |
-        |           <----------+
+        |           |<----------+
         |           |
         |           |           +------------+
         |           |           |            |   IRQ0
-        |           |           |            <------------+ device0
+        |           |           |            |<------------+ device0
         |    CPU    |           |            |   IRQ1
-        |           |   INTR    |     PIC    <------------+ device1
-        |           <-----------+            |   IRQN
-        |           |           |            <------------+ deviceN
+        |           |   INTR    |     PIC    |<------------+ device1
+        |           |<----------+            |   IRQN
+        |           |           |            |<------------+ deviceN
         |           |           |            |
         +-----------+           +------------+
         
@@ -176,6 +176,20 @@ I/O APIC is used to distributed IRQ from external devices to CPU cores.
 
 After discussing the hardware, now let's see how the processor handles an interrupt.
 
+.. slide:: Enabling/disabling the interrupts
+   :inline-contents: True
+   :level: 2
+
+   * at the PIC level
+
+     * programming the PIC
+     * PIC can be programmed to disable a given IRQ line
+
+   * at the CPU level
+
+    * cli (CLear Interrupt flag)
+    * sti (SeT Interrupt flag)
+
 Interrupt Descriptor Table
 --------------------------
 
@@ -184,14 +198,14 @@ identifier with a descriptor for the instructions that service the associated
 event. We will name the identifier as vector number and the associated 
 instructions as interrupt/exception handler.
 
-An, IDT thus is:
+An IDT has the following characteristics:
 
 .. slide:: Interrupt Descriptor Table
    :inline-contents: True
    :level: 2
 
-   * used as a jump table by the CPU when a given vector is triggered
-   * array of 256 x 8 bytes entries
+   * it is used as a jump table by the CPU when a given vector is triggered
+   * it is an array of 256 x 8 bytes entries
    * may reside anywhere in physical memory
    * processor locates IDT by the means of IDTR
 
@@ -248,6 +262,7 @@ Lets have a look at several fields of an IDT entry:
      the interupt handlers resides
    * offset, offset inside the code segment
    * T, represents the type of gate
+   * DPL, minimum privilege required for using the segments content.
 
 .. slide:: Interrupt descriptor table entry (gate)
    :inline-contents: True
@@ -256,11 +271,11 @@ Lets have a look at several fields of an IDT entry:
    .. ditaa::
 
      63                            47         42                  32
-    +------------------------------+-+--+----+--+-------------------+
-    |                              | |D |    |  |                   |
-    |         offset (16..31       |P|P |    |T |                   |
-    |                              | |L |    |  |                   |
-    +------------------------------+-+--+----+--+-------------------+
+    +------------------------------+---+---+----+---+---------------+
+    |                              |   | D |    |   |               |
+    |         offset (16..31       | P | P |    | T |               |
+    |                              |   | L |    |   |               |
+    +------------------------------+---+---+----+---+---------------+
     |                              |                                |
     |       segment selector       |        offset (0..15)          |
     |                              |                                |
@@ -333,23 +348,23 @@ debug the exception.
     
     +   +---------------------+                      +---------------------+
     |   |                     |                      |                     |
-    |   |                     | OLD SS:ESP           |                     | OLD SS:ESP from TSS
+    |   |                     | OLD SS:ESP           |      OLD SS         | NEW SS:ESP from TSS
     |   +---------------------+                      +---------------------+
     |   |                     |                      |                     |
-    |   |     OLD EFLAGS      |                      |     OLD EFLAGS      |
+    |   |     OLD EFLAGS      |                      |     OLD ESP         |
     |   +---------------------+                      +---------------------+
     |   |                     |                      |                     |
-    |   |     OLD CS          |                      |     OLD CS          |
+    |   |     OLD CS          |                      |     OLD EFLAGS      |
     |   +---------------------+                      +---------------------+
     |   |                     |                      |                     |
-    |   |     OLD EIP         |                      |     OLD EIP         |
+    |   |     OLD EIP         |                      |       OLD CS        |
     |   +---------------------+                      +---------------------+
     |   |                     |                      |                     |
-    |   |    error code       | NEW SS:ESP           |    error code       |  NEW SS:ESP
+    |   |    (error code)     | NEW SS:ESP           |      OLD EIP        |
     |   +---------------------+                      +---------------------+
     |   |                     |                      |                     |
-    |   |                     |                      |                     |
-    |   |                     |                      |                     |
+    |   |                     |                      |    (error code)     |  NEW SS:ESP
+    |   |                     |                      +---------------------+
     |   |                     |                      |                     |
     |   |                     |                      |                     |
     |   |                     |                      |                     |
@@ -431,7 +446,7 @@ On the other hand, an exception handler never preempts an interrupt handler.
 
     * runs as a result of an IRQ (not of an exception)
     * there is no 'process' context associated
-    * cannot put the current context to sleep
+    * can't trigger a context switch
       
       * no sleep
       * no schedule
@@ -458,7 +473,7 @@ On the other hand, an exception handler never preempts an interrupt handler.
                                                                 |                |
                                                                 +----------------+
 
-Defferable actions
+Deferrable actions
 ==================
 
 
@@ -472,13 +487,13 @@ Defferable actions
 
       * runs in interrupt context
       * statically allocated
-      * same interrupt can run in parallel on multiple cores
+      * same handler may run in parallel on multiple cores
 
     * tasklet
 
       * runs in interrupt context
       * can be dinamically allocated
-
+      * same handler runs are serialized
     * workqueues
    
       * run in process context
@@ -490,10 +505,10 @@ Defferable actions
     * init: open_softirq()
     * activation: raise_softirq()
     * execution: do_softirq()
-    * runs when:
+    * it runs
 
-      * after finishing handling an interrupt
-      * by the ksoftirqd thread
+      * after an interrupt handler
+      * from the ksoftirqd kernel thread
 
 .. slide:: Types of soft IRQ
    :inline-contents: True
@@ -506,6 +521,14 @@ Defferable actions
     * BLOCK_SOFTIRQ
     * TASKLET_SOFTIRQ
     * HRTIMER_SOFTIRQ
+
+.. slide:: ksoftirqd
+   :inline-contents: True
+   :level: 2
+
+    * minimum priority kernel thread
+    * runs self raised softirqs
+    * trade-off between softirqs and process/kernel threads
 
 .. slide:: Tasklets
    :inline-contents: True

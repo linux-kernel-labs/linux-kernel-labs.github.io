@@ -115,7 +115,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#defferable-actions">Defferable actions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deferrable-actions">Deferrable actions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/vm.html">Virtual Machine Setup</a></li>
@@ -199,7 +199,7 @@
 <ul class="admonition-interrupts simple">
 <li>Interrupts and exceptions (x86)</li>
 <li>Interrupts and exceptions (Linux)</li>
-<li>Defferable work</li>
+<li>Deferrable work</li>
 <li>Timers</li>
 </ul>
 </div>
@@ -258,7 +258,7 @@ of the instruction after the instuction that caused the trap. (e.g debug trap).<
 <h2>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="programmable-interrupt-controller">
 <h3>Programmable Interrupt Controller<a class="headerlink" href="#programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
-<img alt="../_images/ditaa-e0ed929e4a9336d904501564a5e8d58527398aa3.png" class="admonition-hardware-pic" src="../_images/ditaa-e0ed929e4a9336d904501564a5e8d58527398aa3.png" />
+<img alt="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" class="admonition-hardware-pic" src="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" />
 <p>A device supporting interrupts has an output pin used for signalling an Interrupt ReQuest. IRQ
 pins are connected to a device named Programmable Interrupt Controller (PIC) which is connected
 to CPU’s INTR pin.</p>
@@ -285,6 +285,20 @@ interrupt handlers are always executed serially.</p>
 from locally connected devices like timers or thermals sensors.</p>
 <p>I/O APIC is used to distributed IRQ from external devices to CPU cores.</p>
 <p>After discussing the hardware, now let’s see how the processor handles an interrupt.</p>
+<ul class="admonition-enabling-disabling-the-interrupts simple">
+<li>at the PIC level<ul>
+<li>programming the PIC</li>
+<li>PIC can be programmed to disable a given IRQ line</li>
+</ul>
+</li>
+<li>at the CPU level</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>cli (CLear Interrupt flag)</li>
+<li>sti (SeT Interrupt flag)</li>
+</ul>
+</div></blockquote>
 </div>
 <div class="section" id="interrupt-descriptor-table">
 <h3>Interrupt Descriptor Table<a class="headerlink" href="#interrupt-descriptor-table" title="Permalink to this headline">¶</a></h3>
@@ -292,10 +306,10 @@ from locally connected devices like timers or thermals sensors.</p>
 identifier with a descriptor for the instructions that service the associated
 event. We will name the identifier as vector number and the associated
 instructions as interrupt/exception handler.</p>
-<p>An, IDT thus is:</p>
+<p>An IDT has the following characteristics:</p>
 <ul class="admonition-interrupt-descriptor-table simple">
-<li>used as a jump table by the CPU when a given vector is triggered</li>
-<li>array of 256 x 8 bytes entries</li>
+<li>it is used as a jump table by the CPU when a given vector is triggered</li>
+<li>it is an array of 256 x 8 bytes entries</li>
 <li>may reside anywhere in physical memory</li>
 <li>processor locates IDT by the means of IDTR</li>
 </ul>
@@ -320,9 +334,10 @@ interrupts while jumping to interupt/exception handler.</li>
 the interupt handlers resides</li>
 <li>offset, offset inside the code segment</li>
 <li>T, represents the type of gate</li>
+<li>DPL, minimum privilege required for using the segments content.</li>
 </ul>
 </div></blockquote>
-<img alt="../_images/ditaa-d4b096c87c0a2753c19ccf7f61784f21018f7027.png" class="admonition-interrupt-descriptor-table-entry-gate" src="../_images/ditaa-d4b096c87c0a2753c19ccf7f61784f21018f7027.png" />
+<img alt="../_images/ditaa-a9d35ab5597ae26c7755a800c13ff62d6b506ebd.png" class="admonition-interrupt-descriptor-table-entry-gate" src="../_images/ditaa-a9d35ab5597ae26c7755a800c13ff62d6b506ebd.png" />
 </div>
 <div class="section" id="interrupt-handler-address">
 <h3>Interrupt handler address<a class="headerlink" href="#interrupt-handler-address" title="Permalink to this headline">¶</a></h3>
@@ -342,7 +357,7 @@ information needed for returning to the interrupted code.</p>
 before saving the address of the interrupted instruction. Certain types
 of exceptions also cause an error code to be pushed on the stack to help
 debug the exception.</p>
-<img alt="../_images/ditaa-73b3df06bf50c4fd20b5884ff7399c89ba7cd132.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-73b3df06bf50c4fd20b5884ff7399c89ba7cd132.png" />
+<img alt="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" />
 </div>
 <div class="section" id="interrupt-handler-execution">
 <h3>Interrupt handler execution<a class="headerlink" href="#interrupt-handler-execution" title="Permalink to this headline">¶</a></h3>
@@ -388,7 +403,7 @@ On the other hand, an exception handler never preempts an interrupt handler.</p>
 <div><ul class="simple">
 <li>runs as a result of an IRQ (not of an exception)</li>
 <li>there is no ‘process’ context associated</li>
-<li>cannot put the current context to sleep<ul>
+<li>can’t trigger a context switch<ul>
 <li>no sleep</li>
 <li>no schedule</li>
 <li>no user memory access</li>
@@ -399,20 +414,21 @@ On the other hand, an exception handler never preempts an interrupt handler.</p>
 <img alt="../_images/ditaa-5a402cd7f81a0ddbe1a435bc3ab7949828f731f0.png" class="admonition-interrupt-handling" src="../_images/ditaa-5a402cd7f81a0ddbe1a435bc3ab7949828f731f0.png" />
 </div>
 </div>
-<div class="section" id="defferable-actions">
-<h2>Defferable actions<a class="headerlink" href="#defferable-actions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="deferrable-actions">
+<h2>Deferrable actions<a class="headerlink" href="#deferrable-actions" title="Permalink to this headline">¶</a></h2>
 <blockquote class="admonition-deferrable-actions-in-linux">
 <div><ul class="simple">
 <li>implemented using deferrable functions</li>
 <li>softIRQ<ul>
 <li>runs in interrupt context</li>
 <li>statically allocated</li>
-<li>same interrupt can run in parallel on multiple cores</li>
+<li>same handler may run in parallel on multiple cores</li>
 </ul>
 </li>
 <li>tasklet<ul>
 <li>runs in interrupt context</li>
 <li>can be dinamically allocated</li>
+<li>same handler runs are serialized</li>
 </ul>
 </li>
 <li>workqueues<ul>
@@ -426,9 +442,9 @@ On the other hand, an exception handler never preempts an interrupt handler.</p>
 <li>init: open_softirq()</li>
 <li>activation: raise_softirq()</li>
 <li>execution: do_softirq()</li>
-<li>runs when:<ul>
-<li>after finishing handling an interrupt</li>
-<li>by the ksoftirqd thread</li>
+<li>it runs<ul>
+<li>after an interrupt handler</li>
+<li>from the ksoftirqd kernel thread</li>
 </ul>
 </li>
 </ul>
@@ -442,6 +458,13 @@ On the other hand, an exception handler never preempts an interrupt handler.</p>
 <li>BLOCK_SOFTIRQ</li>
 <li>TASKLET_SOFTIRQ</li>
 <li>HRTIMER_SOFTIRQ</li>
+</ul>
+</div></blockquote>
+<blockquote class="admonition-ksoftirqd">
+<div><ul class="simple">
+<li>minimum priority kernel thread</li>
+<li>runs self raised softirqs</li>
+<li>trade-off between softirqs and process/kernel threads</li>
 </ul>
 </div></blockquote>
 <blockquote class="admonition-tasklets">

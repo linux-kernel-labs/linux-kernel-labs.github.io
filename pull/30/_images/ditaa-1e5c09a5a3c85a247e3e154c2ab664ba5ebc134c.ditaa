@@ -2,23 +2,23 @@
 
 +   +---------------------+                      +---------------------+
 |   |                     |                      |                     |
-|   |                     | OLD SS:ESP           |                     | OLD SS:ESP from TSS
+|   |                     | OLD SS:ESP           |      OLD SS         | NEW SS:ESP from TSS
 |   +---------------------+                      +---------------------+
 |   |                     |                      |                     |
-|   |     OLD EFLAGS      |                      |     OLD EFLAGS      |
+|   |     OLD EFLAGS      |                      |     OLD ESP         |
 |   +---------------------+                      +---------------------+
 |   |                     |                      |                     |
-|   |     OLD CS          |                      |     OLD CS          |
+|   |     OLD CS          |                      |     OLD EFLAGS      |
 |   +---------------------+                      +---------------------+
 |   |                     |                      |                     |
-|   |     OLD EIP         |                      |     OLD EIP         |
+|   |     OLD EIP         |                      |       OLD CS        |
 |   +---------------------+                      +---------------------+
 |   |                     |                      |                     |
-|   |    error code       | NEW SS:ESP           |    error code       |  NEW SS:ESP
+|   |    (error code)     | NEW SS:ESP           |      OLD EIP        |
 |   +---------------------+                      +---------------------+
 |   |                     |                      |                     |
-|   |                     |                      |                     |
-|   |                     |                      |                     |
+|   |                     |                      |    (error code)     |  NEW SS:ESP
+|   |                     |                      +---------------------+
 |   |                     |                      |                     |
 |   |                     |                      |                     |
 |   |                     |                      |                     |
