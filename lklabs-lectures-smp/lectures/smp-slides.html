@@ -143,11 +143,11 @@ running context in the critical section)</li>
 <h2>Linux kernel concurrency sources</h2>
 
 <ul class="simple">
-<li><strong>uni-processor systems</strong>, <strong>non-preemptive kernel</strong>: the current
+<li><strong>single core systems</strong>, <strong>non-preemptive kernel</strong>: the current
 process can be preempted by interrupts</li>
-<li><strong>uni-processor systems</strong>, <strong>preemptive kernel</strong>: above + the
+<li><strong>single core systems</strong>, <strong>preemptive kernel</strong>: above + the
 current process can be preempted by other processes</li>
-<li><strong>multi-processor systems</strong>: above + the current process can run
+<li><strong>multi-core systems</strong>: above + the current process can run
 in parallel with another process or with an interrupt running on
 another processor</li>
 </ul>
@@ -287,7 +287,7 @@ in the critical section and the number of cores in the system</li>
 
 <h2>Cache Thrashing</h2>
 
-<p>Cash thrashing occurs when multiple cores are trying to read and
+<p>Cache thrashing occurs when multiple cores are trying to read and
 write to the same memory resulting in excessive cache misses.</p>
 <p>Since spin locks continuously access memory during lock contention,
 cache thrashing is a common occurrence due to the way cache
@@ -733,7 +733,8 @@ to make sure that no write or read operation crosses the barrier</li>
 
 <ul class="simple">
 <li><strong>Read-only</strong> lock-less access at the same time with write access</li>
-<li>Write accesses must use locks to avoid races between writers</li>
+<li>Write accesses still requires locks in order to avoid races
+between writers</li>
 <li>Requires unidirectional traversal by readers</li>
 </ul>
 
@@ -749,9 +750,45 @@ to make sure that no write or read operation crosses the barrier</li>
 <li><strong>Removal</strong>: removes references to elements. Some old readers may
 still see the old reference so we can’t free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
-all existing readers finish traversal. New readers won’t affect
-the elimination delay.</li>
+all existing readers finish traversal (quiescent cycle). New
+readers won’t affect the elimination delay.</li>
 </ul>
+
+
+
+
+</article>
+<article class="admonition-rcu-list-delete slide level-2">
+
+<h2>RCU List Delete</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" src="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" />
+
+
+
+
+</article>
+<article class="admonition-rcu-list-apis-cheat-sheet slide level-2">
+
+<h2>RCU list APIs cheat sheet</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* list traversal */</span>
+<span class="n">rcu_read_lock</span><span class="p">();</span>
+<span class="n">list_for_each_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* no sleeping, blocking calls or context switch allowed */</span>
+<span class="p">}</span>
+<span class="n">rcu_read_unlock</span><span class="p">();</span>
+
+
+<span class="cm">/* list element delete  */</span>
+<span class="n">spin_lock</span><span class="p">();</span>
+<span class="n">list_del_rcu</span><span class="p">(</span><span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
+<span class="n">spin_unlock</span><span class="p">();</span>
+<span class="n">synchronize_rcu</span><span class="p">();</span>
+<span class="n">kfree</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+</pre></div>
+</div>
 
 
 

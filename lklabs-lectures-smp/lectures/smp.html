@@ -102,7 +102,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Symmetric Multi-Processing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#synchronization-basics">Synchronization basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#linux-kernel-concurrency-sources">Linux kernel concurrency  sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linux-kernel-concurrency-sources">Linux kernel concurrency sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#atomic-operations">Atomic operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#preemption-interrupts-disabling">Preemption (interrupts) disabling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#spin-locks">Spin Locks</a></li>
@@ -208,10 +208,14 @@
 </div>
 <div class="section" id="synchronization-basics">
 <h2>Synchronization basics<a class="headerlink" href="#synchronization-basics" title="Permalink to this headline">¶</a></h2>
-<p>Because the Linux kernel support SMP (symmetric multi-processing) but
-also because we can have concurrency between process and interrupt
-contexts it uses a set of synchronization mechanisms to achieve
-predictable results, free of race conditions.</p>
+<p>Because the Linux kernel supports symmetric multi-processing (SMP) it
+must use a set of synchronization mechanisms to achieve predictable
+results, free of race conditions.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We will use the terms core, CPU and processor as
+interchangeable for the purpose of this lecture.</p>
+</div>
 <p>Race conditions can occur when:</p>
 <ul class="admonition-race-conditions simple">
 <li>there are at least two execution contexts that run in “parallel”:<ul>
@@ -224,9 +228,9 @@ interrupt preempts a system call)</li>
 <li>the execution contexts perform read-write accesses to shared
 memory</li>
 </ul>
-<p>A race condition can results in different behavior when running the
-same contexts multiple times because the order and duration of the
-contexts in such a situation can affect the end result.</p>
+<p>Race conditions can lead to erroneous results that are hard to debug,
+because they manifest only when the execution contexts are scheduled
+on the CPU cores in a very specific order.</p>
 <p>A classical race condition example is an incorrect implementation for
 a release operation of a resource counter:</p>
 <div class="admonition-race-condition-resource-counter-release highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">release_resource</span><span class="p">()</span>
@@ -239,7 +243,7 @@ a release operation of a resource counter:</p>
 </pre></div>
 </div>
 <p>A resource counter is used to keep a shared resource available until
-the last user release it but the above implementation has a race
+the last user releases it but the above implementation has a race
 condition that can cause freeing the resource twice:</p>
 <p class="admonition-race-condition-scenario">&nbsp;</p>
 <img alt="../_images/ditaa-e6956bef8745cfb04847e6fa5ab88949d79512e1.png" src="../_images/ditaa-e6956bef8745cfb04847e6fa5ab88949d79512e1.png" />
@@ -266,22 +270,25 @@ running context in the critical section)</li>
 </ul>
 </div>
 <div class="section" id="linux-kernel-concurrency-sources">
-<h2>Linux kernel concurrency  sources<a class="headerlink" href="#linux-kernel-concurrency-sources" title="Permalink to this headline">¶</a></h2>
+<h2>Linux kernel concurrency sources<a class="headerlink" href="#linux-kernel-concurrency-sources" title="Permalink to this headline">¶</a></h2>
 <p>There are multiple source of concurrency in the Linux kernel that
-depend on the current configuration of the kernel as well as the type
-of system it runs on:</p>
+depend on the kernel configuration as well as the type of system it
+runs on:</p>
 <ul class="admonition-linux-kernel-concurrency-sources simple">
-<li><strong>uni-processor systems</strong>, <strong>non-preemptive kernel</strong>: the current
+<li><strong>single core systems</strong>, <strong>non-preemptive kernel</strong>: the current
 process can be preempted by interrupts</li>
-<li><strong>uni-processor systems</strong>, <strong>preemptive kernel</strong>: above + the
+<li><strong>single core systems</strong>, <strong>preemptive kernel</strong>: above + the
 current process can be preempted by other processes</li>
-<li><strong>multi-processor systems</strong>: above + the current process can run
+<li><strong>multi-core systems</strong>: above + the current process can run
 in parallel with another process or with an interrupt running on
 another processor</li>
 </ul>
-<p>Note that we only talk about concurrency when running in kernel mode
-and that is why on uni-processor system that run a non-preemptive
-kernel the only source of concurrency are interrupts.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We only discuss kernel concurrency and that is why a
+non-preemptive kernel running on an single core system
+has interrupts as the only source of concurrency.</p>
+</div>
 </div>
 <div class="section" id="atomic-operations">
 <h2>Atomic operations<a class="headerlink" href="#atomic-operations" title="Permalink to this headline">¶</a></h2>
@@ -317,12 +324,12 @@ the resource counter decrement and value checking atomic:</p>
 </pre></div>
 </div>
 <p>One complication with atomic operations is encountered in
-multi-processor systems, where an atomic operation is not longer
+multi-core systems, where an atomic operation is not longer
 atomic at the system level (but still atomic at the core level).</p>
-<p>To understand why we need to decompose the atomic operation in memory
-load and stores. Then we can construct race condition scenarios where
-the load and store operations are interleaved across cores or CPUs,
-like the one below where increment a value from two processor will
+<p>To understand why, we need to decompose the atomic operation in memory
+loads and stores. Then we can construct race condition scenarios where
+the load and store operations are interleaved across CPUs, like in the
+example below where incrementing a value from two processors will
 produce an unexpected result:</p>
 <p class="admonition-atomic-operations-may-not-be-atomic-on-smp-systems">&nbsp;</p>
 <img alt="../_images/ditaa-4a6cc07b903b874d12feadc8b9e806ed2a32ab83.png" src="../_images/ditaa-4a6cc07b903b874d12feadc8b9e806ed2a32ab83.png" />
@@ -344,7 +351,7 @@ expensive and they must be avoided when possible.</p>
 </div>
 <div class="section" id="preemption-interrupts-disabling">
 <h2>Preemption (interrupts) disabling<a class="headerlink" href="#preemption-interrupts-disabling" title="Permalink to this headline">¶</a></h2>
-<p>On uni-processor systems and non preemptive kernels the only source of
+<p>On single core systems and non preemptive kernels the only source of
 concurrency is the preemption of the current thread by an
 interrupt. To prevent concurrency is thus sufficient to disable
 interrupts.</p>
@@ -382,8 +389,8 @@ calls are balanced.</p>
 <div class="section" id="spin-locks">
 <h2>Spin Locks<a class="headerlink" href="#spin-locks" title="Permalink to this headline">¶</a></h2>
 <p>Spin locks are used to serialize access to a critical section. They
-are necessary on multi-processor systems where we can have true
-execution parallelism. This is a typical spin lock implementation:</p>
+are necessary on multi-core systems where we can have true execution
+parallelism. This is a typical spin lock implementation:</p>
 <div class="admonition-spin-lock-implementation-example-x86 highlight-asm"><div class="highlight"><pre><span></span>spin_lock:
     lock bts [my_lock], 0
     jc spin_lock
@@ -408,8 +415,8 @@ enter the critical section lock</li>
 <li>Lock contention grows with the critical section size, time spent
 in the critical section and the number of cores in the system</li>
 </ul>
-<p>Another negative side effect of spin locks is cash thrashing.</p>
-<p class="admonition-cache-thrashing">Cash thrashing occurs when multiple cores are trying to read and
+<p>Another negative side effect of spin locks is cache thrashing.</p>
+<p class="admonition-cache-thrashing">Cache thrashing occurs when multiple cores are trying to read and
 write to the same memory resulting in excessive cache misses.</p>
 <p>Since spin locks continuously access memory during lock contention,
 cache thrashing is a common occurrence due to the way cache
@@ -559,8 +566,8 @@ the x86 architecture.</p>
 <div class="section" id="process-and-interrupt-context-synchronization">
 <h2>Process and Interrupt Context Synchronization<a class="headerlink" href="#process-and-interrupt-context-synchronization" title="Permalink to this headline">¶</a></h2>
 <p>Accessing shared data from both process and interrupt context is a
-relatively common scenario. On uni-processor systems we can do this by
-disabling interrupts, but that won’t work on multi-processor systems,
+relatively common scenario. On single core systems we can do this by
+disabling interrupts, but that won’t work on multi-core systems,
 as we can have the process running on one CPU core and the interrupt
 context running on a different CPU core.</p>
 <p>Using a spin lock, which was designed for multi-processor systems,
@@ -636,9 +643,9 @@ values:</p>
 <h2>Mutexes<a class="headerlink" href="#mutexes" title="Permalink to this headline">¶</a></h2>
 <p>Mutexes are used to protect against race conditions from other CPU
 cores but they can only be used in <strong>process context</strong>. As opposed to
-spin locks, while a CPU core is waiting to enter the critical section
-it will not use the CPU, but instead it will be added to a waiting
-queue until the critical section is vacated.</p>
+spin locks, while a thread is waiting to enter the critical section it
+will not use CPU time, but instead it will be added to a waiting queue
+until the critical section is vacated.</p>
 <p>Since mutexes and spin locks usage intersect, it is useful to compare
 the two:</p>
 <ul class="admonition-mutexes simple">
@@ -824,26 +831,58 @@ to make sure that no write or read operation crosses the barrier</li>
 </div>
 <div class="section" id="read-copy-update-rcu">
 <h2>Read Copy Update (RCU)<a class="headerlink" href="#read-copy-update-rcu" title="Permalink to this headline">¶</a></h2>
-<p>Read Copy Update is a mechanism that allows <strong>read-only</strong> lock-less
-access to data structures at the same time with write access. However,
-write accesses must be protected with a spin lock to make sure only
-one writer runs in the critical section.</p>
+<p>Read Copy Update is a special synchronization mechanism similar with
+read-write but with significant improvements over it (and some
+limitations):</p>
+<ul class="admonition-read-copy-update-rcu simple">
+<li><strong>Read-only</strong> lock-less access at the same time with write access</li>
+<li>Write accesses still requires locks in order to avoid races
+between writers</li>
+<li>Requires unidirectional traversal by readers</li>
+</ul>
+<p>In fact, the read-write locks in the Linux kernel have been deprecated
+and then removed, in favor of RCU.</p>
 <p>Implementing RCU for a new data structure is difficult, but a few
 common data structures (lists, queues, trees) do have RCU APIs that
 can be used.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">RCU only works with unidirectional traversal by readers.</p>
-</div>
-<span class="admonition-read-copy-update-rcu"></span><p>RCU splits removal updates to the data structures in two phases:</p>
+<p>RCU splits removal updates to the data structures in two phases:</p>
 <ul class="admonition-removal-and-reclamation simple">
 <li><strong>Removal</strong>: removes references to elements. Some old readers may
 still see the old reference so we can’t free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
-all existing readers finish traversal. New readers won’t affect
-the elimination delay.</li>
+all existing readers finish traversal (quiescent cycle). New
+readers won’t affect the elimination delay.</li>
 </ul>
-<p>Lets take a look on how RCU removal from a list is done:</p>
+<p>As an example, lets take a look on how deleting an element from a list
+using RCU is done:</p>
+<p class="admonition-rcu-list-delete">&nbsp;</p>
+<img alt="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" src="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" />
+<p>In the first step it can be seen that while readers traverse the list
+all elements are referenced. In step two a writer removes
+element B. Reclamation is postponed since there are still readers that
+holding references to it. In step three a quiescent cycle just expired
+and it can be noticed that there are no more references to
+element B. Other elements still have references from readers that
+started the list traversal after the element was removed. In step 4 we
+finally perform reclamation (free the element).</p>
+<p>Now that we covered how RCU functions at the high level, lets looks at
+the APIs for read</p>
+<div class="admonition-rcu-list-apis-cheat-sheet highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* list traversal */</span>
+<span class="n">rcu_read_lock</span><span class="p">();</span>
+<span class="n">list_for_each_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* no sleeping, blocking calls or context switch allowed */</span>
+<span class="p">}</span>
+<span class="n">rcu_read_unlock</span><span class="p">();</span>
+
+
+<span class="cm">/* list element delete  */</span>
+<span class="n">spin_lock</span><span class="p">();</span>
+<span class="n">list_del_rcu</span><span class="p">(</span><span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
+<span class="n">spin_unlock</span><span class="p">();</span>
+<span class="n">synchronize_rcu</span><span class="p">();</span>
+<span class="n">kfree</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+</pre></div>
+</div>
 </div>
 </div>
 

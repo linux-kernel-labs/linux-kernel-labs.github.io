@@ -39,10 +39,12 @@ Lecture objectives:
 Synchronization basics
 ======================
 
-Because the Linux kernel support SMP (symmetric multi-processing) but
-also because we can have concurrency between process and interrupt
-contexts it uses a set of synchronization mechanisms to achieve
-predictable results, free of race conditions.
+Because the Linux kernel supports symmetric multi-processing (SMP) it
+must use a set of synchronization mechanisms to achieve predictable
+results, free of race conditions.
+
+.. note:: We will use the terms core, CPU and processor as
+          interchangeable for the purpose of this lecture.
 
 Race conditions can occur when:
 
@@ -62,9 +64,9 @@ Race conditions can occur when:
      memory
 
 
-A race condition can results in different behavior when running the
-same contexts multiple times because the order and duration of the
-contexts in such a situation can affect the end result.
+Race conditions can lead to erroneous results that are hard to debug,
+because they manifest only when the execution contexts are scheduled
+on the CPU cores in a very specific order.
 
 A classical race condition example is an incorrect implementation for
 a release operation of a resource counter:
@@ -85,7 +87,7 @@ a release operation of a resource counter:
 
 
 A resource counter is used to keep a shared resource available until
-the last user release it but the above implementation has a race
+the last user releases it but the above implementation has a race
 condition that can cause freeing the resource twice:
 
 
@@ -144,7 +146,6 @@ from multiple parallel contexts.
 In the example above, the minimal critical section is starting with
 the counter decrement and ending with checking the counter's value.
 
-
 Once the critical section has been identified race conditions can be
 avoided:
 
@@ -161,31 +162,31 @@ avoided:
      running context in the critical section)
 
 
-Linux kernel concurrency  sources
-=================================
+Linux kernel concurrency sources
+================================
 
 There are multiple source of concurrency in the Linux kernel that
-depend on the current configuration of the kernel as well as the type
-of system it runs on:
+depend on the kernel configuration as well as the type of system it
+runs on:
 
 
 .. slide:: Linux kernel concurrency sources
    :inline-contents: True
    :level: 2
 
-   * **uni-processor systems**, **non-preemptive kernel**: the current
+   * **single core systems**, **non-preemptive kernel**: the current
      process can be preempted by interrupts
 
-   * **uni-processor systems**, **preemptive kernel**: above + the
+   * **single core systems**, **preemptive kernel**: above + the
      current process can be preempted by other processes
 
-   * **multi-processor systems**: above + the current process can run
+   * **multi-core systems**: above + the current process can run
      in parallel with another process or with an interrupt running on
      another processor
 
-Note that we only talk about concurrency when running in kernel mode
-and that is why on uni-processor system that run a non-preemptive
-kernel the only source of concurrency are interrupts.
+.. note:: We only discuss kernel concurrency and that is why a
+	  non-preemptive kernel running on an single core system
+	  has interrupts as the only source of concurrency.
 
 
 Atomic operations
@@ -231,13 +232,13 @@ the resource counter decrement and value checking atomic:
 
 
 One complication with atomic operations is encountered in
-multi-processor systems, where an atomic operation is not longer
+multi-core systems, where an atomic operation is not longer
 atomic at the system level (but still atomic at the core level).
 
-To understand why we need to decompose the atomic operation in memory
-load and stores. Then we can construct race condition scenarios where
-the load and store operations are interleaved across cores or CPUs,
-like the one below where increment a value from two processor will
+To understand why, we need to decompose the atomic operation in memory
+loads and stores. Then we can construct race condition scenarios where
+the load and store operations are interleaved across CPUs, like in the
+example below where incrementing a value from two processors will
 produce an unexpected result:
 
 .. slide:: Atomic operations may not be atomic on SMP systems
@@ -306,7 +307,7 @@ expensive and they must be avoided when possible.
 Preemption (interrupts) disabling
 =================================
 
-On uni-processor systems and non preemptive kernels the only source of
+On single core systems and non preemptive kernels the only source of
 concurrency is the preemption of the current thread by an
 interrupt. To prevent concurrency is thus sufficient to disable
 interrupts.
@@ -354,8 +355,8 @@ Spin Locks
 ==========
 
 Spin locks are used to serialize access to a critical section. They
-are necessary on multi-processor systems where we can have true
-execution parallelism. This is a typical spin lock implementation:
+are necessary on multi-core systems where we can have true execution
+parallelism. This is a typical spin lock implementation:
 
 
 .. slide:: Spin Lock Implementation Example (x86)
@@ -397,13 +398,13 @@ impact on the system's performance due to "lock contention":
      in the critical section and the number of cores in the system
 
 
-Another negative side effect of spin locks is cash thrashing.
+Another negative side effect of spin locks is cache thrashing.
 
 .. slide:: Cache Thrashing
    :inline-contents: True
    :level: 2
 
-   Cash thrashing occurs when multiple cores are trying to read and
+   Cache thrashing occurs when multiple cores are trying to read and
    write to the same memory resulting in excessive cache misses.
 
    Since spin locks continuously access memory during lock contention,
@@ -700,8 +701,8 @@ Process and Interrupt Context Synchronization
 =============================================
 
 Accessing shared data from both process and interrupt context is a
-relatively common scenario. On uni-processor systems we can do this by
-disabling interrupts, but that won't work on multi-processor systems,
+relatively common scenario. On single core systems we can do this by
+disabling interrupts, but that won't work on multi-core systems,
 as we can have the process running on one CPU core and the interrupt
 context running on a different CPU core.
 
@@ -815,9 +816,9 @@ Mutexes
 
 Mutexes are used to protect against race conditions from other CPU
 cores but they can only be used in **process context**. As opposed to
-spin locks, while a CPU core is waiting to enter the critical section
-it will not use the CPU, but instead it will be added to a waiting
-queue until the critical section is vacated.
+spin locks, while a thread is waiting to enter the critical section it
+will not use CPU time, but instead it will be added to a waiting queue
+until the critical section is vacated.
 
 Since mutexes and spin locks usage intersect, it is useful to compare
 the two:
@@ -997,7 +998,7 @@ Memory Ordering and Barriers
 Modern processors and compilers employ out-of-order execution to
 improve performance. For example, processors can execute "future"
 instructions while waiting for current instruction data to be fetched
-from memory. 
+from memory.
 
 Here is an example of out of order compiler generated code:
 
@@ -1048,27 +1049,28 @@ For this purpose we can use barriers to order memory operations:
 Read Copy Update (RCU)
 ======================
 
-Read Copy Update is a mechanism that allows **read-only** lock-less
-access to data structures at the same time with write access. However,
-write accesses must be protected with a spin lock to make sure only
-one writer runs in the critical section.
+Read Copy Update is a special synchronization mechanism similar with
+read-write but with significant improvements over it (and some
+limitations):
+
+.. slide:: Read Copy Update (RCU)
+   :level: 2
+   :inline-contents: True
+
+   * **Read-only** lock-less access at the same time with write access
+
+   * Write accesses still requires locks in order to avoid races
+     between writers
+
+   * Requires unidirectional traversal by readers
+
+
+In fact, the read-write locks in the Linux kernel have been deprecated
+and then removed, in favor of RCU.
 
 Implementing RCU for a new data structure is difficult, but a few
 common data structures (lists, queues, trees) do have RCU APIs that
 can be used.
-
-.. note:: RCU only works with unidirectional traversal by readers.
-
-
-.. slide:: Read Copy Update (RCU)
-   :level: 2
-
-   * **Read-only** lock-less access at the same time with write access
-
-   * Write accesses must use locks to avoid races between writers
-
-   * Requires unidirectional traversal by readers
-
 
 RCU splits removal updates to the data structures in two phases:
 
@@ -1080,9 +1082,75 @@ RCU splits removal updates to the data structures in two phases:
      still see the old reference so we can't free the element.
 
    * **Elimination**: free the element. This action is postponed until
-     all existing readers finish traversal. New readers won't affect
-     the elimination delay.
+     all existing readers finish traversal (quiescent cycle). New
+     readers won't affect the elimination delay.
 
 
-Lets take a look on how RCU removal from a list is done:
+As an example, lets take a look on how deleting an element from a list
+using RCU is done:
+
+.. slide:: RCU List Delete
+   :inline-contents: True
+   :level: 2
+
+   |_|
+
+   .. ditaa::
+
+         (1) List Traversal                          (2) Removal
+                                                    +-----------+
+      +-----+     +-----+     +-----+      +-----+  |  +-----+  |  +-----+
+      |     |     |     |     |     |      |     |  |  |     |  |  |     |
+      |  A  |---->|  B  |---->|  C  |      |  A  |--+  |  B  |  +->|  C  |
+      |     |     |     |     |     |      |     |     |     |     |     |
+      +-----+     +-----+     +-----+      +-----+     +-----+     +-----+
+         ^           ^           ^            ^           ^           ^
+         |           |           |            |           |           |
+
+          (3) Quiescent cycle over                 (2) Reclamation
+               +-----------+
+      +-----+  |  +-----+  |  +-----+      +-----+                 +-----+
+      |     |  |  |     |  |  |     |      |     |                 |     |
+      |  A  |--+  |  B  |  +->|  C  |      |  A  |---------------->|  C  |
+      |     |     |     |     |     |      |     |                 |     |
+      +-----+     +-----+     +-----+      +-----+                 +-----+
+         ^                       ^            ^                       ^
+         |                       |            |                       |
+
+
+In the first step it can be seen that while readers traverse the list
+all elements are referenced. In step two a writer removes
+element B. Reclamation is postponed since there are still readers that
+holding references to it. In step three a quiescent cycle just expired
+and it can be noticed that there are no more references to
+element B. Other elements still have references from readers that
+started the list traversal after the element was removed. In step 4 we
+finally perform reclamation (free the element).
+
+
+Now that we covered how RCU functions at the high level, lets looks at
+the APIs for read
+
+
+.. slide:: RCU list APIs cheat sheet
+   :inline-contents: True
+   :level: 2
+
+   .. code-block:: c
+
+      /* list traversal */
+      rcu_read_lock();
+      list_for_each_rcu(i, head) {
+        /* no sleeping, blocking calls or context switch allowed */
+      }
+      rcu_read_unlock();
+
+
+      /* list element delete  */
+      spin_lock();
+      list_del_rcu(&node->list);
+      spin_unlock();
+      synchronize_rcu();
+      kfree(node);
+
 
