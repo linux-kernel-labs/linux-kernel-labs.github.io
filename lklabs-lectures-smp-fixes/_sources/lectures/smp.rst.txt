@@ -46,7 +46,8 @@ results, free of race conditions.
 .. note:: We will use the terms core, CPU and processor as
           interchangeable for the purpose of this lecture.
 
-Race conditions can occur when:
+Race conditions can occur when the following two conditions happen
+simultaneously:
 
 .. slide:: Race conditions
    :inline-contents: True
@@ -153,13 +154,16 @@ avoided by using one of the following approaches:
    :inline-contents: True
    :level: 2
 
-   * make the critical section **atomic** (so that preemption can not
-     occur in the critical section)
+   * make the critical section **atomic** (e.g. use atomic
+     instructions)
 
-   * **disable preemption** while the critical section is executing
+   * **disable preemption** during the critical section (e.g. disable
+     interrupts, bottom-half handlers, or thread preemption)
 
-   * **serialize the access** to the critical section (allow only one
-     running context in the critical section)
+   * **serialize the access** to the critical section (e.g. use spin
+     locks or mutexes to allow only one context or thread in the
+     critical section)
+
 
 
 Linux kernel concurrency sources
@@ -301,8 +305,14 @@ other exclusive operations. So, to implement atomic operations the
 programmer must retry the operation (both LDREX and STREX) until the
 exclusive monitor signals a success.
 
-As seen from the implementation details, atomic operations are
-expensive and they must be avoided when possible.
+Although they are often interpreted as "light" or "efficient"
+synchronization mechanisms (because they "don't require spinning or
+context switches", or because they "are implemented in hardware so
+they must be more efficient", or because they "are just instructions
+so they must have similar efficiency as other instructions"), as seen
+from the implementation details, atomic operations are actually
+expensive.
+
 
 Disabling preemption (interrupts)
 =================================
@@ -689,8 +699,8 @@ next lock in the list, if any.
 While a read spin optimized spin lock reduces most of the cache
 invalidation operations, the lock owner can still generate cache
 invalidate operations due to writes to data structures close to the
-lock. This in turn generates memory traffic on subsequent reads on the
-spinning cores.
+lock and thus part of the same cache line. This in turn generates
+memory traffic on subsequent reads on the spinning cores.
 
 Hence, queued spin locks scale much better for large number of cores
 as is the case for NUMA systems. And since they have similar fairness
@@ -941,9 +951,9 @@ operation:
       ...
 
 
-.. note:: We can use up to 7 of the low bits of the owner field can be
-          used for various flags since task struct is cached
-          aligned.
+.. note:: Because :c:type:`struct task_struct` is cached aligned the 7
+          lower bits of the owner field can be used for various flags,
+          such as :c:type:`MUTEX_FLAG_WAITERS`.
 
 
 Otherwise we take the slow path where we pick up first waiter from the
@@ -1148,7 +1158,7 @@ element to the list:
 
       /* list traversal */
       rcu_read_lock();
-      list_for_each_rcu(i, head) {
+      list_for_each_entry_rcu(i, head) {
         /* no sleeping, blocking calls or context switch allowed */
       }
       rcu_read_unlock();

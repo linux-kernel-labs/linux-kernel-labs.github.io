@@ -216,7 +216,8 @@ results, free of race conditions.</p>
 <p class="last">We will use the terms core, CPU and processor as
 interchangeable for the purpose of this lecture.</p>
 </div>
-<p>Race conditions can occur when:</p>
+<p>Race conditions can occur when the following two conditions happen
+simultaneously:</p>
 <ul class="admonition-race-conditions simple">
 <li>there are at least two execution contexts that run in “parallel”:<ul>
 <li>truly run in parallel (e.g. two system calls running on
@@ -262,11 +263,13 @@ the counter decrement and ending with checking the counter’s value.</p>
 <p>Once the critical section has been identified race conditions can be
 avoided by using one of the following approaches:</p>
 <ul class="admonition-avoiding-race-conditions simple">
-<li>make the critical section <strong>atomic</strong> (so that preemption can not
-occur in the critical section)</li>
-<li><strong>disable preemption</strong> while the critical section is executing</li>
-<li><strong>serialize the access</strong> to the critical section (allow only one
-running context in the critical section)</li>
+<li>make the critical section <strong>atomic</strong> (e.g. use atomic
+instructions)</li>
+<li><strong>disable preemption</strong> during the critical section (e.g. disable
+interrupts, bottom-half handlers, or thread preemption)</li>
+<li><strong>serialize the access</strong> to the critical section (e.g. use spin
+locks or mutexes to allow only one context or thread in the
+critical section)</li>
 </ul>
 </div>
 <div class="section" id="linux-kernel-concurrency-sources">
@@ -346,8 +349,13 @@ new value but only succeeds if the exclusive monitor has not detected
 other exclusive operations. So, to implement atomic operations the
 programmer must retry the operation (both LDREX and STREX) until the
 exclusive monitor signals a success.</p>
-<p>As seen from the implementation details, atomic operations are
-expensive and they must be avoided when possible.</p>
+<p>Although they are often interpreted as “light” or “efficient”
+synchronization mechanisms (because they “don’t require spinning or
+context switches”, or because they “are implemented in hardware so
+they must be more efficient”, or because they “are just instructions
+so they must have similar efficiency as other instructions”), as seen
+from the implementation details, atomic operations are actually
+expensive.</p>
 </div>
 <div class="section" id="disabling-preemption-interrupts">
 <h2>Disabling preemption (interrupts)<a class="headerlink" href="#disabling-preemption-interrupts" title="Permalink to this headline">¶</a></h2>
@@ -556,8 +564,8 @@ next lock in the list, if any.</p>
 <p>While a read spin optimized spin lock reduces most of the cache
 invalidation operations, the lock owner can still generate cache
 invalidate operations due to writes to data structures close to the
-lock. This in turn generates memory traffic on subsequent reads on the
-spinning cores.</p>
+lock and thus part of the same cache line. This in turn generates
+memory traffic on subsequent reads on the spinning cores.</p>
 <p>Hence, queued spin locks scale much better for large number of cores
 as is the case for NUMA systems. And since they have similar fairness
 properties as the ticket lock it is the preferred implementation on
@@ -739,9 +747,9 @@ operation:</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">We can use up to 7 of the low bits of the owner field can be
-used for various flags since task struct is cached
-aligned.</p>
+<p class="last">Because <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is cached aligned the 7
+lower bits of the owner field can be used for various flags,
+such as <code class="xref c c-type docutils literal"><span class="pre">MUTEX_FLAG_WAITERS</span></code>.</p>
 </div>
 <p>Otherwise we take the slow path where we pick up first waiter from the
 list and wake it up:</p>
@@ -870,7 +878,7 @@ the APIs for traversing the list as well as adding and removing an
 element to the list:</p>
 <div class="admonition-rcu-list-apis-cheat-sheet highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* list traversal */</span>
 <span class="n">rcu_read_lock</span><span class="p">();</span>
-<span class="n">list_for_each_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">list_for_each_entry_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
   <span class="cm">/* no sleeping, blocking calls or context switch allowed */</span>
 <span class="p">}</span>
 <span class="n">rcu_read_unlock</span><span class="p">();</span>
