@@ -8,7 +8,13 @@
    ^           ^           ^            ^           ^           ^
    |           |           |            |           |           |
 
-    (3) Quiescent cycle over                 (2) Reclamation
+
+
+
+
+
+
+   (3) Quiescent cycle over                 (4) Reclamation
          +-----------+
 +-----+  |  +-----+  |  +-----+      +-----+                 +-----+
 |     |  |  |     |  |  |     |      |     |                 |     |

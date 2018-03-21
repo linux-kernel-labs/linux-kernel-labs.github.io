@@ -19,4 +19,5 @@ READ data                      READ lock                 READ lock
     +------------------------------+-------------------------+
                                    |
                                    v
-                               cache miss
+
+                              cache miss

@@ -127,11 +127,13 @@ memory</li>
 <h2>Avoiding race conditions</h2>
 
 <ul class="simple">
-<li>make the critical section <strong>atomic</strong> (so that preemption can not
-occur in the critical section)</li>
-<li><strong>disable preemption</strong> while the critical section is executing</li>
-<li><strong>serialize the access</strong> to the critical section (allow only one
-running context in the critical section)</li>
+<li>make the critical section <strong>atomic</strong> (e.g. use atomic
+instructions)</li>
+<li><strong>disable preemption</strong> during the critical section (e.g. disable
+interrupts, bottom-half handlers, or thread preemption)</li>
+<li><strong>serialize the access</strong> to the critical section (e.g. use spin
+locks or mutexes to allow only one context or thread in the
+critical section)</li>
 </ul>
 
 
@@ -383,7 +385,7 @@ flushed to memory</li>
 <h2>Cache thrashing due to spin lock contention</h2>
 
 <p>&nbsp;</p>
-<img alt="../_images/ditaa-c3d7c1b5ba71d3a2fa7a7befe9439e9e2255aeea.png" src="../_images/ditaa-c3d7c1b5ba71d3a2fa7a7befe9439e9e2255aeea.png" />
+<img alt="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" src="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" />
 
 
 
@@ -751,7 +753,7 @@ between writers</li>
 still see the old reference so we can’t free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
 all existing readers finish traversal (quiescent cycle). New
-readers won’t affect the elimination delay.</li>
+readers won’t affect the quiescent cycle.</li>
 </ul>
 
 
@@ -763,7 +765,7 @@ readers won’t affect the elimination delay.</li>
 <h2>RCU List Delete</h2>
 
 <p>&nbsp;</p>
-<img alt="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" src="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" />
+<img alt="../_images/ditaa-d4920f2ac4d57d722b14d5a539d15f5aea4db17d.png" src="../_images/ditaa-d4920f2ac4d57d722b14d5a539d15f5aea4db17d.png" />
 
 
 
@@ -775,18 +777,23 @@ readers won’t affect the elimination delay.</li>
 
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* list traversal */</span>
 <span class="n">rcu_read_lock</span><span class="p">();</span>
-<span class="n">list_for_each_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">list_for_each_entry_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
   <span class="cm">/* no sleeping, blocking calls or context switch allowed */</span>
 <span class="p">}</span>
 <span class="n">rcu_read_unlock</span><span class="p">();</span>
 
 
 <span class="cm">/* list element delete  */</span>
-<span class="n">spin_lock</span><span class="p">();</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 <span class="n">list_del_rcu</span><span class="p">(</span><span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
-<span class="n">spin_unlock</span><span class="p">();</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 <span class="n">synchronize_rcu</span><span class="p">();</span>
 <span class="n">kfree</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+
+<span class="cm">/* list element add  */</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="n">list_add_rcu</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 </pre></div>
 </div>
 

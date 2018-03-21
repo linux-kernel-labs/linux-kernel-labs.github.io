@@ -104,7 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#synchronization-basics">Synchronization basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linux-kernel-concurrency-sources">Linux kernel concurrency sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#atomic-operations">Atomic operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#preemption-interrupts-disabling">Preemption (interrupts) disabling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#disabling-preemption-interrupts">Disabling preemption (interrupts)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#spin-locks">Spin Locks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cache-coherency-in-multi-processor-systems">Cache coherency in multi-processor systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optimized-spin-locks">Optimized spin locks</a></li>
@@ -216,7 +216,8 @@ results, free of race conditions.</p>
 <p class="last">We will use the terms core, CPU and processor as
 interchangeable for the purpose of this lecture.</p>
 </div>
-<p>Race conditions can occur when:</p>
+<p>Race conditions can occur when the following two conditions happen
+simultaneously:</p>
 <ul class="admonition-race-conditions simple">
 <li>there are at least two execution contexts that run in “parallel”:<ul>
 <li>truly run in parallel (e.g. two system calls running on
@@ -260,13 +261,15 @@ from multiple parallel contexts.</p>
 <p>In the example above, the minimal critical section is starting with
 the counter decrement and ending with checking the counter’s value.</p>
 <p>Once the critical section has been identified race conditions can be
-avoided:</p>
+avoided by using one of the following approaches:</p>
 <ul class="admonition-avoiding-race-conditions simple">
-<li>make the critical section <strong>atomic</strong> (so that preemption can not
-occur in the critical section)</li>
-<li><strong>disable preemption</strong> while the critical section is executing</li>
-<li><strong>serialize the access</strong> to the critical section (allow only one
-running context in the critical section)</li>
+<li>make the critical section <strong>atomic</strong> (e.g. use atomic
+instructions)</li>
+<li><strong>disable preemption</strong> during the critical section (e.g. disable
+interrupts, bottom-half handlers, or thread preemption)</li>
+<li><strong>serialize the access</strong> to the critical section (e.g. use spin
+locks or mutexes to allow only one context or thread in the
+critical section)</li>
 </ul>
 </div>
 <div class="section" id="linux-kernel-concurrency-sources">
@@ -346,11 +349,16 @@ new value but only succeeds if the exclusive monitor has not detected
 other exclusive operations. So, to implement atomic operations the
 programmer must retry the operation (both LDREX and STREX) until the
 exclusive monitor signals a success.</p>
-<p>As seen from the implementation details, atomic operations are
-expensive and they must be avoided when possible.</p>
+<p>Although they are often interpreted as “light” or “efficient”
+synchronization mechanisms (because they “don’t require spinning or
+context switches”, or because they “are implemented in hardware so
+they must be more efficient”, or because they “are just instructions
+so they must have similar efficiency as other instructions”), as seen
+from the implementation details, atomic operations are actually
+expensive.</p>
 </div>
-<div class="section" id="preemption-interrupts-disabling">
-<h2>Preemption (interrupts) disabling<a class="headerlink" href="#preemption-interrupts-disabling" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="disabling-preemption-interrupts">
+<h2>Disabling preemption (interrupts)<a class="headerlink" href="#disabling-preemption-interrupts" title="Permalink to this headline">¶</a></h2>
 <p>On single core systems and non preemptive kernels the only source of
 concurrency is the preemption of the current thread by an
 interrupt. To prevent concurrency is thus sufficient to disable
@@ -493,7 +501,7 @@ where the first has acquired the spin lock and it is running the
 critical section while the other two are spinning waiting to enter the
 critical section:</p>
 <p class="admonition-cache-thrashing-due-to-spin-lock-contention">&nbsp;</p>
-<img alt="../_images/ditaa-c3d7c1b5ba71d3a2fa7a7befe9439e9e2255aeea.png" src="../_images/ditaa-c3d7c1b5ba71d3a2fa7a7befe9439e9e2255aeea.png" />
+<img alt="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" src="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" />
 <p>As it can be seen from the figure above due to the writes issued by
 the cores spinning on the lock we see frequent cache line invalidate
 operations which means that basically the two waiting cores will flush
@@ -556,8 +564,8 @@ next lock in the list, if any.</p>
 <p>While a read spin optimized spin lock reduces most of the cache
 invalidation operations, the lock owner can still generate cache
 invalidate operations due to writes to data structures close to the
-lock. This in turn generates memory traffic on subsequent reads on the
-spinning cores.</p>
+lock and thus part of the same cache line. This in turn generates
+memory traffic on subsequent reads on the spinning cores.</p>
 <p>Hence, queued spin locks scale much better for large number of cores
 as is the case for NUMA systems. And since they have similar fairness
 properties as the ticket lock it is the preferred implementation on
@@ -739,9 +747,9 @@ operation:</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">We can use up to 7 of the low bits of the owner field can be
-used for various flags since task struct is cached
-aligned.</p>
+<p class="last">Because <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is cached aligned the 7
+lower bits of the owner field can be used for various flags,
+such as <code class="xref c c-type docutils literal"><span class="pre">MUTEX_FLAG_WAITERS</span></code>.</p>
 </div>
 <p>Otherwise we take the slow path where we pick up first waiter from the
 list and wake it up:</p>
@@ -809,14 +817,14 @@ from memory.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">When executing instructions out of order the processor makes
-sure that data dependency is kept, e.g. it won’t execute
+sure that data dependency is observed, i.e. it won’t execute
 instructions whose input depend on the output of a previous
 instruction that has not been executed.</p>
 </div>
 <p>In most cases out of order execution is not an issue. However, in
 certain situations (e.g. communicating via shared memory between
-processors or processors and hardware) we must issue instructions
-before others even without data dependency between them.</p>
+processors or between processors and hardware) we must issue some
+instructions before others even without data dependency between them.</p>
 <p>For this purpose we can use barriers to order memory operations:</p>
 <ul class="admonition-barriers simple">
 <li>A read barrier (<code class="xref c c-func docutils literal"><span class="pre">rmb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_rmb()</span></code>) is used to
@@ -832,7 +840,7 @@ to make sure that no write or read operation crosses the barrier</li>
 <div class="section" id="read-copy-update-rcu">
 <h2>Read Copy Update (RCU)<a class="headerlink" href="#read-copy-update-rcu" title="Permalink to this headline">¶</a></h2>
 <p>Read Copy Update is a special synchronization mechanism similar with
-read-write but with significant improvements over it (and some
+read-write locks but with significant improvements over it (and some
 limitations):</p>
 <ul class="admonition-read-copy-update-rcu simple">
 <li><strong>Read-only</strong> lock-less access at the same time with write access</li>
@@ -851,36 +859,42 @@ can be used.</p>
 still see the old reference so we can’t free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
 all existing readers finish traversal (quiescent cycle). New
-readers won’t affect the elimination delay.</li>
+readers won’t affect the quiescent cycle.</li>
 </ul>
-<p>As an example, lets take a look on how deleting an element from a list
-using RCU is done:</p>
+<p>As an example, lets take a look on how to delete an element from a
+list using RCU:</p>
 <p class="admonition-rcu-list-delete">&nbsp;</p>
-<img alt="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" src="../_images/ditaa-edf4ac1b184d9f8a9c32e7cb5a762766f2ebd2cf.png" />
+<img alt="../_images/ditaa-d4920f2ac4d57d722b14d5a539d15f5aea4db17d.png" src="../_images/ditaa-d4920f2ac4d57d722b14d5a539d15f5aea4db17d.png" />
 <p>In the first step it can be seen that while readers traverse the list
 all elements are referenced. In step two a writer removes
 element B. Reclamation is postponed since there are still readers that
-holding references to it. In step three a quiescent cycle just expired
+hold references to it. In step three a quiescent cycle just expired
 and it can be noticed that there are no more references to
 element B. Other elements still have references from readers that
 started the list traversal after the element was removed. In step 4 we
 finally perform reclamation (free the element).</p>
 <p>Now that we covered how RCU functions at the high level, lets looks at
-the APIs for read</p>
+the APIs for traversing the list as well as adding and removing an
+element to the list:</p>
 <div class="admonition-rcu-list-apis-cheat-sheet highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* list traversal */</span>
 <span class="n">rcu_read_lock</span><span class="p">();</span>
-<span class="n">list_for_each_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">list_for_each_entry_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
   <span class="cm">/* no sleeping, blocking calls or context switch allowed */</span>
 <span class="p">}</span>
 <span class="n">rcu_read_unlock</span><span class="p">();</span>
 
 
 <span class="cm">/* list element delete  */</span>
-<span class="n">spin_lock</span><span class="p">();</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 <span class="n">list_del_rcu</span><span class="p">(</span><span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
-<span class="n">spin_unlock</span><span class="p">();</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 <span class="n">synchronize_rcu</span><span class="p">();</span>
 <span class="n">kfree</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+
+<span class="cm">/* list element add  */</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="n">list_add_rcu</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
