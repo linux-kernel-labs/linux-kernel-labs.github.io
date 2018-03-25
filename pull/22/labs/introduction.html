@@ -98,6 +98,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
@@ -265,10 +267,15 @@ Drivers</a></li>
 <p><a class="reference external" href="http://cscope.sourceforge.net/">Cscope</a> is a tool for
 efficient navigation of C sources. To use it, a cscope database must
 be generated from the existing sources. In a Linux tree, the command
-<strong class="command">make ARCH = x86 cscope</strong> is sufficient. Specification of the
+<strong class="command">make ARCH=x86 cscope</strong> is sufficient. Specification of the
 architecture through the ARCH variable is optional but recommended;
 otherwise, some architecture dependent functions will appear multiple
 times in the database.</p>
+<p>You can build the cscope database with the command <strong class="command">make
+ARCH=x86 COMPILED_SOURCE=1 cscope</strong>. This way, the cscope database will
+only contain symbols that have already been used in the compile
+process before, thus resulting in better performance when searching
+for symbols.</p>
 <p>Cscope can also be used as stand-alone, but it is more useful when
 combined with an editor. To use cscope with <strong class="command">vim</strong>, it is necessary to
 install both packages and add the following lines to the file

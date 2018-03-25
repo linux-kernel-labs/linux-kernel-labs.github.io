@@ -97,6 +97,8 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/introduction.html">Introduction</a></li>
@@ -261,7 +263,43 @@ Computers, University POLITEHNICA of Bucharest.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#virtual-dynamic-shared-object-vdso">Virtual Dynamic Shared Object (VDSO)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#accessing-userspace-from-system-calls">Accessing userspace from system calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#accessing-user-space-from-system-calls">Accessing user space from system calls</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#what-is-an-interrupt">What is an interrupt?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#hardware">Hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#advanced-programmable-interrupt-controller">Advanced Programmable Interrupt Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-handler-address">Interrupt handler address</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-handler-execution">Interrupt handler execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#returning-from-an-interrupt">Returning from an interrupt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions">Deferrable actions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#synchronization-basics">Synchronization basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#linux-kernel-concurrency-sources">Linux kernel concurrency sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#atomic-operations">Atomic operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#disabling-preemption-interrupts">Disabling preemption (interrupts)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#spin-locks">Spin Locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#cache-coherency-in-multi-processor-systems">Cache coherency in multi-processor systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#optimized-spin-locks">Optimized spin locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#process-and-interrupt-context-synchronization">Process and Interrupt Context Synchronization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#mutexes">Mutexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#per-cpu-data">Per CPU data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#memory-ordering-and-barriers">Memory Ordering and Barriers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#read-copy-update-rcu">Read Copy Update (RCU)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="labs/vm.html">Virtual Machine Setup</a><ul>
@@ -306,7 +344,7 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l1"><a class="reference internal" href="labs/kernel_modules.html">Kernel modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#an-example-of-kernel-module">An example of kernel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#an-example-of-a-kernel-module">An example of a kernel module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#compiling-kernel-modules">Compiling kernel modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#debugging">Debugging</a><ul>
@@ -340,7 +378,6 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#accessing-memory">Accessing memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#contexts-of-execution">Contexts of execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#locking">Locking</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#preemptivity">Preemptivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#linux-kernel-api">Linux Kernel API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#convention-indicating-errors">Convention indicating errors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#strings-of-characters">Strings of characters</a></li>

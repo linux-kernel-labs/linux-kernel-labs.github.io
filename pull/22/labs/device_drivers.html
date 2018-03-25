@@ -98,6 +98,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
@@ -857,12 +859,12 @@ initializations are done by the sequence:</p>
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
-<p>To solve exercises need to perform these steps:</p>
+<p>To solve exercises, you need to perform these steps:</p>
 <blockquote>
 <div><ul class="simple">
 <li>prepare skeletons from templates</li>
 <li>build modules</li>
-<li>copy modules to VM</li>
+<li>copy modules to the VM</li>
 <li>start the VM and test the module in the VM.</li>
 </ul>
 </div></blockquote>
@@ -871,25 +873,25 @@ initializations are done by the sequence:</p>
 <div class="header docutils container">
 <strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
-<code class="docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks start by generating
+<code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
 the skeleton code:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>shell
-
-tools/labs $ make clean
-tools/labs $ LABS=&lt;lab name&gt;/&lt;task name&gt; make skels
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
 </pre></div>
 </div>
-<p>Where task name is defined for each task. Once the skelton drivers are
-generated build the source:</p>
+<p>where task name is defined for each task. Once the skeleton drivers are
+generated, build the source:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
-<p>Then copy the modules and start the VM:</p>
+<p>Then, copy the modules and start the VM:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
 tools/labs $ make boot
 </pre></div>
 </div>
 <p>The modules are placed in /home/root/skels/device_drivers/&lt;task_name&gt;.</p>
+<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
+For additional details about connecting to the VM via the network, please check <a class="reference internal" href="vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the VM</span></a>.</p>
 <p>Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
 </div>
 </div>

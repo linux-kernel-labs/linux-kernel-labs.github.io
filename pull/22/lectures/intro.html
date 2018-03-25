@@ -137,6 +137,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
@@ -224,7 +226,7 @@
 <h2>Basic operating systems terms and concepts<a class="headerlink" href="#basic-operating-systems-terms-and-concepts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="user-vs-kernel">
 <h3>User vs Kernel<a class="headerlink" href="#user-vs-kernel" title="Permalink to this headline">¶</a></h3>
-<span class="admonition-user-vs-kernel"></span><p>Kernel and user are two terms that are often use in operating
+<span class="admonition-user-vs-kernel"></span><p>Kernel and user are two terms that are often used in operating
 systems. Their definition is pretty straight forward: The kernel is
 the part of the operating system that runs with higher privileges
 while user (space) usually means by applications running with low
@@ -334,7 +336,7 @@ goal:</p>
 <li>Strict interfaces but with low performance overhead: macros,
 inline functions, function pointers</li>
 </ul>
-<p>There are a class of operating systems that (used to) claim to be
+<p>There is a class of operating systems that (used to) claim to be
 hybrid kernels, in between monolithic and micro-kernels (e.g. Windows,
 Mac OS X). However, since all of the typical monolithic services run
 in kernel-mode in these operating systems, there is little merit to
