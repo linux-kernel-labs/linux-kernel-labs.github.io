@@ -137,10 +137,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#store-ascii-keys-to-buffer">3. Store ASCII keys to buffer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#reading-the-data-register">Reading the data register</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interpreting-the-scancode">Interpreting the scancode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#store-characters-to-the-buffer">Store characters to the buffer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reset-the-buffer">Reset the buffer</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#store-characters-to-the-buffer">4. Store characters to the buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reset-the-buffer">5. Reset the buffer</a></li>
 </ul>
 </li>
 </ul>
@@ -353,19 +353,19 @@ are differentiated by the number of bits (8, 16, or 32 bits), there
 are different port access functions depending on their size. The
 following port access functions are defined in asm/io.h:</p>
 <ul class="simple">
-<li><em>unsigned inb(int port)</em>, read one byte (8 bits) from port</li>
-<li><em>void outb(unsigned char byte, int port)</em>, write one byte (8 bits) to port</li>
-<li><em>unsigned inw(int port)</em>, read two bytes (16-bit) ports</li>
-<li><em>void outw(unsigned short word, int port)</em> writes two bytes (16-bits) to port</li>
+<li><em>unsigned inb(int port)</em>, reads one byte (8 bits) from port</li>
+<li><em>void outb(unsigned char byte, int port)</em>, writes one byte (8 bits) to port</li>
+<li><em>unsigned inw(int port)</em>, reads two bytes (16-bit) ports</li>
+<li><em>void outw(unsigned short word, int port)</em>, writes two bytes (16-bits) to port</li>
 <li><em>unsigned inl (int port)</em>, reads four bytes (32-bits) from port</li>
-<li><em>void outl(unsigned long word, int port)</em> write four bytes (32-bits) to port</li>
+<li><em>void outl(unsigned long word, int port)</em>, writes four bytes (32-bits) to port</li>
 </ul>
 <p>The port argument specifies the address of the port where the reads or
 writes are done, and its type is platform dependent (may be unsigned
 long or unsigned short).</p>
 <p>Some devices may have problems when the processor is trying to
 transfer data too fast to and from the device. To avoid this issue we
-may need to insert a delay after an I/O operation and there functions
+may need to insert a delay after an I/O operation and there are functions
 you can use that introduce this delay. Their names are similar to
 those described above, with the exception that it ends in _p: inb_p,
 outb_p, etc.</p>
@@ -530,7 +530,7 @@ following operations will be executed:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">free_irq</span> <span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>During the initialization functiom (c:func:<cite>init_module</cite>), or in the
+<p>During the initialization function (c:func:<cite>init_module</cite>), or in the
 function that opens the device, interrupts must be activated for the
 device. This operation is dependent on the device, but most often
 involves setting a bit from the control register.</p>
@@ -645,7 +645,7 @@ you can use <code class="xref c c-func docutils literal"><span class="pre">spin_
 (not recommended because disabling a particular interrupt is slower,
 we can not disable shared interrupts) we can do this with
 <code class="xref c c-func docutils literal"><span class="pre">disable_irq()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">disable_irq_nosync()</span></code>, and
-<code class="xref c c-func docutils literal"><span class="pre">enable_irq()</span></code>. Using these functions disabled the interrupts on
+<code class="xref c c-func docutils literal"><span class="pre">enable_irq()</span></code>. Using these functions will disable the interrupts on
 all processors. Calls can be nested: if disable_irq is called twice,
 it will require as many calls enable_irq to enable it. The difference
 between disable_irq and disable_irq_nosync is that the first one will
@@ -709,7 +709,7 @@ as follows:</p>
 </pre></div>
 </div>
 <p>The <em>my_access function</em> above runs in process context. To
-synchronize access to the share data, we disable the interrupts and
+synchronize access to the shared data, we disable the interrupts and
 use the spinlock <em>lock</em>, i.e. the <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irqrestore()</span></code> functions.</p>
 <p>In the interrupt handling routine, we use the <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code> and
@@ -968,8 +968,7 @@ and our driver.</p>
 <p class="last">More details about the format of the <em>/proc/interrupts</em> can
 be found in the <a class="reference internal" href="#interrupt-statistics">Interrupt statistics</a> section.</p>
 </div>
-<p>Add a message in the interrupt handling routine to check if it is
-called. Compile and reload the module into the kernel. Check that the
+<p>called. Compile and reload the module into the kernel. Check that the
 interrupt handling routine is called when you press the keyboard on
 the virtual machine. Also note that when you use the serial port no
 keyboard interrupt is generated.</p>
@@ -990,7 +989,7 @@ following in the interrupt handling:</p>
 <li>copy the ASCII characters corresponding to the keystrokes and store
 them in the buffer of the device</li>
 </ul>
-<p>Follow the sectios marked <strong>TODO 3</strong> in the skeleton.</p>
+<p>Follow the sections marked <strong>TODO 3</strong> in the skeleton.</p>
 <div class="section" id="reading-the-data-register">
 <h4>Reading the data register<a class="headerlink" href="#reading-the-data-register" title="Permalink to this headline">¶</a></h4>
 <p>First, fill in the i8042_read_data() function to read the
@@ -1003,7 +1002,7 @@ keystroke.</p>
 <p class="last">Read the I8042_DATA_REG register using <code class="xref c c-func docutils literal"><span class="pre">inb()</span></code>.</p>
 </div>
 <p>Then print information about the keystrokes int the following format:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ:% d, scancode = 0x% x (% u,% c) \ n&quot;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ:% d, scancode = 0x%x (%u,%c)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
         <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1125,12 +1124,13 @@ format.</p>
 the value returned by the get_ascii() function.</p>
 </div>
 </div>
+</div>
 <div class="section" id="store-characters-to-the-buffer">
-<h4>Store characters to the buffer<a class="headerlink" href="#store-characters-to-the-buffer" title="Permalink to this headline">¶</a></h4>
+<h3>4. Store characters to the buffer<a class="headerlink" href="#store-characters-to-the-buffer" title="Permalink to this headline">¶</a></h3>
 <p>We want to collect the pressed characters (not the other keys) into
 circular a buffer that can be consumed from user space. For this step
 follow the sections marked with <strong>TODO 4</strong> in the skeleton.</p>
-<p>Implement <code class="xref c c-func docutils literal"><span class="pre">get_char()</span></code> in a similar with  <code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code>.</p>
+<p>Implement <code class="xref c c-func docutils literal"><span class="pre">get_char()</span></code> in a similar way to <code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code>.</p>
 <p>Update the interrupt handler to add a pressed ASCII character to the
 end of the device buffer. If the buffer is full, the character will be
 discarded.</p>
@@ -1174,11 +1174,10 @@ minor are defined as <code class="docutils literal"><span class="pre">KBD_MAJOR<
 </div>
 </div>
 <div class="section" id="reset-the-buffer">
-<h4>Reset the buffer<a class="headerlink" href="#reset-the-buffer" title="Permalink to this headline">¶</a></h4>
+<h3>5. Reset the buffer<a class="headerlink" href="#reset-the-buffer" title="Permalink to this headline">¶</a></h3>
 <p>Reset the buffer if the device is written to. For this step follow the
 sections marked with <strong>TODO 5</strong> in the skeleton.</p>
 <p>Implement <code class="xref c c-func docutils literal"><span class="pre">reset_buffer()</span></code> and add the write operation to <em>kbd_fops</em>.</p>
-</div>
 </div>
 </div>
 </div>
