@@ -137,7 +137,7 @@ To go to a symbol definition directly when :command:`vim` starts, use :code:`vim
 to search for a symbol by name, use :code:`cs find g <symbol_name>` (for example
 :code:`cs find g task_struct`).
 
-If you fond more than one results and opened a panel showing all the matches
+If you found more than one results and opened a panel showing all the matches
 (using :code:`:copen`) and you want to find a symbol of type structure,
 it is recommended to search in the results panel (using :code:`/` -- slash)
 the character :code:`{` (opening brace).
@@ -228,7 +228,7 @@ Usage example:
     sw-clang-indexer --index-project
     sourceweb index
 
-:file:`sw-btrace` is a scrit that adds the :file:`libsw-btrace.so`
+:file:`sw-btrace` is a script that adds the :file:`libsw-btrace.so`
 library to :code:`LD_PRELOAD`. This way, the library is loaded by
 every process started by :code:`make` (basically, the compiler),
 registers the commands used to start the processes and generates
@@ -343,12 +343,12 @@ after compilation.
 
 A few commands used for debugging using :command:`gdb` are:
 
-- :command:`x` (examine) -- used to show the contents of the memory area
+- :command:`x` (examine) - Used to show the contents of the memory area
   whose address is specified as an argument to the command (this address
   can be the value of a physical address, a symbol or the address of a
   symbol). It can take as arguments (preceded by :code:`/`): the format
   to display the data in (:code:`x` for hexadecimal, :code:`d` for
-  decimal, etc), how many memory units to display and the size of a
+  decimal, etc.), how many memory units to display and the size of a
   memory unit.
 
 - :command:`disassemble` - Used to disassemble a function.
@@ -388,7 +388,7 @@ Using the dynamic image of the kernel is useful for detecting `rootkits <http://
 Getting a stack trace
 ---------------------
 
-Somethimes, you will want information about the trace the execution
+Sometimes, you will want information about the trace the execution
 reaches a certain point. You can determine this information using 
 :command:`cscope` or LXR, but some function are called from many
 execution paths, which makes this method difficult.
@@ -432,18 +432,18 @@ Remarks
      following:
   
      -  editing the module source code (on the physical machine);
-     -  module compilation (on the physical machine)
-     -  generation of the minimal image for the virtual machine.
-        This image contains the kernel, your module, busybox and
-        eventually test programs.
-     -  starting the virtual machine using QEMU.
+     -  module compilation (on the physical machine);
+     -  generation of the minimal image for the virtual machine;
+        this image contains the kernel, your module, busybox and
+        eventually test programs;
+     -  starting the virtual machine using QEMU;
      -  running the tests in the virtual machine.
   
   -  When using cscope, use :file:`~/src/linux`.
      If there is no :file:`cscope.out` file, you can generate it using
      the command :command:`make ARCH=x86 cscope`.
 
-  -  You cand find more details about the virtual machine at 
+  -  You can find more details about the virtual machine at 
      :ref:`vm_link`.
 
 .. important::
