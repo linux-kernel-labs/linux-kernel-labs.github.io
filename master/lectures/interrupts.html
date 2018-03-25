@@ -284,7 +284,7 @@ interrupt handlers are always executed serially.</p>
 <img alt="../_images/ditaa-f0124fcd03ddd32134f414c160e247355ab306bc.png" class="admonition-hardware-apic" src="../_images/ditaa-f0124fcd03ddd32134f414c160e247355ab306bc.png" />
 <p>With multicore systems, each core has a local APIC used to process interrupts
 from locally connected devices like timers or thermals sensors.</p>
-<p>I/O APIC is used to distributed IRQ from external devices to CPU cores.</p>
+<p>I/O APIC is used to distribute IRQ from external devices to CPU cores.</p>
 <p>After discussing the hardware, now let’s see how the processor handles an interrupt.</p>
 <ul class="admonition-enabling-disabling-the-interrupts simple">
 <li>at the PIC level<ul>
@@ -373,9 +373,9 @@ debug the exception.</p>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">save error code on stack in case of an abort</p>
-</li>
 <li><p class="first">save EFLAGS, CS, EIP on stack</p>
+</li>
+<li><p class="first">save error code on stack in case of an abort</p>
 </li>
 <li><p class="first">execute interrupt handler</p>
 </li>
@@ -384,7 +384,7 @@ debug the exception.</p>
 <div class="section" id="returning-from-an-interrupt">
 <h3>Returning from an interrupt<a class="headerlink" href="#returning-from-an-interrupt" title="Permalink to this headline">¶</a></h3>
 <p>IRET is used to from an interrupt handler. IRET is similar with RET except
-that IRET increments EIP by extra four bytes (because of the flags on stack)
+that IRET increments ESP by extra four bytes (because of the flags on stack)
 and moves the saved flags into EFLAGS register.</p>
 <ul class="admonition-returning-from-an-interrupt simple">
 <li>pop the eror code (in case of an abort)</li>
