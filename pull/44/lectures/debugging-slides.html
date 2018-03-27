@@ -212,6 +212,18 @@ c8816008:       a3 <span class="m">42</span> <span class="m">00</span> <span cla
 <h2>gdb</h2>
 
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ gdb ./vmlinux
+
+<span class="o">(</span>gdb<span class="o">)</span> list *<span class="o">(</span>do_panic+0x8<span class="o">)</span>
+0xc1244138 is in do_panic <span class="o">(</span>lib/test_panic.c:8<span class="o">)</span>.
+<span class="m">3</span>
+<span class="m">4</span> static struct timer_list panic_timer<span class="p">;</span>
+<span class="m">5</span>
+<span class="m">6</span> static void do_panic<span class="o">(</span>struct timer_list *unused<span class="o">)</span>
+<span class="m">7</span> <span class="o">{</span>
+<span class="m">8</span>         *<span class="o">(</span>int*<span class="o">)</span><span class="nv">0x42</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">;</span>
+<span class="m">9</span> <span class="o">}</span>
+<span class="m">10</span>
+<span class="m">11</span>        static int so2_panic_init<span class="o">(</span>void<span class="o">)</span>
 </pre></div>
 </div>
 
@@ -335,6 +347,21 @@ IP: crush+0x80/0xb0 <span class="o">[</span>list<span class="o">]</span>
 <li>lock inversion</li>
 <li>cyclic dependency</li>
 <li>incorrect usage of locks</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-perf slide level-1">
+
+<h1>perf</h1>
+
+<ul class="simple">
+<li>performance counters, tracepoints, kprobes, uprobes</li>
+<li>hardware events: CPU cycles, TLB misses, cache misses</li>
+<li>software events: page fauls , context switches</li>
+<li>collects backtraces (user + kernel)</li>
 </ul>
 
 
