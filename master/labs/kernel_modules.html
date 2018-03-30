@@ -133,6 +133,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#proc-info">7. Proc info</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#kdb">1. KDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ps-module">2. PS Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-info">3. Memory Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">4. Dynamic Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-debugging-during-initialization">5. Dynamic Debugging During Initialization</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
@@ -258,8 +266,8 @@ it will generate the message <code class="code docutils literal"><span class="pr
 </div>
 <p>The generated messages will not be displayed on the console but will be saved
 in a specially reserved memory area for this, from where they will be extracted
-by the logging daemon (syslog). To display kernel messages, you can use the <strong class="command">dmesg</strong>
-command or inspect the logs:</p>
+by the logging daemon (syslog). To display kernel messages, you can use the
+<strong class="command">dmesg</strong> command or inspect the logs:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># cat /var/log/syslog | tail -2</span>
 Feb <span class="m">20</span> <span class="m">13</span>:57:38 asgard kernel: Hi
 Feb <span class="m">20</span> <span class="m">13</span>:57:43 asgard kernel: Bye
@@ -302,19 +310,21 @@ the <code class="file docutils literal"><span class="pre">Kbuild</span></code> f
 as instructed in this file.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>For labs we will configure different <strong class="command">KDIR</strong>, according to the virtual
-machine specifications:</p>
+<p>For labs we will configure different <strong class="command">KDIR</strong>, according to
+the virtual machine specifications:</p>
 <div class="last highlight-bash"><div class="highlight"><pre><span></span><span class="nv">KDIR</span> <span class="o">=</span> /home/student/so2/linux
 <span class="o">[</span>...<span class="o">]</span>
 </pre></div>
 </div>
 </div>
-<p>A <code class="file docutils literal"><span class="pre">Kbuild</span></code> file contains one or more directives for compiling a kernel module.
-The easiest example of such a directive is <code class="docutils literal"><span class="pre">obj-m</span> <span class="pre">=</span> <span class="pre">module.o</span></code>. Following this
-directive, a kernel module (<code class="code docutils literal"><span class="pre">ko</span></code> - kernel object) will be created, starting from the
-<code class="docutils literal"><span class="pre">module.o</span></code> file. <code class="docutils literal"><span class="pre">module.o</span></code> will be created starting from <code class="docutils literal"><span class="pre">module.c</span></code> or
-<code class="docutils literal"><span class="pre">module.S</span></code>. All of these files can be found in the <code class="file docutils literal"><span class="pre">Kbuild</span></code>’s directory.</p>
-<p>An example of a <code class="file docutils literal"><span class="pre">Kbuild</span></code> file that uses several sub-modules is shown below:</p>
+<p>A <code class="file docutils literal"><span class="pre">Kbuild</span></code> file contains one or more directives for compiling a kernel
+module.  The easiest example of such a directive is <code class="docutils literal"><span class="pre">obj-m</span> <span class="pre">=</span>
+<span class="pre">module.o</span></code>. Following this directive, a kernel module (<code class="code docutils literal"><span class="pre">ko</span></code> - kernel
+object) will be created, starting from the <code class="docutils literal"><span class="pre">module.o</span></code> file. <code class="docutils literal"><span class="pre">module.o</span></code> will
+be created starting from <code class="docutils literal"><span class="pre">module.c</span></code> or <code class="docutils literal"><span class="pre">module.S</span></code>. All of these files can
+be found in the <code class="file docutils literal"><span class="pre">Kbuild</span></code>’s directory.</p>
+<p>An example of a <code class="file docutils literal"><span class="pre">Kbuild</span></code> file that uses several sub-modules is shown
+below:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">EXTRA_CFLAGS</span> <span class="o">=</span> -Wall -g
 
 obj-m        <span class="o">=</span> supermodule.o
@@ -332,39 +342,41 @@ in <code class="file docutils literal"><span class="pre">supermodule.o</span></c
 module</li>
 </ul>
 </div></blockquote>
-<p>The suffix of targets in <code class="file docutils literal"><span class="pre">Kbuild</span></code> determines how they are used, as follows:</p>
+<p>The suffix of targets in <code class="file docutils literal"><span class="pre">Kbuild</span></code> determines how they are used, as
+follows:</p>
 <blockquote>
 <div><ul class="simple">
 <li>M (modules) is a target for loadable kernel modules</li>
-<li>Y (yes) represents a target for object files to be compiled and then linked
-to a module (<code class="docutils literal"><span class="pre">$(mode_name)-y</span></code>) or within the kernel (<code class="docutils literal"><span class="pre">obj-y</span></code>)</li>
-<li>any other target suffix will be ignored by <code class="file docutils literal"><span class="pre">Kbuild</span></code> and will not be compiled</li>
+<li>Y (yes) represents a target for object files to be compiled and then
+linked to a module (<code class="docutils literal"><span class="pre">$(mode_name)-y</span></code>) or within the kernel (<code class="docutils literal"><span class="pre">obj-y</span></code>)</li>
+<li>any other target suffix will be ignored by <code class="file docutils literal"><span class="pre">Kbuild</span></code> and will not be
+compiled</li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These suffixes are used to easily configure the kernel by running the <strong class="command">make
-menuconfig</strong> command or directly editing the <code class="file docutils literal"><span class="pre">.config</span></code> file. This file sets a
-series of variables that are used to determine which features are added to the
-kernel at build time. For example, when adding BTRFS support with :command: <cite>make menuconfig</cite>,
-add the line <code class="code docutils literal"><span class="pre">CONFIG_BTRFS_FS</span> <span class="pre">=</span> <span class="pre">y</span></code> to the <code class="file docutils literal"><span class="pre">.config</span></code> file.
-The BTRFS kbuild contains the line <code class="docutils literal"><span class="pre">obj-$(CONFIG_BTRFS_FS):=</span> <span class="pre">btrfs.o</span></code>, which
-becomes <code class="docutils literal"><span class="pre">obj-y:=</span> <span class="pre">btrfs.o</span></code>. This will compile the <code class="file docutils literal"><span class="pre">btrfs.o</span></code> object and will be
-linked to the kernel. Before the variable was set, the line became <code class="docutils literal"><span class="pre">obj:=btrfs.o</span></code>
-and so it was ignored, and the kernel was build-at without BTRFS support.</p>
+<p class="last">These suffixes are used to easily configure the kernel by running the
+<strong class="command">make menuconfig</strong> command or directly editing the
+<code class="file docutils literal"><span class="pre">.config</span></code> file. This file sets a series of variables that are
+used to determine which features are added to the kernel at build
+time. For example, when adding BTRFS support with <strong class="command">make
+menuconfig</strong>, add the line <code class="code docutils literal"><span class="pre">CONFIG_BTRFS_FS</span> <span class="pre">=</span> <span class="pre">y</span></code> to the
+<code class="file docutils literal"><span class="pre">.config</span></code> file.  The BTRFS kbuild contains the line
+<code class="docutils literal"><span class="pre">obj-$(CONFIG_BTRFS_FS):=</span> <span class="pre">btrfs.o</span></code>, which becomes <code class="docutils literal"><span class="pre">obj-y:=</span>
+<span class="pre">btrfs.o</span></code>. This will compile the <code class="file docutils literal"><span class="pre">btrfs.o</span></code> object and will be
+linked to the kernel. Before the variable was set, the line became
+<code class="docutils literal"><span class="pre">obj:=btrfs.o</span></code> and so it was ignored, and the kernel was build
+without BTRFS support.</p>
 </div>
-<p>For more details, see the
-<a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/Documentation/kbuild/makefiles.txt">makefiles.txt</a>
-file and the
-<a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/Documentation/kbuild/modules.txt">modules.txt</a>
-file within the kernel sources.</p>
+<p>For more details, see the <code class="file docutils literal"><span class="pre">Documentation/kbuild/makefiles.txt</span></code> and
+<code class="file docutils literal"><span class="pre">Documentation/kbuild/modules.txt</span></code> files within the kernel sources.</p>
 </div>
 <div class="section" id="loading-unloading-a-kernel-module">
 <h2>Loading/unloading a kernel module<a class="headerlink" href="#loading-unloading-a-kernel-module" title="Permalink to this headline">¶</a></h2>
-<p>To load a kernel module, use the <strong class="command">insmod</strong> utility. This utility receives as a
-parameter the path to the <code class="file docutils literal"><span class="pre">*.ko</span></code> file in which the module was compiled and linked.
-Unloading the module from the kernel is done using the <strong class="command">rmmod</strong> command, which receives
-the module name as a parameter.</p>
+<p>To load a kernel module, use the <strong class="command">insmod</strong> utility. This utility
+receives as a parameter the path to the <code class="file docutils literal"><span class="pre">*.ko</span></code> file in which the module
+was compiled and linked.  Unloading the module from the kernel is done using
+the <strong class="command">rmmod</strong> command, which receives the module name as a parameter.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ insmod module.ko
 $ rmmod module.ko
 </pre></div>
@@ -372,7 +384,8 @@ $ rmmod module.ko
 <p>When loading the kernel module, the routine specified as a parameter of the
 <code class="docutils literal"><span class="pre">module_init</span></code> macro will be executed. Similarly, when the module is unloaded
 the routine specified as a parameter of the <code class="docutils literal"><span class="pre">module_exit</span></code> will be executed.</p>
-<p>A complete example of compiling and loading/unloading mode is presented below:</p>
+<p>A complete example of compiling and loading/unloading a kernel module is
+presented below:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-lin# ls
 Kbuild  Makefile  modul.c
 
@@ -404,8 +417,9 @@ Hi
 Bye
 </pre></div>
 </div>
-<p>Information about modules loaded into the kernel can be found using the <strong class="command">lsmod</strong>
-command or by inspecting the <code class="file docutils literal"><span class="pre">/proc/modules</span></code>, <code class="file docutils literal"><span class="pre">/sys/module</span></code> directories.</p>
+<p>Information about modules loaded into the kernel can be found using the
+<strong class="command">lsmod</strong> command or by inspecting the <code class="file docutils literal"><span class="pre">/proc/modules</span></code>,
+<code class="file docutils literal"><span class="pre">/sys/module</span></code> directories.</p>
 </div>
 <div class="section" id="debugging">
 <h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
@@ -421,12 +435,13 @@ means that the module contains a bug. After the oops appears, the kernel will
 continue to work.</p>
 <p>Very important to the appearance of a kernel oops is saving the generated
 message. As noted above, messages generated by the kernel are saved in logs and
-can be displayed with the :command:dmesg command. To make sure that no kernel message
-is lost, it is recommended to insert/test the kernel directly from the console,
-or periodically check the kernel messages. Noteworthy is that an oops can occur
-because of a programming error, but also a because of hardware error.</p>
+can be displayed with the <strong class="command">dmesg</strong> command. To make sure that no kernel
+message is lost, it is recommended to insert/test the kernel directly from the
+console, or periodically check the kernel messages. Noteworthy is that an oops
+can occur because of a programming error, but also a because of hardware error.</p>
 <p>If a fatal error occurs, after which the system can not return to a stable
-state, a <a class="reference external" href="https://en.wikipedia.org/wiki/Linux_kernel_panic">kernel panic</a> is generated.</p>
+state, a <a class="reference external" href="https://en.wikipedia.org/wiki/Linux_kernel_panic">kernel panic</a> is
+generated.</p>
 <p>Look at the kernel module below that contains a bug that generates an oops:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm"> * Oops generating kernel module</span>
@@ -521,8 +536,7 @@ In our case this is an invalid access to memory.</p>
 <p>Tells us that it’s the first oops (#1). This is important in the context that
 an oops can lead to other oopses. Usually only the first oops is relevant.
 Furthermore, the oops code (<code class="docutils literal"><span class="pre">0002</span></code>) provides information about the error type
-(in memory manager -&gt;
-<a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/arch/x86/include/asm/traps.h#L149">traps.h</a>):</p>
+(see <code class="file docutils literal"><span class="pre">arch/x86/include/asm/traps.h</span></code>):</p>
 <blockquote>
 <div><ul class="simple">
 <li>Bit 0 == 0 means no page found, 1 means protection fault</li>
@@ -532,9 +546,9 @@ Furthermore, the oops code (<code class="docutils literal"><span class="pre">000
 </div></blockquote>
 <p>In this case, we have a write access that generated the oops (bit 1 is 1).</p>
 <p>Below is a dump of the registers. It decodes the instruction pointer (<code class="docutils literal"><span class="pre">EIP</span></code>)
-value and notes that the bug appeared in the <code class="code docutils literal"><span class="pre">my_oops_init</span></code> function with a
-5-byte offset (<code class="docutils literal"><span class="pre">EIP:</span> <span class="pre">[&lt;c89d4005&gt;]</span> <span class="pre">my_oops_init+0x5</span></code>). The message also shows
-the stack content and a backtrace of calls until then.</p>
+value and notes that the bug appeared in the <code class="code docutils literal"><span class="pre">my_oops_init</span></code> function with
+a 5-byte offset (<code class="docutils literal"><span class="pre">EIP:</span> <span class="pre">[&lt;c89d4005&gt;]</span> <span class="pre">my_oops_init+0x5</span></code>). The message also
+shows the stack content and a backtrace of calls until then.</p>
 <p>If an invalid read call is generated (<code class="docutils literal"><span class="pre">#define</span> <span class="pre">OP_OOPS</span> <span class="pre">OP_READ</span></code>), the message
 will be the same, but the oops code will differ, which would now be <code class="docutils literal"><span class="pre">0000</span></code>:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# dmesg <span class="p">|</span> tail -33
@@ -576,13 +590,12 @@ EIP: <span class="o">[</span>&lt;c89c3016&gt;<span class="o">]</span> my_oops_in
 <div class="section" id="objdump">
 <h3>objdump<a class="headerlink" href="#objdump" title="Permalink to this headline">¶</a></h3>
 <p>Detailed information about the instruction that generated the oops can be found
-using the <strong class="command">objdump</strong> utility. Useful options to use are <strong class="command">-d</strong> to
-disassemble the code and <strong class="command">-S`</strong> for interleaving C code in assembly language
-code.
-For efficient decoding, however, we need the address where the kernel module was
-loaded. This can be found in <code class="file docutils literal"><span class="pre">/proc/modules</span></code>.</p>
-<p>Here’s an example of using <strong class="command">objdump</strong> on the above module to identify the instruction
-that generated the oops:</p>
+using the <strong class="command">objdump</strong> utility. Useful options to use are <strong class="command">-d</strong>
+to disassemble the code and <strong class="command">-S</strong> for interleaving C code in assembly
+language code.  For efficient decoding, however, we need the address where the
+kernel module was loaded. This can be found in <code class="file docutils literal"><span class="pre">/proc/modules</span></code>.</p>
+<p>Here’s an example of using <strong class="command">objdump</strong> on the above module to identify
+the instruction that generated the oops:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# cat /proc/modules
 oops <span class="m">1280</span> <span class="m">1</span> - Loading 0xc89d4000
 netconsole <span class="m">8352</span> <span class="m">0</span> - Live 0xc89ad000
@@ -669,10 +682,10 @@ earlier) is:</p>
 <blockquote>
 <div><code class="docutils literal"><span class="pre">C89d4005:</span> <span class="pre">c7</span> <span class="pre">05</span> <span class="pre">34</span> <span class="pre">12</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">03</span> <span class="pre">movl</span> <span class="pre">$</span> <span class="pre">0x3,0x1234</span></code></div></blockquote>
 <p>That is exactly what was expected - storing value 3 at 0x0001234.</p>
-<p>The <code class="file docutils literal"><span class="pre">/proc/modules</span></code> is used to find the address where a kernel module is loaded.
-The <strong class="command">--adjust-vma</strong> option allows you to display instructions relative to
-<code class="docutils literal"><span class="pre">0xc89d4000</span></code>. The <strong class="command">-l</strong> option displays the number of each line in the source
-code interleaved with the assembly language code.</p>
+<p>The <code class="file docutils literal"><span class="pre">/proc/modules</span></code> is used to find the address where a kernel module is
+loaded.  The <strong class="command">--adjust-vma</strong> option allows you to display instructions
+relative to <code class="docutils literal"><span class="pre">0xc89d4000</span></code>. The <strong class="command">-l</strong> option displays the number of
+each line in the source code interleaved with the assembly language code.</p>
 </div>
 <div class="section" id="addr2line">
 <h3>addr2line<a class="headerlink" href="#addr2line" title="Permalink to this headline">¶</a></h3>
@@ -682,18 +695,21 @@ code interleaved with the assembly language code.</p>
 /root/lab-01/modul-oops/oops.c:23
 </pre></div>
 </div>
-<p>Where <code class="docutils literal"><span class="pre">0x5</span></code> is the value of the program counter (<code class="docutils literal"><span class="pre">EIP</span> <span class="pre">=</span> <span class="pre">c89d4005</span></code>) that generated the
-oops, minus the base address of the module (<code class="docutils literal"><span class="pre">0xc89c4000</span></code>) according to <code class="file docutils literal"><span class="pre">/proc/modules</span></code></p>
+<p>Where <code class="docutils literal"><span class="pre">0x5</span></code> is the value of the program counter (<code class="docutils literal"><span class="pre">EIP</span> <span class="pre">=</span> <span class="pre">c89d4005</span></code>) that
+generated the oops, minus the base address of the module (<code class="docutils literal"><span class="pre">0xc89c4000</span></code>)
+according to <code class="file docutils literal"><span class="pre">/proc/modules</span></code></p>
 </div>
 <div class="section" id="minicom">
 <h3>minicom<a class="headerlink" href="#minicom" title="Permalink to this headline">¶</a></h3>
-<p><strong class="command">Minicom</strong> (or other equivalent utilities, eg <strong class="command">picocom</strong>, <strong class="command">screen</strong>)
-is a utility that can be used to connect and interact with a serial port. The serial port
-is the basic method for analyzing kernel messages or interacting with an embedded
-system in the development phase. There are two more common ways to connect:</p>
+<p><strong class="command">Minicom</strong> (or other equivalent utilities, eg <strong class="command">picocom</strong>,
+<strong class="command">screen</strong>) is a utility that can be used to connect and interact with a
+serial port. The serial port is the basic method for analyzing kernel messages
+or interacting with an embedded system in the development phase. There are two
+more common ways to connect:</p>
 <ul class="simple">
 <li>a serial port where the device we are going to use is <code class="file docutils literal"><span class="pre">/dev/ttyS0</span></code></li>
-<li>a serial USB port (FTDI) in which case the device we are going to use is <code class="file docutils literal"><span class="pre">/dev/ttyUSB</span></code>.</li>
+<li>a serial USB port (FTDI) in which case the device we are going to use is
+<code class="file docutils literal"><span class="pre">/dev/ttyUSB</span></code>.</li>
 </ul>
 <p>For the virtual machine used in the lab, the device that we need to use is
 displayed after the virtual machine starts:</p>
@@ -714,10 +730,11 @@ minicom -D /dev/pts/20
 </div>
 <div class="section" id="netconsole">
 <h3>netconsole<a class="headerlink" href="#netconsole" title="Permalink to this headline">¶</a></h3>
-<p><strong class="command">Netconsole</strong> is a utility that allows logging of kernel debugging messages over
-the network. This is useful when the disk logging system does not work or when
-serial ports are not available or when the terminal does not respond to
-commands. <strong class="command">Netconsole</strong> comes in the form of a kernel module.</p>
+<p><strong class="command">Netconsole</strong> is a utility that allows logging of kernel debugging
+messages over the network. This is useful when the disk logging system does not
+work or when serial ports are not available or when the terminal does not
+respond to commands. <strong class="command">Netconsole</strong> comes in the form of a kernel
+module.</p>
 <p>To work, it needs the following parameters:</p>
 <blockquote>
 <div><ul class="simple">
@@ -729,38 +746,42 @@ messages will be sent</li>
 <p>These parameters can be configured when the module is inserted into the kernel,
 or even while the module is inserted if it has been compiled with the
 <code class="docutils literal"><span class="pre">CONFIG_NETCONSOLE_DYNAMIC</span></code> option.</p>
-<p>An example configuration when inserting <strong class="command">netconsole</strong> kernel module is as follows:</p>
+<p>An example configuration when inserting <strong class="command">netconsole</strong> kernel module is
+as follows:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>alice:~# modprobe netconsole <span class="nv">netconsole</span><span class="o">=</span><span class="m">6666</span>@192.168.191.130/eth0,6000@192.168.191.1/00:50:56:c0:00:08
 </pre></div>
 </div>
-<p>Thus, the debug messages on the station that has the address <code class="docutils literal"><span class="pre">192.168.191.130</span></code>
-will be sent to the <code class="docutils literal"><span class="pre">eth0</span></code> interface, having source port <code class="docutils literal"><span class="pre">6666</span></code>. The messages will
-be sent to <code class="docutils literal"><span class="pre">192.168.191.1</span></code> with the MAC address <code class="docutils literal"><span class="pre">00:50:56:c0:00:08</span></code>, on port
-<code class="docutils literal"><span class="pre">6000</span></code>.</p>
+<p>Thus, the debug messages on the station that has the address
+<code class="docutils literal"><span class="pre">192.168.191.130</span></code> will be sent to the <code class="docutils literal"><span class="pre">eth0</span></code> interface, having source port
+<code class="docutils literal"><span class="pre">6666</span></code>. The messages will be sent to <code class="docutils literal"><span class="pre">192.168.191.1</span></code> with the MAC address
+<code class="docutils literal"><span class="pre">00:50:56:c0:00:08</span></code>, on port <code class="docutils literal"><span class="pre">6000</span></code>.</p>
 <p>Messages can be played on the destination station using <strong class="command">netcat</strong>:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>bob:~ <span class="c1"># nc -l -p 6000 -u</span>
 </pre></div>
 </div>
-<p>Alternatively, the destination station can configure <strong class="command">syslogd</strong> to intercept these
-messages. More information can be found <a class="reference external" href="https://www.kernel.org/doc/Documentation/networking/netconsole.txt">here</a>.</p>
+<p>Alternatively, the destination station can configure <strong class="command">syslogd</strong> to
+intercept these messages. More information can be found in
+<code class="file docutils literal"><span class="pre">Documentation/networking/netconsole.txt</span></code>.</p>
 </div>
 <div class="section" id="printk-debugging">
 <h3>Printk debugging<a class="headerlink" href="#printk-debugging" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal"><span class="pre">The</span> <span class="pre">two</span> <span class="pre">oldest</span> <span class="pre">and</span> <span class="pre">most</span> <span class="pre">useful</span> <span class="pre">debugging</span> <span class="pre">aids</span> <span class="pre">are</span> <span class="pre">Your</span> <span class="pre">Brain</span> <span class="pre">and</span> <span class="pre">Printf</span></code>.</p>
-<p>For debugging, a primitive way is often used, but it is quite effective: <code class="code docutils literal"><span class="pre">printk</span></code>
-debugging. Although a debugger can also be used, it is generally not very
-useful: simple bugs (uninitialized variables, memory management problems, etc.)
-can be easily localized by control messages and the kernel-decoded oop message.</p>
+<p>For debugging, a primitive way is often used, but it is quite effective:
+<code class="code docutils literal"><span class="pre">printk</span></code> debugging. Although a debugger can also be used, it is generally
+not very useful: simple bugs (uninitialized variables, memory management
+problems, etc.)  can be easily localized by control messages and the
+kernel-decoded oop message.</p>
 <p>For more complex bugs, even a debugger can not help us too much unless the
 operating system structure is very well understood. When debugging a kernel
 module, there are a lot of unknowns in the equation: multiple contexts (we have
 multiple processes and threads running at a time), interruptions, virtual
 memory, etc.</p>
-<p>You can use <code class="code docutils literal"><span class="pre">printk</span></code> to display kernel messages to user space. It is similar to
-<code class="code docutils literal"><span class="pre">printf</span></code>’s functionality; the only difference is that the transmitted message
-can be prefixed with a string of <code class="code docutils literal"><span class="pre">&quot;&lt;n&gt;&quot;</span></code>, where <code class="code docutils literal"><span class="pre">n</span></code> indicates the error level
-(loglevel) and has values between <code class="docutils literal"><span class="pre">0</span></code> and <code class="docutils literal"><span class="pre">7</span></code>. Instead of <code class="code docutils literal"><span class="pre">&quot;&lt;n&gt;&quot;</span></code>, the levels
-can also be coded by symbolic constants:</p>
+<p>You can use <code class="code docutils literal"><span class="pre">printk</span></code> to display kernel messages to user space. It is
+similar to <code class="code docutils literal"><span class="pre">printf</span></code>’s functionality; the only difference is that the
+transmitted message can be prefixed with a string of <code class="code docutils literal"><span class="pre">&quot;&lt;n&gt;&quot;</span></code>, where
+<code class="code docutils literal"><span class="pre">n</span></code> indicates the error level (loglevel) and has values between <code class="docutils literal"><span class="pre">0</span></code> and
+<code class="docutils literal"><span class="pre">7</span></code>. Instead of <code class="code docutils literal"><span class="pre">&quot;&lt;n&gt;&quot;</span></code>, the levels can also be coded by symbolic
+constants:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">KERN_EMERG</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">KERN_ALERT</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">KERN_CRIT</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span>
@@ -771,26 +792,26 @@ can also be coded by symbolic constants:</p>
 <span class="n">KERN_DEBUG</span> <span class="o">-</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">7</span>
 </pre></div>
 </div>
-<p>The definitions of all log levels are found in
-<a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/include/linux/kern_levels.h">linux/kern_levels.h</a>.
+<p>The definitions of all log levels are found in <code class="file docutils literal"><span class="pre">linux/kern_levels.h</span></code>.
 Basically, these log levels are used by the system to route messages sent to
 various outputs: console, log files in <code class="file docutils literal"><span class="pre">/var/log</span></code> etc.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To display <code class="code docutils literal"><span class="pre">printk</span></code> messages in user space, the <code class="code docutils literal"><span class="pre">printk</span></code> log level must be of
-higher priority than
-<a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/include/linux/printk.h#L65">console_loglevel</a>
+<p>To display <code class="code docutils literal"><span class="pre">printk</span></code> messages in user space, the <code class="code docutils literal"><span class="pre">printk</span></code>
+log level must be of higher priority than <cite>console_loglevel</cite>
 variable. The default console log level can be configured from
-<a class="reference external" href="https://elixir.bootlin.com/linux/v4.15.7/source/Documentation/sysctl/kernel.txt#L724">/proc/sys/kernel/printk</a>.
-For instance, the command:</p>
+<code class="file docutils literal"><span class="pre">/proc/sys/kernel/printk</span></code>.</p>
+<p>For instance, the command:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">8</span> &gt; /proc/sys/kernel/printk
 </pre></div>
 </div>
-<p class="last">will enable all the kernel log messages to be displayed in the console. That is, the logging level
-has to be strictly less than the <code class="code docutils literal"><span class="pre">console_loglevel</span></code> variable. For example, if the
-<code class="code docutils literal"><span class="pre">console_loglevel</span></code> has a value of <code class="docutils literal"><span class="pre">5</span></code> (specific to <code class="code docutils literal"><span class="pre">KERN_NOTICE</span></code>), only messages
-with loglevel stricter than <code class="docutils literal"><span class="pre">5</span></code> (i.e <code class="code docutils literal"><span class="pre">KERN_EMERG</span></code>, <code class="code docutils literal"><span class="pre">KERN_ALERT</span></code>,
-<code class="code docutils literal"><span class="pre">KERN_CRIT</span></code>, <code class="code docutils literal"><span class="pre">KERN_ERR</span></code>, <code class="code docutils literal"><span class="pre">KERN_WARNING</span></code>) will be shown.</p>
+<p class="last">will enable all the kernel log messages to be displayed in the
+console. That is, the logging level has to be strictly less than the
+<code class="code docutils literal"><span class="pre">console_loglevel</span></code> variable. For example, if the
+<code class="code docutils literal"><span class="pre">console_loglevel</span></code> has a value of <code class="docutils literal"><span class="pre">5</span></code> (specific to
+<code class="code docutils literal"><span class="pre">KERN_NOTICE</span></code>), only messages with loglevel stricter than <code class="docutils literal"><span class="pre">5</span></code>
+(i.e <code class="code docutils literal"><span class="pre">KERN_EMERG</span></code>, <code class="code docutils literal"><span class="pre">KERN_ALERT</span></code>, <code class="code docutils literal"><span class="pre">KERN_CRIT</span></code>,
+<code class="code docutils literal"><span class="pre">KERN_ERR</span></code>, <code class="code docutils literal"><span class="pre">KERN_WARNING</span></code>) will be shown.</p>
 </div>
 <p>Console-redirected messages can be useful for quickly viewing the effect of
 executing the kernel code, but they are no longer so useful if the kernel
@@ -801,14 +822,14 @@ restarts. These are found in <code class="file docutils literal"><span class="pr
 <code class="code docutils literal"><span class="pre">klogd</span></code> take the information from the virtual file system mounted in
 <code class="file docutils literal"><span class="pre">/proc</span></code>. In principle, with <code class="code docutils literal"><span class="pre">syslogd</span></code> and <code class="code docutils literal"><span class="pre">klogd</span></code> turned on,
 all messages coming from the kernel will go to <code class="file docutils literal"><span class="pre">/var/log/kern.log</span></code>.</p>
-<p>A simpler version for debugging is using the <code class="file docutils literal"><span class="pre">/var/log/debug</span></code> file.
-It is populated only with the <code class="code docutils literal"><span class="pre">printk</span></code> messages from the kernel with
-the <code class="code docutils literal"><span class="pre">KERN_DEBUG</span></code> log level.</p>
+<p>A simpler version for debugging is using the <code class="file docutils literal"><span class="pre">/var/log/debug</span></code> file.  It
+is populated only with the <code class="code docutils literal"><span class="pre">printk</span></code> messages from the kernel with the
+<code class="code docutils literal"><span class="pre">KERN_DEBUG</span></code> log level.</p>
 <p>Given that a production kernel (similar to the one we’re probably running with)
 contains only release code, our module is among the few that send messages
 prefixed with KERN_DEBUG . In this way, we can easily navigate through the
-<code class="file docutils literal"><span class="pre">/var/log/debug</span></code> information by finding the messages corresponding to
-a debugging session for our module.</p>
+<code class="file docutils literal"><span class="pre">/var/log/debug</span></code> information by finding the messages corresponding to a
+debugging session for our module.</p>
 <p>Such an example would be the following:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Clear the debug file of previous information (or possibly a backup)</span>
 $ <span class="nb">echo</span> <span class="s2">&quot;New debug session&quot;</span> &gt; /var/log/debug
@@ -820,30 +841,30 @@ $ <span class="nb">echo</span> <span class="s2">&quot;New debug session&quot;</s
 </div>
 <p>The format of the messages must obviously contain all the information of
 interest in order to detect the error, but inserting in the code <code class="code docutils literal"><span class="pre">printk</span></code>
-to  provide detailed information can be as time-consuming as writing the code to
+to provide detailed information can be as time-consuming as writing the code to
 solve the problem. This is usually a trade-off between the completeness of the
 debugging messages displayed using <code class="code docutils literal"><span class="pre">printk</span></code> and the time it takes to
-insert these  messages into the text.</p>
-<p>A very simple way, less time-consuming for inserting <code class="code docutils literal"><span class="pre">printk</span></code> and providing
-the possibility to analyze the flow of instructions for tests is
-the use of the predefined constants <code class="code docutils literal"><span class="pre">__FILE__</span></code>, <code class="code docutils literal"><span class="pre">__LINE__</span></code>
-and <code class="code docutils literal"><span class="pre">__func__</span></code>:</p>
+insert these messages into the text.</p>
+<p>A very simple way, less time-consuming for inserting <code class="code docutils literal"><span class="pre">printk</span></code> and
+providing the possibility to analyze the flow of instructions for tests is the
+use of the predefined constants <code class="code docutils literal"><span class="pre">__FILE__</span></code>, <code class="code docutils literal"><span class="pre">__LINE__</span></code> and
+<code class="code docutils literal"><span class="pre">__func__</span></code>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">__FILE__</span></code> is replaced by the compiler with the name of the source file it is
-currently being compiled.</li>
+<li><code class="docutils literal"><span class="pre">__FILE__</span></code> is replaced by the compiler with the name of the source file
+it is currently being compiled.</li>
 <li><code class="docutils literal"><span class="pre">__LINE__</span></code> is replaced by the compiler with the line number on which the
 current instruction is found in the current source file.</li>
-<li><code class="docutils literal"><span class="pre">__func__</span></code> /<code class="docutils literal"><span class="pre">__FUNCTION__</span></code> is replaced by the compiler with the name of the
-function in which the current instruction is found.</li>
+<li><code class="docutils literal"><span class="pre">__func__</span></code> /<code class="docutils literal"><span class="pre">__FUNCTION__</span></code> is replaced by the compiler with the name
+of the function in which the current instruction is found.</li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last"><code class="code docutils literal"><span class="pre">__FILE__</span></code> and <code class="code docutils literal"><span class="pre">__LINE__</span></code> are part of the ANSI C specifications:
-:code`__func__` is part of specification C99; <code class="code docutils literal"><span class="pre">__FUNCTION__</span></code> is a GNU C
-extension and is not portable; However, since we write code for the Linux kernel,
-we can use it without any problems.</p>
+:code`__func__` is part of specification C99; <code class="code docutils literal"><span class="pre">__FUNCTION__</span></code> is a GNU
+:codeC extension and is not portable; However, since we write code for the
+:codeLinux kernel, we can use it without any problems.</p>
 </div>
 <p>The following macrodefinition can be used in this case:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define PRINT_DEBUG \</span>
@@ -877,8 +898,8 @@ those relevant for the debug context. To enable <code class="docutils literal"><
 compiled with the <code class="docutils literal"><span class="pre">CONFIG_DYNAMIC_DEBUG</span></code> option. Once configured,
 <code class="code docutils literal"><span class="pre">pr_debug()</span></code>, <code class="code docutils literal"><span class="pre">dev_dbg()</span></code> and <code class="code docutils literal"><span class="pre">print_hex_dump_debug()</span></code>,
 <code class="code docutils literal"><span class="pre">print_hex_dump_bytes()</span></code> can be dynamically enabled per call.</p>
-<p>The <code class="file docutils literal"><span class="pre">/sys/kernel/debug/dynamic_debug/control</span></code> file from the debugfs
-(where <code class="file docutils literal"><span class="pre">/sys/kernel/debug</span></code> is the path to which debugfs was mounted) is used to
+<p>The <code class="file docutils literal"><span class="pre">/sys/kernel/debug/dynamic_debug/control</span></code> file from the debugfs (where
+<code class="file docutils literal"><span class="pre">/sys/kernel/debug</span></code> is the path to which debugfs was mounted) is used to
 filter messages or to view existing filters.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">mount</span> <span class="o">-</span><span class="n">t</span> <span class="n">debugfs</span> <span class="n">none</span> <span class="o">/</span><span class="n">debug</span>
 </pre></div>
@@ -1120,7 +1141,7 @@ the module. Find more information <a class="reference external" href="http://tld
 </div>
 </div>
 <div class="section" id="proc-info">
-<span id="id3"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
 <p>Generate the skeleton for the task named <strong>7-list-proc</strong>. Add code to
 display the Process ID (<code class="docutils literal"><span class="pre">PID</span></code>) and the executable name. The
 information will be displayed both when loading and unloading the
@@ -1130,19 +1151,19 @@ module.</p>
 <ul class="last simple">
 <li>In the Linux kernel, a process is described by the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> to find the
-definition of <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
+definition of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
 <li>To find the structure field that contains the name of the
 executable, look for the “executable” comment.</li>
 <li>The pointer to the structure of the current process
 running at a given time in the kernel is given by the
-<code class="xref c c-macro docutils literal"><span class="pre">current</span></code> variable (of the type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span>
-<span class="pre">*</span></code>).</li>
+<code class="xref c c-macro docutils literal"><span class="pre">current</span></code> variable (of the type
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct*</span></code>).</li>
 </ul>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">To use <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> you’ll need to include the header
-in which the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
+in which the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
 <code class="docutils literal"><span class="pre">linux/sched.h</span></code>.</p>
 </div>
 <p>Compile, copy and load the module. Unload the kernel module.</p>
@@ -1151,6 +1172,134 @@ displayed processes differ. This is because a module is being loaded
 from the executable <code class="file docutils literal"><span class="pre">/sbin/insmod</span></code> when the module is loaded and
 when the module is unloaded a process is created from the executable
 <code class="file docutils literal"><span class="pre">/sbin/rmmod</span></code>.</p>
+</div>
+</div>
+<div class="section" id="extra-exercises">
+<h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kdb">
+<h3>1. KDB<a class="headerlink" href="#kdb" title="Permalink to this headline">¶</a></h3>
+<p>Go to the <strong>9-kdb</strong> directory. Activate KDB the over serial port and enter KDB
+mode using <strong class="command">SysRq</strong>. Connect to the pseudo-terminal linked to virtiocon0
+using <strong class="command">minicom</strong>, configure KDB to use the hvc0 serial port:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
+</pre></div>
+</div>
+<p>and enable it using SysRq (<strong class="command">Ctrl + O g</strong>).
+Review the current system status (<strong class="command">help</strong> to see the available KDB
+commands). Continue the kernel execution using the <strong class="command">go</strong> command.</p>
+<p>Load the <code class="file docutils literal"><span class="pre">hello_kdb</span></code> module.
+The module will simulate a bug when writing to the <code class="file docutils literal"><span class="pre">/proc/hello_kdb_bug</span></code>
+file. To simulate a bug, use the below command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/hello_kdb_bug
+</pre></div>
+</div>
+<p>After running the above command, at every oops/panic the kernel stops the
+execution and enters debug mode.</p>
+<p>Analyze the stacktrace and determine the code that generated the bug.
+How can we find out from KDB the address where the module was loaded?</p>
+<p>In parallel, use GDB in a new window to view the code based on KDB information.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Load the symbol file. Use <strong class="command">info line</strong>.</p>
+</div>
+<p>When writing to <code class="file docutils literal"><span class="pre">/proc/hello_kdb_break</span></code>, the module will increment the
+<code class="xref c c-data docutils literal"><span class="pre">kdb_write_address</span></code> variable. Enter KDB and set a breakpoint for each
+write access of the <code class="xref c c-data docutils literal"><span class="pre">kdb_write_address</span></code> variable.
+Return to kernel to trigger a write using:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/hello_kdb_break
+</pre></div>
+</div>
+</div>
+<div class="section" id="ps-module">
+<h3>2. PS Module<a class="headerlink" href="#ps-module" title="Permalink to this headline">¶</a></h3>
+<p>Update the created kernel module at <a class="reference internal" href="#proc-info"><span class="std std-ref">7. Proc info</span></a> in order to display
+information about all the processes in the system, when inserting the kernel
+module, not just about the current process. Afterwards, compare the obtained
+result with the output of the <strong class="command">ps</strong> command.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<ul class="last simple">
+<li>Processes in the system are structured in a circular list.</li>
+<li><code class="xref c c-macro docutils literal"><span class="pre">for_each</span> <span class="pre">_...</span></code> macros (such as <code class="xref c c-macro docutils literal"><span class="pre">for_each_process</span></code>) are
+useful when you want to navigate the items in a list.</li>
+<li>To understand how to use a feature or a macro, use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> or Vim and
+<strong class="command">cscope</strong> and search for usage scenarios.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="memory-info">
+<h3>3. Memory Info<a class="headerlink" href="#memory-info" title="Permalink to this headline">¶</a></h3>
+<p>Create a kernel module that displays the virtual memory areas of the current
+process; for each memory area it will display the start address and the end
+address.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<ul class="last simple">
+<li>Start from an existing kernel module.</li>
+<li>Investigate the structures <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>,
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code>. A
+memory area is indicated by a structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span>
+<span class="pre">vm_area_struct</span></code>.</li>
+<li>Don’t forget to include the headers where the necessary structures are
+defined.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>4. Dynamic Debugging<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Go to the <strong>10-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
+<p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in
+<code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file
+<code class="file docutils literal"><span class="pre">/debug/dynamic_debug/control</span></code>. Insert the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module and
+notice the new content of the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file.</p>
+<p>What appears extra in the respective file? Run the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>grep dyndbg /debug/dynamic_debug/control
+</pre></div>
+</div>
+<p>Configure <strong class="command">dyndbg</strong> so that only messages marked as “Important” in
+<code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code> function are displayed when the module is unloaded.
+The exercise will only filter out the <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls; <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
+calls being always displayed.</p>
+<p>Specify two ways to filter.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Read the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and look at the <strong class="command">dyndbg</strong>
+options (for example, <strong class="command">line</strong>, <strong class="command">format</strong>).</p>
+</div>
+<p>Perform the filtering and revise the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file. What
+has changed? How do you know which calls are activated?</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Check the <strong class="command">dyndbg</strong> flags. Unload the kernel module and observe the
+log messages.</p>
+</div>
+</div>
+<div class="section" id="dynamic-debugging-during-initialization">
+<h3>5. Dynamic Debugging During Initialization<a class="headerlink" href="#dynamic-debugging-during-initialization" title="Permalink to this headline">¶</a></h3>
+<p>As you have noticed, <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls can only be activated /filtered
+after module insertion. In some situations, it might be helpful to view the
+messages from the initialization of the module. This can be done by using a
+default (fake) parameter called <strong class="command">dyndbg</strong> that can be passed as an
+argument to initialize the module. With this parameter you can add /delete
+<strong class="command">dyndbg</strong> flags.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Read the last part of the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and see the available
+flags (e.g.: <strong class="command">+/- p</strong>).</p>
+</div>
+<p>Read the <a class="reference external" href="https://01.org/linuxgraphics/gfx-docs/drm/admin-guide/dynamic-debug-howto.html#debug-messages-at-module-initialization-time">Debug Messages section at Module Initialization Time</a>
+and insert the module so that the messages in <code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code> (called
+<code class="xref c c-func docutils literal"><span class="pre">dyndbg_init()</span></code>) are also displayed during initialization.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In the VM from the lab, you will need to use <strong class="command">insmod</strong> instead of
+<strong class="command">modprobe</strong>.</p>
+</div>
+<p>Without unloading the module, deactivate <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">You can delete the set flags. Unload the kernel module.</p>
+</div>
 </div>
 </div>
 </div>
