@@ -1,0 +1,54 @@
+img.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  min-width: 100%;
+  min-height: 100%;
+
+  border-radius: 10px;
+  -o-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+
+  z-index: -1;
+}
+
+a.headerlink {
+    visibility: hidden;
+}
+
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+    visibility: visible;
+}
+
+div.figure p.caption {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-size: 0.5em;
+}
+
+.slide-no {
+    position: absolute;
+    bottom: 1ex;
+    right: 1em;
+    font-size: 66%;
+}
+
+.slide-footer {
+    position: absolute;
+    bottom: 1ex;
+    left: 1em;
+    font-size: 66%;
+}
+
+div.admonition.note {
+    visibility: hidden;
+    display: none;
+}
