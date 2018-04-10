@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/introduction.html">Introduction</a></li>
@@ -293,6 +294,31 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#per-cpu-data">Per CPU data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#memory-ordering-and-barriers">Memory Ordering and Barriers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#read-copy-update-rcu">Read Copy Update (RCU)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#decoding-an-oops">Decoding an oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#addr2line">addr2line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#objdump">objdump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#gdb">gdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kernel-panic">Kernel panic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#list-debugging">List debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#memory-debugging">Memory debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#debug-slab">DEBUG_SLAB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kasan">KASAN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#comparison-between-memory-debugging-tools">Comparison between memory debugging tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kmemcheck">kmemcheck</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#slub-debug">SLUB_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#kmemleak">Kmemleak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#other-tools">Other tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="labs/vm.html">Virtual Machine Setup</a><ul>
@@ -503,32 +529,29 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l1"><a class="reference internal" href="labs/block_device_drivers.html">Block Device Drivers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#block-i-o-devices-in-linux">Block I/O devices in Linux</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#register-a-block-i-o-device">Register a block I/O device</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#register-a-disk">Register a disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#request-queues">Request queues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#register-a-block-i-o-device">Register a block I/O device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#register-a-disk">Register a disk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#request-queues">Request queues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#requests-for-block-devices">Requests for block devices</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#create-a-request">Create a request</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#finish-a-request">Finish a request</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#process-a-request">Process a request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#requests-for-block-devices">Requests for block devices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-a-request">Create a request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#finish-a-request">Finish a request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#process-a-request">Process a request</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#transmit-a-struct-bio-structure">Transmit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="labs/block_device_drivers.html#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#submit-a-struct-bio-structure">Submit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#further-reading">Further reading</a></li>

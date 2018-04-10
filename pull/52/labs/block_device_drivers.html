@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
@@ -102,32 +103,29 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Block Device Drivers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#block-i-o-devices-in-linux">Block I/O devices in Linux</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#register-a-block-i-o-device">Register a block I/O device</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#register-a-disk">Register a disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#request-queues">Request queues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#register-a-block-i-o-device">Register a block I/O device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#register-a-disk">Register a disk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-queues">Request queues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#create-a-request">Create a request</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#finish-a-request">Finish a request</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#process-a-request">Process a request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-request">Create a request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finish-a-request">Finish a request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#process-a-request">Process a request</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#transmit-a-struct-bio-structure">Transmit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submit-a-struct-bio-structure">Submit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
@@ -243,10 +241,8 @@ exceed the size of a page. The size of the block may vary depending on the file
 system used, the most common values being 512 bytes, 1 kilobytes and 4
 kilobytes.</p>
 </div>
-<div class="section" id="block-i-o-devices-in-linux">
-<h2>Block I/O devices in Linux<a class="headerlink" href="#block-i-o-devices-in-linux" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="register-a-block-i-o-device">
-<h3>Register a block I/O device<a class="headerlink" href="#register-a-block-i-o-device" title="Permalink to this headline">¶</a></h3>
+<h2>Register a block I/O device<a class="headerlink" href="#register-a-block-i-o-device" title="Permalink to this headline">¶</a></h2>
 <p>To register a block I/O device, function <code class="xref c c-func docutils literal"><span class="pre">register_blkdev()</span></code> is used.
 To deregister a block I/O device, function <code class="xref c c-func docutils literal"><span class="pre">unregister_blkdev()</span></code> is
 used.</p>
@@ -284,7 +280,7 @@ the module exit function. A typical scenario is presented below:</p>
 </div>
 </div>
 <div class="section" id="register-a-disk">
-<h3>Register a disk<a class="headerlink" href="#register-a-disk" title="Permalink to this headline">¶</a></h3>
+<h2>Register a disk<a class="headerlink" href="#register-a-disk" title="Permalink to this headline">¶</a></h2>
 <p>Although the <code class="xref c c-func docutils literal"><span class="pre">register_blkdev()</span></code> function obtains a major, it does not
 provide a device (disk) to the system. For creating and using block devices
 (disks), a specialized interface defined in <code class="file docutils literal"><span class="pre">linux/genhd.h</span></code> is used.</p>
@@ -349,7 +345,7 @@ users of the device and call the <code class="xref c c-func docutils literal"><s
 are no users left of the device.</p>
 </div>
 <div class="section" id="struct-gendisk-structure">
-<h3><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure<a class="headerlink" href="#struct-gendisk-structure" title="Permalink to this headline">¶</a></h3>
+<h2><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure<a class="headerlink" href="#struct-gendisk-structure" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure stores information about a disk. As
 stated above, such a structure is obtained from the <code class="xref c c-func docutils literal"><span class="pre">alloc_disk()</span></code> call
 and must be completed before it is sent to the <code class="xref c c-func docutils literal"><span class="pre">add_disk()</span></code> function.</p>
@@ -448,7 +444,7 @@ example of such conversion is when calling the <code class="xref c c-func docuti
 in the code above).</p>
 </div>
 <div class="section" id="struct-block-device-operations-structure">
-<h3><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure<a class="headerlink" href="#struct-block-device-operations-structure" title="Permalink to this headline">¶</a></h3>
+<h2><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure<a class="headerlink" href="#struct-block-device-operations-structure" title="Permalink to this headline">¶</a></h2>
 <p>Just as for a character device, operations in <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code>
 should be completed, so for a block device, the operations in
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> should be completed. The association
@@ -525,7 +521,7 @@ performed by the <code class="xref c c-func docutils literal"><span class="pre">
 of the disk.</p>
 </div>
 <div class="section" id="request-queues">
-<h3>Request queues<a class="headerlink" href="#request-queues" title="Permalink to this headline">¶</a></h3>
+<h2>Request queues<a class="headerlink" href="#request-queues" title="Permalink to this headline">¶</a></h2>
 <p>Drivers for block devices use queues to store the block requests I/O that will
 be processed. A request queue is represented by the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request_queue</span></code> structure. The request queue is made up of a
@@ -540,7 +536,7 @@ schedulers. A scheduler must sort the requests and present them to the driver
 in order to maximize performance. The scheduler also deals with the combination
 of adjacent requests (which refer to adjacent sectors of the disk).</p>
 <div class="section" id="create-and-delete-a-request-queue">
-<h4>Create and delete a request queue<a class="headerlink" href="#create-and-delete-a-request-queue" title="Permalink to this headline">¶</a></h4>
+<h3>Create and delete a request queue<a class="headerlink" href="#create-and-delete-a-request-queue" title="Permalink to this headline">¶</a></h3>
 <p>A request queue is created with the <code class="xref c c-func docutils literal"><span class="pre">blk_init_queue()</span></code> function and is
 deleted using the <code class="xref c c-func docutils literal"><span class="pre">blk_cleanup_queue()</span></code> function.</p>
 <p>An example of using these functions is as follows:</p>
@@ -609,7 +605,7 @@ function.</p>
 field in other structures.</p>
 </div>
 <div class="section" id="useful-functions-for-processing-request-queues">
-<h4>Useful functions for processing request queues<a class="headerlink" href="#useful-functions-for-processing-request-queues" title="Permalink to this headline">¶</a></h4>
+<h3>Useful functions for processing request queues<a class="headerlink" href="#useful-functions-for-processing-request-queues" title="Permalink to this headline">¶</a></h3>
 <p>The function of type <code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code> is used to handle requests for
 working  with the block device. This function is the equivalent of read and
 write  functions encountered on character devices. The function receives the
@@ -637,7 +633,7 @@ must be acquired. If the function is called from the function of type
 </div>
 </div>
 <div class="section" id="requests-for-block-devices">
-<h3>Requests for block devices<a class="headerlink" href="#requests-for-block-devices" title="Permalink to this headline">¶</a></h3>
+<h2>Requests for block devices<a class="headerlink" href="#requests-for-block-devices" title="Permalink to this headline">¶</a></h2>
 <p>A request for a block device is described by <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code>
 structure.</p>
 <p>The fields of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure include:</p>
@@ -666,7 +662,7 @@ will be discussed in the ref:<cite>bio_structure</cite> section;</li>
 </ul>
 </div></blockquote>
 <div class="section" id="create-a-request">
-<h4>Create a request<a class="headerlink" href="#create-a-request" title="Permalink to this headline">¶</a></h4>
+<h3>Create a request<a class="headerlink" href="#create-a-request" title="Permalink to this headline">¶</a></h3>
 <p>Read /write requests are created by code layers superior to the kernel I/O
 subsystem. Typically, the subsystem that creates requests for block devices is
 the file management subsystem. The I/O subsystem acts as an interface between
@@ -676,7 +672,7 @@ of the specific block device and sorting and merging requests according to
 performance considerations.</p>
 </div>
 <div class="section" id="finish-a-request">
-<h4>Finish a request<a class="headerlink" href="#finish-a-request" title="Permalink to this headline">¶</a></h4>
+<h3>Finish a request<a class="headerlink" href="#finish-a-request" title="Permalink to this headline">¶</a></h3>
 <p>When the driver has finished transferring all the sectors of a request to /from
 the device, it must inform the I/O subsystem by calling the
 <code class="xref c c-func docutils literal"><span class="pre">blk_end_request()</span></code> function. If the lock associated to the request queue
@@ -688,7 +684,7 @@ function is called if the lock associated to the request queue is already
 acquired.</p>
 </div>
 <div class="section" id="process-a-request">
-<h4>Process a request<a class="headerlink" href="#process-a-request" title="Permalink to this headline">¶</a></h4>
+<h3>Process a request<a class="headerlink" href="#process-a-request" title="Permalink to this headline">¶</a></h3>
 <p>The central part of a block device driver is the <code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code>
 function type. In previous examples, the function that fulfilled this role was
 <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>. As stated in the
@@ -762,7 +758,7 @@ have been processed, the <code class="xref c c-func docutils literal"><span clas
 </div>
 </div>
 <div class="section" id="struct-bio-structure">
-<span id="bio-structure"></span><h3><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#struct-bio-structure" title="Permalink to this headline">¶</a></h3>
+<span id="bio-structure"></span><h2><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#struct-bio-structure" title="Permalink to this headline">¶</a></h2>
 <p>Each <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure is an I/O block request, but may come
 from combining more independent requests from a higher level. The sectors to be
 transferred for a request can be scattered into the main memory but they always
@@ -790,7 +786,7 @@ a block I/O request.</p>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>In turn, the <a href="#id1"><span class="problematic" id="id2">:c:struct:`struct bio`</span></a> structure contains a <code class="xref c c-member docutils literal"><span class="pre">bi_io_vec</span></code>
+<p>In turn, the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure contains a <code class="xref c c-member docutils literal"><span class="pre">bi_io_vec</span></code>
 vector of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> structures. It consists of the individual
 pages in the physical memory to be transferred, the offset within the page and
 the size of the buffer. To iterate through a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure,
@@ -801,7 +797,7 @@ information about how many buffers and sectors were consumed during the
 iteration. The request type is encoded in the <code class="xref c c-member docutils literal"><span class="pre">bi_opf</span></code> field; to
 determine it, use the <code class="xref c c-func docutils literal"><span class="pre">bio_data_dir()</span></code> function.</p>
 <div class="section" id="create-a-struct-bio-structure">
-<h4>Create a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#create-a-struct-bio-structure" title="Permalink to this headline">¶</a></h4>
+<h3>Create a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#create-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
 <p>Two functions can be used to create a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure:</p>
 <blockquote>
 <div><ul class="simple">
@@ -817,8 +813,8 @@ from the two clones;</li>
 </div></blockquote>
 <p>Both functions return a new <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure.</p>
 </div>
-<div class="section" id="transmit-a-struct-bio-structure">
-<h4>Transmit a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#transmit-a-struct-bio-structure" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="submit-a-struct-bio-structure">
+<h3>Submit a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#submit-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
 <p>Usually, a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure is created by the higher levels of
 the kernel (usually the file system). A structure thus created is then
 transmitted to the I/O subsystem that gathers more <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>
@@ -830,8 +826,8 @@ a request from the request queue of an I/O device. From that queue, it can be
 processed by the I/O device driver using a specialized function.</p>
 </div>
 <div class="section" id="wait-for-the-completion-of-a-struct-bio-structure">
-<span id="bio-completion"></span><h4>Wait for the completion of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#wait-for-the-completion-of-a-struct-bio-structure" title="Permalink to this headline">¶</a></h4>
-<p>Transmitting a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure to a driver has the effect of
+<span id="bio-completion"></span><h3>Wait for the completion of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#wait-for-the-completion-of-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
+<p>Submitting a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure to a driver has the effect of
 adding it to a request from the request queue from where it will be further
 processed. Thus, when the <code class="xref c c-func docutils literal"><span class="pre">submit_bio()</span></code> function returns, it is not
 guaranteed that the processing of the structure has finished. If you want to
@@ -846,7 +842,7 @@ specifies the function that will be called at the end of the
 function.</p>
 </div>
 <div class="section" id="initialize-a-struct-bio-structure">
-<h4>Initialize a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#initialize-a-struct-bio-structure" title="Permalink to this headline">¶</a></h4>
+<h3>Initialize a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#initialize-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
 <p>Once a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure has been allocated and before being
 transmitted, it must be initialized.</p>
 <p>Initializing the structure involves filling in its important fields. As
@@ -878,7 +874,7 @@ a multiple of the device sector size.</p>
 </div>
 </div>
 <div class="section" id="how-to-use-the-content-of-a-struct-bio-structure">
-<span id="bio-content"></span><h4>How to use the content of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#how-to-use-the-content-of-a-struct-bio-structure" title="Permalink to this headline">¶</a></h4>
+<span id="bio-content"></span><h3>How to use the content of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#how-to-use-the-content-of-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
 <p>To use the content of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, the structure’s
 support pages must be mapped to the kernel address space from where they can be
 accessed. For mapping /unmapping, use the <code class="xref c c-macro docutils literal"><span class="pre">kmap_atomic</span></code> and
@@ -950,12 +946,12 @@ structure and the iterator that traverses its segments.</p>
 </div>
 </div>
 <div class="section" id="free-a-struct-bio-structure">
-<h4>Free a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#free-a-struct-bio-structure" title="Permalink to this headline">¶</a></h4>
+<h3>Free a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#free-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
 <p>Once a kernel subsystem uses a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, it will have to
 release the reference to it. This is done by calling <code class="xref c c-func docutils literal"><span class="pre">bio_put()</span></code> function.</p>
 </div>
 <div class="section" id="set-up-a-request-queue-at-struct-bio-level">
-<h4>Set up a request queue at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level<a class="headerlink" href="#set-up-a-request-queue-at-struct-bio-level" title="Permalink to this headline">¶</a></h4>
+<h3>Set up a request queue at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level<a class="headerlink" href="#set-up-a-request-queue-at-struct-bio-level" title="Permalink to this headline">¶</a></h3>
 <p>The function <code class="xref c c-func docutils literal"><span class="pre">blk_init_queue()</span></code> may specify a function to be used to
 process requests sent to the driver. The function receives as argument the
 request queue as queries and carries out processing at
@@ -983,7 +979,6 @@ processing at <code class="xref c c-type docutils literal"><span class="pre">str
 <span class="n">blk_queue_make_request</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">,</span> <span class="n">my_make_request</span><span class="p">);</span>
 <span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">queuedata</span> <span class="o">=</span> <span class="n">dev</span><span class="p">;</span>
 </pre></div>
-</div>
 </div>
 </div>
 </div>
@@ -1260,7 +1255,13 @@ standard output.</p>
 </div>
 <div class="section" id="processing-requests-from-the-request-queue-at-struct-bio-level">
 <h3>6. Processing requests from the request queue at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level<a class="headerlink" href="#processing-requests-from-the-request-queue-at-struct-bio-level" title="Permalink to this headline">¶</a></h3>
-<p>In the implementation from exercise 3, we have only processed a bio_vec of the current bio from the request. We want to process all bio_vecs from all bio. For this we will go through all bio requests and all bio_vecs (also called segments) to each bio.</p>
+<p>In the implementation from Exercise 3, we have only processed a
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> of the current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> from the request.
+We want to process all <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> structures from all
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structures.
+For this, we will iterate through all <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> requests and through
+all <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> structures (also called segments) of each
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>.</p>
 <p>Add, within the ramdisk implementation (<code class="file docutils literal"><span class="pre">1-2-3-6-ram-disk/</span></code> directory),
 support for processing the requests from the request queue at
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level. Follow the comments marked with <strong>TODO 6</strong>.</p>

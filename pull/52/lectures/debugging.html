@@ -30,7 +30,9 @@
   <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
   <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Virtual Machine Setup" href="../labs/vm.html" />
+    <link rel="prev" title="Symmetric Multi-Processing" href="smp.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -83,12 +85,37 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#decoding-an-oops">Decoding an oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addr2line">addr2line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#objdump">objdump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gdb">gdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-panic">Kernel panic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#list-debugging">List debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-debugging">Memory debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#debug-slab">DEBUG_SLAB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kasan">KASAN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comparison-between-memory-debugging-tools">Comparison between memory debugging tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kmemcheck">kmemcheck</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slub-debug">SLUB_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#kmemleak">Kmemleak</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-tools">Other tools</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
@@ -563,6 +590,15 @@ Documentation/dev-tools/kmemleak.rst.</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../labs/vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="smp.html" class="btn btn-neutral" title="Symmetric Multi-Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
