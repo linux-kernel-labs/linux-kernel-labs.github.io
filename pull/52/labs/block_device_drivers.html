@@ -774,7 +774,7 @@ driver to retain its current position while processing the request.</p>
 a block I/O request.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bio</span> <span class="p">{</span>
     <span class="c1">//...</span>
-    <span class="k">struct</span> <span class="n">block_device</span>     <span class="o">*</span><span class="n">bi_bdev</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">gendisk</span>          <span class="o">*</span><span class="n">bi_disk</span><span class="p">;</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>            <span class="n">bi_opf</span><span class="p">;</span>         <span class="cm">/* bottom bits req flags, top bits REQ_OP. Use accessors. */</span>
     <span class="c1">//...</span>
     <span class="k">struct</span> <span class="n">bio_vec</span>          <span class="o">*</span><span class="n">bi_io_vec</span><span class="p">;</span>     <span class="cm">/* the actual vec list */</span>
@@ -854,7 +854,7 @@ in the function pointed by <code class="xref c c-member docutils literal"><span 
 <code class="xref c c-member docutils literal"><span class="pre">bio_set_op_attrs</span></code> to initialize the type of operation.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span> <span class="o">=</span> <span class="n">bio_alloc</span><span class="p">(</span><span class="n">GFP_NOIO</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 <span class="c1">//...</span>
-<span class="n">bio</span><span class="o">-&gt;</span><span class="n">bi_bdev</span> <span class="o">=</span> <span class="n">bdev</span><span class="p">;</span>
+<span class="n">bio</span><span class="o">-&gt;</span><span class="n">bi_disk</span> <span class="o">=</span> <span class="n">bdev</span><span class="o">-&gt;</span><span class="n">bd_disk</span><span class="p">;</span>
 <span class="n">bio</span><span class="o">-&gt;</span><span class="n">bi_iter</span><span class="p">.</span><span class="n">bi_sector</span> <span class="o">=</span> <span class="n">sector</span><span class="p">;</span>
 <span class="n">bio_set_op_attrs</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">REQ_OP_READ</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 <span class="n">bio_add_page</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
