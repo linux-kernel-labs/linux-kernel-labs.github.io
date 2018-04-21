@@ -1,0 +1,360 @@
+=================
+Memory Management
+=================
+
+`View slides <mm-slides.html>`_
+
+.. slideconf::
+   :autoslides: False
+   :theme: single-level
+
+Lecture objectives:
+===================
+
+.. slide:: Memory management
+   :inline-contents: True
+   :level: 2
+
+   * physical memory management in Linux
+
+   * virtual memory management in Linux
+
+
+Memory addressing basics
+========================
+
+.. slide:: Linux kernel address space
+   :inline-contents: True
+   :level: 2
+
+   .. ditaa::
+
+                                                        +--------------------+
+                                                        |                    |
+                                                        |                    |
+                                                        |                    |
+                                                        |                    |
+      0xFFFFFFFF  +---------------+                     |    I/O memory 1    |
+                  |               |                     |                    |
+                  |   HighMem     |                     |                    |
+                  |(arbitrary map)|                     |    I/O memory 0    |
+         +896MB   +---------------+-------------------->|                    |
+                  |               |                     |   ..............   |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |       Flash        |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |   ..............   |
+                  |   LowMem      |                     |                    |
+                  | (liniar map)  |                     |                    |
+                  |               |                     |       RAM 1        |
+                  |               |                     |                    |
+                  |               |                     |       RAM 0        |
+           +16MB  |               |                     |                    |
+                  +...............|       +------------>|                    |
+                  |               |       |             |                    |
+       0xC0000000 |               |       |             |                    | 0x000000000
+                  +---------------+-------------------->+--------------------+
+                  |               |       |
+                  |               |       |              physical address space
+                  |               |       |
+                  |   user space  +-------+
+                  |               |
+                  |               |
+                  +...............+
+
+                virtual address space
+
+
+
+.. slide:: Types of memory addresses
+   :inline-contents: True
+   :level: 2
+   
+   * physical address (processor <-> physical memory)
+   * user virtual address
+
+     * each process has its own mapping
+     * only used portions are mapped
+   
+   * kernel logical address
+
+     * 1-1 mapping kernel memory to physical memory
+   
+   * kernel virtual address
+   
+     * non-contiguous physical memory allocation
+
+
+Physical memory management in Linux
+===================================
+
+
+.. slide:: Physical memory management in Linux
+   :inline-contents: True
+   :level: 2
+
+   * physical memory is devided into chunks named pages
+
+      * sometimes refered as frames
+      * size = 1 << **PAGE_SHIFT**
+
+   * separated from virtual memory management
+
+   * each frame has associated a **struct page**
+   
+    * stored in lowmem as an array of descriptors (**mem_map**)
+    * contains flags, counters, virtual address (if any)
+
+
+.. slide:: Kernel memory allocation overview
+   :inline-contents: True
+   :level: 2
+
+   .. ditaa::
+      
+      
+      +----------------------------------------------------------------+
+      |                                                                |
+      |                        kernel code                             |
+      |                                                                |
+      +----------+--------------+----------+--------------+------------+
+                 |              |          |              |
+                 |              |          |              |
+                 v              |          |              v
+      +---------------------+   |          | +-------------------------+
+      |                     |   |          | |                         |
+      |  kmalloc allocator  |   |          | |   vmalloc allocator     |
+      |(contiguous phys mem)|   |          | |(non contiguous phys mem)|
+      +----------+----------+   |          | +-------------+-----------+
+                 |              |          |               |
+                 |              |          |               |
+                 v              v          |               |
+      +-----------------------------+      |               |
+      |                             |      |               |
+      |       slab allocator        |      |               |
+      |(caches of same size objects)|      |               |
+      +----------+------------------+      |               |
+                 |                         |               |
+                 |                         |               |
+                 v                         V               V
+      +------------------------------------------------------------------+
+      |                     page frame allocator                         |
+      |       (contiguous area of physical pages, 2k, 4k, 8k, ..)        |
+      |                   (includes zone allocator)                      |
+      +------------------------------------------------------------------+
+
+
+
+.. slide:: Physical memory zones
+   :inline-contents: True
+   :level: 2
+
+   .. ditaa::
+
+                                                        +--------------------+
+                                                        |                    |
+                                                        |                    |
+                                                        |                    |
+                                                        |                    |
+      0xFFFFFFFF  +---------------+                     |   ZONE_HIGHMEM     |
+                  |               |                     |                    |
+                  |   HighMem     |                     |                    |
+                  |               |                     |                    |
+         +896MB   +---------------+-------------------->|--------------------|
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |    ZONE_NORMAL     |
+                  |    LowMem     |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+                  |               |                     |                    |
+           +16MB  |               |                     |                    |
+                  +---------------+-------------------->|--------------------|
+                  |               |                     |                    |
+       0xC0000000 |               |                     |     ZONE_DMA       |
+                  +---------------+-------------------->+--------------------+
+               virtual address space                    physical address space
+
+
+
+.. slide:: Physical page allocation
+   :inline-contents: True
+   :level: 2
+
+   * **alloc_pages(gfp_mask, order)**
+ 
+    * allocates 2^order pages
+    * returns page descriptor (struct page)
+
+   * **__get_free_pages(gfp_mask, order)**
+    
+    * allocates 2^order pages
+    * returns the linear address of the page
+
+   * other functions
+
+     * alloc_page  / __get_free_page()
+     * __get_zero_page()  / __get_dma_page()
+
+
+.. slide:: Buddy allocation algorithm
+   :inline-contents: True
+   :level: 2
+
+   .. ditaa::
+
+                       +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+
+      List0:+--------> |1| |1| |1| |1| |1| |1| |1| |1|
+                       +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+
+      
+                       +-----+ +-----+  +-----+ +-----+
+      List1:+--------> |  2  | |  2  |  |  2  | |  2  |
+                       +-----+ +-----+  +-----+ +-----+
+      
+                       +-------------+  +-------------+
+      List2:+--------> |      4      |  |     4       |
+                       +-------------+  +-------------+
+
+      .........
+
+                       +----------------------------------------------------------+
+      List10:+-------> |                          1024                            |
+                       +----------------------------------------------------------+
+      
+
+.. slide:: Buddy algorithm
+   :inline-contents: True
+   :level: 2
+
+   * avoid external fragmentation
+   * fixed sized blocks are grouped in lists
+   * allocations performed only in 2^order size
+   * allocation of size N block
+
+     * if N sizes block exists. Trivial.
+     * if not, get a 2N sized block and split it.
+
+   * free of size N block
+
+    * if there are adjacents free blocks then merge them into a 2N block
+
+.. slide:: Buddy algorithm in Linux
+   :inline-contents: True
+   :level: 2
+
+   * use 11 list for blocks of sizes: 1, 2, 4, 8, .. 1024 pages
+   * largest allocation request corresponds to 4MB (1024 pages)
+   * each zone has its own buddy allocator
+   * physical address of the first page in a group is multiple of group size
+
+
+.. slide:: Smaller allocations
+   :inline-contents: True
+   :level: 2
+
+   * buddy algorithm is used for allocating pages.
+   * .. but we might need smaller chunks
+   * using the buddy allocator will result in external fragmentation
+   * create smaller blocks with fixed size
+
+.. slide:: SLAB architecture
+   :inline-contents: True
+   :level: 2
+
+   .. ditaa::
+
+      
+                                    +---------------------------+
+                                    |                           |
+              +-------------------->| .... +--+ +--+ +--+  +--+ |
+              |                     | .... +--+ +--+ +--+  +--+ |
+              |                     |      obj  obj  obj   obj  |
+              |                     +---------------------------+
+      +-------+------+                          Slab            
+      |              |                                            
+      |    Cache     |              +---------------------------+
+      +---+-----+----+              |                           |
+          |     |                   | +--+ +--+ .... +--+ ....  |
+          |     |                   | +--+ +--+ .... +--+ ....  |
+          |     +------------------>| obj  obj       obj        |
+          |                         +---------------------------+
+          |                                     Slab
+          |
+          |                         +---------------------------+
+          |                         |                           |
+          |                         | +--+ .... +--+ ....  +--+ |
+          +------------------------>| +--+ .... +--+ ....  +--+ |
+                                    | obj       obj        obj  |
+                                    +---------------------------+
+                                                Slab
+
+
+.. slide:: Slab allocator
+   :inline-contents: True
+   :level: 2
+
+   * allocations are seen as objects
+   * objects are grouped into caches
+   * each cache is a "store" of objects of the same type
+   * area of memory that contains a cache is divided into slabs
+   * each slab contains one or more contiguous pages
+   * freed objects are cached
+
+.. slide:: Why slab?
+   :inline-contents: True
+   :level: 2
+
+   * kernel tends to use same type of date repeatedly
+   * allocation requests frequently use the same size for allocation
+   * for non-standard request we can use the next size slab
+   * reduces allocation footprint because of caches
+   * objects are uniformly distributed to cache lines
+
+
+
+.. slide:: Virtual memory management
+   :inline-contents: True
+   :level: 2
+
+   * virtual memory is used in
+  
+     * kernel space
+     * user space
+
+   * allocating a memory zone in kernel/user space means:
+
+    * allocating a physical page
+    * allocating a zone in the virtual space
+
+.. slide:: Address space description
+   :inline-contents: True
+   :level: 2
+
+   * page table is used by:
+
+    * CPU to convert a virtual address to a physical address
+    * kernel (search, add, TLB)
+
+   * address space descriptor
+   
+    * used by the kernel to manage the virutal address space
+    * list of zone descriptors
+
+
+
+..
+
+
+
+   
