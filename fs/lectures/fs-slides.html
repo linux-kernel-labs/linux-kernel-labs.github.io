@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>File System Internals &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="next" title="Virtual Machine Setup" href="../labs/vm.html" />
+    <link rel="prev" title="Debugging" href="debugging.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-file-system-internals slide level-2">
+
+<h2>File System Internals</h2>
+
+<ul class="simple">
+<li>File System Software Stack</li>
+<li>VFS Basics</li>
+<li>Operations with Files</li>
+<li>Internals: Caches and Operations Structures</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-overview-of-file-system-software-stack slide level-2">
+
+<h2>Overview of File System Software Stack</h2>
+
+<img alt="../_images/ditaa-6d170e5ef5d74c1c6054fc3ff66f8114e6046fb3.png" src="../_images/ditaa-6d170e5ef5d74c1c6054fc3ff66f8114e6046fb3.png" />
+
+
+
+
+</article>
+<article class="admonition-disks-and-partitions slide level-2">
+
+<h2>Disks and Partitions</h2>
+
+<ul class="simple">
+<li>used by block device drivers</li>
+<li>disk and its partitions share major number, disk uses minor 0</li>
+<li>block_device: physical device description</li>
+<li>gendisk: logical device description (entry in /dev)</li>
+<li>may be formatted with filesystem</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-sectors-and-blocks slide level-2">
+
+<h2>Sectors and Blocks</h2>
+
+<ul class="simple">
+<li>sectors: smallest physical addressable unit</li>
+<li>block: logical addressing, multiple of sectors</li>
+<li>filesystem generally uses blocks of 4K (page size)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-block-device-driver slide level-2">
+
+<h2>Block Device Driver</h2>
+
+<ul class="simple">
+<li>sends read/write command to the device controller</li>
+<li>knows disk geometry, controller registers</li>
+<li>gets data from block I/O layer as request or bio</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-block-i-o-layer slide level-2">
+
+<h2>Block I/O Layer</h2>
+
+<ul class="simple">
+<li>also named “I/O Subsystem”, “I/O Manager”</li>
+<li>defines I/O schedulers</li>
+<li>sorting and merging data from higher layer (generally filesystem)</li>
+<li>sends data to block device driver in bigger chunks to improve efficiency</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-block-i-o-structures slide level-2">
+
+<h2>Block I/O Structures</h2>
+
+<ul class="simple">
+<li>struct bio: basic I/O metadata structure (equivalent to NT kernel IRP: I/O Request Packet)<ul>
+<li>data sector, direction, device</li>
+<li>list of bvec structures</li>
+</ul>
+</li>
+<li>struct bvec: smallest block metadata: block/page, start, length</li>
+<li>struct request: array of bio structures<ul>
+<li>used for efficiency</li>
+<li>usually sent out to block device drivers who define a reques_fn() function</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-buffer-head slide level-2">
+
+<h2>buffer_head</h2>
+
+<ul class="simple">
+<li>old block I/O data structure, maps a block (bh-&gt;b_data)</li>
+<li>used by VFS and file system drivers</li>
+<li>bread(), sb_bread(), brelse()</li>
+<li>submit_bh() submits a buffer head, creates a bio behind the scenes</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtual-file-system-vfs slide level-2">
+
+<h2>Virtual File System (VFS)</h2>
+
+<ul class="simple">
+<li>common component in other UNIX kernels (BSD, Solaris, macOS)</li>
+<li>Installable File System (IFS) on Windows</li>
+<li>kernel-level framework for file system driver</li>
+<li>provides data structures and implements generic methods</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-file-system-driver-fsd slide level-2">
+
+<h2>File System Driver (FSD)</h2>
+
+<ul class="simple">
+<li>uses VFS methods and data structures</li>
+<li>interprets data on disk</li>
+<li>registers callbacks called by VFS</li>
+<li>difficulty lies in knowing what is part of VFS and what needs implementing</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-file-and-inode slide level-2">
+
+<h2>file and inode</h2>
+
+<ul class="simple">
+<li>inode is basic file metadata (at VFS level)</li>
+<li>file is open file</li>
+<li>file is pointed to by entry in file descriptor table (part of each process)</li>
+<li>file points to inode</li>
+<li>multiple files may point to one inode</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-inode-in-memory-and-on-disk slide level-2">
+
+<h2>inode in Memory and on Disk</h2>
+
+<ul class="simple">
+<li>VFS inode (generic) is allocated into memory with kmalloc() or friends, and then initialized with generic data</li>
+<li>disk inode (file system specific) is read into memory from disk using sb_bread()</li>
+<li>data from disk inode is filled into VFS inode</li>
+<li>extra data from disk inode is part of a file system specific in-memory data structure pointed to by VFS inode</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-fundamental-data-structures slide level-2">
+
+<h2>Fundamental Data Structures</h2>
+
+<ul class="simple">
+<li>inode: file medatada: type, permissions, ownership, timestamps, accounting, pointers to data blocks</li>
+<li>superblock: file system metadata: filesystem magic number, file system layout, accounting</li>
+<li>dentry: (name, inode) mappings<ul>
+<li>multiple dentries may point to same inode: hard links or simply links</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-regular-files-vs-directories slide level-2">
+
+<h2>Regular Files vs. Directories</h2>
+
+<ul class="simple">
+<li>regular files: data is byte stream, no structure</li>
+<li>directories: data is array of records (dentries)</li>
+<li>dentries have no file system region of their own, they are part of directory data blocks</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-filesystem-layout slide level-2">
+
+<h2>Filesystem Layout</h2>
+
+<div class="figure">
+<img alt="_static/fs-layout.png" class="fill" src="_static/fs-layout.png" />
+</div>
+
+
+
+
+</article>
+<article class="admonition-mount-and-unmount slide level-2">
+
+<h2>Mount and Unmount</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-open-file slide level-2">
+
+<h2>Open File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-close-file slide level-2">
+
+<h2>Close File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-get-attributes-of-file slide level-2">
+
+<h2>Get Attributes of File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-read-data-from-file slide level-2">
+
+<h2>Read Data from File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-write-data-to-file slide level-2">
+
+<h2>Write Data to File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-create-file slide level-2">
+
+<h2>Create File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-remove-file slide level-2">
+
+<h2>Remove File</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-list-directory-contents slide level-2">
+
+<h2>List Directory Contents</h2>
+
+<ul class="simple">
+<li>called readdir()</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-caches slide level-2">
+
+<h2>Caches</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-operations-structures slide level-2">
+
+<h2>Operations Structures</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-super-operations slide level-2">
+
+<h2>super_operations</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-inode-operations slide level-2">
+
+<h2>inode_operations</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-file-operations slide level-2">
+
+<h2>file_operations</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-address-space-operations slide level-2">
+
+<h2>address_space_operations</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-file-system-software-stack slide level-2">
+
+<h2>File System Software Stack</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtual-file-system slide level-2">
+
+<h2>Virtual File System</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-vfs-data-structures slide level-2">
+
+<h2>VFS Data Structures</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-vfs-operations-structures slide level-2">
+
+<h2>VFS Operations Structures</h2>
+
+<ul class="simple">
+<li>TODO</li>
+</ul>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
