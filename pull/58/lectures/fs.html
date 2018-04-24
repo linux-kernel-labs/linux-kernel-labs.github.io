@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File System Internals &mdash; The Linux Kernel  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Virtual Machine Setup" href="../labs/vm.html" />
+    <link rel="prev" title="Debugging" href="debugging.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.15.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">File System Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-system-software-stack">File System Software Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vfs-basics">VFS Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operations-with-files">Operations with Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#internals-caches-and-operations-structures">Internals: Caches and Operations Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/exercises.html">Exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>File System Internals</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/lectures/fs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-system-internals">
+<h1>File System Internals<a class="headerlink" href="#file-system-internals" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="fs-slides.html">View slides</a></p>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-file-system-internals simple">
+<li>File System Software Stack</li>
+<li>VFS Basics</li>
+<li>Operations with Files</li>
+<li>Internals: Caches and Operations Structures</li>
+</ul>
+</div>
+<div class="section" id="file-system-software-stack">
+<h2>File System Software Stack<a class="headerlink" href="#file-system-software-stack" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://upload.wikimedia.org/wikipedia/commons/3/30/IO_stack_of_the_Linux_kernel.svg">The Linux Storage Stack</a></p>
+<span class="admonition-overview-of-file-system-software-stack"></span><p>TODO</p>
+<span class="admonition-disks-and-partitions"></span><p>TODO</p>
+<span class="admonition-sectors-and-blocks"></span><p>TODO</p>
+<span class="admonition-block-device-driver"></span><p>TODO</p>
+<span class="admonition-block-i-o-layer"></span><p>TODO</p>
+<span class="admonition-block-i-o-structures"></span><p>TODO</p>
+<span class="admonition-buffer-head"></span><p>TODO</p>
+<span class="admonition-virtual-file-system-vfs"></span><p>TODO</p>
+<span class="admonition-file-system-driver-fsd"></span><p>TODO</p>
+</div>
+<div class="section" id="vfs-basics">
+<h2>VFS Basics<a class="headerlink" href="#vfs-basics" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<span class="admonition-file-and-inode"></span><p>TODO</p>
+<span class="admonition-inode-in-memory-and-on-disk"></span><p>TODO</p>
+<span class="admonition-fundamental-data-structures"></span><p>TODO</p>
+<span class="admonition-regular-files-vs-directories"></span><p>TODO</p>
+<span class="admonition-filesystem-layout"></span><p>TODO</p>
+</div>
+<div class="section" id="operations-with-files">
+<h2>Operations with Files<a class="headerlink" href="#operations-with-files" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<span class="admonition-mount-and-unmount"></span><p>TODO</p>
+<span class="admonition-open-file"></span><p>TODO</p>
+<span class="admonition-close-file"></span><p>TODO</p>
+<span class="admonition-get-attributes-of-file"></span><p>TODO</p>
+<span class="admonition-read-data-from-file"></span><p>TODO</p>
+<span class="admonition-write-data-to-file"></span><p>TODO</p>
+<span class="admonition-create-file"></span><p>TODO</p>
+<span class="admonition-remove-file"></span><p>TODO</p>
+<span class="admonition-list-directory-contents"></span><p>TODO</p>
+</div>
+<div class="section" id="internals-caches-and-operations-structures">
+<h2>Internals: Caches and Operations Structures<a class="headerlink" href="#internals-caches-and-operations-structures" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<span class="admonition-caches"></span><p>TODO</p>
+<span class="admonition-operations-structures"></span><p>TODO</p>
+<span class="admonition-super-operations"></span><p>TODO</p>
+<span class="admonition-inode-operations"></span><p>TODO</p>
+<span class="admonition-file-operations"></span><p>TODO</p>
+<span class="admonition-address-space-operations"></span><p>TODO</p>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+<span class="admonition-file-system-software-stack"></span><p>TODO</p>
+<span class="admonition-virtual-file-system"></span><p>TODO</p>
+<span class="admonition-vfs-data-structures"></span><p>TODO</p>
+<span class="admonition-vfs-operations-structures"></span><p>TODO</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../labs/vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="debugging.html" class="btn btn-neutral" title="Debugging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The kernel development community.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>
