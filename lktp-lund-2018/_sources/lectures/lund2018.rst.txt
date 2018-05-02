@@ -1,0 +1,236 @@
+=================================
+The Linux Kernel Teaching Project
+=================================
+
+.. ifnotslides::
+
+   `View slides <lund2018-slides.html>`_
+
+http://github.com/linux-kernel-labs
+
+Octavian Purdila <tavi@cs.pub.ro>
+
+Daniel Baluta <daniel.baluta@gmail.com>
+
+
+.. slideconf::
+   :autoslides: True
+   :theme: single-level
+
+
+What is it?
+===========
+
+   * A collection of lectures and labs about Linux kernel topics
+
+   * The lectures focus on theoretical topics and Linux kernel
+     internals exploration
+
+   * The labs focus on device drivers topics and they resemble "howto"
+     style documentation
+
+   * Content based on the `Operatings Systems 2
+     <http://ocw.cs.pub.ro/courses/so2>`_ course from the Computer
+     Science and Engineering Department, the Faculty of Automatic
+     Control and Computers, University POLITEHNICA of Bucharest.
+
+What is it for?
+===============
+
+   * A base for people wanting to start learning about a specific
+     subsystem or a particular device driver
+
+   * A base for creating operating systems internals courses based on
+     the Linux kernel
+
+   * A base for creating traning courses on Linux kernel
+
+
+Lectures
+========
+
+   * Present topics about Linux kernel internals as well as any
+     required OS internals concepts
+
+   * Topics: system calls, address space, SMP, interrupts, processes,
+     etc.
+
+   `Example: Introduction <intro.html>`_
+
+
+Labs
+====
+
+   The labs focus on device drivers topics and they resemble "howto"
+   style documentation. Each topic has two parts:
+
+   * a walk-through the topic which contains an overview, the main
+     abstractions, simple examples and pointers to APIs
+
+   * a hands-on part which contains a few exercises that should be
+     resolved by the student; to focus on the topic at hand, the
+     student is presented with a starting coding skeleton and with
+     in-depth tips on how to solve the exercises
+
+
+   `Example: Kernel Modules <../labs/kernel_modules.html>`_
+
+
+VM
+==
+
+   * Exercises are designed to run on a qemu based virtual machine
+
+   * Lectures use gdb for introspection (e.g. follow system call flow)
+
+   * The virtual machine setup uses prebuild Yocto images that it
+     downloads from downloads.yocyoproject.org and a kernel image that
+     it builds itself
+
+   * Simulates typical Linux embedded development (e.g. students
+     connect to the VM via serial, simulates JTAG debugging via qemu
+     gdb support)
+
+
+VM demo
+=======
+
+   |_|
+
+   .. asciicast:: syscalls-inspection.cast
+
+Exercises
+=========
+
+   * Each lab has a hands-on exercises section which will contain
+     in-depth, incremental clues on how to solve one or multiple
+     tasks.
+
+   * To focus on a particular issue most of the tasks will be
+     performed on existing skeleton drivers.
+
+   * Each skeleton driver has clearly marked sections that needs to be
+     filled in order to complete the tasks
+
+   * The skeleton drivers are generated from full source examples
+     located in tools/labs/templates
+
+   * Targets for building and copying modules to VM image
+
+Exercises demo
+==============
+
+   |_|
+
+   .. asciicast:: syscalls-inspection.cast
+
+
+How?
+====
+
+   * Integrated with the Linux kernel documentation system
+
+   * Uses a few extra sphinx plugins: hieroglyph, ditaa, ascinema
+
+   * Provides a qemu + yocto sandbox for kernel development as well as
+     iterative code templates
+
+
+Hieroglyph
+==========
+
+   * A sphinx plugin that creates HTML slides
+
+   * Same source for slides and docs
+
+   .. code-block:: none
+
+      Advocates of micro-kernels often suggest that micro-kernel are
+      superior because of the modular design a micro-kernel
+      enforces. However, monolithic kernels can also be modular and
+      there are several approaches that modern monolithic kernels use
+      toward this goal:
+
+      .. slide:: Monolithic kernels *can* be modular
+         :level: 2
+         :inline-contents: True
+
+         * Components can enabled or disabled at compile time
+
+         * Support of loadable kernel modules (at runtime)
+
+
+   `Docs view <https://linux-kernel-labs.github.io/master/lectures/intro.html#micro-kernels-vs-monolithic-kernels>`_
+   `Slides view <https://linux-kernel-labs.github.io/master/lectures/intro-slides.html#6>`_
+
+
+ditaa
+=====
+
+   .. code-block:: none
+
+      .. ditaa::
+
+         +---------------+  +--------------+      +---------------+  -\
+         | Application 1 |  | Application2 | ...  | Application n |   |
+         +---------------+  +--------------+      +---------------+   |> User space
+                 |                 |                      |           |
+                 v                 v                      v          -/
+         +--------------------------------------------------------+  -\
+         |                 System Call Interface                  |   |
+         +--------------------------------------------------------+   |
+
+   .. ditaa::
+
+      +---------------+  +--------------+      +---------------+  -\
+      | Application 1 |  | Application2 | ...  | Application n |   |
+      +---------------+  +--------------+      +---------------+   |> User space
+              |                 |                      |           |
+              v                 v                      v          -/
+      +--------------------------------------------------------+  -\
+      |                 System Call Interface                  |   |
+      +--------------------------------------------------------+   |
+              |                 |                      |           |
+              v                 v                      v           |> Kernel space
+      +--------------------------------------------------------+   |
+      |                       Kernel                           |   |
+      +--------------------------------------------------------+   |
+      |                   Device drivers                       |   |
+      +--------------------------------------------------------+  -/
+              |                 |                      |          -\
+              v                 v                      v           |> Hardware
+                                                                  -/
+
+
+ascinema
+========
+
+   .. code-block:: none
+
+      .. asciicast:: syscalls-inspection.cast
+
+   .. asciicast:: syscalls-inspection.cast
+
+
+Templates
+=========
+
+   * Full solution provided for exercises
+
+   * Script for generating skeletons from solution with simple
+     `/* TODO <task>/<lines> */` annotations in the source code
+
+   .. code-block:: c
+
+      static void timer_handler(struct timer_list *tl)
+      {
+	/* TODO 1/4: print a message */
+	static size_t nseconds;
+
+	nseconds += TIMER_TIMEOUT;
+	pr_info("[timer_handler] nseconds = %d\n", nseconds);
+
+	/* TODO 2: rechedule timer */
+	mod_timer(tl, jiffies + TIMER_TIMEOUT * HZ);
+      }
+
