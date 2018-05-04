@@ -1,22 +1,40 @@
-=================================
-The Linux Kernel Teaching Project
-=================================
+==============================
+Teaching with the Linux Kernel
+==============================
 
 .. ifnotslides::
 
    `View slides <lund2018-slides.html>`_
 
+|_|
+
 http://github.com/linux-kernel-labs
+
+|_|
 
 Octavian Purdila <tavi@cs.pub.ro>
 
-Daniel Baluta <daniel.baluta@gmail.com>
+Daniel Baluta <daniel.baluta@nxp.com>
 
 
 .. slideconf::
    :autoslides: True
    :theme: single-level
 
+
+What is it for?
+===============
+
+   * A base for people wanting to start learning about a specific
+     subsystem or a particular device driver
+
+   * A base for creating operating systems internals courses based on
+     the Linux kernel
+
+   * A base for creating training courses on Linux kernel
+
+
+   * Started as a result of the Linux kernel teaching panel @ LLC2016
 
 What is it?
 ===========
@@ -33,17 +51,6 @@ What is it?
      <http://ocw.cs.pub.ro/courses/so2>`_ course from the Computer
      Science and Engineering Department, the Faculty of Automatic
      Control and Computers, University POLITEHNICA of Bucharest.
-
-What is it for?
-===============
-
-   * A base for people wanting to start learning about a specific
-     subsystem or a particular device driver
-
-   * A base for creating operating systems internals courses based on
-     the Linux kernel
-
-   * A base for creating traning courses on Linux kernel
 
 
 Lectures
@@ -95,16 +102,16 @@ VM
 VM demo
 =======
 
-   |_|
-
-   .. asciicast:: syscalls-inspection.cast
+   .. asciicast:: vm-demo.cast
 
 Exercises
 =========
 
    * Each lab has a hands-on exercises section which will contain
      in-depth, incremental clues on how to solve one or multiple
-     tasks.
+     tasks
+
+     * `Example: Kernel Modules <../labs/kernel_modules.html#exercises>`_
 
    * To focus on a particular issue most of the tasks will be
      performed on existing skeleton drivers.
@@ -117,12 +124,11 @@ Exercises
 
    * Targets for building and copying modules to VM image
 
+
 Exercises demo
 ==============
 
-   |_|
-
-   .. asciicast:: syscalls-inspection.cast
+   .. asciicast:: exercises-demo.cast
 
 
 How?
@@ -234,3 +240,41 @@ Templates
 	mod_timer(tl, jiffies + TIMER_TIMEOUT * HZ);
       }
 
+
+
+Projects
+========
+
+   * Create full drivers from scratch based on detailed specification
+
+
+   * Requires more effort then exercises
+
+   * Current projects: system call tracer, serial driver (using qemu
+     virtual device), very simple filesystem driver, transport
+     protocol driver, etc
+
+   * Unit tests provided
+
+
+Future work
+===========
+
+ * Upstreaming
+
+ * qemu virtual devices to exercise drivers for various subsystems
+   (e.g. sensors)
+
+ * Update kernel docs to allow better referencing from labs
+
+
+
+How to contribute
+=================
+
+ * http://github.com/linux-kernel-labs
+
+ * Fork it for custom activities (University lectures, company
+   training, summer schools) and to contribute back
+
+ * Issues and Pull Requests are welcomed!

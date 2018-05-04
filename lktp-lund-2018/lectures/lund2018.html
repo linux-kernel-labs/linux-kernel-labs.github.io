@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The Linux Kernel Teaching Project &mdash; The Linux Kernel  documentation</title>
+  <title>Teaching with the Linux Kernel &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -92,9 +92,9 @@
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The Linux Kernel Teaching Project</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#what-is-it">What is it?</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Teaching with the Linux Kernel</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#what-is-it-for">What is it for?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-it">What is it?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lectures">Lectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#labs">Labs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#vm">VM</a></li>
@@ -106,6 +106,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#ditaa">ditaa</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ascinema">ascinema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#projects">Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#future-work">Future work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-contribute">How to contribute</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../labs/vm.html">Virtual Machine Setup</a></li>
@@ -164,7 +167,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>The Linux Kernel Teaching Project</li>
+      <li>Teaching with the Linux Kernel</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -183,12 +186,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="the-linux-kernel-teaching-project">
-<h1>The Linux Kernel Teaching Project<a class="headerlink" href="#the-linux-kernel-teaching-project" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="teaching-with-the-linux-kernel">
+<h1>Teaching with the Linux Kernel<a class="headerlink" href="#teaching-with-the-linux-kernel" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="lund2018-slides.html">View slides</a></p>
+<p>&nbsp;</p>
 <p><a class="reference external" href="http://github.com/linux-kernel-labs">http://github.com/linux-kernel-labs</a></p>
+<p>&nbsp;</p>
 <p>Octavian Purdila &lt;<a class="reference external" href="mailto:tavi&#37;&#52;&#48;cs&#46;pub&#46;ro">tavi<span>&#64;</span>cs<span>&#46;</span>pub<span>&#46;</span>ro</a>&gt;</p>
-<p>Daniel Baluta &lt;<a class="reference external" href="mailto:daniel&#46;baluta&#37;&#52;&#48;gmail&#46;com">daniel<span>&#46;</span>baluta<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<p>Daniel Baluta &lt;<a class="reference external" href="mailto:daniel&#46;baluta&#37;&#52;&#48;nxp&#46;com">daniel<span>&#46;</span>baluta<span>&#64;</span>nxp<span>&#46;</span>com</a>&gt;</p>
+<div class="section" id="what-is-it-for">
+<h2>What is it for?<a class="headerlink" href="#what-is-it-for" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>A base for people wanting to start learning about a specific
+subsystem or a particular device driver</li>
+<li>A base for creating operating systems internals courses based on
+the Linux kernel</li>
+<li>A base for creating training courses on Linux kernel</li>
+<li>Started as a result of the Linux kernel teaching panel &#64; LLC2016</li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="what-is-it">
 <h2>What is it?<a class="headerlink" href="#what-is-it" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -201,18 +219,6 @@ style documentation</li>
 <li>Content based on the <a class="reference external" href="http://ocw.cs.pub.ro/courses/so2">Operatings Systems 2</a> course from the Computer
 Science and Engineering Department, the Faculty of Automatic
 Control and Computers, University POLITEHNICA of Bucharest.</li>
-</ul>
-</div></blockquote>
-</div>
-<div class="section" id="what-is-it-for">
-<h2>What is it for?<a class="headerlink" href="#what-is-it-for" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ul class="simple">
-<li>A base for people wanting to start learning about a specific
-subsystem or a particular device driver</li>
-<li>A base for creating operating systems internals courses based on
-the Linux kernel</li>
-<li>A base for creating traning courses on Linux kernel</li>
 </ul>
 </div></blockquote>
 </div>
@@ -262,8 +268,7 @@ gdb support)</li>
 <div class="section" id="vm-demo">
 <h2>VM demo<a class="headerlink" href="#vm-demo" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>&nbsp;</p>
-<asciinema-player src="syscalls-inspection.cast"></asciinema-player></div></blockquote>
+<div><asciinema-player src="vm-demo.cast"></asciinema-player></div></blockquote>
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
@@ -271,7 +276,10 @@ gdb support)</li>
 <div><ul class="simple">
 <li>Each lab has a hands-on exercises section which will contain
 in-depth, incremental clues on how to solve one or multiple
-tasks.</li>
+tasks<ul>
+<li><a class="reference external" href="../labs/kernel_modules.html#exercises">Example: Kernel Modules</a></li>
+</ul>
+</li>
 <li>To focus on a particular issue most of the tasks will be
 performed on existing skeleton drivers.</li>
 <li>Each skeleton driver has clearly marked sections that needs to be
@@ -285,8 +293,7 @@ located in tools/labs/templates</li>
 <div class="section" id="exercises-demo">
 <h2>Exercises demo<a class="headerlink" href="#exercises-demo" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>&nbsp;</p>
-<asciinema-player src="syscalls-inspection.cast"></asciinema-player></div></blockquote>
+<div><asciinema-player src="exercises-demo.cast"></asciinema-player></div></blockquote>
 </div>
 <div class="section" id="how">
 <h2>How?<a class="headerlink" href="#how" title="Permalink to this headline">¶</a></h2>
@@ -374,6 +381,41 @@ toward this goal:
 </div>
 </div></blockquote>
 </div>
+<div class="section" id="projects">
+<h2>Projects<a class="headerlink" href="#projects" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Create full drivers from scratch based on detailed specification</li>
+<li>Requires more effort then exercises</li>
+<li>Current projects: system call tracer, serial driver (using qemu
+virtual device), very simple filesystem driver, transport
+protocol driver, etc</li>
+<li>Unit tests provided</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="future-work">
+<h2>Future work<a class="headerlink" href="#future-work" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Upstreaming</li>
+<li>qemu virtual devices to exercise drivers for various subsystems
+(e.g. sensors)</li>
+<li>Update kernel docs to allow better referencing from labs</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="how-to-contribute">
+<h2>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://github.com/linux-kernel-labs">http://github.com/linux-kernel-labs</a></li>
+<li>Fork it for custom activities (University lectures, company
+training, summer schools) and to contribute back</li>
+<li>Issues and Pull Requests are welcomed!</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
@@ -440,9 +482,7 @@ toward this goal:
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
