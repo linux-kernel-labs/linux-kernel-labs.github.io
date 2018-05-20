@@ -91,7 +91,6 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lectures/mm.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/vm.html">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/exercises.html">Exercises</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/introduction.html">Introduction</a></li>
@@ -320,12 +319,6 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#kmemleak">Kmemleak</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lockdep-checker">Lockdep checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#other-tools">Other tools</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="lectures/mm.html">Memory Management</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="lectures/mm.html#lecture-objectives">Lecture objectives:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/mm.html#memory-addressing-basics">Memory addressing basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/mm.html#physical-memory-management-in-linux">Physical memory management in Linux</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="labs/vm.html">Virtual Machine Setup</a><ul>
@@ -576,8 +569,8 @@ Computers, University POLITEHNICA of Bucharest.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#background-information">Background information</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#memory-structures">Memory Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#structures-used-for-memory-mapping">Structures used for memory mapping</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#struct-page"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#struct-vm-area-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#struct-mm-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code></a></li>
@@ -688,9 +681,7 @@ Computers, University POLITEHNICA of Bucharest.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
