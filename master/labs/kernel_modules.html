@@ -72,7 +72,7 @@
             
             
               <div class="version">
-                4.15.0
+                4.19.0
               </div>
             
           
@@ -1182,7 +1182,7 @@ when the module is unloaded a process is created from the executable
 <h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="kdb">
 <h3>1. KDB<a class="headerlink" href="#kdb" title="Permalink to this headline">¶</a></h3>
-<p>Go to the <strong>9-kdb</strong> directory. Activate KDB the over serial port and enter KDB
+<p>Go to the <strong>8-kdb</strong> directory. Activate KDB the over serial port and enter KDB
 mode using <strong class="command">SysRq</strong>. Connect to the pseudo-terminal linked to virtiocon0
 using <strong class="command">minicom</strong>, configure KDB to use the hvc0 serial port:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
@@ -1251,7 +1251,7 @@ defined.</li>
 </div>
 <div class="section" id="id3">
 <h3>4. Dynamic Debugging<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>Go to the <strong>10-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
+<p>Go to the <strong>9-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
 <p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in
 <code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file
 <code class="file docutils literal"><span class="pre">/debug/dynamic_debug/control</span></code>. Insert the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module and
