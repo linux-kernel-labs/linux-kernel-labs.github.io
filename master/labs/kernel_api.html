@@ -454,7 +454,7 @@ well-known structure in the Linux kernel:</p>
 sentinel of a list when dynamic allocation is made, by setting the value of
 the <code class="xref c c-data docutils literal"><span class="pre">next</span></code> and <code class="xref c c-data docutils literal"><span class="pre">prev</span></code> to list fields.</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">list_add(struct</span> <span class="pre">list_head</span> <span class="pre">*new,</span> <span class="pre">struct</span> <span class="pre">list_head</span> <span class="pre">*head)()</span></code> adds the
-:c:data`new` element after the <code class="xref c c-data docutils literal"><span class="pre">head</span></code> element.</li>
+<code class="xref c c-data docutils literal"><span class="pre">new</span></code> element after the <code class="xref c c-data docutils literal"><span class="pre">head</span></code> element.</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">list_del(struct</span> <span class="pre">list_head</span> <span class="pre">*entry)()</span></code> deletes the item at the
 <code class="xref c c-data docutils literal"><span class="pre">entry</span></code> address of the list it belongs to.</li>
 <li><code class="xref c c-macro docutils literal"><span class="pre">list_entry(ptr,</span> <span class="pre">type,</span> <span class="pre">member)</span></code> returns the structure with the
@@ -628,7 +628,7 @@ can only be used in process context.</p>
 <div class="section" id="atomic-variables">
 <span id="id1"></span><h3>Atomic variables<a class="headerlink" href="#atomic-variables" title="Permalink to this headline">¶</a></h3>
 <p>Often, you only need to synchronize access to a simple variable, such as a
-counter. For this, an :c:type`atomic_t` type can be used (defined in
+counter. For this, an <code class="xref c c-type docutils literal"><span class="pre">atomic_t</span></code> type can be used (defined in
 <code class="file docutils literal"><span class="pre">include/linux/atomic.h</span></code>), that holds an integer value. Below are some
 operations that can be performed on an <code class="xref c c-type docutils literal"><span class="pre">atomic_t</span></code> variable.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/atomic.h&gt;</span><span class="cp"></span>
@@ -913,7 +913,7 @@ current process.</li>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-macro docutils literal"><span class="pre">next_task</span></code> macro, which returns a pointer to the next
-process (i.e a :c:type`struct task_struct` structure).</p>
+process (i.e a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> structure).</p>
 </div>
 <ul class="simple">
 <li>PID of the next process of the next process, relative to the current
