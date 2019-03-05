@@ -113,6 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#accessing-memory">Accessing memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contexts-of-execution">Contexts of execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#locking">Locking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preemptivity">Preemptivity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linux-kernel-api">Linux Kernel API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#convention-indicating-errors">Convention indicating errors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#strings-of-characters">Strings of characters</a></li>
@@ -309,9 +310,10 @@ The code that runs in the critical region protected by a spinlock is not allowed
 to suspend the current process (it must adhere to the execution conditions in
 the interrupt context). Moreover, the CPU will not be released except for
 the case of an interrupt. Due to the mechanism used, it is important that a
-spinlock is being held as little time as possible.
-Preemptivity
-============</p>
+spinlock is being held as little time as possible.</p>
+</div>
+<div class="section" id="preemptivity">
+<h2>Preemptivity<a class="headerlink" href="#preemptivity" title="Permalink to this headline">¶</a></h2>
 <p>Linux uses preemptive kernels. The notion of preemptive multitasking should not
 be confused with the notion of a preemptive kernel. The notion of preemptive
 multitasking refers to the fact that the operating system forcefully interrupts
@@ -347,7 +349,7 @@ For failures, negative values are returned as shown in the example below:</p>
 <p>In Linux, the kernel programmer is provided with the usual routine functions:
 <code class="xref c c-func docutils literal"><span class="pre">strcpy()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strncpy()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strlcpy()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strcat()</span></code>,
 <code class="xref c c-func docutils literal"><span class="pre">strncat()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strlcat()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strcmp()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strncmp()</span></code>,
-<code class="xref c c-func docutils literal"><span class="pre">strnicmp()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strnchr()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strrchr()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strrchr()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">strnicmp()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strchr()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strnchr()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strrchr()</span></code>,
 <code class="xref c c-func docutils literal"><span class="pre">strstr()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">strlen()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">memset()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">memmove()</span></code>,
 <code class="xref c c-func docutils literal"><span class="pre">memcmp()</span></code>, etc. These functions are declared in the
 <code class="file docutils literal"><span class="pre">include/linux/string.h</span></code> header and are implemented in the kernel in the
@@ -652,7 +654,7 @@ example, we consider that an atomic variable can have the LOCKED and UNLOCKED
 values, and if the respective variable equals LOCKED then a specific function
 should return -EBUSY.
 Such an usage is shown schematically in the code below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define LOCKED               0</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define LOCKED       0</span>
 <span class="cp">#define UNLOCKED     1</span>
 
 <span class="k">static</span> <span class="n">atomic_t</span> <span class="n">flag</span><span class="p">;</span>

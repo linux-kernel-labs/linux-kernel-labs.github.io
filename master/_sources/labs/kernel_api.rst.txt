@@ -103,6 +103,7 @@ to suspend the current process (it must adhere to the execution conditions in
 the interrupt context). Moreover, the CPU will not be released except for
 the case of an interrupt. Due to the mechanism used, it is important that a
 spinlock is being held as little time as possible.
+
 Preemptivity
 ============
 
@@ -147,7 +148,7 @@ Strings of characters
 In Linux, the kernel programmer is provided with the usual routine functions:
 :c:func:`strcpy`, :c:func:`strncpy`, :c:func:`strlcpy`, :c:func:`strcat`,
 :c:func:`strncat`, :c:func:`strlcat`, :c:func:`strcmp`, :c:func:`strncmp`,
-:c:func:`strnicmp`, :c:func:`strnchr`, :c:func:`strrchr`, :c:func:`strrchr`,
+:c:func:`strnicmp`, :c:func:`strchr`, :c:func:`strnchr`, :c:func:`strrchr`,
 :c:func:`strstr`, :c:func:`strlen`, :c:func:`memset`, :c:func:`memmove`,
 :c:func:`memcmp`, etc. These functions are declared in the
 :file:`include/linux/string.h` header and are implemented in the kernel in the
@@ -489,7 +490,7 @@ Such an usage is shown schematically in the code below:
 
 .. code-block:: c
 
-   #define LOCKED		0
+   #define LOCKED	0
    #define UNLOCKED	1
 
    static atomic_t flag;
