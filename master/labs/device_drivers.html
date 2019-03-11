@@ -239,8 +239,8 @@ Examples of devices that fall into this category are hard drives, cdroms, ram
 disks, magnetic tape drives. For these devices, reading and writing is done at
 the data block level.</p>
 <p>For the two types of device drivers, the Linux kernel offers different APIs.
-If for device devices system calls go directly to device drivers, in case of
-block device devices, the drivers do not work directly with system calls. In
+If for character devices system calls go directly to device drivers, in case of
+block devices, the drivers do not work directly with system calls. In
 the case of block devices, communication between the user-space and the block
 device driver is mediated by the file management subsystem and the block device
 subsystem . The role of these subsystems is to prepare the device driver’s
@@ -272,7 +272,7 @@ character in the first column of the command output, and the block type by the
 character <code class="docutils literal"><span class="pre">b</span></code>. In columns <code class="docutils literal"><span class="pre">5</span></code> and <code class="docutils literal"><span class="pre">6</span></code> of the result  you can see the
 major, respectively the minor for each device.</p>
 <p>Certain major identifiers are statically assigned to devices (in the
-<code class="docutils literal"><span class="pre">Documentation/devices.txt</span></code> file from the kernel sources). When choosing the
+<code class="docutils literal"><span class="pre">Documentation/admin-guide/devices.txt</span></code> file from the kernel sources). When choosing the
 identifier for a new device, you can use two methods: static (choose a number
 that does not seem to be used already) or dynamically. In /proc/devices are the
 loaded devices, along with the major identifier.</p>
@@ -298,11 +298,11 @@ system. Most driver operations use three important structures:
 <code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code>, <code class="docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code> and <code class="docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code>.</p>
 <div class="section" id="struct-file-operations">
 <h3><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code><a class="headerlink" href="#struct-file-operations" title="Permalink to this headline">¶</a></h3>
-<p>As mentioned above, the device device drivers receive unaltered system calls
+<p>As mentioned above, the character device drivers receive unaltered system calls
 made by users over device-type files. Consequently, implementation of a character
-device drivers means implementing the system calls specific to files: <code class="docutils literal"><span class="pre">open</span></code>,
+device driver means implementing the system calls specific to files: <code class="docutils literal"><span class="pre">open</span></code>,
 <code class="docutils literal"><span class="pre">close</span></code>, <code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code>, <code class="docutils literal"><span class="pre">lseek</span></code>, <code class="docutils literal"><span class="pre">mmap</span></code>, etc. These operations are
-described in the fields of the file_operations structure:</p>
+described in the fields of the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> structure:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">file_operations</span> <span class="p">{</span>
@@ -427,7 +427,7 @@ routines.</p>
 </div>
 <div class="section" id="registration-and-unregistration-of-character-devices">
 <h2>Registration and unregistration of character devices<a class="headerlink" href="#registration-and-unregistration-of-character-devices" title="Permalink to this headline">¶</a></h2>
-<p>The registration/registration of a device is made by specifying the major and
+<p>The registration/unregistration of a device is made by specifying the major and
 minor. The <code class="docutils literal"><span class="pre">dev_t</span></code> type is used to keep the identifiers of a device (both major
 and minor) and can be obtained using the MKDEV macro.</p>
 <p>For the static assignment and unallocation of device identifiers, the
@@ -456,7 +456,7 @@ exceeded, move to the next major):</p>
 </pre></div>
 </div>
 <p>After assigning the identifiers, the character device will have to be
-initialized (cdev_init) and the cdev_add kernel will have to be notified. The
+initialized (<code class="docutils literal"><span class="pre">cdev_init</span></code>) and the kernel will have to be notified(<code class="docutils literal"><span class="pre">cdev_add</span></code>). The
 <code class="docutils literal"><span class="pre">cdev_add</span></code> function must be called only after the device is ready to receive
 calls. Removing a device is done using the <code class="docutils literal"><span class="pre">cdev_del</span></code> function.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
@@ -511,7 +511,7 @@ calls. Removing a device is done using the <code class="docutils literal"><span 
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>While the following sequence deletes and registers them:</p>
+<p>While the following sequence deletes and unregisters them:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">cleanup_module</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
@@ -562,10 +562,10 @@ Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
 hardware platform);</li>
 <li><code class="docutils literal"><span class="pre">get_user</span></code> analogue to the previous function, only that val will be set to a
 value identical to the value at the user-space address given by address;</li>
-<li><code class="docutils literal"><span class="pre">copy_to_user</span></code> copies from the kernel-space from the address referenced by
-from in user-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>, <code class="docutils literal"><span class="pre">byte</span> <span class="pre">size</span></code> bytes;</li>
-<li><code class="docutils literal"><span class="pre">copy_from_user</span></code> copies from user-space from the address referenced by from
-in kernel-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>, <code class="docutils literal"><span class="pre">byte</span> <span class="pre">size</span></code> bytes.</li>
+<li><code class="docutils literal"><span class="pre">copy_to_user</span></code> copies from the kernel-space, from the address referenced by
+<code class="docutils literal"><span class="pre">from</span></code> in user-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>, <code class="docutils literal"><span class="pre">n</span></code> bytes;</li>
+<li><code class="docutils literal"><span class="pre">copy_from_user</span></code> copies from user-space from the address referenced by
+<code class="docutils literal"><span class="pre">from</span></code> in kernel-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>, <code class="docutils literal"><span class="pre">n</span></code> bytes.</li>
 </ul>
 </div></blockquote>
 <p>A common section of code that works with these functions is:</p>
@@ -750,8 +750,8 @@ to generate ioctl codes. The macrodefinition parameters are as follows:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">dir</span></code> represents the data transfer (<code class="docutils literal"><span class="pre">_IOC_NONE</span></code> , <code class="docutils literal"><span class="pre">_IOC_READ</span></code>,
-<code class="docutils literal"><span class="pre">_IOC_WRITE</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">type</span></code> represents the magic number (Documentation/ioctl-number.txt);</li>
+<code class="docutils literal"><span class="pre">_IOC_WRITE</span></code>).</li>
+<li><code class="docutils literal"><span class="pre">type</span></code> represents the magic number (<code class="docutils literal"><span class="pre">Documentation/ioctl/ioctl-number.txt</span></code>);</li>
 <li><code class="docutils literal"><span class="pre">nr</span></code> is the ioctl code for the device;</li>
 <li><code class="docutils literal"><span class="pre">size</span></code> is the size transferred data.</li>
 </ul>
