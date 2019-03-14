@@ -553,7 +553,7 @@ calling the macros / functions below:</p>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>All macros / functions turn 0 in case of success and another value in case of
+<p>All macros / functions return 0 in case of success and another value in case of
 error and have the following roles:</p>
 <blockquote>
 <div><ul class="simple">
@@ -562,10 +562,10 @@ Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
 hardware platform);</li>
 <li><code class="docutils literal"><span class="pre">get_user</span></code> analogue to the previous function, only that val will be set to a
 value identical to the value at the user-space address given by address;</li>
-<li><code class="docutils literal"><span class="pre">copy_to_user</span></code> copies from the kernel-space, from the address referenced by
-<code class="docutils literal"><span class="pre">from</span></code> in user-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>, <code class="docutils literal"><span class="pre">n</span></code> bytes;</li>
-<li><code class="docutils literal"><span class="pre">copy_from_user</span></code> copies from user-space from the address referenced by
-<code class="docutils literal"><span class="pre">from</span></code> in kernel-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>, <code class="docutils literal"><span class="pre">n</span></code> bytes.</li>
+<li><code class="docutils literal"><span class="pre">copy_to_user</span></code> copies <code class="docutils literal"><span class="pre">n</span></code> bytes from the kernel-space, from the address
+referenced by <code class="docutils literal"><span class="pre">from</span></code> in user-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>;</li>
+<li><code class="docutils literal"><span class="pre">copy_from_user</span></code> copies <code class="docutils literal"><span class="pre">n</span></code> bytes from user-space from the address
+referenced by <code class="docutils literal"><span class="pre">from</span></code> in kernel-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>.</li>
 </ul>
 </div></blockquote>
 <p>A common section of code that works with these functions is:</p>
@@ -714,7 +714,7 @@ may be less than what is required).</p>
         <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 
     <span class="cm">/* read data from device in my_data-&gt;buffer */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">copy_to_user</span><span class="p">(</span><span class="n">user_buffer</span><span class="p">,</span> <span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">copy_from_user</span><span class="p">(</span><span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">,</span> <span class="n">user_buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
 
     <span class="o">*</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
@@ -825,7 +825,7 @@ be used by the functions/macros:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="xref c c-func docutils literal"><span class="pre">init_waitqueue_head()</span></code> initializes the queue; to initialize the
-queue at compile time, you can use the c:macro:<cite>DECLARE_WAIT_QUEUE_HEAD</cite> macro;</li>
+queue at compile time, you can use the <code class="xref c c-macro docutils literal"><span class="pre">DECLARE_WAIT_QUEUE_HEAD</span></code> macro;</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">wait_event()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">wait_event_interruptible()</span></code> adds the current thread to the
 queue while the condition is false, sets it to TASK_UNINTERRUPTIBLE or
 TASK_INTERRUPTIBLE and calls the scheduler to schedule a new thread; Waiting
@@ -1007,7 +1007,7 @@ the driver. Follow comments marked with <strong>TODO 3</strong> and implement th
 <li>Add an <code class="docutils literal"><span class="pre">atomic_t</span></code> variable to the device structure.</li>
 <li>Initialize the variable at module initialization.</li>
 <li>Use the variable in the open function to restrict access to the device. We
-recommend using c:func:<cite>atomic_cmpxchg</cite>.</li>
+recommend using <code class="xref c c-func docutils literal"><span class="pre">atomic_cmpxchg()</span></code>.</li>
 <li>Reset the variable in the release function to retrieve access to the device.</li>
 <li>To test your deployment, you’ll need to simulate a long-term use of your
 device. To simulate a sleep, call the scheduler at the end of the device opening:</li>
@@ -1034,7 +1034,7 @@ An example of use is <a class="reference external" href="http://elixir.free-elec
 Initializing this buffer will be done in module <code class="docutils literal"><span class="pre">init</span></code> function.</li>
 <li>At a read call, copy the contents of the kernel space buffer into the user
 space buffer.<ul>
-<li>Use the c:func:<cite>copy_to_user</cite> function to copy information from kernel space to
+<li>Use the <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code> function to copy information from kernel space to
 user space.</li>
 <li>Ignore the size and offset parameters at this time. You can assume that
 the buffer in user space is large enough. You do not need to check the
