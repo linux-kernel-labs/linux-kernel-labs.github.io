@@ -535,7 +535,7 @@ following operations will be executed:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">free_irq</span> <span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>During the initialization function (c:func:<cite>init_module</cite>), or in the
+<p>During the initialization function (<code class="xref c c-func docutils literal"><span class="pre">init_module()</span></code>), or in the
 function that opens the device, interrupts must be activated for the
 device. This operation is dependent on the device, but most often
 involves setting a bit from the control register.</p>
