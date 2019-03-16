@@ -679,7 +679,7 @@ into account the internal buffer size, user buffer size and the offset:</p>
     <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 
-    <span class="cm">/* read data from device in my_data-&gt;buffer */</span>
+    <span class="cm">/* read data from my_data-&gt;buffer to user buffer */</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">copy_to_user</span><span class="p">(</span><span class="n">user_buffer</span><span class="p">,</span> <span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span> <span class="o">+</span> <span class="o">*</span><span class="n">offset</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
 
@@ -713,8 +713,8 @@ may be less than what is required).</p>
     <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 
-    <span class="cm">/* read data from device in my_data-&gt;buffer */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">copy_from_user</span><span class="p">(</span><span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">,</span> <span class="n">user_buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
+    <span class="cm">/* read data from user buffer to my_data-&gt;buffer */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">copy_from_user</span><span class="p">(</span><span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span> <span class="o">+</span> <span class="o">*</span><span class="n">offset</span><span class="p">,</span> <span class="n">user_buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
 
     <span class="o">*</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
