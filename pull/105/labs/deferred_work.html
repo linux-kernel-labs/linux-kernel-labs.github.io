@@ -378,7 +378,7 @@ context and are implemented on top of softirqs.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux / sched.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">timer_setup</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span> <span class="n">timer</span><span class="p">,</span>
-                 <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">),</span>
+                 <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="p">),</span>
                  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -433,7 +433,7 @@ will be generated.</p>
 timeout is:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
-<span class="kt">void</span> <span class="nf">timer_function</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">timer_function</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="p">);</span>
 
 <span class="k">struct</span> <span class="n">timer_list</span> <span class="n">timer</span> <span class="p">;</span>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">seconds</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>

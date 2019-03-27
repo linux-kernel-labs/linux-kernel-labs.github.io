@@ -200,7 +200,7 @@ To be used, a timer must first be initialized by calling :c:func:`timer_setup`:
    #include <linux / sched.h>
 
    void timer_setup(struct timer_list * timer,
-		    void (*function)(unsigned long),
+		    void (*function)(struct timer_list *),
 		    unsigned int flags);
 
 The above function initializes the internal fields of the structure
@@ -269,7 +269,7 @@ timeout is:
 
    #include <linux/sched.h>
 
-   void timer_function(unsigned long arg);
+   void timer_function(struct timer_list *);
 
    struct timer_list timer ;
    unsigned long seconds = 1;
