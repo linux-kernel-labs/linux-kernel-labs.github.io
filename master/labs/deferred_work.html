@@ -374,11 +374,11 @@ can not be used in the handler function.</p>
 <p>A particular type of deferred work, very often used, are timers. They
 are defined by <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">timer_list</span></code>. They run in interrupt
 context and are implemented on top of softirqs.</p>
-<p>To be used, a timer must first be initialized by calling <code class="xref c c-func docutils literal"><span class="pre">setup_timer()</span></code>:</p>
+<p>To be used, a timer must first be initialized by calling <code class="xref c c-func docutils literal"><span class="pre">timer_setup()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux / sched.h&gt;</span><span class="cp"></span>
 
-<span class="kt">void</span> <span class="nf">setup_timer</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span> <span class="n">timer</span><span class="p">,</span>
-                 <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">),</span>
+<span class="kt">void</span> <span class="nf">timer_setup</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span> <span class="n">timer</span><span class="p">,</span>
+                 <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="p">),</span>
                  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -434,12 +434,12 @@ will be generated.</p>
 timeout is:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
-<span class="kt">void</span> <span class="nf">timer_function</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">timer_function</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="p">);</span>
 
 <span class="k">struct</span> <span class="n">timer_list</span> <span class="n">timer</span> <span class="p">;</span>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">seconds</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
-<span class="n">setup_timer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">timer_function</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">timer_setup</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">timer_function</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 <span class="n">mod_timer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">jiffies</span> <span class="o">+</span> <span class="n">seconds</span> <span class="o">*</span> <span class="n">HZ</span><span class="p">);</span>
 </pre></div>
 </div>
