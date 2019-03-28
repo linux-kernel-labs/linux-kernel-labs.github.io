@@ -768,6 +768,8 @@ common mistakes:</p>
     <span class="k">if</span> <span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
     <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">e</span>
 <span class="p">}</span>
 
 <span class="kt">int</span> <span class="nf">my_thread_f</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
@@ -964,7 +966,7 @@ TODOs from the skeleton.</p>
 <li><code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code> to create a suspended thread and
 then start it running with <code class="xref c c-func docutils literal"><span class="pre">wake_up_process()</span></code>.</li>
 </ul>
-<p class="last">Review the <cite>Kernel threads</cite> section if needed.</p>
+<p class="last">Review the <a class="reference internal" href="#kernel-threads">Kernel Threads</a> section if needed.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
