@@ -325,8 +325,8 @@ calls.</p>
 <div class="section" id="tasklets">
 <h3>Tasklets<a class="headerlink" href="#tasklets" title="Permalink to this headline">¶</a></h3>
 <p>A tasklet is a special form of deferred work that runs in interrupt
-context, just like softirqs. The main between sofirqs are tasklets are
-that tasklets can be allocated dynamically and thus they can be used
+context, just like softirqs. The main difference between sofirqs and tasklets
+is that tasklets can be allocated dynamically and thus they can be used
 by device drivers. A tasklet is represented by <code class="xref c c-type docutils literal"><span class="pre">struct</span>
 <span class="pre">tasklet</span></code> and as many other kernel structures it needs to be
 initialized before being used. A pre-initialized tasklet can defined
@@ -379,12 +379,11 @@ context and are implemented on top of softirqs.</p>
 
 <span class="kt">void</span> <span class="nf">timer_setup</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span> <span class="n">timer</span><span class="p">,</span>
                  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="p">),</span>
-                 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
+                 <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The above function initializes the internal fields of the structure
-and associates <em>function</em> as the timer handler; The data parameter
-will be passed to the treatment function. Since timers are planned
+and associates <em>function</em> as the timer handler. Since timers are planned
 over softirqs, blocking calls can not be used in the code associated
 with the treatment function.</p>
 <p>Scheduling a timer is done with <code class="xref c c-func docutils literal"><span class="pre">mod_timer()</span></code>:</p>
@@ -546,7 +545,7 @@ initialize a work item, and <code class="xref c c-func docutils literal"><span c
 </div>
 <p><code class="xref c c-func docutils literal"><span class="pre">schedule_delayed_work()</span></code> can be used to plan a work item for
 execution with a given delay. The delay time unit is jiffies.</p>
-<p>Work items can not be masked by they can be canceled by calling
+<p>Work items can not be masked but they can be canceled by calling
 <code class="xref c c-func docutils literal"><span class="pre">cancel_delayed_work_sync()</span></code> or <code class="xref c c-func docutils literal"><span class="pre">cancel_work_sync()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">cancel_work_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
 <span class="kt">int</span> <span class="nf">cancel_delayed_work_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">delayed_work</span> <span class="o">*</span><span class="n">work</span><span class="p">);</span>
