@@ -946,8 +946,8 @@ section if needed.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">Add a new field with the type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">work_struct</span></code>
 in your device structure. Initialize this field. Schedule
-the work after N seconds from the timer’s handler using
-<code class="xref c c-func docutils literal"><span class="pre">schedule_delayed_work()</span></code>.</p>
+the work from the timer handler using <code class="xref c c-func docutils literal"><span class="pre">schedule_work()</span></code>.
+Schedule the timer handler aften N seconds from the ioctl.</p>
 </div>
 </div>
 <div class="section" id="kernel-thread">
