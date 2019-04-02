@@ -117,10 +117,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#tasklets">Tasklets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#timers">Timers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#locking">Locking</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#workqueues">Workqueues</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#kernel-threads">Kernel threads</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#workqueues">Workqueues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kernel-threads">Kernel threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
@@ -489,8 +489,9 @@ calls for synchronization like <code class="xref c c-func docutils literal"><spa
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="workqueues">
-<h3>Workqueues<a class="headerlink" href="#workqueues" title="Permalink to this headline">¶</a></h3>
+<h2>Workqueues<a class="headerlink" href="#workqueues" title="Permalink to this headline">¶</a></h2>
 <p>Workqueues are used to schedule actions to run in process context. The
 base unit with which they work is called work. There are two types of
 work:</p>
@@ -679,7 +680,7 @@ a new thread kernel called <em>my_workqueue</em>, the name passed to
 <code class="xref c c-func docutils literal"><span class="pre">create_singlethread_workqueue()</span></code>.</p>
 </div>
 <div class="section" id="kernel-threads">
-<h3>Kernel threads<a class="headerlink" href="#kernel-threads" title="Permalink to this headline">¶</a></h3>
+<h2>Kernel threads<a class="headerlink" href="#kernel-threads" title="Permalink to this headline">¶</a></h2>
 <p>Kernel threads have emerged from the need to run kernel code in
 process context. Kernel threads are the basis of the workqueue
 mechanism. Essentially, a thread kernel is a thread that only runs in
@@ -703,7 +704,7 @@ according to the standard printf syntax.</li>
 </pre></div>
 </div>
 <p>Will create a thread kernel with the name mykthread0.</p>
-<p>The kernel thread created with this function will stopped (in the
+<p>The kernel thread created with this function will be stopped (in the
 <em>TASK_INTERRUPTIBLE</em> state). To start the kernel thread, call the
 <code class="xref c c-func docutils literal"><span class="pre">wake_up_process()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
@@ -803,7 +804,6 @@ with:</p>
 </pre></div>
 </div>
 </div>
-</div>
 <div class="section" id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -898,7 +898,7 @@ type operation and its parameters (if any) on the command line.</p>
 <p>Run the test executable without arguments to observe the
 command line options it accepts.</p>
 <p>To enable the timer after 3 seconds use:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">test</span> <span class="n">with</span> <span class="mi">3</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">test</span> <span class="n">s</span> <span class="mi">3</span>
 </pre></div>
 </div>
 <p>To disable the timer use:</p>
@@ -947,8 +947,8 @@ section if needed.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">Add a new field with the type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">work_struct</span></code>
 in your device structure. Initialize this field. Schedule
-the work after N seconds from the timer’s handler using
-<code class="xref c c-func docutils literal"><span class="pre">schedule_work()</span></code>.</p>
+the work from the timer handler using <code class="xref c c-func docutils literal"><span class="pre">schedule_work()</span></code>.
+Schedule the timer handler aften N seconds from the ioctl.</p>
 </div>
 </div>
 <div class="section" id="kernel-thread">

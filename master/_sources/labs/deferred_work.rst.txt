@@ -333,7 +333,7 @@ calls for synchronization like :c:func:`spin_lock_bh` and
 
 
 Workqueues
-----------
+==========
 
 Workqueues are used to schedule actions to run in process context. The
 base unit with which they work is called work. There are two types of
@@ -563,7 +563,7 @@ a new thread kernel called *my_workqueue*, the name passed to
 :c:func:`create_singlethread_workqueue`.
 
 Kernel threads
---------------
+==============
 
 Kernel threads have emerged from the need to run kernel code in
 process context. Kernel threads are the basis of the workqueue
@@ -593,7 +593,7 @@ For example, the following call:
 
 Will create a thread kernel with the name mykthread0.
 
-The kernel thread created with this function will stopped (in the
+The kernel thread created with this function will be stopped (in the
 *TASK_INTERRUPTIBLE* state). To start the kernel thread, call the
 :c:func:`wake_up_process`:
 
@@ -800,7 +800,7 @@ type operation and its parameters (if any) on the command line.
 
 	  .. code-block:: c
 
-	     ./test with 3
+	     ./test s 3
 
 	  To disable the timer use:
 
@@ -853,8 +853,8 @@ section if needed.
 
 .. hint:: Add a new field with the type :c:type:`struct work_struct`
 	  in your device structure. Initialize this field. Schedule
-	  the work after N seconds from the timer's handler using
-	  :c:func:`schedule_work`.
+	  the work from the timer handler using :c:func:`schedule_work`.
+	  Schedule the timer handler aften N seconds from the ioctl.
 
 6. Kernel thread
 ----------------
