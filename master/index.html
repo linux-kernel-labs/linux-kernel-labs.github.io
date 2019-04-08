@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="labs/interrupts.html">I/O access and Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/deferred_work.html">Deferred work</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a></li>
 </ul>
@@ -575,6 +576,58 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#read-data-from-the-disk">4. Read data from the disk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#write-data-to-the-disk">5. Write data to the disk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#processing-requests-from-the-request-queue-at-struct-bio-level">6. Processing requests from the request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#virtual-filesystem-vfs">Virtual Filesystem (VFS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#the-general-file-system-model">The general file system model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#superblock">superblock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#localization">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#inode">inode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#id1">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#file">file</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#id2">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#dentry">dentry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#register-and-unregister-filesystems">Register and unregister filesystems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#functions-mount-kill-sb">Functions mount, kill_sb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#superblock-in-vfs">Superblock in VFS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#the-struct-super-block-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#superblock-operations">Superblock operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#the-fill-super-function">The <code class="docutils literal"><span class="pre">fill_super()</span></code> function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#buffer-cache">Buffer cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#functions-and-useful-macros">Functions and useful macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#myfs">myfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#register-and-unregister-the-myfs-file-system">1. Register and unregister the myfs file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#completing-myfs-superblock">2. Completing myfs superblock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#initialize-myfs-root-inode">3. Initialize myfs root inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#test-myfs-mount-and-unmount">4. Test myfs mount and unmount</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#minfs">minfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#registering-and-unregister-the-minfs-file-system">1. Registering and unregister the minfs file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#completing-minfs-superblock">2. Completing minfs superblock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#testing-of-minfs-mount-and-unmount">5. Testing of minfs mount and unmount</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

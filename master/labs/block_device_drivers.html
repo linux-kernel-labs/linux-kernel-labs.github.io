@@ -47,7 +47,7 @@
   <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Memory mapping" href="memory_mapping.html" />
+    <link rel="next" title="File system drivers (Part 1)" href="filesystems_part1.html" />
     <link rel="prev" title="Deferred work" href="deferred_work.html" /> 
 </head>
 
@@ -152,6 +152,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
 </ul>
@@ -359,7 +360,8 @@ are no users left of the device.</p>
 <h2><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure<a class="headerlink" href="#struct-gendisk-structure" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure stores information about a disk. As
 stated above, such a structure is obtained from the <code class="xref c c-func docutils literal"><span class="pre">alloc_disk()</span></code> call
-and must be completed before it is sent to the <code class="xref c c-func docutils literal"><span class="pre">add_disk()</span></code> function.</p>
+and its fields must be filled before it is sent to the <code class="xref c c-func docutils literal"><span class="pre">add_disk()</span></code>
+function.</p>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure has the following important fields:</p>
 <blockquote>
 <div><ul class="simple">
@@ -669,7 +671,7 @@ buffers, or by <code class="xref c c-macro docutils literal"><span class="pre">b
 one associated buffer;</li>
 <li><code class="xref c c-member docutils literal"><span class="pre">bio_data</span></code>: the address of the buffer associated to the request</li>
 <li>about the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure and its associated operations
-will be discussed in the ref:<cite>bio_structure</cite> section;</li>
+will be discussed in the <span class="xref std std-ref">bio_structure</span> section;</li>
 </ul>
 </div></blockquote>
 <div class="section" id="create-a-request">
@@ -769,7 +771,7 @@ have been processed, the <code class="xref c c-func docutils literal"><span clas
 </div>
 </div>
 <div class="section" id="struct-bio-structure">
-<span id="bio-structure"></span><h2><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#struct-bio-structure" title="Permalink to this headline">¶</a></h2>
+<h2><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#struct-bio-structure" title="Permalink to this headline">¶</a></h2>
 <p>Each <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure is an I/O block request, but may come
 from combining more independent requests from a higher level. The sectors to be
 transferred for a request can be scattered into the main memory but they always
@@ -872,7 +874,7 @@ in the function pointed by <code class="xref c c-member docutils literal"><span 
 <span class="c1">//...</span>
 </pre></div>
 </div>
-<p>In the code snippet above are specified the block device to which are sent the
+<p>In the code snippet above we specified the block device to which we sent the
 following: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, startup sector, operation
 (<code class="xref c c-data docutils literal"><span class="pre">REQ_OP_READ</span></code> or <code class="xref c c-data docutils literal"><span class="pre">REQ_OP_WRITE</span></code>) and content. The content of a
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure is a buffer described by: a physical page,
@@ -929,8 +931,8 @@ segments, and will also update global information stored in an iterator
 (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bvec_iter</span></code>) such as the current sector as well as other
 internal information (segment vector index, number of bytes left to be
 processed, etc.) .</p>
-<p>It can store information in the mapped buffer, or extract information.</p>
-<p>In the case request queues are used and it is needed to process the requests
+<p>You can store information in the mapped buffer, or extract information.</p>
+<p>In case request queues are used and you needed to process the requests
 at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level, use the <code class="xref c c-macro docutils literal"><span class="pre">rq_for_each_segment</span></code>
 macrodefinition instead of the <code class="xref c c-macro docutils literal"><span class="pre">bio_for_each_segment</span></code> macrodefinition.
 This macrodefinition iterates through each segment of each
@@ -1097,7 +1099,7 @@ the <code class="file docutils literal"><span class="pre">ram-disk.c</span></cod
 <p class="first admonition-title">Hint</p>
 <p class="last">Review the <a class="reference internal" href="#register-a-disk">Register a disk</a> and <a class="reference internal" href="#process-a-request">Process a request</a> sections.</p>
 </div>
-<p>Complete the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to process the request queue
+<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function which processes the request queue
 without actually processing your request: display the “request received” message
 and the following information: start sector, total size, data size from the
 current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, direction. To validate a request type,
@@ -1132,7 +1134,10 @@ updating, writing takes place.</p>
 result in read/write in a memory area.</p>
 <p>The memory area <code class="xref c c-data docutils literal"><span class="pre">dev-&gt;data</span></code> is already allocated in the source code of
 the module using <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>. To deallocate, use <code class="xref c c-func docutils literal"><span class="pre">vfree()</span></code>.</p>
-<p>..note:: Review the <a class="reference internal" href="#process-a-request">Process a request</a> section.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Review the <a class="reference internal" href="#process-a-request">Process a request</a> section.</p>
+</div>
 <p>Follow the comments marked with <strong>TODO 3</strong> to complete the
 <code class="xref c c-func docutils literal"><span class="pre">my_block_transfer()</span></code> function to write /read the request information
 in /from the memory area. The function will be called for each request within
@@ -1177,14 +1182,11 @@ data (flush).</p>
 <code class="xref c c-macro docutils literal"><span class="pre">PHYSICAL_DISK_NAME</span></code> disk (<code class="file docutils literal"><span class="pre">/dev/vdb</span></code>) directly from the kernel.</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<p>Before solving the exercise, we need to add the disk to the
+<p class="last">Before solving the exercise, we need to add the disk to the
 virtual machine. To do this, generate a file that we will use as
-the disk image using the command:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<p>dd if=/dev/zero of=qemu/mydisk.img bs=1024 count=1</p>
-<p class="last">and add the command:
+the disk image using the command:
+<strong class="command">dd if=/dev/zero of=qemu/mydisk.img bs=1024 count=1</strong>
+and add the following option:
 <strong class="command">-drive file = qemu/mydisk.img, if=virtio, format=raw
 qemu</strong>
 in the <code class="file docutils literal"><span class="pre">qemu/Makefile</span></code> file (in the
@@ -1219,7 +1221,7 @@ variable.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Review the sections ref:<cite>bio_content</cite> and ref:<cite>bio_completion</cite>.</p>
+<p class="last">Review the sections <a class="reference internal" href="#bio-content"><span class="std std-ref">How to use the content of a struct bio structure</span></a> and <a class="reference internal" href="#bio-completion"><span class="std std-ref">Wait for the completion of a struct bio structure</span></a>.</p>
 </div>
 <p>For testing, use the <code class="file docutils literal"><span class="pre">test-relay-disk</span></code> script, which is copied on the
 virtual machine when running <strong class="command">make copy</strong>. If it is not copied, make
@@ -1304,12 +1306,12 @@ direction for a <code class="xref c c-type docutils literal"><span class="pre">s
 the pages of each <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure and access its associated
 buffers. For the actual transfer, call the <code class="xref c c-func docutils literal"><span class="pre">my_block_transfer()</span></code> function
 implemented in the previous exercise.</p>
-<p>For testing, use the <code class="file docutils literal"><span class="pre">ram-disk-test.c</span></code> test file. You compile it using on
-the host, the command:</p>
+<p>For testing, use the <code class="file docutils literal"><span class="pre">ram-disk-test.c</span></code> test file. Compile it on
+the host, using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>make -f Makefile.test
 </pre></div>
 </div>
-<p>and then run it using the QEMU virtual machine command:</p>
+<p>and then run it in the QEMU virtual machine using the following command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./ram-disk-test
 </pre></div>
 </div>
@@ -1329,7 +1331,7 @@ data (flush).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memory_mapping.html" class="btn btn-neutral float-right" title="Memory mapping" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="filesystems_part1.html" class="btn btn-neutral float-right" title="File system drivers (Part 1)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="deferred_work.html" class="btn btn-neutral float-left" title="Deferred work" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
