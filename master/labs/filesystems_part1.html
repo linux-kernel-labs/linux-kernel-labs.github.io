@@ -302,7 +302,7 @@ Each entity is treated as an object: it has a associated data structure and a po
 <li>file size;</li>
 <li>access rights;</li>
 <li>access or modify time;</li>
-<li>location of data on the dick (pointers to disk blocks containing data).</li>
+<li>location of data on the disk (pointers to disk blocks containing data).</li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
@@ -522,16 +522,16 @@ The superblock can be viewed as an abstract object to which its own data is adde
 <span id="superblocksection"></span><h3>Superblock operations<a class="headerlink" href="#superblock-operations" title="Permalink to this headline">¶</a></h3>
 <p>The superbloc operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">super_operations</span> <span class="p">{</span>
-      <span class="c1">// ...</span>
-      <span class="kt">int</span> <span class="p">(</span> <span class="o">*</span> <span class="n">write_inode</span> <span class="p">)</span> <span class="p">(</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span> <span class="n">wbc</span> <span class="p">)</span> <span class="p">;</span>
-      <span class="n">structure</span> <span class="n">inode</span> <span class="o">*</span> <span class="p">(</span> <span class="o">*</span> <span class="n">alloc_inode</span> <span class="p">)</span> <span class="p">(</span> <span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span> <span class="n">sb</span> <span class="p">)</span> <span class="p">;</span>
-      <span class="kt">void</span> <span class="p">(</span> <span class="o">*</span> <span class="n">destroy_inode</span> <span class="p">)</span> <span class="p">(</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+       <span class="c1">//...</span>
+       <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write_inode</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span><span class="n">wbc</span><span class="p">);</span>
+       <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">alloc_inode</span><span class="p">)(</span><span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span><span class="n">sb</span><span class="p">);</span>
+       <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destroy_inode</span><span class="p">)(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">);</span>
 
-      <span class="kt">void</span> <span class="p">(</span> <span class="o">*</span> <span class="n">put_super</span> <span class="p">)</span> <span class="p">(</span> <span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
-      <span class="kt">int</span> <span class="p">(</span> <span class="o">*</span> <span class="n">statfs</span> <span class="p">)</span> <span class="p">(</span> <span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kstatfs</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
-      <span class="kt">int</span> <span class="p">(</span> <span class="o">*</span> <span class="n">remount_fs</span> <span class="p">)</span> <span class="p">(</span> <span class="n">super_block</span> <span class="n">structure</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
-      <span class="c1">// ...</span>
-<span class="p">}</span> <span class="p">;</span>
+       <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">put_super</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span><span class="p">);</span>
+       <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">statfs</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kstatfs</span> <span class="o">*</span><span class="p">);</span>
+       <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">remount_fs</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="p">);</span>
+       <span class="c1">//...</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <p>The fields of the structure are function pointers with the following meanings:</p>
@@ -549,46 +549,46 @@ The superblock can be viewed as an abstract object to which its own data is adde
 <span id="fillsupersection"></span><h2>The <code class="xref c c-func docutils literal"><span class="pre">fill_super()</span></code> function<a class="headerlink" href="#the-fill-super-function" title="Permalink to this headline">¶</a></h2>
 <p>As specified, the <code class="xref c c-func docutils literal"><span class="pre">fill_super()</span></code> function is called to terminate the superblock initialization. This initialization involves filling the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure fields and the initialization of the root directory inode.</p>
 <p>An example of implementation is the <code class="xref c c-func docutils literal"><span class="pre">ramfs_fill_super()</span></code> function which is called to initialize the remaining fields in the superblock:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux / pagemap.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/pagemap.h&gt;</span><span class="cp"></span>
 
-<span class="cp">#define RAMFS_MAGIC 0x858458f6</span>
+<span class="cp">#define RAMFS_MAGIC     0x858458f6</span>
 
 <span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">super_operations</span> <span class="n">ramfs_ops</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="p">.</span>  <span class="n">statfs</span> <span class="o">=</span> <span class="n">simple_statfs</span> <span class="p">,</span>
-        <span class="p">.</span>  <span class="n">drop_inode</span> <span class="o">=</span> <span class="n">generic_delete_inode</span> <span class="p">,</span>
-        <span class="p">.</span>  <span class="n">show_options</span> <span class="o">=</span> <span class="n">ramfs_show_options</span> <span class="p">,</span>
-<span class="p">}</span> <span class="p">;</span>
+        <span class="p">.</span><span class="n">statfs</span>         <span class="o">=</span> <span class="n">simple_statfs</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">drop_inode</span>     <span class="o">=</span> <span class="n">generic_delete_inode</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">show_options</span>   <span class="o">=</span> <span class="n">ramfs_show_options</span><span class="p">,</span>
+<span class="p">};</span>
 
-<span class="k">static</span> <span class="kt">int</span> <span class="nf">ramfs_fill_super</span> <span class="p">(</span> <span class="n">super_block</span> <span class="n">structure</span> <span class="o">*</span> <span class="n">sb</span> <span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">data</span> <span class="p">,</span> <span class="kt">int</span> <span class="n">silent</span> <span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">ramfs_fill_super</span><span class="p">(</span><span class="k">struct</span> <span class="n">super_block</span> <span class="o">*</span><span class="n">sb</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">silent</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="k">struct</span> <span class="n">ramfs_fs_info</span> <span class="o">*</span> <span class="n">fsi</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span> <span class="n">inode</span> <span class="p">;</span>
-        <span class="kt">int</span> <span class="n">err</span> <span class="p">;</span>
+        <span class="k">struct</span> <span class="n">ramfs_fs_info</span> <span class="o">*</span><span class="n">fsi</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
 
-        <span class="n">save_mount_options</span> <span class="p">(</span> <span class="n">sb</span> <span class="p">,</span> <span class="n">data</span> <span class="p">)</span> <span class="p">;</span>
+        <span class="n">save_mount_options</span><span class="p">(</span><span class="n">sb</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
 
-        <span class="n">fsi</span> <span class="o">=</span> <span class="n">kzaloc</span> <span class="p">(</span> <span class="k">sizeof</span> <span class="p">(</span> <span class="k">struct</span> <span class="n">ramfs_fs_info</span> <span class="p">)</span> <span class="p">,</span> <span class="n">GFP_KERNEL</span> <span class="p">)</span> <span class="p">;</span>
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_fs_info</span> <span class="o">=</span> <span class="n">fsi</span> <span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="n">fsi</span> <span class="p">)</span>
-                <span class="k">return</span> <span class="o">-</span> <span class="n">ENOM</span> <span class="p">;</span>
+        <span class="n">fsi</span> <span class="o">=</span> <span class="n">kzalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">ramfs_fs_info</span><span class="p">),</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_fs_info</span> <span class="o">=</span> <span class="n">fsi</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">fsi</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
 
-        <span class="n">err</span> <span class="o">=</span> <span class="n">ramfs_parse_options</span> <span class="p">(</span> <span class="n">data</span> <span class="p">,</span> <span class="o">&amp;</span> <span class="n">fsi</span> <span class="o">-&gt;</span> <span class="n">mount_opts</span> <span class="p">)</span> <span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span> <span class="n">err</span> <span class="p">)</span>
-                <span class="k">return</span> <span class="n">err</span> <span class="p">;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">ramfs_parse_options</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">fsi</span><span class="o">-&gt;</span><span class="n">mount_opts</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
 
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_maxbytes</span> <span class="o">=</span> <span class="n">MAX_LFS_FILESIZE</span> <span class="p">;</span>
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_blocksize</span> <span class="o">=</span> <span class="n">PAGE_SIZE</span> <span class="p">;</span>
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_blocksize_bits</span> <span class="o">=</span> <span class="n">PAGE_SHIFT</span> <span class="p">;</span>
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_magic</span> <span class="o">=</span> <span class="n">RAMFS_MAGIC</span>
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_op</span> <span class="o">=</span> <span class="o">&amp;</span> <span class="n">ramfs_ops</span> <span class="p">;</span>
-        <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_time_gran</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_maxbytes</span>          <span class="o">=</span> <span class="n">MAX_LFS_FILESIZE</span><span class="p">;</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_blocksize</span>         <span class="o">=</span> <span class="n">PAGE_SIZE</span><span class="p">;</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_blocksize_bits</span>    <span class="o">=</span> <span class="n">PAGE_SHIFT</span><span class="p">;</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_magic</span>             <span class="o">=</span> <span class="n">RAMFS_MAGIC</span><span class="p">;</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_op</span>                <span class="o">=</span> <span class="o">&amp;</span><span class="n">ramfs_ops</span><span class="p">;</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_time_gran</span>         <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
-        <span class="n">inode</span> <span class="o">=</span> <span class="n">ramfs_get_inode</span> <span class="p">(</span> <span class="n">sb</span> <span class="p">,</span> <span class="nb">NULL</span> <span class="p">,</span> <span class="n">S_IFDIR</span> <span class="o">|</span> <span class="n">fsi</span> <span class="o">-&gt;</span> <span class="n">mount_opts</span> <span class="n">mode</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
-        <span class="n">sb</span> <span class="o">-</span> <span class="o">&amp;</span> <span class="n">s_root</span> <span class="o">=</span> <span class="n">d_make_root</span> <span class="p">(</span> <span class="n">inode</span> <span class="p">)</span> <span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="n">sb</span> <span class="o">-&gt;</span> <span class="n">s_root</span> <span class="p">)</span>
-                <span class="k">return</span> <span class="o">-</span> <span class="n">ENOM</span> <span class="p">;</span>
+        <span class="n">inode</span> <span class="o">=</span> <span class="n">ramfs_get_inode</span><span class="p">(</span><span class="n">sb</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">S_IFDIR</span> <span class="o">|</span> <span class="n">fsi</span><span class="o">-&gt;</span><span class="n">mount_opts</span><span class="p">.</span><span class="n">mode</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_root</span> <span class="o">=</span> <span class="n">d_make_root</span><span class="p">(</span><span class="n">inode</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">sb</span><span class="o">-&gt;</span><span class="n">s_root</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
 
-        <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -716,7 +716,7 @@ For additional details about connecting to the VM via the network, please check 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Within the file system structure, use the <code class="docutils literal"><span class="pre">myfs_mount</span></code> function present in the code skeleton to fill the superblock (done when mounting). In <code class="docutils literal"><span class="pre">myfs_mount</span></code> call the function specific to a file system without disk support (TODO). As an argument for the specific mount function, use the function of type <code class="docutils literal"><span class="pre">fill_super</span></code> defined in the code skeleton.</p>
-<p class="last">To destroy the superblock (done at unmounting) use <code class="docutils literal"><span class="pre">kill_litter_super</span></code>, also a function specific to a file system without disk support.</p>
+<p class="last">To destroy the superblock (done at unmounting) use <code class="docutils literal"><span class="pre">kill_litter_super</span></code>, also a function specific to a file system without disk support. The function is already implemented, you need to fill it in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_system_type</span></code> structure.</p>
 </div>
 <p>After completing the sections marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code> , compile the module, copy it to the QEMU virtual machine, and start the virtual machine. Load the kernel module and then check the presence of the <code class="docutils literal"><span class="pre">myfs</span></code> file system within the <code class="docutils literal"><span class="pre">/proc/filesystems</span></code> file.</p>
 <p>At the moment, the file system is only registered, it does not expose operations to use it. If we try to mount it, the operation will fail. To try mounting, we create mount point <code class="docutils literal"><span class="pre">/mnt/myfs/</span></code>.</p>
@@ -770,8 +770,8 @@ When you call <code class="xref c c-func docutils literal"><span class="pre">ino
 <div><ol class="arabic simple">
 <li>Check if this is a directory type inode using the <code class="docutils literal"><span class="pre">S_ISDIR</span></code> macro.</li>
 <li>For the <code class="docutils literal"><span class="pre">i_op</span></code> and <code class="docutils literal"><span class="pre">i_fop</span></code> fields, use kernel functions that are already implemented:<ul>
-<li>for <code class="docutils literal"><span class="pre">i_op</span></code>: <code class="xref c c-func docutils literal"><span class="pre">simple_dir_inode_operations()</span></code>.</li>
-<li>for <code class="docutils literal"><span class="pre">i_fop</span></code>: <code class="xref c c-func docutils literal"><span class="pre">simple_dir_operations()</span></code></li>
+<li>for <code class="docutils literal"><span class="pre">i_op</span></code>: <code class="xref c c-type docutils literal"><span class="pre">simple_dir_inode_operations</span></code>.</li>
+<li>for <code class="docutils literal"><span class="pre">i_fop</span></code>: <code class="xref c c-type docutils literal"><span class="pre">simple_dir_operations</span></code></li>
 </ul>
 </li>
 <li>Increase the number of links for the directory using the <code class="xref c c-func docutils literal"><span class="pre">inc_nlink()</span></code> function.</li>
@@ -794,7 +794,7 @@ We verify that the file system was mounted by inspecting the <code class="docuti
 <p class="last">where <code class="docutils literal"><span class="pre">/path/to/directory/</span></code> is the path to the directory whose inode number we want to display.</p>
 </div>
 <p>We check myfs file system statistics using the following command:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">state -f / mnt / myfs</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">stat -f / mnt / myfs</span>
 </pre></div>
 </div>
 <p>We want to see what the mount point <code class="docutils literal"><span class="pre">/mnt/myfs</span></code> contains and if we can create files.
@@ -842,7 +842,7 @@ The rest of the operations will be implemented in the next lab.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Before solving the exercise, we need to add a disk to the virtual machine. To do this, generate a file that we will use as the disk image using the following command:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">dd if=/dev/zero of=qemu/mydisk.img bs=1M count=100</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">dd if=/dev/zero of=mydisk.img bs=1M count=100</span>
 </pre></div>
 </div>
 <p class="last">and add the <code class="docutils literal"><span class="pre">-drive</span> <span class="pre">file=qemu/mydisk.img,if=virtio,format=raw</span></code> argument to the <code class="docutils literal"><span class="pre">qemu</span></code> command in <code class="docutils literal"><span class="pre">qemu/Makefile</span></code> (in the <code class="docutils literal"><span class="pre">QEMU_OPTS</span></code> variable).
@@ -860,8 +860,8 @@ Choose the most suitable function for destroying the superblock (done at unmount
 <p>After completing the sections marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>, compile the module, copy it into the QEMU virtual machine, and start the virtual machine.
 Load the kernel module and then check the presence of the <code class="docutils literal"><span class="pre">minfs</span></code> file system within the <code class="docutils literal"><span class="pre">/proc/filesystems</span></code> file.</p>
 <p>To test the mounting of the <code class="docutils literal"><span class="pre">minfs</span></code> file system we will need to format the disk with its structure. Formatting requires the <code class="docutils literal"><span class="pre">mkfs.minfs</span></code> formatting tool from the <code class="docutils literal"><span class="pre">minfs/user</span></code> directory. The utility is automatically compiled when running <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code> and copied to the virtual machine at <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code>.</p>
-<p>After compiling, copying, and starting the virtual machine, format the <code class="docutils literal"><span class="pre">/dev/vdX</span></code> using the formatting utility:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> ./mkfs.minfs /dev/vdX
+<p>After compiling, copying, and starting the virtual machine, format the <code class="docutils literal"><span class="pre">/dev/vdb</span></code> using the formatting utility:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> ./mkfs.minfs /dev/vdb
 </pre></div>
 </div>
 <p>Load the kernel module:</p>
@@ -873,8 +873,9 @@ Load the kernel module and then check the presence of the <code class="docutils 
 </pre></div>
 </div>
 <p>and mount the filesystem</p>
-<blockquote>
-<div># mount -t minfs /dev/vdX /mnt/minfs/</div></blockquote>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> mount -t minfs /dev/vdX /mnt/minfs/
+</pre></div>
+</div>
 <p>The operation fails because the root inode is not initialized.</p>
 </div>
 <div class="section" id="completing-minfs-superblock">
