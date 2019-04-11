@@ -366,9 +366,9 @@ From the point of view of the process, the file entity abstracts the file. From 
 </div>
 <div class="section" id="register-and-unregister-filesystems">
 <span id="registerunregistersection"></span><h2>Register and unregister filesystems<a class="headerlink" href="#register-and-unregister-filesystems" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>In the current version, the Linux kernel supports about 50 file systems, including:</dt>
-<dd><ul class="first last simple">
+<p>In the current version, the Linux kernel supports about 50 file systems, including:</p>
+<blockquote>
+<div><ul class="simple">
 <li>ext2/ ext4</li>
 <li>reiserfs</li>
 <li>xfs</li>
@@ -378,8 +378,7 @@ From the point of view of the process, the file entity abstracts the file. From 
 <li>udf for CDs and DVDs</li>
 <li>hpfs</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p>On a single system, however, it is unlikely that there will be more than 5-6 file systems. For this reason, file systems (or, more correctly, file system types) are implemented as modules and can be loaded or unloaded at any time.</p>
 <p>In order to be able to dynamically load / unload a file system module, a file system registration / deregistration API is required. The structure describing a particular file system is <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_system_type</span></code>:</p>
 <blockquote>
@@ -437,26 +436,24 @@ From the point of view of the process, the file entity abstracts the file. From 
 </div>
 <div class="section" id="functions-mount-kill-sb">
 <span id="functionsmountkillsbsection"></span><h3>Functions mount, kill_sb<a class="headerlink" href="#functions-mount-kill-sb" title="Permalink to this headline">¶</a></h3>
-<dl class="docutils">
-<dt>When mounting  the file system, the kernel calls the mount function defined within the structure <code class="xref c c-type docutils literal"><span class="pre">file_system_type</span></code>. The function makes a set of initializations and returns a dentry (the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">dentry</span></code>) that represents the mount point directory. Usually <code class="xref c c-func docutils literal"><span class="pre">mount()</span></code> is a simple function that calls one of the functions:</dt>
-<dd><ul class="first last simple">
+<p>When mounting  the file system, the kernel calls the mount function defined within the structure <code class="xref c c-type docutils literal"><span class="pre">file_system_type</span></code>. The function makes a set of initializations and returns a dentry (the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">dentry</span></code>) that represents the mount point directory. Usually <code class="xref c c-func docutils literal"><span class="pre">mount()</span></code> is a simple function that calls one of the functions:</p>
+<blockquote>
+<div><ul class="simple">
 <li><code class="xref c c-func docutils literal"><span class="pre">mount_bdev()</span></code>, which mounts a file system stored on a block device</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">mount_single()</span></code>, which mounts a file system that shares an instance between all mount operations</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">mount_nodev()</span></code>, which mounts a file system that is not on a physical device</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">mount_pseudo()</span></code>, a helper function for pseudo-file systems (<code class="docutils literal"><span class="pre">sockfs</span></code>, <code class="docutils literal"><span class="pre">pipefs</span></code>, generally file systems that can not be mounted)</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p>These functions get as parameter a pointer to a function <code class="xref c c-func docutils literal"><span class="pre">fill_super()</span></code> that will be called after the superblock initialization to finish the its initialization it by the driver. An example of such a function can be found in the <code class="docutils literal"><span class="pre">fill_super</span></code> section.</p>
-<dl class="docutils">
-<dt>When unmounting the file system, the kernel calls <code class="xref c c-func docutils literal"><span class="pre">kill_sb()</span></code>, which performs cleanup operations and invokes one of the functions:</dt>
-<dd><ul class="first last simple">
+<p>When unmounting the file system, the kernel calls <code class="xref c c-func docutils literal"><span class="pre">kill_sb()</span></code>, which performs cleanup operations and invokes one of the functions:</p>
+<blockquote>
+<div><ul class="simple">
 <li><code class="xref c c-func docutils literal"><span class="pre">kill_block_super()</span></code>, which unmounts a file system on a block device</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">kill_anon_super()</span></code>, which unmounts a virtual file system (information is generated when requested)</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">kill_litter_super()</span></code>, which unmounts a file system that is not on a physical device (the information is kept in memory)</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p>An example for a file system without disk support is the <code class="xref c c-func docutils literal"><span class="pre">ramfs_mount()</span></code> function in the <code class="docutils literal"><span class="pre">ramfs</span></code> file system:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">dentry</span> <span class="o">*</span><span class="nf">ramfs_mount</span><span class="p">(</span><span class="k">struct</span> <span class="n">file_system_type</span> <span class="o">*</span><span class="n">fs_type</span><span class="p">,</span>
         <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">dev_name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
@@ -735,12 +732,12 @@ For additional details about connecting to the VM via the network, please check 
 </div>
 <div class="section" id="completing-myfs-superblock">
 <h4>2. Completing myfs superblock<a class="headerlink" href="#completing-myfs-superblock" title="Permalink to this headline">¶</a></h4>
-<p>To be able to mount the file system, we need to complete its superblock, that is, a generic VFS structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>.
+<p>To be able to mount the file system, we need to fill its superblock’s fields, that is, a generic VFS structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>.
 We will fill out the structure within the <code class="xref c c-func docutils literal"><span class="pre">myfs_fill_super()</span></code> function; the superblock is represented by the variable <code class="docutils literal"><span class="pre">sb</span></code> passed as an argument to the function.
 Follow the hints marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To complete the <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, you can start from the example in the section <a class="reference internal" href="#fillsupersection"><span class="std std-ref">The fill_super() function</span></a>.</p>
+<p>To fill the <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, you can start from the example in the section <a class="reference internal" href="#fillsupersection"><span class="std std-ref">The fill_super() function</span></a>.</p>
 <p class="last">For the superblock structure fields, use the macros defined within the code skeleton wherever possible.</p>
 </div>
 <p>The <code class="docutils literal"><span class="pre">s_op</span></code> field in the superblock structure must be initialized to the superblock operations structures (type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code>). You need to define such a structure.</p>
@@ -762,7 +759,7 @@ Typically, this function is used to create and initialize all inodes; In this ex
 <p>To successfully complete mounting the file system, you will need to fill the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function. Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">3</span></code>. A starting point is the <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code> function.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To initialize <code class="docutils literal"><span class="pre">uid</span></code> ,``gid`` and <code class="docutils literal"><span class="pre">mode</span></code> , you can use the <code class="xref c c-func docutils literal"><span class="pre">inode_init_owner()</span></code> function as it is used in <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code>.
+<p>To initialize <code class="docutils literal"><span class="pre">uid</span></code>, <code class="docutils literal"><span class="pre">gid</span></code> and <code class="docutils literal"><span class="pre">mode</span></code> , you can use the <code class="xref c c-func docutils literal"><span class="pre">inode_init_owner()</span></code> function as it is used in <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code>.
 When you call <code class="xref c c-func docutils literal"><span class="pre">inode_init_owner()</span></code>, use <code class="docutils literal"><span class="pre">NULL</span></code> as the second parameter because there is no parent directory for the created inode.</p>
 <p>Initialize the <code class="docutils literal"><span class="pre">i_atime</span></code>, <code class="docutils literal"><span class="pre">i_atime</span></code>, and <code class="docutils literal"><span class="pre">i_mtime</span></code> of the VFS inode to the value returned by the <code class="xref c c-func docutils literal"><span class="pre">current_time()</span></code> function.</p>
 <p>You will need to initialize the operations for the inode of type directory. To do this, follow the steps:</p>
