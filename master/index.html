@@ -116,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="labs/deferred_work.html">Deferred work</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/block_device_drivers.html">Block Device Drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a></li>
 </ul>
@@ -636,6 +637,72 @@ Computers, University POLITEHNICA of Bucharest.</p>
 <li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#testing-of-minfs-mount-and-unmount">5. Testing of minfs mount and unmount</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part2.html">File system drivers (Part 2)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#inode">Inode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#the-inode-structure">The inode structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#inode-operations">Inode operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#getting-an-inode">Getting an inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#superoperations">Superoperations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#id1">inode_operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#the-file-structure">The file structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#regular-files-inodes">Regular files inodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#regular-files-inode-operations">Regular files inode operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#address-space-operations">Address space operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#dentry-structure">Dentry structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#dentry-operations">Dentry operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#directory-inodes-operations">Directory inodes operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-an-inode">Creating an inode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-a-directory">Creating a directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-a-link">Creating a link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-a-symbolic-link">Creating a symbolic link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#deleting-a-link">Deleting a link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#deleting-a-directory">Deleting a directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#searching-for-an-inode-in-a-directory">Searching for an inode in a directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#iterating-through-entries-in-a-directory">Iterating through entries in a directory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#bitmap-operations">Bitmap operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#myfs">myfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#directory-operations">1. Directory operations</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#file-operations">2. File operations</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id2">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#minfs">minfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#iterate-operation">1. Iterate operation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id3">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#lookup-operation">2. Lookup operation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id4">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#create-operation">2. Create operation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id5">Testing</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
