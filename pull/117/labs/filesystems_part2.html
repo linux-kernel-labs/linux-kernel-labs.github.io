@@ -250,7 +250,7 @@
 <h2>Inode<a class="headerlink" href="#inode" title="Permalink to this headline">¶</a></h2>
 <p>The inode is an essential component of a UNIX file system and, at the same time, an important component of VFS. An inode is a metadata (it has information about information).
 An inode uniquely identifies a file on disk and holds information about it (uid, gid, access rights, access times, pointers to data blocks, etc.).
-An important aspect is that an inode does not have information about the file name (it is retained by the associated <code class="docutils literal"><span class="pre">dentry</span></code> structure).</p>
+An important aspect is that an inode does not have information about the file name (it is retained by the associated <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">dentry</span></code> structure).</p>
 <p>The inode refers to a file on the disk. To refer an open file (associated with a file descriptor within a process), the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code> structure is used.
 An inode can have any number of (zero or more) <code class="docutils literal"><span class="pre">file</span></code> structures associated (multiple processes can open the same file, or a process can open the same file several times).</p>
 <p>Inode exists both as a VFS entity (in memory) and as a disk entity (for UNIX, HFS, NTFS, etc.).
@@ -258,20 +258,20 @@ The inode in VFS is represented by the structure <code class="xref c c-type docu
 Like the other structures in VFS, <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code> is a generic structure that covers the options for all supported file types, even those that do not have an associated disk entity (such as FAT).</p>
 <div class="section" id="the-inode-structure">
 <h3>The inode structure<a class="headerlink" href="#the-inode-structure" title="Permalink to this headline">¶</a></h3>
-<p>The inode structure is the same for all file systems. In general, file systems also have particular information. These are referenced through the <code class="docutils literal"><span class="pre">i_private</span></code> field of the structure.
+<p>The inode structure is the same for all file systems. In general, file systems also have private information. These are referenced through the <code class="docutils literal"><span class="pre">i_private</span></code> field of the structure.
 Conventionally, the structure that keeps that particular information is called <code class="docutils literal"><span class="pre">&lt;fsname&gt;_inode_info</span></code>, where <code class="docutils literal"><span class="pre">fsname</span></code> represents the file system name. For example, minix and ext4 filesystems store particular information in structures <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">minix_inode_info</span></code>, or <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">ext4_inode_info</span></code>.</p>
 <p>Some of the important fields of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code> are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">i_sb</span></code> : The superblock structure of the file system to which the inode belongs to.</li>
+<li><code class="docutils literal"><span class="pre">i_sb</span></code> : The superblock structure of the file system the inode belongs to.</li>
 <li><code class="docutils literal"><span class="pre">i_rdev</span></code>: the device on which this file system is mounted</li>
 <li><code class="docutils literal"><span class="pre">i_ino</span></code> : the number of the inode (uniquely identifies the inode within the file system)</li>
 <li><code class="docutils literal"><span class="pre">i_blkbits</span></code>: number of bits used for the block size == log<sub>2</sub>(block size)</li>
 <li><code class="docutils literal"><span class="pre">i_mode</span></code>, <code class="docutils literal"><span class="pre">i_uid</span></code>, <code class="docutils literal"><span class="pre">i_gid</span></code>: access rights, uid, gid</li>
 <li><code class="docutils literal"><span class="pre">i_size</span></code>: file/directory/etc. size in bytes</li>
 <li><code class="docutils literal"><span class="pre">i_mtime</span></code>, <code class="docutils literal"><span class="pre">i_atime</span></code>, <code class="docutils literal"><span class="pre">i_ctime</span></code>: change, access, and creation time</li>
-<li><code class="docutils literal"><span class="pre">i_nlink</span></code>: the number of names entries (dentries) that use this inode; for file systems without links (either hard or symbolic) is always set to 1</li>
-<li><code class="docutils literal"><span class="pre">i_blocks</span></code>: the number of blocks used by the file (all blocks, not just data); is only used by the quota subsystem</li>
+<li><code class="docutils literal"><span class="pre">i_nlink</span></code>: the number of names entries (dentries) that use this inode; for file systems without links (either hard or symbolic) this is always set to 1</li>
+<li><code class="docutils literal"><span class="pre">i_blocks</span></code>: the number of blocks used by the file (all blocks, not just data); this is only used by the quota subsystem</li>
 <li><code class="docutils literal"><span class="pre">i_op</span></code>, <code class="docutils literal"><span class="pre">i_fop</span></code>: pointers to operations structures: c:type:<cite>struct inode_operations</cite> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code>; <code class="docutils literal"><span class="pre">i_mapping-&gt;a_ops</span></code> contains a pointer to <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">address_space_operations</span></code>.</li>
 <li><code class="docutils literal"><span class="pre">i_count</span></code>: the inode counter indicating how many kernel components use it.</li>
 </ul>
@@ -284,7 +284,7 @@ Conventionally, the structure that keeps that particular information is called <
 <li><p class="first"><code class="xref c c-func docutils literal"><span class="pre">insert_inode_hash()</span></code>: adds the inode to the hash table of inodes; an interesting effect of this call is that the inode will be written to the disk if it is marked as dirty;</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">An inode created with <code class="xref c c-func docutils literal"><span class="pre">new_inode()</span></code> is not in the hash table, and unless you have serious reasons, you must enter it in the hash table;</p>
+<p class="last">An inode created with <code class="xref c c-func docutils literal"><span class="pre">new_inode()</span></code> is not in the hash table, and unless you have serious reasons not to, you must enter it in the hash table;</p>
 </div>
 </li>
 <li><p class="first"><code class="xref c c-func docutils literal"><span class="pre">mark_inode_dirty()</span></code>: marks the inode as dirty; at a later moment, it will be written on the disc;</p>
@@ -307,7 +307,7 @@ Conventionally, the structure that keeps that particular information is called <
 <p>One of the main inode operations is obtaining an inode (the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code> in VFS).
 Until version <code class="docutils literal"><span class="pre">2.6.24</span></code> of the Linux kernel, the developer defined a <code class="docutils literal"><span class="pre">read_inode</span></code> function.
 Starting with version <code class="docutils literal"><span class="pre">2.6.25</span></code>, the developer must define a <code class="docutils literal"><span class="pre">&lt;fsname&gt;_iget</span></code> where <code class="docutils literal"><span class="pre">&lt;fsname&gt;</span></code> is the name of the file system.
-This function is responsible for finding the VFS inode if it exists or creating a new one and filling it with the information from the disk.</p>
+This function is responsible with finding the VFS inode if it exists or creating a new one and filling it with the information from the disk.</p>
 <p>Generally, this function will call <code class="xref c c-func docutils literal"><span class="pre">iget_locked()</span></code> to get the inode structure from VFS. If the inode is newly created then it will need to read the inode from the disk (using <code class="xref c c-func docutils literal"><span class="pre">sb_bread()</span></code>) and fill in the useful information.</p>
 <p>An example of such a function is <code class="xref c c-func docutils literal"><span class="pre">minix_iget()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="nf">V1_minix_iget</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">)</span>
@@ -346,7 +346,7 @@ Otherwise, the function calls the <code class="xref c c-func docutils literal"><
 </div>
 <div class="section" id="superoperations">
 <h4>Superoperations<a class="headerlink" href="#superoperations" title="Permalink to this headline">¶</a></h4>
-<p>Many of the superoperations (components of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure used by the superbloc) are used when working with inodes. These operations are described next:</p>
+<p>Many of the superoperations (components of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure used by the superblock) are used when working with inodes. These operations are described next:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">alloc_inode</span></code>: allocates an inode.
@@ -364,8 +364,8 @@ The <code class="xref c c-func docutils literal"><span class="pre">alloc_inode()
 </li>
 <li><code class="docutils literal"><span class="pre">evict_inode</span></code>: removes any information about the inode with the number received in the <code class="docutils literal"><span class="pre">i_ino</span></code> field from the disk and memory (both the inode on the disk and the associated data blocks). This involves performing the following operations:<ul>
 <li>delete the inode from the disk;</li>
-<li>updates disk bitmaps (if any)</li>
-<li>delete the inode the page cache by calling <code class="xref c c-func docutils literal"><span class="pre">truncate_inode_pages()</span></code>;</li>
+<li>updates disk bitmaps (if any);</li>
+<li>delete the inode from the page cache by calling <code class="xref c c-func docutils literal"><span class="pre">truncate_inode_pages()</span></code>;</li>
 <li>delete the inode from memory by calling <code class="xref c c-func docutils literal"><span class="pre">clear_inode()</span></code> ;</li>
 <li>an example is the <code class="xref c c-func docutils literal"><span class="pre">minix_evict_inode()</span></code> function from the minix file system.</li>
 </ul>
@@ -386,10 +386,10 @@ Below are detailed operations for a <a class="reference internal" href="#fileino
 </div>
 <div class="section" id="the-file-structure">
 <h2>The file structure<a class="headerlink" href="#the-file-structure" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">file</span></code> structure corresponds to a file open by a process and exists only in memory, being associated with an inode
-It is the VFS entity closest to user-space; the structure fields contain familiar information of a user-space file (access mode, file position, etc.) and the operations with it are known system calls (<code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code> , etc.).</p>
+<p>The <code class="docutils literal"><span class="pre">file</span></code> structure corresponds to a file open by a process and exists only in memory, being associated with an inode.
+It is the closest VFS entity to user-space; the structure fields contain familiar information of a user-space file (access mode, file position, etc.) and the operations with it are performed by known system calls (<code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code> , etc.).</p>
 <p>The file operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> structure.</p>
-<p>To file operations for a file system are initialozed using the <code class="docutils literal"><span class="pre">i_fop</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code> structure.
+<p>The file operations for a file system are initialized using the <code class="docutils literal"><span class="pre">i_fop</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code> structure.
 When opening a file, the VFS initializes the <code class="docutils literal"><span class="pre">f_op</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code> structure with address of <code class="docutils literal"><span class="pre">inode-&gt;i_fop</span></code>, such that subsequent system calls use the value stored in the <code class="docutils literal"><span class="pre">file-&gt;f_op</span></code>.</p>
 </div>
 <div class="section" id="regular-files-inodes">
@@ -525,10 +525,10 @@ Most of the specific functions are very easy to implement, as follows:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>All that needs to be done is implement <code class="xref c c-type docutils literal"><span class="pre">minix_get_block</span></code>, which has to translate a block of a file into a block on the device.
+<p>All that needs to be done is to implement <code class="xref c c-type docutils literal"><span class="pre">minix_get_block</span></code>, which has to translate a block of a file into a block on the device.
 If the flag <code class="docutils literal"><span class="pre">create</span></code> received as a parameter is set, a new block must be allocated.
 In case a new block is created, the bit map must be updated accordingly.
-To notify the kernel not to read the block from the disk, <code class="docutils literal"><span class="pre">bh</span></code> must be marked bh with <code class="xref c c-func docutils literal"><span class="pre">set_buffer_new()</span></code>. The buffer must be associated with the block through <code class="xref c c-func docutils literal"><span class="pre">map_bh()</span></code>.</p>
+To notify the kernel not to read the block from the disk, <code class="docutils literal"><span class="pre">bh</span></code> must be marked with <code class="xref c c-func docutils literal"><span class="pre">set_buffer_new()</span></code>. The buffer must be associated with the block through <code class="xref c c-func docutils literal"><span class="pre">map_bh()</span></code>.</p>
 </div>
 </div>
 <div class="section" id="dentry-structure">
@@ -569,13 +569,13 @@ The kernel implements default operations so there is no need to (re)implement th
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">d_make_root</span></code>: allocates the root dentry. It is generally used in the function that is called to read the superblock (<code class="docutils literal"><span class="pre">fill_super</span></code>), which must initialize the root directory.
 So the root inode is obtained from the superblock and is used as an argument to this function, to fill the <code class="docutils literal"><span class="pre">s_root</span></code> field from the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure.</li>
-<li><code class="docutils literal"><span class="pre">d_add</span></code>: associates a dentry with an inode; the dentry received as a parameter in the calls discussed above signifies the entry (name, length) that needs to be created. This function will be used when creating/loading a new inode that does not have a dentry associated with it and has not yet been introduced to the hash (at <code class="docutils literal"><span class="pre">lookup</span></code>);</li>
-<li><code class="docutils literal"><span class="pre">d_instantiate</span></code>: The lighter version of the previous call, in which the dentry was previously added in hash.</li>
+<li><code class="docutils literal"><span class="pre">d_add</span></code>: associates a dentry with an inode; the dentry received as a parameter in the calls discussed above signifies the entry (name, length) that needs to be created. This function will be used when creating/loading a new inode that does not have a dentry associated with it and has not yet been introduced to the hash table of inodes (at <code class="docutils literal"><span class="pre">lookup</span></code>);</li>
+<li><code class="docutils literal"><span class="pre">d_instantiate</span></code>: The lighter version of the previous call, in which the dentry was previously added in the hash table.</li>
 </ul>
 </div></blockquote>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last"><code class="docutils literal"><span class="pre">d_instantiate</span></code> must be used for create calls (<code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code>, <code class="docutils literal"><span class="pre">rename</span></code>, <code class="docutils literal"><span class="pre">symlink</span></code>) and  NOT <code class="docutils literal"><span class="pre">d_add</span></code>.</p>
+<p class="last"><code class="docutils literal"><span class="pre">d_instantiate</span></code> must be used to implement create calls (<code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code>, <code class="docutils literal"><span class="pre">rename</span></code>, <code class="docutils literal"><span class="pre">symlink</span></code>) and  NOT <code class="docutils literal"><span class="pre">d_add</span></code>.</p>
 </div>
 </div>
 </div>
@@ -621,7 +621,7 @@ In the minix case, the function is <code class="xref c c-func docutils literal">
 This function is called by the <code class="docutils literal"><span class="pre">open</span></code> and <code class="docutils literal"><span class="pre">creat</span></code> system calls. Such a function performs the following operations:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Introduces a new entry into the physical structure on the disk; the update of the bit maps on the disk must bot be forgotten.</li>
+<li>Introduces a new entry into the physical structure on the disk; the update of the bit maps on the disk must not be forgotten.</li>
 <li>Configures access rights to those received as a parameter.</li>
 <li>Marks the inode as dirty with the <code class="xref c c-func docutils literal"><span class="pre">mark_inode_dirty()</span></code> function.</li>
 <li>Instantiates the directory entry (<code class="docutils literal"><span class="pre">dentry</span></code>) with the <code class="docutils literal"><span class="pre">d_instantiate</span></code> function.</li>
@@ -899,7 +899,7 @@ To begin, just define the structure <code class="docutils literal"><span class="
 <p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">As a model, you are following the <code class="docutils literal"><span class="pre">ramfs_dir_inode_operations</span></code> structure.</p>
 </div>
-<p>Implement the <code class="docutils literal"><span class="pre">mkdir</span></code> and <code class="docutils literal"><span class="pre">creatr</span></code> operations inside <code class="docutils literal"><span class="pre">myfs_mkdir</span></code> and <code class="docutils literal"><span class="pre">myfs_create</span></code>.
+<p>Implement the <code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code> and <code class="docutils literal"><span class="pre">create</span></code> operations inside <code class="docutils literal"><span class="pre">myfs_mkdir</span></code>, <code class="docutils literal"><span class="pre">myfs_mkdir</span></code> and <code class="docutils literal"><span class="pre">myfs_create</span></code>.
 These operations will allow you to create directories and files in the file system.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
@@ -1195,7 +1195,7 @@ For this, you will iterate over the directory data block and you will find the f
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>In order to work with the directory, get the inode of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> corresponding to the parent directory (the <strong>dir</strong> inode).
-Do not use the variable <code class="docutils literal"><span class="pre">inode</span></code> to get <code class="docutils literal"><span class="pre">struct_minfs_inode_info</span></code>; that inode belongs to the file, not to the parent directory inside which you want to add the link /dentry.
+Do not use the variable <code class="docutils literal"><span class="pre">inode</span></code> to get <code class="docutils literal"><span class="pre">struct_minfs_inode_info</span></code>; that inode belongs to the file, not to the parent directory inside which you want to add the link/dentry.
 To get the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> structure, use <code class="xref c c-func docutils literal"><span class="pre">container_of()</span></code>.</p>
 <p>The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful for finding the directory data block (the one indicated by the <code class="docutils literal"><span class="pre">dentry-&gt;d_parent-&gt;d_inode</span></code>, which is the <code class="docutils literal"><span class="pre">dir</span></code> variable).
 From this structure, get the <code class="docutils literal"><span class="pre">data_block</span></code> field, representing index of the data block on the disk.
