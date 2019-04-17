@@ -893,13 +893,13 @@ The operations of creating a file or deleting a file are also directory operatio
 </ul>
 </div></blockquote>
 <p>For this, define the <code class="docutils literal"><span class="pre">myfs_dir_inode_operations</span></code> structure in the code, where marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">5</span></code>.
-To begin, just define the structure <code class="docutils literal"><span class="pre">myfs_dir_inode_operations</span></code>; you will define the structures <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code>, <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> , and <code class="docutils literal"><span class="pre">myfs_aops</span></code> in the next exercise .</p>
+To begin, just define the structure <code class="docutils literal"><span class="pre">myfs_dir_inode_operations</span></code>; you will define the structures <code class="docutils literal"><span class="pre">myfs_file_operations</span></code>, <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> , and <code class="docutils literal"><span class="pre">myfs_aops</span></code> in the next exercise.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">As a model, you are following the <code class="docutils literal"><span class="pre">ramfs_dir_inode_operations</span></code> structure.</p>
 </div>
-<p>Implement the <code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code> and <code class="docutils literal"><span class="pre">create</span></code> operations inside <code class="docutils literal"><span class="pre">myfs_mkdir</span></code>, <code class="docutils literal"><span class="pre">myfs_mkdir</span></code> and <code class="docutils literal"><span class="pre">myfs_create</span></code>.
+<p>Implement the <code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code> and <code class="docutils literal"><span class="pre">create</span></code> operations inside <code class="docutils literal"><span class="pre">myfs_mkdir</span></code>, <code class="docutils literal"><span class="pre">myfs_mknod</span></code> and <code class="docutils literal"><span class="pre">myfs_create</span></code>.
 These operations will allow you to create directories and files in the file system.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
@@ -1105,7 +1105,6 @@ This is because we have not implemented the <code class="docutils literal"><span
 <span class="gp">#</span> ./test-minfs-1.sh
 </pre></div>
 </div>
-<p>If the implementation is correct, no error messages will be displayed when running the scripts above.</p>
 </div>
 </div>
 <div class="section" id="lookup-operation">
