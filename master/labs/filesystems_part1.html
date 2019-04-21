@@ -450,7 +450,7 @@ From the point of view of the process, the file entity abstracts the file. From 
 <li><code class="xref c c-func docutils literal"><span class="pre">mount_pseudo()</span></code>, a helper function for pseudo-file systems (<code class="docutils literal"><span class="pre">sockfs</span></code>, <code class="docutils literal"><span class="pre">pipefs</span></code>, generally file systems that can not be mounted)</li>
 </ul>
 </div></blockquote>
-<p>These functions get as parameter a pointer to a function <code class="xref c c-func docutils literal"><span class="pre">fill_super()</span></code> that will be called after the superblock initialization to finish the its initialization it by the driver. An example of such a function can be found in the <code class="docutils literal"><span class="pre">fill_super</span></code> section.</p>
+<p>These functions get as parameter a pointer to a function <code class="xref c c-func docutils literal"><span class="pre">fill_super()</span></code> that will be called after the superblock initialization to finish its initialization by the driver. An example of such a function can be found in the <code class="docutils literal"><span class="pre">fill_super</span></code> section.</p>
 <p>When unmounting the file system, the kernel calls <code class="xref c c-func docutils literal"><span class="pre">kill_sb()</span></code>, which performs cleanup operations and invokes one of the functions:</p>
 <blockquote>
 <div><ul class="simple">
@@ -766,7 +766,7 @@ Typically, this function is used to create and initialize all inodes; In this ex
 <p class="first admonition-title">Note</p>
 <p>To initialize <code class="docutils literal"><span class="pre">uid</span></code>, <code class="docutils literal"><span class="pre">gid</span></code> and <code class="docutils literal"><span class="pre">mode</span></code> , you can use the <code class="xref c c-func docutils literal"><span class="pre">inode_init_owner()</span></code> function as it is used in <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code>.
 When you call <code class="xref c c-func docutils literal"><span class="pre">inode_init_owner()</span></code>, use <code class="docutils literal"><span class="pre">NULL</span></code> as the second parameter because there is no parent directory for the created inode.</p>
-<p>Initialize the <code class="docutils literal"><span class="pre">i_atime</span></code>, <code class="docutils literal"><span class="pre">i_atime</span></code>, and <code class="docutils literal"><span class="pre">i_mtime</span></code> of the VFS inode to the value returned by the <code class="xref c c-func docutils literal"><span class="pre">current_time()</span></code> function.</p>
+<p>Initialize the <code class="docutils literal"><span class="pre">i_atime</span></code>, <code class="docutils literal"><span class="pre">i_ctime</span></code>, and <code class="docutils literal"><span class="pre">i_mtime</span></code> of the VFS inode to the value returned by the <code class="xref c c-func docutils literal"><span class="pre">current_time()</span></code> function.</p>
 <p>You will need to initialize the operations for the inode of type directory. To do this, follow the steps:</p>
 <blockquote class="last">
 <div><ol class="arabic simple">
@@ -882,7 +882,7 @@ Load the kernel module and then check the presence of the <code class="docutils 
 </div>
 <div class="section" id="completing-minfs-superblock">
 <h4>2. Completing minfs superblock<a class="headerlink" href="#completing-minfs-superblock" title="Permalink to this headline">¶</a></h4>
-<p>To be able to mount the file system, you will need to fill the superloclock (i.e a structure with type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>) within the <code class="docutils literal"><span class="pre">minfs_fill_super</span></code> function; it is the <code class="docutils literal"><span class="pre">s</span></code> argument of the function.
+<p>To be able to mount the file system, you will need to fill the superblock (i.e a structure with type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>) within the <code class="docutils literal"><span class="pre">minfs_fill_super</span></code> function; it is the <code class="docutils literal"><span class="pre">s</span></code> argument of the function.
 The structure of operations on the superblock is already defined: <code class="docutils literal"><span class="pre">minfs_ops</span></code>.
 Follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>. You can also follow the implementation of the <code class="docutils literal"><span class="pre">minix_fill_super</span></code> function.</p>
 <div class="admonition note">
