@@ -773,7 +773,7 @@ to generate ioctl codes. The macrodefinition parameters are as follows:</p>
          <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span><span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
      <span class="n">my_ioctl_data</span> <span class="n">mid</span><span class="p">;</span>
 
-     <span class="n">sitch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">switch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
      <span class="k">case</span> <span class="nl">MY_IOCTL_IN</span><span class="p">:</span>
         <span class="k">if</span><span class="p">(</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mid</span><span class="p">,</span> <span class="p">(</span><span class="n">my_ioctl_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">arg</span><span class="p">,</span>
                            <span class="k">sizeof</span><span class="p">(</span><span class="n">my_ioctl_data</span><span class="p">))</span> <span class="p">)</span>
