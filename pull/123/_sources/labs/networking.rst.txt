@@ -6,7 +6,7 @@ Lab objectives
 ==============
 
   * Understanding the Linux kernel networking architecture
-  * Acquiring practical IP packet management skills using a packet filter of
+  * Acquiring practical IP packet management skills using a packet filter or
     firewall
   * Familiarize yourself with how to use sockets at the Linux kernel level
 
@@ -36,13 +36,14 @@ that use sockets are: creation (``socket``), initialization
 (``bind``), connecting (``connect``), waiting for a connection
 (``listen``, ``accept``), closing a socket (``close``).
 
-Network communication is accomplished via read/write or ``recv``/``send`` calls for
-TCP sockets and recvfrom/sendto for UDP sockets. Transmission and reception
-operations are transparent to the application, leaving encapsulation and
-transmission over network at the kernel's discretion. However, it is possible to
-implement the TCP/IP stack in user-space using raw sockets (the ``PF_PACKET``
-option when creating a socket), or implementing a kernel application layer
-protocol (`TUX web server <http://en.wikipedia.org/wiki/TUX_web_server>`_).
+Network communication is accomplished via read/write or ``recv``/``send`` calls
+for TCP sockets and ``recvfrom``/``sendto`` for UDP sockets. Transmission and
+reception operations are transparent to the application, leaving encapsulation
+and transmission over network at the kernel's discretion. However, it is
+possible to implement the TCP/IP stack in user-space using raw sockets (the
+``PF_PACKET`` option when creating a socket), or implementing an application
+layer protocol in kernel(`TUX web server
+<http://en.wikipedia.org/wiki/TUX_web_server>`_).
 
 For more details about user-space programming using sockets, see `Bee's Guide to
 Network Programming Using Internet
@@ -107,7 +108,7 @@ Creation is similar to calling the :c:func:`socket` function in user-space, but 
 The parameters of these calls are as follows:
 
   * ``net``, where it is present, used as reference to the network namespace used;
-    we will usually initialize it at :c:type:`init_net`;
+    we will usually initialize it with ``init_net:`;
   * ``family`` represents the family of protocols used in the transfer of
     information; they usually begin with the ``PF_`` (Protocol Family) string;
     the constants representing the family of protocols used are found in
@@ -202,7 +203,6 @@ resources:
 
 Sending/receiving messages
 """"""""""""""""""""""""""
-
 
 The messages are sent/received using the following functions:
 
@@ -1034,7 +1034,7 @@ a connection to the localhost, a connection that will be intercepted and
 displayed by the kernel module. The script is copied on the virtual machine by
 the :command:`make copy` command only if it is marked as executable. The script
 uses the statically compiled :command:`netcat` tool stored in
-:file:`skels/networking/netcat`; this executable must have execution
+:file:`skels/networking/netcat`; this program must have execution
 permissions.
 
 After running the checker the output should be similar to the one bellow:
@@ -1065,7 +1065,7 @@ Review the section in :ref:`ioctl`. The address sent from user space is in
   :c:func:`copy_from_user`.
 
 To compare the addresses, fill out the ``test_daddr`` function. Addresses in
-network byte-order will be used; without having to convert addresses (if they
+network byte-order will be used without having to convert addresses (if they
 are equal from left to right they will be equal if reversed too).
 
 The ``test_daddr`` function must be called from the netfilter hook to display
@@ -1115,7 +1115,7 @@ The ``sock`` socket is a ``server socket`` and must be put in the listening
 state. That is, the ``bind`` and ``listen`` operations must be applied to the
 socket. For the ``bind`` and ``listen`` equivalent, in kernel space you will
 need to call ``sock->ops->...;`` examples of such functions you can call are
-``sock->ops->bind``, ``sock->ops-->listen`` etc.
+``sock->ops->bind``, ``sock->ops->listen`` etc.
 
 .. note::
 
@@ -1142,20 +1142,21 @@ connections on port ``60000``.
 ----------------------------------------
 
 Expand the module from the previous exercise to allow an external connection (no
-message, only new connection accepted). Fill in the areas marked with ``TODO
-2``.
+need to send any message, only accept new connections). Fill in the areas marked
+with ``TODO 2``.
 
 Read the `Operations on the socket structure`_ and `The struct proto_ops
 structure`_ sections.
 
 For the kernel-space ``accept`` equivalent, see the system call handler for
 :c:func:`sys_accept4`. Follow the :c:func:`lnet_sock_accept` implementation, and
-how the ``sock->ops->accept`` call is used. Use ``0`` as the value for the last
-argument (``flags``).
+how the ``sock->ops->accept`` call is used. Use ``0`` as the value for the
+second to last argument (``flags``), and ``false`` for the last argument
+(``kern``).
 
 .. note::
 
-  The newly created socket (``new_sock``) must be created with the
+  The new socket (``new_sock``) must be created with the
   :c:func:`sock_create_lite` function and then its operations must be configured
   using
 

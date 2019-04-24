@@ -221,7 +221,7 @@
 <blockquote>
 <div><ul class="simple">
 <li>Understanding the Linux kernel networking architecture</li>
-<li>Acquiring practical IP packet management skills using a packet filter of
+<li>Acquiring practical IP packet management skills using a packet filter or
 firewall</li>
 <li>Familiarize yourself with how to use sockets at the Linux kernel level</li>
 </ul>
@@ -248,13 +248,13 @@ transport layer protocol used (TCP, UDP etc) and a port. Common function calls
 that use sockets are: creation (<code class="docutils literal"><span class="pre">socket</span></code>), initialization
 (<code class="docutils literal"><span class="pre">bind</span></code>), connecting (<code class="docutils literal"><span class="pre">connect</span></code>), waiting for a connection
 (<code class="docutils literal"><span class="pre">listen</span></code>, <code class="docutils literal"><span class="pre">accept</span></code>), closing a socket (<code class="docutils literal"><span class="pre">close</span></code>).</p>
-<p>Network communication is accomplished via read/write or <code class="docutils literal"><span class="pre">recv</span></code>/<code class="docutils literal"><span class="pre">send</span></code> calls for
-TCP sockets and recvfrom/sendto for UDP sockets. Transmission and reception
-operations are transparent to the application, leaving encapsulation and
-transmission over network at the kernel’s discretion. However, it is possible to
-implement the TCP/IP stack in user-space using raw sockets (the <code class="docutils literal"><span class="pre">PF_PACKET</span></code>
-option when creating a socket), or implementing a kernel application layer
-protocol (<a class="reference external" href="http://en.wikipedia.org/wiki/TUX_web_server">TUX web server</a>).</p>
+<p>Network communication is accomplished via read/write or <code class="docutils literal"><span class="pre">recv</span></code>/<code class="docutils literal"><span class="pre">send</span></code> calls
+for TCP sockets and <code class="docutils literal"><span class="pre">recvfrom</span></code>/<code class="docutils literal"><span class="pre">sendto</span></code> for UDP sockets. Transmission and
+reception operations are transparent to the application, leaving encapsulation
+and transmission over network at the kernel’s discretion. However, it is
+possible to implement the TCP/IP stack in user-space using raw sockets (the
+<code class="docutils literal"><span class="pre">PF_PACKET</span></code> option when creating a socket), or implementing an application
+layer protocol in kernel(<a class="reference external" href="http://en.wikipedia.org/wiki/TUX_web_server">TUX web server</a>).</p>
 <p>For more details about user-space programming using sockets, see <a class="reference external" href="http://www.beej.us/guide/bgnet/output/html/multipage/">Bee’s Guide to
 Network Programming Using Internet
 Sockets</a>.</p>
@@ -312,7 +312,7 @@ creates a kernel socket without parameter sanity checks.</li>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">net</span></code>, where it is present, used as reference to the network namespace used;
-we will usually initialize it at <code class="xref c c-type docutils literal"><span class="pre">init_net</span></code>;</li>
+we will usually initialize it with <a href="#id1"><span class="problematic" id="id2">``</span></a>init_net:<a href="#id3"><span class="problematic" id="id4">`</span></a>;</li>
 <li><code class="docutils literal"><span class="pre">family</span></code> represents the family of protocols used in the transfer of
 information; they usually begin with the <code class="docutils literal"><span class="pre">PF_</span></code> (Protocol Family) string;
 the constants representing the family of protocols used are found in
@@ -870,7 +870,7 @@ packet is as follows:</p>
 </div>
 </div>
 <div class="section" id="conversions">
-<span id="id1"></span><h2>Conversions<a class="headerlink" href="#conversions" title="Permalink to this headline">¶</a></h2>
+<span id="id5"></span><h2>Conversions<a class="headerlink" href="#conversions" title="Permalink to this headline">¶</a></h2>
 <p>In different systems, there are several ways of ordering bytes in a word
 (<a class="reference external" href="http://en.wikipedia.org/wiki/Endianness">Endianness</a>), including: <a class="reference external" href="http://en.wikipedia.org/wiki/Endianness#Big-endian">Big
 Endian</a> (the most
@@ -898,7 +898,7 @@ host byte-order (network to host long).</li>
 </div></blockquote>
 </div>
 <div class="section" id="netfilter">
-<span id="id2"></span><h2>netfilter<a class="headerlink" href="#netfilter" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2>netfilter<a class="headerlink" href="#netfilter" title="Permalink to this headline">¶</a></h2>
 <p>Netfilter is the name of the kernel interface for capturing network packets for
 modifying/analyzing them (for filtering, NAT, etc.). <a class="reference external" href="http://www.netfilter.org/">The netfilter</a> interface is used in user-space by <a class="reference external" href="http://www.frozentux.net/documents/iptables-tutorial/">iptables</a>.</p>
 <p>In the Linux kernel, packet capture using netfilter is done by attaching hooks.
@@ -1208,7 +1208,7 @@ a connection to the localhost, a connection that will be intercepted and
 displayed by the kernel module. The script is copied on the virtual machine by
 the <strong class="command">make copy</strong> command only if it is marked as executable. The script
 uses the statically compiled <strong class="command">netcat</strong> tool stored in
-<code class="file docutils literal"><span class="pre">skels/networking/netcat</span></code>; this executable must have execution
+<code class="file docutils literal"><span class="pre">skels/networking/netcat</span></code>; this program must have execution
 permissions.</p>
 <p>After running the checker the output should be similar to the one bellow:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp"># ./test-1.sh</span>
@@ -1234,7 +1234,7 @@ address must be stored in the <code class="docutils literal"><span class="pre">i
 <code class="xref c c-func docutils literal"><span class="pre">copy_from_user()</span></code>.</p>
 </div>
 <p>To compare the addresses, fill out the <code class="docutils literal"><span class="pre">test_daddr</span></code> function. Addresses in
-network byte-order will be used; without having to convert addresses (if they
+network byte-order will be used without having to convert addresses (if they
 are equal from left to right they will be equal if reversed too).</p>
 <p>The <code class="docutils literal"><span class="pre">test_daddr</span></code> function must be called from the netfilter hook to display
 the connection initialization packets for which the destination address is the
@@ -1279,7 +1279,7 @@ structure</a> sections.</p>
 state. That is, the <code class="docutils literal"><span class="pre">bind</span></code> and <code class="docutils literal"><span class="pre">listen</span></code> operations must be applied to the
 socket. For the <code class="docutils literal"><span class="pre">bind</span></code> and <code class="docutils literal"><span class="pre">listen</span></code> equivalent, in kernel space you will
 need to call <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;...;</span></code> examples of such functions you can call are
-<code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;bind</span></code>, <code class="docutils literal"><span class="pre">sock-&gt;ops--&gt;listen</span></code> etc.</p>
+<code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;bind</span></code>, <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;listen</span></code> etc.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For example, call <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;bind</span></code>, or <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;listen</span></code> functions, see
@@ -1302,17 +1302,18 @@ connections on port <code class="docutils literal"><span class="pre">60000</span
 <div class="section" id="accepting-connections-in-kernel-space">
 <h3>4. Accepting connections in kernel-space<a class="headerlink" href="#accepting-connections-in-kernel-space" title="Permalink to this headline">¶</a></h3>
 <p>Expand the module from the previous exercise to allow an external connection (no
-message, only new connection accepted). Fill in the areas marked with <code class="docutils literal"><span class="pre">TODO</span>
-<span class="pre">2</span></code>.</p>
+need to send any message, only accept new connections). Fill in the areas marked
+with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>.</p>
 <p>Read the <a class="reference internal" href="#operations-on-the-socket-structure">Operations on the socket structure</a> and <a class="reference internal" href="#the-struct-proto-ops-structure">The struct proto_ops
 structure</a> sections.</p>
 <p>For the kernel-space <code class="docutils literal"><span class="pre">accept</span></code> equivalent, see the system call handler for
 <code class="xref c c-func docutils literal"><span class="pre">sys_accept4()</span></code>. Follow the <code class="xref c c-func docutils literal"><span class="pre">lnet_sock_accept()</span></code> implementation, and
-how the <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;accept</span></code> call is used. Use <code class="docutils literal"><span class="pre">0</span></code> as the value for the last
-argument (<code class="docutils literal"><span class="pre">flags</span></code>).</p>
+how the <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;accept</span></code> call is used. Use <code class="docutils literal"><span class="pre">0</span></code> as the value for the
+second to last argument (<code class="docutils literal"><span class="pre">flags</span></code>), and <code class="docutils literal"><span class="pre">false</span></code> for the last argument
+(<code class="docutils literal"><span class="pre">kern</span></code>).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>The newly created socket (<code class="docutils literal"><span class="pre">new_sock</span></code>) must be created with the
+<p>The new socket (<code class="docutils literal"><span class="pre">new_sock</span></code>) must be created with the
 <code class="xref c c-func docutils literal"><span class="pre">sock_create_lite()</span></code> function and then its operations must be configured
 using</p>
 <div class="last highlight-console"><div class="highlight"><pre><span></span><span class="go">newsock-&gt;ops = sock-&gt;ops;</span>
