@@ -108,7 +108,7 @@ Creation is similar to calling the :c:func:`socket` function in user-space, but 
 The parameters of these calls are as follows:
 
   * ``net``, where it is present, used as reference to the network namespace used;
-    we will usually initialize it with ``init_net:`;
+    we will usually initialize it with ``init_net``;
   * ``family`` represents the family of protocols used in the transfer of
     information; they usually begin with the ``PF_`` (Protocol Family) string;
     the constants representing the family of protocols used are found in
@@ -323,7 +323,7 @@ pointers for specific protocol implementations:
   	int		family;
   	struct module	*owner;
   	int		(*release)   (struct socket *sock);
-  	int		(*bind)	     (struct socket *sock,
+  	int		(*bind)      (struct socket *sock,
   				      struct sockaddr *myaddr,
   				      int sockaddr_len);
   	int		(*connect)   (struct socket *sock,
@@ -332,13 +332,14 @@ pointers for specific protocol implementations:
   	int		(*socketpair)(struct socket *sock1,
   				      struct socket *sock2);
   	int		(*accept)    (struct socket *sock,
-  				      struct socket *newsock, int flags);
+  				      struct socket *newsock, int flags, bool kern);
   	int		(*getname)   (struct socket *sock,
   				      struct sockaddr *addr,
-  				      int *sockaddr_len, int peer);
+  				      int peer);
   	//...
+  }
 
-The initialization of the ``ops`` field from :c:type:`struct socket`` is done in
+The initialization of the ``ops`` field from :c:type:`struct socket` is done in
 the :c:func:`__sock_create` function, by calling the :c:func:`create` function,
 specific to each protocol; an equivalent call is the implementation of the
 :c:func:`__sock_create` function:
@@ -724,7 +725,8 @@ modifying/analyzing them (for filtering, NAT, etc.). `The netfilter
 In the Linux kernel, packet capture using netfilter is done by attaching hooks.
 Hooks can be specified in different locations in the path followed by a kernel
 network packet, as needed. An organization chart with the route followed by a
-package and the possible areas for a hook can be found here.
+package and the possible areas for a hook can be found `here
+<http://linux-ip.net/nf/nfk-traversal.png>`_.
 
 The header included when using netfilter is :file:`linux/netfilter.h`.
 
@@ -987,7 +989,7 @@ Exercises
   is enabled via ``CONFIG_NETFILTER``. To activate it, run :command:`make menuconfig` in
   the :file:`linux` directory and check the ``Network packet filtering framework
   (Netfilter)`` option in ``Networking support -> Networking options``. If it
-  was not enabled, enable it (as builtin, not external mode - it must be
+  was not enabled, enable it (as builtin, not external module - it must be
   marked with ``*``).
 
 
@@ -1003,9 +1005,9 @@ You will need to register a netfilter hook of type ``NF_INET_LOCAL_OUT`` as expl
 in the `netfilter`_ section.
 
 `The struct sk_buff structure`_ lets you access the packet headers. The IP
-header is obtained in from :c:type:`struct iphdr` structure using the
-:c:func:`ip_hdr` function, and the TCP header is obtained form a :c:type:`struct
-tcphdr` using the :c:func:`tcp_hdr` function.
+header is obtained in the form of a :c:type:`struct iphdr` structure using
+the :c:func:`ip_hdr` function, and the TCP header is obtained in the form of a
+:c:type:`struct tcphdr` using the :c:func:`tcp_hdr` function.
 
 The `diagram`_ explains how to make a TCP connection. The connection initiation
 packet has the ``SYN`` flag set in the TCP header and the ``ACK`` flag cleared.
@@ -1018,7 +1020,7 @@ packet has the ``SYN`` flag set in the TCP header and the ``ACK`` flag cleared.
   addresses`` section). The following is an example code snippet that uses
   ``%pI4``:
 
-  .. code-block: c
+  .. code-block:: c
 
     printk("IP address is %pI4\n", &iph->saddr);
 
@@ -1151,7 +1153,7 @@ structure`_ sections.
 For the kernel-space ``accept`` equivalent, see the system call handler for
 :c:func:`sys_accept4`. Follow the :c:func:`lnet_sock_accept` implementation, and
 how the ``sock->ops->accept`` call is used. Use ``0`` as the value for the
-second to last argument (``flags``), and ``false`` for the last argument
+second to last argument (``flags``), and ``true`` for the last argument
 (``kern``).
 
 .. note::
@@ -1210,21 +1212,21 @@ system call handler or `Sending/receiving messages`_.
 
 .. hint::
 
-  The ``msg_name`` field of the :c:type:`struct msghdr`` structure must be
-  initialized to the destination address (pointer to:c:type:`struct sockaddr``)
+  The ``msg_name`` field of the :c:type:`struct msghdr` structure must be
+  initialized to the destination address (pointer to :c:type:`struct sockaddr`)
   and the ``msg_namelen`` field to the address size.
 
-  Initialize the ``msg_flags`` field of the :c:type:`struct msghdr`` structure
+  Initialize the ``msg_flags`` field of the :c:type:`struct msghdr` structure
   to ``0``.
 
   Initialize the ``msg_control`` and ``msg_controllen`` fields of the
-  :c:type:`struct msghdr`` structure to ``NULL`` and ``0`` respectively.
+  :c:type:`struct msghdr` structure to ``NULL`` and ``0`` respectively.
 
 For sending the message use :c:func:`kernel_sendmsg`.
 
 The message transmission parameters are retrieved from the kernel-space. Cast
 the :c:type:`struct iovec` structure pointer to a :c:type:`struct kvec` pointer
-in the :c:func:`kernel_sendmsg call`.
+in the :c:func:`kernel_sendmsg` call.
 
 .. hint::
 
