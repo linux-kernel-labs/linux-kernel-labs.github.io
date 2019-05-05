@@ -108,7 +108,7 @@ Creation is similar to calling the :c:func:`socket` function in user space, but 
 The parameters of these calls are as follows:
 
   * ``net``, where it is present, used as reference to the network namespace used;
-    we will usually initialize it with ``init_net:`;
+    we will usually initialize it with ``init_net``;
   * ``family`` represents the family of protocols used in the transfer of
     information; they usually begin with the ``PF_`` (Protocol Family) string;
     the constants representing the family of protocols used are found in
@@ -323,7 +323,7 @@ pointers for specific protocol implementations:
   	int		family;
   	struct module	*owner;
   	int		(*release)   (struct socket *sock);
-  	int		(*bind)	     (struct socket *sock,
+  	int		(*bind)      (struct socket *sock,
   				      struct sockaddr *myaddr,
   				      int sockaddr_len);
   	int		(*connect)   (struct socket *sock,
@@ -337,6 +337,7 @@ pointers for specific protocol implementations:
   				      struct sockaddr *addr,
   				      int peer);
   	//...
+  }
 
 The initialization of the ``ops`` field from :c:type:`struct socket` is done in
 the :c:func:`__sock_create` function, by calling the :c:func:`create` function,
@@ -724,7 +725,8 @@ modifying/analyzing them (for filtering, NAT, etc.). `The netfilter
 In the Linux kernel, packet capture using netfilter is done by attaching hooks.
 Hooks can be specified in different locations in the path followed by a kernel
 network packet, as needed. An organization chart with the route followed by a
-package and the possible areas for a hook can be found here.
+package and the possible areas for a hook can be found `here
+<http://linux-ip.net/nf/nfk-traversal.png>`_.
 
 The header included when using netfilter is :file:`linux/netfilter.h`.
 
@@ -987,7 +989,7 @@ Exercises
   is enabled via ``CONFIG_NETFILTER``. To activate it, run :command:`make menuconfig` in
   the :file:`linux` directory and check the ``Network packet filtering framework
   (Netfilter)`` option in ``Networking support -> Networking options``. If it
-  was not enabled, enable it (as builtin, not external mode - it must be
+  was not enabled, enable it (as builtin, not external module - it must be
   marked with ``*``).
 
 
@@ -1018,7 +1020,7 @@ packet has the ``SYN`` flag set in the TCP header and the ``ACK`` flag cleared.
   addresses`` section). The following is an example code snippet that uses
   ``%pI4``:
 
-  .. code-block: c
+  .. code-block:: c
 
     printk("IP address is %pI4\n", &iph->saddr);
 
@@ -1232,7 +1234,7 @@ For sending the message use :c:func:`kernel_sendmsg`.
 
 The message transmission parameters are retrieved from the kernel space. Cast
 the :c:type:`struct iovec` structure pointer to a :c:type:`struct kvec` pointer
-in the :c:func:`kernel_sendmsg call`.
+in the :c:func:`kernel_sendmsg` call.
 
 .. hint::
 
