@@ -121,7 +121,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Networking</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#networking-in-user-space">Networking in user-space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#networking-in-user-space">Networking in user space</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#linux-networking">Linux networking</a><ul>
@@ -139,10 +139,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#netcat">netcat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#displaying-packets-in-kernel-space">1. Displaying packets in kernel-space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#displaying-packets-in-kernel-space">1. Displaying packets in kernel space</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#filtering-by-destination-address">2. Filtering by destination address</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#listening-on-a-tcp-socket">3. Listening on a TCP socket</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#accepting-connections-in-kernel-space">4. Accepting connections in kernel-space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accepting-connections-in-kernel-space">4. Accepting connections in kernel space</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#udp-socket-sender">5. UDP socket sender</a></li>
 </ul>
 </li>
@@ -235,27 +235,27 @@ requirements of an operating system’s networking subsystem. The networking
 subsystem is not an essential component of an operating system kernel (the Linux
 kernel can be compiled without networking support). It is, however, quite
 unlikely for a computing system (or even an embedded device) to have a
-non-networked operating system due to the need for connectivity. Both Linux
-(Unix) and Windows systems use the <a class="reference external" href="https://en.wikipedia.org/wiki/Internet_protocol_suite">TCP/IP stack</a>. Their kernel
-implements protocols up to the transport layer, and application layer protocols
-will be implemented in user-space (HTTP, FTP, SSH, etc.).</p>
+non-networked operating system due to the need for connectivity. Modern operating
+systems use the <a class="reference external" href="https://en.wikipedia.org/wiki/Internet_protocol_suite">TCP/IP stack</a>. Their kernel
+implements protocols up to the transport layer, while application layer protocols
+are tipically implemented in user space (HTTP, FTP, SSH, etc.).</p>
 <div class="section" id="networking-in-user-space">
-<h3>Networking in user-space<a class="headerlink" href="#networking-in-user-space" title="Permalink to this headline">¶</a></h3>
-<p>In user-space, the abstraction of network communication is the socket. The
+<h3>Networking in user space<a class="headerlink" href="#networking-in-user-space" title="Permalink to this headline">¶</a></h3>
+<p>In user space the abstraction of network communication is the socket. The
 socket abstracts a communication channel and is the kernel-based TCP/IP stack
 interaction interface. An IP socket is associated with an IP address, the
 transport layer protocol used (TCP, UDP etc) and a port. Common function calls
 that use sockets are: creation (<code class="docutils literal"><span class="pre">socket</span></code>), initialization
 (<code class="docutils literal"><span class="pre">bind</span></code>), connecting (<code class="docutils literal"><span class="pre">connect</span></code>), waiting for a connection
 (<code class="docutils literal"><span class="pre">listen</span></code>, <code class="docutils literal"><span class="pre">accept</span></code>), closing a socket (<code class="docutils literal"><span class="pre">close</span></code>).</p>
-<p>Network communication is accomplished via read/write or <code class="docutils literal"><span class="pre">recv</span></code>/<code class="docutils literal"><span class="pre">send</span></code> calls
+<p>Network communication is accomplished via <code class="docutils literal"><span class="pre">read</span></code>/<code class="docutils literal"><span class="pre">write</span></code> or <code class="docutils literal"><span class="pre">recv</span></code>/<code class="docutils literal"><span class="pre">send</span></code> calls
 for TCP sockets and <code class="docutils literal"><span class="pre">recvfrom</span></code>/<code class="docutils literal"><span class="pre">sendto</span></code> for UDP sockets. Transmission and
 reception operations are transparent to the application, leaving encapsulation
 and transmission over network at the kernel’s discretion. However, it is
-possible to implement the TCP/IP stack in user-space using raw sockets (the
+possible to implement the TCP/IP stack in user space using raw sockets (the
 <code class="docutils literal"><span class="pre">PF_PACKET</span></code> option when creating a socket), or implementing an application
-layer protocol in kernel(<a class="reference external" href="http://en.wikipedia.org/wiki/TUX_web_server">TUX web server</a>).</p>
-<p>For more details about user-space programming using sockets, see <a class="reference external" href="http://www.beej.us/guide/bgnet/output/html/multipage/">Bee’s Guide to
+layer protocol in kernel (<a class="reference external" href="http://en.wikipedia.org/wiki/TUX_web_server">TUX web server</a>).</p>
+<p>For more details about user space programming using sockets, see <a class="reference external" href="http://www.beej.us/guide/bgnet/output/html/multipage/">Bee’s Guide to
 Network Programming Using Internet
 Sockets</a>.</p>
 </div>
@@ -268,7 +268,7 @@ packets: <code class="xref c c-type docutils literal"><span class="pre">struct</
 <p>The first two are abstractions of a socket:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> is an abstraction very close to user-space, ie <a class="reference external" href="http://en.wikipedia.org/wiki/Berkeley_sockets">BSD
+<li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> is an abstraction very close to user space, ie <a class="reference external" href="http://en.wikipedia.org/wiki/Berkeley_sockets">BSD
 sockets</a> used to program
 network applications;</li>
 <li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> or <em>INET socket</em> in Linux terminology is the network
@@ -279,7 +279,7 @@ representation of a socket.</li>
 socket field, and the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> has a BSD socket that holds it.</p>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure is the representation of a network packet
 and its status. The structure is created when a kernel packet is received,
-either from the user-space or from the network interface.</p>
+either from the user space or from the network interface.</p>
 <div class="section" id="the-struct-socket-structure">
 <h3>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure<a class="headerlink" href="#the-struct-socket-structure" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure is the kernel representation of a BSD
@@ -290,13 +290,13 @@ calls; they work with the <code class="xref c c-type docutils literal"><span cla
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> operations are described in <code class="file docutils literal"><span class="pre">net/socket.c</span></code> and
 are independent of the protocol type. The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure is thus
 a generic interface over particular network operations implementations.
-Typically, the names of these operations begin with the <code class="docutils literal"><span class="pre">sock_</span></code> string.</p>
+Typically, the names of these operations begin with the <code class="docutils literal"><span class="pre">sock_</span></code> prefix.</p>
 <div class="section" id="operations-on-the-socket-structure">
 <span id="socketstructops"></span><h4>Operations on the socket structure<a class="headerlink" href="#operations-on-the-socket-structure" title="Permalink to this headline">¶</a></h4>
 <p>Socket operations are:</p>
 <div class="section" id="creation">
 <h5>Creation<a class="headerlink" href="#creation" title="Permalink to this headline">¶</a></h5>
-<p>Creation is similar to calling the <code class="xref c c-func docutils literal"><span class="pre">socket()</span></code> function in user-space, but the
+<p>Creation is similar to calling the <code class="xref c c-func docutils literal"><span class="pre">socket()</span></code> function in user space, but the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> created will be stored in the <code class="docutils literal"><span class="pre">res</span></code> parameter:</p>
 <blockquote>
 <div><ul class="simple">
@@ -328,7 +328,7 @@ for connectionless communication;</li>
 <code class="docutils literal"><span class="pre">IPPROTO_UDP</span></code> for UDP.</li>
 </ul>
 </div></blockquote>
-<p>To create a TCP socket in kernel-space, you must call:</p>
+<p>To create a TCP socket in kernel space, you must call:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">socket</span> <span class="o">*</span><span class="n">sock</span><span class="p">;</span>
 <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
 
@@ -348,7 +348,7 @@ for connectionless communication;</li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>A usage example can be seen in the <code class="xref c c-func docutils literal"><span class="pre">sys_socket()</span></code> system call handler:</p>
+<p>A usage sample is part of the <code class="xref c c-func docutils literal"><span class="pre">sys_socket()</span></code> system call handler:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">SYSCALL_DEFINE3</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">protocol</span><span class="p">)</span>
 <span class="p">{</span>
       <span class="kt">int</span> <span class="n">retval</span><span class="p">;</span>
@@ -427,8 +427,8 @@ to which the message is sent (<code class="xref c c-type docutils literal"><span
 <li><code class="docutils literal"><span class="pre">vec</span></code>, a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kvec</span></code> structure, containing a pointer to the buffer
 containing its data and size; as can be seen, it has a similar structure to the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">iovec</span></code> structure (the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">iovec</span></code> structure
-corresponds to the user-space data, and the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kvec</span></code> structure
-corresponds to kernel-space data).</li>
+corresponds to the user space data, and the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kvec</span></code> structure
+corresponds to kernel space data).</li>
 </ul>
 </div></blockquote>
 <p>A usage example can be seen in the <code class="xref c c-func docutils literal"><span class="pre">sys_sendto()</span></code> system call handler:</p>
@@ -581,7 +581,7 @@ will be associated with the socket, a <code class="xref c c-type docutils litera
 <div class="section" id="the-struct-sock-structure">
 <h3>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> structure<a class="headerlink" href="#the-struct-sock-structure" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> describes an <code class="docutils literal"><span class="pre">INET</span></code> socket. Such a structure is
-associated with a user-space socket and implicitly with a <code class="xref c c-type docutils literal"><span class="pre">struct</span>
+associated with a user space socket and implicitly with a <code class="xref c c-type docutils literal"><span class="pre">struct</span>
 <span class="pre">socket</span></code> structure. The structure is used to store information about the status
 of a connection. The structure’s fields and associated operations usually begin
 with the <code class="docutils literal"><span class="pre">sk_</span></code> string. Some fields are listed below:</p>
@@ -901,7 +901,7 @@ host byte-order (network to host long).</li>
 <div class="section" id="netfilter">
 <span id="id2"></span><h2>netfilter<a class="headerlink" href="#netfilter" title="Permalink to this headline">¶</a></h2>
 <p>Netfilter is the name of the kernel interface for capturing network packets for
-modifying/analyzing them (for filtering, NAT, etc.). <a class="reference external" href="http://www.netfilter.org/">The netfilter</a> interface is used in user-space by <a class="reference external" href="http://www.frozentux.net/documents/iptables-tutorial/">iptables</a>.</p>
+modifying/analyzing them (for filtering, NAT, etc.). <a class="reference external" href="http://www.netfilter.org/">The netfilter</a> interface is used in user space by <a class="reference external" href="http://www.frozentux.net/documents/iptables-tutorial/">iptables</a>.</p>
 <p>In the Linux kernel, packet capture using netfilter is done by attaching hooks.
 Hooks can be specified in different locations in the path followed by a kernel
 network packet, as needed. An organization chart with the route followed by a
@@ -1179,17 +1179,17 @@ was not enabled, enable it (as builtin, not external module - it must be
 marked with <code class="docutils literal"><span class="pre">*</span></code>).</p>
 </div>
 <div class="section" id="displaying-packets-in-kernel-space">
-<h3>1. Displaying packets in kernel-space<a class="headerlink" href="#displaying-packets-in-kernel-space" title="Permalink to this headline">¶</a></h3>
+<h3>1. Displaying packets in kernel space<a class="headerlink" href="#displaying-packets-in-kernel-space" title="Permalink to this headline">¶</a></h3>
 <p>Write a kernel module that displays the source address and port for TCP packets
 that initiate an outbound connection. Start from the code in
 <code class="file docutils literal"><span class="pre">1-2-netfilter</span></code> and fill in the areas marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>, taking into
 account the comments below.</p>
 <p>You will need to register a netfilter hook of type <code class="docutils literal"><span class="pre">NF_INET_LOCAL_OUT</span></code> as explained
 in the <a class="reference internal" href="#netfilter">netfilter</a> section.</p>
-<p><a class="reference internal" href="#the-struct-sk-buff-structure">The struct sk_buff structure</a> lets you access the packet headers. The IP
-header is obtained in the form of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">iphdr</span></code> structure using
-the <code class="xref c c-func docutils literal"><span class="pre">ip_hdr()</span></code> function, and the TCP header is obtained in the form of a
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">tcphdr</span></code> using the <code class="xref c c-func docutils literal"><span class="pre">tcp_hdr()</span></code> function.</p>
+<p><a class="reference internal" href="#the-struct-sk-buff-structure">The struct sk_buff structure</a> lets you access the packet headers using
+specific functions. The <code class="xref c c-func docutils literal"><span class="pre">ip_hdr()</span></code> function returns the IP header as a
+pointer to a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">iphdr</span></code> structure. The <code class="xref c c-func docutils literal"><span class="pre">tcp_hdr()</span></code> function
+returns the TCP header as a pointer to a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">tcphdr</span></code> structure.</p>
 <p>The <a class="reference external" href="http://www.eventhelix.com/Realtimemantra/Networking/Tcp.pdf">diagram</a> explains how to make a TCP connection. The connection initiation
 packet has the <code class="docutils literal"><span class="pre">SYN</span></code> flag set in the TCP header and the <code class="docutils literal"><span class="pre">ACK</span></code> flag cleared.</p>
 <div class="admonition note">
@@ -1242,9 +1242,9 @@ network byte-order will be used without having to convert addresses (if they
 are equal from left to right they will be equal if reversed too).</p>
 <p>The <code class="docutils literal"><span class="pre">test_daddr</span></code> function must be called from the netfilter hook to display
 the connection initialization packets for which the destination address is the
-one sent through the ioctl routine. Connection initiation packets have the
-<code class="docutils literal"><span class="pre">SYN</span></code> flag enabled and the <code class="docutils literal"><span class="pre">ACK</span></code> flag disabled in the TCP header. You have
-to check two things:</p>
+one sent through the ioctl routine. The connection initiation packet has the
+<code class="docutils literal"><span class="pre">SYN</span></code> flag set in the TCP header and the <code class="docutils literal"><span class="pre">ACK</span></code> flag cleared.  You have to
+check two things:</p>
 <blockquote>
 <div><ul class="simple">
 <li>the TCP flags;</li>
@@ -1286,9 +1286,11 @@ need to call <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;.
 <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;bind</span></code>, <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;listen</span></code> etc.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For example, call <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;bind</span></code>, or <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;listen</span></code> functions, see
+<p>For example, call <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;bind</span></code>, or <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;listen</span></code> functions, see
 how they are called in the <code class="xref c c-func docutils literal"><span class="pre">sys_bind()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">sys_listen()</span></code> system
 call handlers.</p>
+<p class="last">Look for the system call handlers in the <code class="docutils literal"><span class="pre">net/socket.c</span></code> file in the Linux
+kernel source code tree.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1304,17 +1306,22 @@ executable.</p>
 connections on port <code class="docutils literal"><span class="pre">60000</span></code>.</p>
 </div>
 <div class="section" id="accepting-connections-in-kernel-space">
-<h3>4. Accepting connections in kernel-space<a class="headerlink" href="#accepting-connections-in-kernel-space" title="Permalink to this headline">¶</a></h3>
+<h3>4. Accepting connections in kernel space<a class="headerlink" href="#accepting-connections-in-kernel-space" title="Permalink to this headline">¶</a></h3>
 <p>Expand the module from the previous exercise to allow an external connection (no
 need to send any message, only accept new connections). Fill in the areas marked
 with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>.</p>
 <p>Read the <a class="reference internal" href="#operations-on-the-socket-structure">Operations on the socket structure</a> and <a class="reference internal" href="#the-struct-proto-ops-structure">The struct proto_ops
 structure</a> sections.</p>
-<p>For the kernel-space <code class="docutils literal"><span class="pre">accept</span></code> equivalent, see the system call handler for
+<p>For the kernel space <code class="docutils literal"><span class="pre">accept</span></code> equivalent, see the system call handler for
 <code class="xref c c-func docutils literal"><span class="pre">sys_accept4()</span></code>. Follow the <code class="xref c c-func docutils literal"><span class="pre">lnet_sock_accept()</span></code> implementation, and
 how the <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;accept</span></code> call is used. Use <code class="docutils literal"><span class="pre">0</span></code> as the value for the
 second to last argument (<code class="docutils literal"><span class="pre">flags</span></code>), and <code class="docutils literal"><span class="pre">true</span></code> for the last argument
 (<code class="docutils literal"><span class="pre">kern</span></code>).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Look for the system call handlers in the <code class="docutils literal"><span class="pre">net/socket.c</span></code> file in the Linux
+kernel source code tree.</p>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>The new socket (<code class="docutils literal"><span class="pre">new_sock</span></code>) must be created with the
@@ -1356,7 +1363,7 @@ stop the test script, and then you can remove the kernel module.</p>
 <p>Start from the code in <code class="file docutils literal"><span class="pre">5-udp-sock</span></code>.</p>
 <p>Read the <a class="reference internal" href="#operations-on-the-socket-structure">Operations on the socket structure</a> and <a class="reference internal" href="#the-struct-proto-ops-structure">The struct proto_ops
 structure</a> sections.</p>
-<p>To see how to send messages in the kernel-space, see the <code class="xref c c-func docutils literal"><span class="pre">sys_send()</span></code>
+<p>To see how to send messages in the kernel space, see the <code class="xref c c-func docutils literal"><span class="pre">sys_send()</span></code>
 system call handler or <a class="reference internal" href="#sending-receiving-messages">Sending/receiving messages</a>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1369,7 +1376,7 @@ to <code class="docutils literal"><span class="pre">0</span></code>.</p>
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">msghdr</span></code> structure to <code class="docutils literal"><span class="pre">NULL</span></code> and <code class="docutils literal"><span class="pre">0</span></code> respectively.</p>
 </div>
 <p>For sending the message use <code class="xref c c-func docutils literal"><span class="pre">kernel_sendmsg()</span></code>.</p>
-<p>The message transmission parameters are retrieved from the kernel-space. Cast
+<p>The message transmission parameters are retrieved from the kernel space. Cast
 the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">iovec</span></code> structure pointer to a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kvec</span></code> pointer
 in the <code class="xref c c-func docutils literal"><span class="pre">kernel_sendmsg()</span></code> call.</p>
 <div class="admonition hint">
