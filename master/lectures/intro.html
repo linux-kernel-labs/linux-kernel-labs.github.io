@@ -414,7 +414,7 @@ or in kernel mode (executing a system call).</p>
 </div>
 <div class="section" id="multi-tasking">
 <h3>Multi-tasking<a class="headerlink" href="#multi-tasking" title="Permalink to this headline">¶</a></h3>
-<span class="admonition-execution-contexts"></span><p>Multitasking is the ability of the operating system to
+<span class="admonition-multi-tasking"></span><p>Multitasking is the ability of the operating system to
 “simultaneously” execute multiple programs. It does so by quickly
 switching between running processes.</p>
 <p>Cooperative multitasking requires the programs to cooperate to achieve
@@ -428,7 +428,7 @@ another task is scheduled.</p>
 </div>
 <div class="section" id="preemptive-kernel">
 <h3>Preemptive kernel<a class="headerlink" href="#preemptive-kernel" title="Permalink to this headline">¶</a></h3>
-<p class="admonition-execution-contexts">Preemptive multitasking and preemptive kernels are different terms.</p>
+<p class="admonition-preemptive-kernel">Preemptive multitasking and preemptive kernels are different terms.</p>
 <p>A kernel is preemptive if a process can be preempted while running
 in kernel mode.</p>
 <p>However, note that non-preemptive kernels may support preemptive
@@ -436,13 +436,13 @@ multitasking.</p>
 </div>
 <div class="section" id="pageable-kernel-memory">
 <h3>Pageable kernel memory<a class="headerlink" href="#pageable-kernel-memory" title="Permalink to this headline">¶</a></h3>
-<p class="admonition-execution-contexts">A kernel supports pageable kernel memory if parts of kernel memory
+<p class="admonition-pageable-kernel-memory">A kernel supports pageable kernel memory if parts of kernel memory
 (code, data, stack or dynamically allocated memory) can be swapped
 to disk.</p>
 </div>
 <div class="section" id="kernel-stack">
 <h3>Kernel stack<a class="headerlink" href="#kernel-stack" title="Permalink to this headline">¶</a></h3>
-<p class="admonition-execution-contexts">Each process has a kernel stack that is used to maintain the
+<p class="admonition-kernel-stack">Each process has a kernel stack that is used to maintain the
 function call chain and local variables state while it is executing
 in kernel mode, as a result of a system call.</p>
 <p>The kernel stack is small (4KB - 12 KB) so the kernel developer has
@@ -454,7 +454,7 @@ that are not properly bounded.</p>
 <p>In order to increase portability across various architectures and
 hardware configurations, modern kernels are organized as follows at the
 top level:</p>
-<ul class="admonition-execution-contexts simple">
+<ul class="admonition-portability simple">
 <li>Architecture and machine specific code (C &amp; ASM)</li>
 <li>Independent architecture code (C):<ul>
 <li>kernel core (further split in multiple subsystems)</li>
@@ -494,7 +494,7 @@ executing a critical section.</p>
 <p>CPU scalability refers to how well the performance scales with
 the number of cores. There are a few things that the kernel developer
 should keep in mind with regard to CPU scalability:</p>
-<ul class="admonition-execution-contexts simple">
+<ul class="admonition-cpu-scalability simple">
 <li>Use lock free algorithms when possible</li>
 <li>Use fine grained locking for high contention areas</li>
 <li>Pay attention to algorithm complexity</li>
@@ -637,7 +637,7 @@ string operations, etc.)</p>
 </div>
 <div class="section" id="device-drivers">
 <h4>Device drivers<a class="headerlink" href="#device-drivers" title="Permalink to this headline">¶</a></h4>
-<span class="admonition-arch"></span><p>The Linux kernel uses a unified device model whose purpose is to
+<span class="admonition-device-drivers"></span><p>The Linux kernel uses a unified device model whose purpose is to
 maintain internal data structures that reflect the state and structure
 of the system. Such information includes what devices are present,
 what is their status, what bus they are attached to, to what driver
