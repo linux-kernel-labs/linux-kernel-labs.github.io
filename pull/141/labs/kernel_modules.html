@@ -1088,9 +1088,11 @@ lab skeleton.</p>
 <p class="first admonition-title">Warning</p>
 <p class="last">Until after solving exercise 3, you will get a compilation error for
 <code class="docutils literal"><span class="pre">3-error-mod</span></code>. To avoid this issue, remove the directory
-<code class="file docutils literal"><span class="pre">skels/kernel_modules/3-error-mod/</span></code>.</p>
+<code class="file docutils literal"><span class="pre">skels/kernel_modules/3-error-mod/</span></code> and remove the corresponding
+line from <code class="docutils literal"><span class="pre">skels/Kbuild</span></code>.</p>
 </div>
-<p>Start the VM using <strong class="command">make boot</strong> and perform the following tasks:</p>
+<p>Start the VM using <strong class="command">make boot</strong>, connect to the serial console
+using <cite>minicom -D serial.pts</cite> and perform the following tasks:</p>
 <ul class="simple">
 <li>load the kernel module.</li>
 <li>list the kernel modules and check if current module is present</li>
@@ -1107,27 +1109,20 @@ a kernel module, you can specify only the module name
 </div>
 <div class="section" id="printk">
 <h3>2. Printk<a class="headerlink" href="#printk" title="Permalink to this headline">¶</a></h3>
-<p>Watch the virtual machine console. Why were the messages not displayed directly
+<p>Watch the virtual machine console. Why were the messages displayed directly
 to the virtual machine console?</p>
-<p>Inspect the source code file. Change the source code file so that messages are
-displayed directly on the serial console.</p>
+<p>Configure the system such that the messages are not displayed directly
+on the serial console, and they can only be inspected using <code class="docutils literal"><span class="pre">dmesg</span></code>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p>Read the <a class="reference internal" href="#printk-debugging">Printk debugging</a> section of the lab and focus on the
-information regarding the <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code> function.</p>
-<p class="last">You will need to edit the kernel boot options in the file
-<code class="file docutils literal"><span class="pre">qemu/Makefile</span></code> and add the option <cite>ignore_loglevel</cite> on the line
-starting with <cite>append root…</cite>.</p>
+<p class="last">One option is to set the console log level by writting
+the desired level to <code class="docutils literal"><span class="pre">/proc/sys/kernel/printk</span></code>.
+Use a value smaller than the level used for the prints in
+the source code of the module.</p>
 </div>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p>Another option is to set the current log level by writting
-the desired log level to <code class="docutils literal"><span class="pre">/proc/sys/kernel/printk</span></code></p>
-<p class="last">An alternative approach is to use a higher log level in the
-<code class="xref c c-func docutils literal"><span class="pre">printk()</span></code> calls.</p>
-</div>
-<p>Compile the module, copy it to the virtual machine, boot and load/unload the
-module. The messages should be printed to the virtual machine console.</p>
+<p>Load/unload the module again.
+The messages should not be printed to the virtual machine console,
+but they should be visible when running <code class="docutils literal"><span class="pre">dmesg</span></code>.</p>
 </div>
 <div class="section" id="error">
 <h3>3. Error<a class="headerlink" href="#error" title="Permalink to this headline">¶</a></h3>
