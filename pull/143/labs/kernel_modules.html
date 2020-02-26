@@ -1004,19 +1004,15 @@ gdb and symbol files – see <a class="reference internal" href="introduction.ht
 </div></blockquote>
 <p>For the lab, we will use a serial interface connected to the host.
 The following command will activate GDB over the serial port:</p>
-<blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
 </pre></div>
 </div>
-</div></blockquote>
 <p>KDB is a <em>stop mode debugger</em>, which means that, while it is active, all the other processes
 are stopped. The kernel can be <em>forced</em> to enter KDB during execution using the following
 <a class="reference external" href="http://en.wikipedia.org/wiki/Magic_SysRq_key">SysRq</a> command</p>
-<blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> g &gt; /proc/sysrq-trigger
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> g &gt; /proc/sysrq-trigger
 </pre></div>
 </div>
-</div></blockquote>
 <p>or by using the key combination <code class="docutils literal"><span class="pre">Ctrl+O</span> <span class="pre">g</span></code> in a terminal connected to the serial port
 (for example using <strong class="command">minicom</strong>).</p>
 <p>KDB has various commands to control and define the context of the debugged system:</p>
@@ -1032,18 +1028,16 @@ are stopped. The kernel can be <em>forced</em> to enter KDB during execution usi
 the KDB shell.
 In the next example, you can notice a simple KDB usage example which sets a hardware
 breakpoint to monitor the changes of the <code class="docutils literal"><span class="pre">mVar</span></code> variable.</p>
-<blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># trigger KDB</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># trigger KDB</span>
 <span class="nb">echo</span> g &gt; /proc/sysrq-trigger
 <span class="c1"># or if we are connected to the serial port issue</span>
 Ctrl-O g
-<span class="c1"># breakpoint la accesul de scriere al variabilei mVar</span>
+<span class="c1"># breakpoint on write access to the mVar variable</span>
 kdb&gt; bph mVar dataw
-<span class="c1"># revenire din KDB</span>
+<span class="c1"># return from KDB</span>
 kdb&gt; go
 </pre></div>
 </div>
-</div></blockquote>
 </div>
 </div>
 <div class="section" id="exercises">

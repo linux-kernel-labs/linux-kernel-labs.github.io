@@ -870,17 +870,17 @@ To use KDB, you have the following options:
 For the lab, we will use a serial interface connected to the host.
 The following command will activate GDB over the serial port:
 
-  .. code-block:: bash
+.. code-block:: bash
 
-    echo hvc0 > /sys/module/kgdboc/parameters/kgdboc
+  echo hvc0 > /sys/module/kgdboc/parameters/kgdboc
 
 KDB is a *stop mode debugger*, which means that, while it is active, all the other processes
 are stopped. The kernel can be *forced* to enter KDB during execution using the following
 `SysRq <http://en.wikipedia.org/wiki/Magic_SysRq_key>`__ command
 
-  .. code-block:: bash
+.. code-block:: bash
 
-    echo g > /proc/sysrq-trigger
+  echo g > /proc/sysrq-trigger
 
 or by using the key combination ``Ctrl+O g`` in a terminal connected to the serial port
 (for example using :command:`minicom`).
@@ -897,16 +897,16 @@ the KDB shell.
 In the next example, you can notice a simple KDB usage example which sets a hardware
 breakpoint to monitor the changes of the ``mVar`` variable.
 
-  .. code-block:: bash
+.. code-block:: bash
 
-    # trigger KDB
-    echo g > /proc/sysrq-trigger
-    # or if we are connected to the serial port issue
-    Ctrl-O g
-    # breakpoint la accesul de scriere al variabilei mVar
-    kdb> bph mVar dataw
-    # revenire din KDB
-    kdb> go
+  # trigger KDB
+  echo g > /proc/sysrq-trigger
+  # or if we are connected to the serial port issue
+  Ctrl-O g
+  # breakpoint on write access to the mVar variable
+  kdb> bph mVar dataw
+  # return from KDB
+  kdb> go
 
 Exercises
 =========
