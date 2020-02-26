@@ -682,18 +682,18 @@ Filesystem</li>
 </ul>
 </div></blockquote>
 <p>The current lab name is filesystems. See the exercises for the task name.</p>
-<div class="toggle last docutils container">
-<div class="header docutils container">
-<strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
-the skeleton code:</p>
+the skeleton code for a complete lab:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
-tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
 </pre></div>
 </div>
-<p>where task name is defined for each task. Once the skeleton drivers are
-generated, build the source:</p>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
@@ -705,8 +705,7 @@ tools/labs $ make boot
 <p>The modules are placed in /home/root/skels/filesystems/&lt;task_name&gt;.</p>
 <p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
 For additional details about connecting to the VM via the network, please check <a class="reference internal" href="vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the VM</span></a>.</p>
-<p>Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
-</div>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
 </div>
 <div class="section" id="myfs">
 <h3>myfs<a class="headerlink" href="#myfs" title="Permalink to this headline">¶</a></h3>

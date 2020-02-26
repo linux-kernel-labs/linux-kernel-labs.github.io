@@ -829,18 +829,18 @@ system.</p>
 </ul>
 </div></blockquote>
 <p>The current lab name is interrupts. See the exercises for the task name.</p>
-<div class="toggle docutils container">
-<div class="header docutils container">
-<strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
-the skeleton code:</p>
+the skeleton code for a complete lab:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
-tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
 </pre></div>
 </div>
-<p>where task name is defined for each task. Once the skeleton drivers are
-generated, build the source:</p>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
@@ -853,7 +853,6 @@ tools/labs $ make boot
 <p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
 For additional details about connecting to the VM via the network, please check <a class="reference internal" href="vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the VM</span></a>.</p>
 <p>Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
-</div>
 <p class="last">Generate the skeleton for this lab (task name should be empty).</p>
 </div>
 <div class="section" id="intro">

@@ -130,7 +130,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module">1. Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-module">1. Kernel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#printk">2. Printk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error">3. Error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sub-modules">4. Sub-modules</a></li>
@@ -987,7 +987,7 @@ with operators <code class="docutils literal"><span class="pre">+`,</span> <span
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
-<div class="admonition important">
+<div class="admonition important" id="exercises-summary">
 <p class="first admonition-title">Important</p>
 <p>To solve exercises, you need to perform these steps:</p>
 <blockquote>
@@ -999,18 +999,18 @@ with operators <code class="docutils literal"><span class="pre">+`,</span> <span
 </ul>
 </div></blockquote>
 <p>The current lab name is kernel_modules. See the exercises for the task name.</p>
-<div class="toggle last docutils container">
-<div class="header docutils container">
-<strong>See details</strong></div>
 <p>The skeleton code is generated from full source examples located in
 <code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
-the skeleton code:</p>
+the skeleton code for a complete lab:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
-tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
 </pre></div>
 </div>
-<p>where task name is defined for each task. Once the skeleton drivers are
-generated, build the source:</p>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
@@ -1022,15 +1022,15 @@ tools/labs $ make boot
 <p>The modules are placed in /home/root/skels/kernel_modules/&lt;task_name&gt;.</p>
 <p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
 For additional details about connecting to the VM via the network, please check <a class="reference internal" href="vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the VM</span></a>.</p>
-<p>Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
-</div>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
 </div>
 <div class="section" id="intro">
 <h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
-<p>Using <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> find the definitions of the following symbols in the Linux kernel:</p>
+<p>Using <strong class="command">cscope</strong> or <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> find the definitions of the following symbols
+in the Linux kernel source code:</p>
 <ul class="simple">
 <li><code class="xref c c-func docutils literal"><span class="pre">module_init()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">module_exit()</span></code><ul>
-<li>what does the two macros do? What is <code class="docutils literal"><span class="pre">init_module</span></code> and <code class="docutils literal"><span class="pre">cleanup_module</span></code>?</li>
+<li>what do the two macros do? What is <code class="docutils literal"><span class="pre">init_module</span></code> and <code class="docutils literal"><span class="pre">cleanup_module</span></code>?</li>
 </ul>
 </li>
 <li><code class="xref c c-data docutils literal"><span class="pre">ignore_loglevel</span></code><ul>
@@ -1038,11 +1038,61 @@ For additional details about connecting to the VM via the network, please check 
 </ul>
 </li>
 </ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>If you have problems using <strong class="command">cscope</strong>, it is possible that the database
+is not generated.  To generate it, use the following command in the kernel
+directory:</p>
+<div class="last highlight-bash"><div class="highlight"><pre><span></span>make <span class="nv">ARCH</span><span class="o">=</span>x86 cscope
+</pre></div>
 </div>
-<div class="section" id="module">
-<h3>1. Module<a class="headerlink" href="#module" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>When searching for a structure using <strong class="command">cscope</strong>, use only the
+structure name (without <code class="code docutils literal"><span class="pre">struct</span></code>).  So, to search for the
+structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">module</span></code>, you will use the command</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>vim -t module
+</pre></div>
+</div>
+</div></blockquote>
+<p>or, in <strong class="command">vim</strong>, the command</p>
+<blockquote class="last">
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>:cs f g module
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more info on using <strong class="command">cscope</strong>, read the
+<a class="reference internal" href="introduction.html#cscope-intro"><span class="std std-ref">cscope section</span></a> in the previous lab.</p>
+</div>
+</div>
+<div class="section" id="kernel-module">
+<h3>1. Kernel module<a class="headerlink" href="#kernel-module" title="Permalink to this headline">¶</a></h3>
+<p>To work with the kernel modules, we will follow the steps described
+<a class="reference internal" href="#exercises-summary"><span class="std std-ref">above</span></a>.</p>
 <p>Generate the skeleton for the task named <strong>1-2-test-mod</strong> then build and
-copy the module to the VM. Perform the following tasks:</p>
+copy the module to the VM, by running the following commands in
+<code class="file docutils literal"><span class="pre">tools/labs</span></code>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nv">LABS</span><span class="o">=</span>kernel_modules make skels
+$ make build
+$ make copy
+</pre></div>
+</div>
+<p>The these commands will build and copy all the modules in the current
+lab skeleton.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Until after solving exercise 3, you will get a compilation error for
+<code class="docutils literal"><span class="pre">3-error-mod</span></code>. To avoid this issue, remove the directory
+<code class="file docutils literal"><span class="pre">skels/kernel_modules/3-error-mod/</span></code> and remove the corresponding
+line from <code class="docutils literal"><span class="pre">skels/Kbuild</span></code>.</p>
+</div>
+<p>Start the VM using <strong class="command">make boot</strong>, connect to the serial console
+using <cite>minicom -D serial.pts</cite> and perform the following tasks:</p>
 <ul class="simple">
 <li>load the kernel module.</li>
 <li>list the kernel modules and check if current module is present</li>
@@ -1053,79 +1103,70 @@ copy the module to the VM. Perform the following tasks:</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Read <a class="reference internal" href="#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a> section. When unloading
-a kernel module, only the module name (without extension) can
-be specified.</p>
+a kernel module, you can specify only the module name
+(without extension).</p>
 </div>
 </div>
 <div class="section" id="printk">
 <h3>2. Printk<a class="headerlink" href="#printk" title="Permalink to this headline">¶</a></h3>
-<p>Watch the virtual machine console. Why were the messages not displayed directly
+<p>Watch the virtual machine console. Why were the messages displayed directly
 to the virtual machine console?</p>
-<p>Inspect the source code file. Change the source code file so that messages are
-displayed directly on the serial console.</p>
+<p>Configure the system such that the messages are not displayed directly
+on the serial console, and they can only be inspected using <code class="docutils literal"><span class="pre">dmesg</span></code>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Read the <a class="reference internal" href="#printk-debugging">Printk debugging</a> section of the lab and change
-the log level of the prints in the module source.</p>
+<p class="last">One option is to set the console log level by writting
+the desired level to <code class="docutils literal"><span class="pre">/proc/sys/kernel/printk</span></code>.
+Use a value smaller than the level used for the prints in
+the source code of the module.</p>
 </div>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Another option is to set the current log level by writting
-the desired log level to <code class="docutils literal"><span class="pre">/proc/sys/kernel/printk</span></code></p>
-</div>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">An alternative approach is to edit the boot options in
-<code class="docutils literal"><span class="pre">tools/labs/qemu/Makefile</span></code>. Add <code class="docutils literal"><span class="pre">ignore_loglevel</span></code> option
-to the qemu <code class="docutils literal"><span class="pre">--append</span></code> option.</p>
-</div>
+<p>Load/unload the module again.
+The messages should not be printed to the virtual machine console,
+but they should be visible when running <code class="docutils literal"><span class="pre">dmesg</span></code>.</p>
 </div>
 <div class="section" id="error">
 <h3>3. Error<a class="headerlink" href="#error" title="Permalink to this headline">¶</a></h3>
 <p>Generate the skeleton for the task named <strong>3-error-mod</strong>. Compile the
-sources and get the corresponding kernel module. Why have compilation
-errors occurred?</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">How does this module differ from the previous module?</p>
-</div>
-<p>Modify the module to solve the cause of those errors.</p>
+sources and get the corresponding kernel module.</p>
+<p>Why have compilation
+errors occurred? <strong>Hint:</strong> How does this module differ from the previous module?</p>
+<p>Modify the module to solve the cause of those errors, then compile and test
+the module.</p>
 </div>
 <div class="section" id="sub-modules">
 <h3>4. Sub-modules<a class="headerlink" href="#sub-modules" title="Permalink to this headline">¶</a></h3>
-<p>Generate the skeleton for the task named <strong>4-multi-mod</strong>. Inspect the
-C source files: <code class="docutils literal"><span class="pre">mod1.c</span></code> and <code class="docutils literal"><span class="pre">mod2.c</span></code>. Module 2 contains only the
-definition of a function used by module 1.</p>
-<p>Create a Kbuild file that will lead to creating the <code class="docutils literal"><span class="pre">multi_mod.ko</span></code>
-from the two source files.</p>
+<p>Inspect the C source files <code class="docutils literal"><span class="pre">mod1.c</span></code> and <code class="docutils literal"><span class="pre">mod2.c</span></code> in <code class="file docutils literal"><span class="pre">4-multi-mod/</span></code>.
+Module 2 contains only the definition of a function used by module 1.</p>
+<p>Change the <code class="file docutils literal"><span class="pre">Kbuild</span></code> file to create the <code class="docutils literal"><span class="pre">multi_mod.ko</span></code> module from
+from the two C source files.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Read the <a class="reference internal" href="#compiling-kernel-modules">Compiling kernel modules</a> section of the lab.</p>
 </div>
-<p>Compile, copy, load and unload the kernel module. Make sure messages
+<p>Compile, copy, boot the VM, load and unload the kernel module. Make sure messages
 are properly displayed on the console.</p>
 </div>
 <div class="section" id="id1">
 <h3>5. Kernel oops<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Generate the skeleton for the task named <strong>5-oops-mod</strong> and inspect the
-C source file. Notice where the problem will occur. Add -g to
-compilation in the Kbuild file.</p>
+<p>Enter the directory for the task <strong>5-oops-mod</strong> and inspect the
+C source file. Notice where the problem will occur. Add the compilation flag
+<code class="docutils literal"><span class="pre">-g</span></code> in the Kbuild file.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Read <a class="reference internal" href="#compiling-kernel-modules">Compiling kernel modules</a>  section of the lab.</p>
 </div>
-<p>Compile the associated module and load it into the kernel. Identify the memory
+<p>Compile the corresponding module and load it into the kernel. Identify the memory
 address at which the oops appeared.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Read <a class="reference internal" href="#debugging">Debugging</a> section of the lab.  To identify the
 address, follow the oops message and extract the value of
-the instructions pointer (EIP) register.</p>
+the instructions pointer (<code class="docutils literal"><span class="pre">EIP</span></code>) register.</p>
 </div>
 <p>Determine which instruction has triggered the oops.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Use the /proc/modules information to get the load address of
+<p class="last">Use the <code class="file docutils literal"><span class="pre">proc/modules</span></code> information to get the load address of
 the kernel module.  Use, on the physical machine, objdump
 and/or addr2line . Objdump needs debugging support for
 compilation!  Read the lab’s <a class="reference internal" href="#objdump">objdump</a> and <a class="reference internal" href="#addr2line">addr2line</a>
@@ -1139,7 +1180,7 @@ unloaded.</p>
 </div>
 <div class="section" id="module-parameters">
 <h3>6. Module parameters<a class="headerlink" href="#module-parameters" title="Permalink to this headline">¶</a></h3>
-<p>Generate the skeletons for <strong>6-cmd-mod</strong> and inspect the C
+<p>Enter the directory for the task <strong>6-cmd-mod</strong> and inspect the C
 <code class="docutils literal"><span class="pre">cmd_mod.c</span></code> source file. Compile and copy the associated module and
 load the kernel module to see the printk message. Then unload the
 module from the kernel.</p>
@@ -1153,15 +1194,17 @@ the module. Find more information <a class="reference external" href="http://tld
 </div>
 <div class="section" id="proc-info">
 <span id="id2"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
-<p>Generate the skeleton for the task named <strong>7-list-proc</strong>. Add code to
-display the Process ID (<code class="docutils literal"><span class="pre">PID</span></code>) and the executable name. The
-information will be displayed both when loading and unloading the
+<p>Check the skeleton for the task named <strong>7-list-proc</strong>. Add code to
+display the Process ID (<code class="docutils literal"><span class="pre">PID</span></code>) and the executable name for the current
+process.</p>
+<p>Follow the commands marked with <code class="docutils literal"><span class="pre">TODO</span></code>.
+The information must be displayed both when loading and unloading the
 module.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
 <li>In the Linux kernel, a process is described by the
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> to find the
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> or <code class="docutils literal"><span class="pre">cscope</span></code> to find the
 definition of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
 <li>To find the structure field that contains the name of the
 executable, look for the “executable” comment.</li>
@@ -1177,9 +1220,9 @@ running at a given time in the kernel is given by the
 in which the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
 <code class="docutils literal"><span class="pre">linux/sched.h</span></code>.</p>
 </div>
-<p>Compile, copy and load the module. Unload the kernel module.</p>
+<p>Compile, copy, boot the VM and load the module. Unload the kernel module.</p>
 <p>Repeat the loading/unloading operation. Note that the PIDs of the
-displayed processes differ. This is because a module is being loaded
+displayed processes differ. This is because a process is created
 from the executable <code class="file docutils literal"><span class="pre">/sbin/insmod</span></code> when the module is loaded and
 when the module is unloaded a process is created from the executable
 <code class="file docutils literal"><span class="pre">/sbin/rmmod</span></code>.</p>
