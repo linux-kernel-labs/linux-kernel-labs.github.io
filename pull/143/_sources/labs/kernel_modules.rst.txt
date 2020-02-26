@@ -876,7 +876,7 @@ The following command will activate GDB over the serial port:
 
 KDB is a *stop mode debugger*, which means that, while it is active, all the other processes
 are stopped. The kernel can be *forced* to enter KDB during execution using the following
-command `SysRq <http://en.wikipedia.org/wiki/Magic_SysRq_key>`
+`SysRq <http://en.wikipedia.org/wiki/Magic_SysRq_key>`__ command
 
   .. code-block:: bash
 
