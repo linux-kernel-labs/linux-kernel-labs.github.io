@@ -126,6 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#dyndbg-options">Dyndbg Options</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#kdb-kernel-debugger">KDB: Kernel debugger</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
@@ -134,7 +135,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#printk">2. Printk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error">3. Error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sub-modules">4. Sub-modules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1">5. Kernel oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">5. Kernel oops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-parameters">6. Module parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#proc-info">7. Proc info</a></li>
 </ul>
@@ -143,7 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#kdb">1. KDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ps-module">2. PS Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memory-info">3. Memory Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">4. Dynamic Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">4. Dynamic Debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dynamic-debugging-during-initialization">5. Dynamic Debugging During Initialization</a></li>
 </ul>
 </li>
@@ -984,6 +985,60 @@ with operators <code class="docutils literal"><span class="pre">+`,</span> <span
 </div></blockquote>
 </div>
 </div>
+<div class="section" id="kdb-kernel-debugger">
+<h3>KDB: Kernel debugger<a class="headerlink" href="#kdb-kernel-debugger" title="Permalink to this headline">¶</a></h3>
+<p>The kernel debugger has proven to be very useful to facilitate the development and
+debugging process. One of its main advantages it the possibility to perform live debugging.
+This allows us to monitor, in real time, the accesses to memory or even modify the memory
+while debugging.
+The debugger has been integrated in the mainline kernel starting with version 2.6.26-rci.
+KDB is not a <a href="#id1"><span class="problematic" id="id2">*</span></a>source debugger”, but for a complete analysis it can be used in parallel with
+gdb and symbol files – see <a class="reference internal" href="introduction.html#gdb-intro"><span class="std std-ref">the GDB debugging section</span></a></p>
+<p>To use KDB, you have the following options:</p>
+<blockquote>
+<div><ul class="simple">
+<li>non-usb keyboard + VGA text console</li>
+<li>serial port console</li>
+<li>USB EHCI debug port</li>
+</ul>
+</div></blockquote>
+<p>For the lab, we will use a serial interface connected to the host.
+The following command will activate GDB over the serial port:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
+</pre></div>
+</div>
+<p>KDB is a <em>stop mode debugger</em>, which means that, while it is active, all the other processes
+are stopped. The kernel can be <em>forced</em> to enter KDB during execution using the following
+<a class="reference external" href="http://en.wikipedia.org/wiki/Magic_SysRq_key">SysRq</a> command</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> g &gt; /proc/sysrq-trigger
+</pre></div>
+</div>
+<p>or by using the key combination <code class="docutils literal"><span class="pre">Ctrl+O</span> <span class="pre">g</span></code> in a terminal connected to the serial port
+(for example using <strong class="command">minicom</strong>).</p>
+<p>KDB has various commands to control and define the context of the debugged system:</p>
+<blockquote>
+<div><ul class="simple">
+<li>lsmod, ps, kill, dmesg, env, bt (backtrace)</li>
+<li>dump trace logs</li>
+<li>hardware breakpoints</li>
+<li>modifying memory</li>
+</ul>
+</div></blockquote>
+<p>For a better description of the available commands you can use the <code class="docutils literal"><span class="pre">help</span></code> command in
+the KDB shell.
+In the next example, you can notice a simple KDB usage example which sets a hardware
+breakpoint to monitor the changes of the <code class="docutils literal"><span class="pre">mVar</span></code> variable.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># trigger KDB</span>
+<span class="nb">echo</span> g &gt; /proc/sysrq-trigger
+<span class="c1"># or if we are connected to the serial port issue</span>
+Ctrl-O g
+<span class="c1"># breakpoint on write access to the mVar variable</span>
+kdb&gt; bph mVar dataw
+<span class="c1"># return from KDB</span>
+kdb&gt; go
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
@@ -1146,8 +1201,8 @@ from the two C source files.</p>
 <p>Compile, copy, boot the VM, load and unload the kernel module. Make sure messages
 are properly displayed on the console.</p>
 </div>
-<div class="section" id="id1">
-<h3>5. Kernel oops<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>5. Kernel oops<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>Enter the directory for the task <strong>5-oops-mod</strong> and inspect the
 C source file. Notice where the problem will occur. Add the compilation flag
 <code class="docutils literal"><span class="pre">-g</span></code> in the Kbuild file.</p>
@@ -1193,7 +1248,7 @@ the module. Find more information <a class="reference external" href="http://tld
 </div>
 </div>
 <div class="section" id="proc-info">
-<span id="id2"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
+<span id="id4"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
 <p>Check the skeleton for the task named <strong>7-list-proc</strong>. Add code to
 display the Process ID (<code class="docutils literal"><span class="pre">PID</span></code>) and the executable name for the current
 process.</p>
@@ -1299,8 +1354,8 @@ defined.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id3">
-<h3>4. Dynamic Debugging<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>4. Dynamic Debugging<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>Go to the <strong>9-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
 <p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in
 <code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file
