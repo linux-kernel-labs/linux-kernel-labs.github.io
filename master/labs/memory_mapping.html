@@ -473,6 +473,52 @@ Enabling is done using <code class="xref c c-func docutils literal"><span class=
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>To solve exercises, you need to perform these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>prepare skeletons from templates</li>
+<li>build modules</li>
+<li>copy modules to the VM</li>
+<li>start the VM and test the module in the VM.</li>
+</ul>
+</div></blockquote>
+<p>The current lab name is memory_mapping. See the exercises for the task name.</p>
+<p>The skeleton code is generated from full source examples located in
+<code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
+the skeleton code for a complete lab:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
+</pre></div>
+</div>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+</pre></div>
+</div>
+<p>Then, copy the modules and start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+tools/labs $ make boot
+</pre></div>
+</div>
+<p>The modules are placed in /home/root/skels/memory_mapping/&lt;task_name&gt;.</p>
+<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
+For additional details about connecting to the VM via the network, please check <a class="reference internal" href="vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the VM</span></a>.</p>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Before starting the exercises or generating the skeletons, please run <strong>git pull</strong> inside the Linux repo,
+to make sure you have the latest version of the exercises.</p>
+<p>If you have local changes, the pull command will fail. Check for local changes using <code class="docutils literal"><span class="pre">git</span> <span class="pre">status</span></code>.
+If you want to keep them, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span></code> before <code class="docutils literal"><span class="pre">pull</span></code> and <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span> <span class="pre">pop</span></code> after.
+To discard the changes, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">reset</span> <span class="pre">--hard</span> <span class="pre">master</span></code>.</p>
+<p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
+</div>
 <div class="section" id="mapping-contiguous-physical-memory-to-userspace">
 <h3>1. Mapping contiguous physical memory to userspace<a class="headerlink" href="#mapping-contiguous-physical-memory-to-userspace" title="Permalink to this headline">¶</a></h3>
 <p>Implement a device driver that maps contiguous physical memory
