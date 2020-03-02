@@ -964,25 +964,17 @@ the next process (ie. a <code class="xref c c-type docutils literal"><span class
 <p class="first admonition-title">Note</p>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> structure contains two fields to
 designate the parent of a task:</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li><dl class="first docutils">
-<dt><code class="xref c c-member docutils literal"><span class="pre">real_parent</span></code> points to the process that created the</dt>
-<dd>task or to process with pid 1 (init) if the parent
-completed its execution.</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="xref c c-member docutils literal"><span class="pre">parent</span></code> indicates to the current task parent (the</dt>
-<dd>process that will be reported if the task completes
-execution).</dd>
-</dl>
-</li>
+<ul class="simple">
+<li><code class="xref c c-member docutils literal"><span class="pre">real_parent</span></code> points to the process that created the
+task or to process with pid 1 (init) if the parent
+completed its execution.</li>
+<li><code class="xref c c-member docutils literal"><span class="pre">parent</span></code> indicates to the current task parent (the
+process that will be reported if the task completes
+execution).</li>
 </ul>
-<p>In general, the values of the two fields are the same, but
+<p class="last">In general, the values of the two fields are the same, but
 there are situations where they differ, for example when
 using the <code class="xref c c-func docutils literal"><span class="pre">ptrace()</span></code> system call.</p>
-</div></blockquote>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1039,11 +1031,8 @@ the list, but:</p>
 <li><p class="first">To implement the counter facility, add a <code class="xref c c-func docutils literal"><span class="pre">task_info_find_pid()</span></code>
 function that searches for a pid in the existing list.</p>
 </li>
-<li><dl class="first docutils">
-<dt>If found, return the reference to the <code class="xref c c-type docutils literal"><span class="pre">task_info</span></code> struct. If</dt>
-<dd><p class="first last">not, return <code class="xref c c-macro docutils literal"><span class="pre">NULL</span></code>.</p>
-</dd>
-</dl>
+<li><p class="first">If found, return the reference to the <code class="xref c c-type docutils literal"><span class="pre">task_info</span></code> struct. If
+not, return <code class="xref c c-macro docutils literal"><span class="pre">NULL</span></code>.</p>
 </li>
 <li><p class="first">An expiration facility. If a process was added more than 3
 seconds ago and if it does not have a <code class="xref c c-member docutils literal"><span class="pre">count</span></code> greater than 5 then
@@ -1066,17 +1055,13 @@ referred by <code class="xref c c-member docutils literal"><span class="pre">hea
 field to a large enough value. Use <code class="xref c c-func docutils literal"><span class="pre">atomic_set()</span></code> function.</p>
 </div>
 </li>
-</ol>
-</div></blockquote>
-<ol class="arabic simple" start="3">
-<li><dl class="first docutils">
-<dt>Compile, copy, load and unload the kernel module following the displayed</dt>
-<dd>messages.
+<li><p class="first">Compile, copy, load and unload the kernel module following the displayed
+messages.
 Kernel module loading will take some time, because <code class="xref c c-func docutils literal"><span class="pre">sleep()</span></code> is
-being called by <code class="xref c c-func docutils literal"><span class="pre">schedule_timeout()</span></code> function.</dd>
-</dl>
+being called by <code class="xref c c-func docutils literal"><span class="pre">schedule_timeout()</span></code> function.</p>
 </li>
 </ol>
+</div></blockquote>
 </div>
 <div class="section" id="synchronizing-list-work">
 <h3>6. Synchronizing list work<a class="headerlink" href="#synchronizing-list-work" title="Permalink to this headline">¶</a></h3>
