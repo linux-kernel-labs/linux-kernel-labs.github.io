@@ -1,0 +1,31 @@
+                         counter is 2
+
+    Thread A                                Thread B
+
+       *
+       |
+       |
+ +---------------------+
+ |  dec counter        |   counter is 1
+ |  cEEE               |
+ +---------------------+
+       |
+       |                 B preempts A
+       +-----------------------------------------------+
+                                                       |
+                                                       v
+                                                +----------------------+
+                         counter is 0           | dec counter          |
+                                                | if (!counter)        |
+                       resource is freed        |     free_resource(); |
+                                                | cEEE                 |
+                                                +----------------------+
+                    B finishes, A continues            |
+       +-----------------------------------------------+
+       |
+       v
++----------------------+
+| if (!counter)        |
+|     free_resource(); | resource is freed
+| cEEE                 |
++----------------------+
