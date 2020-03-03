@@ -880,7 +880,7 @@ for 5 seconds.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review the <a class="reference internal" href="#contexts-of-execution">Contexts of execution</a>, <cite>Locking</cite> and <a class="reference internal" href="#spinlock">Spinlock</a>
+<p class="last">Review the <a class="reference internal" href="#contexts-of-execution">Contexts of execution</a>, <a class="reference internal" href="#locking">Locking</a> and <a class="reference internal" href="#spinlock">Spinlock</a>
 sections.</p>
 </div>
 </div>
@@ -937,12 +937,14 @@ process.</li>
 </ul>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Call 2 times the <code class="xref c c-macro docutils literal"><span class="pre">next_task</span></code>.</p>
+<p class="last">Call the <code class="xref c c-macro docutils literal"><span class="pre">next_task</span></code> macro 2 times.</p>
 </div>
 </li>
-<li><p class="first">(TODO 3) Display the four structures.
-* Use <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code> to display their two fields:
-<code class="xref c c-member docutils literal"><span class="pre">pid</span></code> and <code class="xref c c-member docutils literal"><span class="pre">timestamp</span></code>.</p>
+<li><p class="first">(TODO 3) Display the four structures.</p>
+<ul class="simple">
+<li>Use <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code> to display their two fields:</li>
+</ul>
+<p><code class="xref c c-member docutils literal"><span class="pre">pid</span></code> and <code class="xref c c-member docutils literal"><span class="pre">timestamp</span></code>.</p>
 </li>
 <li><p class="first">(TODO 4) Release the memory occupied by the structures
 (use <code class="xref c c-func docutils literal"><span class="pre">kfree()</span></code>).</p>
