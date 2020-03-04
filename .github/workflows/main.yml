@@ -1,0 +1,27 @@
+on:
+  repository_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        env:
+          GHAPI_URL: https://api.github.com/repos/linux-kernel-labs/linux/${{ github.event.run_id }}/artifacts
+        run: |
+          export ZIP_URL=$(curl -u ${{ secrets.ACCESS_TOKEN }} $GHAPI_URL | jq -r .artifacts[0].archive_download_url)
+          curl -L -u ${{ secrets.ACCESS_TOKEN }} -o docs.zip $ZIP_URL
+          test -e docs.zip
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Publish
+        env:
+          DIR: ${{ github.event.dir }}
+        run: |
+          mkdir -p $DIR
+          unzip -d $DIR docs.zip
+          git config --global user.email "github.actions@linux-kernel-labs.gihub.io"
+          git config --global user.name "GitHub Actions"
+          git add $DIR
+          git commit -m "Publish $DIR"
+          git push
