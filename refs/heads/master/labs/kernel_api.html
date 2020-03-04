@@ -1070,7 +1070,7 @@ being called by <code class="xref c c-func docutils literal"><span class="pre">s
 <p>Generate the skeleton for the task named <strong>6-list-sync</strong>.</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Browse the code and look for <code class="docutils literal"><span class="pre">TODO</span></code> string.</li>
+<li>Browse the code and look for <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code> string.</li>
 <li>Use a spinlock or a read-write lock to synchronize access to the
 list.</li>
 <li>Compile, load and unload the kernel module.</li>
@@ -1099,7 +1099,9 @@ directory, the following steps are required:</p>
 <li>Functions must not be static.</li>
 <li>Use the <code class="xref c c-macro docutils literal"><span class="pre">EXPORT_SYMBOL</span></code> macro to export the kernel symbols. For
 example: <code class="xref c c-macro docutils literal"><span class="pre">EXPORT_SYMBOL(task_info_remove_expired);</span></code>. The
-macro must be used for each function after the function is defined.</li>
+macro must be used for each function after the function is defined.
+Browse the code and look for the <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code> string in the
+<code class="file docutils literal"><span class="pre">list-sync.c</span></code>.</li>
 <li>Remove from the module from <strong>6-list-sync</strong> the code that avoids the
 expiration of a list item (it is in contradiction to our exercise).</li>
 <li>Compile and load the module from <code class="file docutils literal"><span class="pre">6-list-sync/</span></code>. Once loaded, it
