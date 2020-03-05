@@ -19,6 +19,7 @@ jobs:
         env:
           DIR: ${{ github.event.client_payload.dir }}
         run: |
+          rm -rf $DIR
           mkdir -p $DIR
           unzip -d $DIR docs.zip
           git config --global user.email "github.actions@linux-kernel-labs.gihub.io"
