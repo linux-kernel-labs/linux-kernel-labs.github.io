@@ -25,5 +25,5 @@ jobs:
           git config --global user.email "github.actions@linux-kernel-labs.gihub.io"
           git config --global user.name "GitHub Actions"
           git add $DIR
-          git commit -m "Publish $DIR"
+          git commit --allow-empty -m "Publish $DIR"
           git push
