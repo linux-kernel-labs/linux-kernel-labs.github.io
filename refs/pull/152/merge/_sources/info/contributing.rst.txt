@@ -4,15 +4,15 @@ Contributing to linux-kernel-labs
 
 ``linux-kernel-labs`` is an open platform.
 You can help it get better by contributing to the documentation, exercises or
-the general infrastructure.
-Any contribution is helpful, no matter if it is just a fix for a typo or a
-completely new section in the documentation.
+the infrastructure.
+All contributions are welcome, no matter if they are just fixes for typos or
+new sections in the documentation.
 
-All the sources required for making a contribution can be found in the
+All information required for making a contribution can be found in the
 `linux-lernel-labs Linux repo <https://github.com/linux-kernel-labs/linux>`_.
-In order to change anything, you will need to create a Pull Request (``PR``)
+In order to change anything, you need to create a Pull Request (``PR``)
 from your own fork to this repository.
-The PR must be reviewed by ther members of the team and will be merged once
+The PR will be reviewed by ther members of the team and will be merged once
 any pottential issue is fixed.
 
 ********************
@@ -22,7 +22,7 @@ Repository structure
 The `linux-lernel-labs repo <https://github.com/linux-kernel-labs/linux>`_ is
 a fork of the Linux kernel repo, with the following additions:
 
-  * ``/tools/labs``: contains the labs and the VM infrastructure
+  * ``/tools/labs``: contains the labs and the :ref:`virtual machine (VM) infrastructure<vm_link>`
 
     * ``tools/labs/templates``: contains the skeletons sources
     * ``tools/labs/qemu``: contains the qemu VM configuration
@@ -48,7 +48,7 @@ command:
 
   Instead of struggling to fix the dependencies, the simplest way to build
   the documentation is using a `Docker <https://www.docker.com/>`_.
-  First, install docker and docker-compose on your host, and then run:
+  First, install ``docker`` and ``docker-compose`` on your host, and then run:
 
   .. code-block:: bash
 
@@ -148,7 +148,7 @@ Creating a pull request
 
     student@eg106:~/so2/linux$ git push my_fork <your_branch_name>
 
-6. Open the pull request
+6. Open the Pull Pequest
 
   * Go to https://github.com and open your forked repository page
   * Click ``New pull request``.
@@ -163,10 +163,10 @@ Making changes to a Pull Request
 
 After receiving feedback for your changes, you might need to update the Pull
 Request.
-Our plan is to do a new push on the same branch. For this, follow the next steps:
+Your goal is to do a new push on the same branch. For this, follow the next steps:
 
-1. Make sure your branch is still up to date with the linux-kernel-labs repo
-   master branch.
+1. Make sure your branch is still up to date with the ``linux-kernel-labs`` repo
+   ``master`` branch.
 
   .. code-block:: bash
 
@@ -177,7 +177,7 @@ Our plan is to do a new push on the same branch. For this, follow the next steps
 
     If you are getting conflicts, it means that someone else modified the same
     files/lines as you and already merged the changes since you opened the
-    Pull request.
+    Pull Request.
 
     In this case, you will need to fix the conflicts by editing the
     conflicting files manually (run ``git status`` to see these files).
@@ -200,5 +200,7 @@ Our plan is to do a new push on the same branch. For this, follow the next steps
 
     student@eg106:~/so2/linux$ git push my_fork <your_branch_name> -f
 
-  After this step, the Pull Request is updated.
+  After this step, the Pull Request is updated. It is now up to the
+  linux-kernel-labs team to review the pull request and integrate your
+  contributions in the main project.
 
