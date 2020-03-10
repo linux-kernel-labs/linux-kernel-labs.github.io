@@ -139,6 +139,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#ioctl-operation">7. ioctl operation</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ioctl-with-messaging">Ioctl with messaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ioctl-with-waiting-queues">Ioctl with waiting queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#o-nonblock-implementation">O_NONBLOCK implementation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
@@ -1118,18 +1124,101 @@ Follow the comments marked with <code class="docutils literal"><span class="pre"
 <li>Implement the ioctl function in the driver.</li>
 <li>We need to use <code class="docutils literal"><span class="pre">user/so2_cdev_test.c</span></code> to call the
 ioctl function with the appropriate parameters.</li>
+<li>To test, we will use an user-space program (<code class="docutils literal"><span class="pre">user/so2_cdev_test.c</span></code>)
+which will call the <code class="docutils literal"><span class="pre">ioctl</span></code> function with the required arguments.</li>
 </ol>
 </div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The macro definition <code class="docutils literal"><span class="pre">MY_IOCTL_PRINT</span></code> is defined in the <code class="docutils literal"><span class="pre">include/so2_cdev.h</span></code> file
-Read the <a class="reference internal" href="#ioctl">ioctl</a> section in the lab.</p>
+<p>The macro <code class="docutils literal"><span class="pre">MY_IOCTL_PRINT</span></code> is defined in the file <code class="docutils literal"><span class="pre">include/so2_cdev.h</span></code>,
+which is shared between the kernel module and the user-space program.</p>
+<p class="last">Read the <a class="reference internal" href="#ioctl">ioctl</a> section in the lab.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Because we need to compile the program for qemu machine which is 32 bit, if your host is 64 bit
-then you need to install <code class="docutils literal"><span class="pre">gcc-multilib</span></code> package.</p>
+<p>The userspace code is compiled automatically at <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code> and
+copied at <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code>.</p>
+<p class="last">Because we need to compile the program for qemu machine which is 32 bit,
+if your host is 64 bit then you need to install <code class="docutils literal"><span class="pre">gcc-multilib</span></code> package.</p>
 </div>
+</div>
+</div>
+<div class="section" id="extra-exercises">
+<h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ioctl-with-messaging">
+<h3>Ioctl with messaging<a class="headerlink" href="#ioctl-with-messaging" title="Permalink to this headline">¶</a></h3>
+<p>Add two ioctl operations to modify the message associated with the
+driver. Use fixed-length buffer ( BUFFER_SIZE ).</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:
+* <code class="docutils literal"><span class="pre">MY_IOCTL_SET_BUFFER</span></code> for writing a message to the device;
+* <code class="docutils literal"><span class="pre">MY_IOCTL_GET_BUFFER</span></code> to read a message from your device.</li>
+<li>Change the user-space program to allow testing.</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Read the <a class="reference internal" href="#ioctl">ioctl</a> and <a class="reference internal" href="#access-to-the-address-space-of-the-process">Access to the address space of the process</a>
+sections of the lab.</p>
+</div>
+</div>
+<div class="section" id="ioctl-with-waiting-queues">
+<h3>Ioctl with waiting queues<a class="headerlink" href="#ioctl-with-waiting-queues" title="Permalink to this headline">¶</a></h3>
+<p>Add two ioctl operations to the device driver for queuing.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:
+* <code class="docutils literal"><span class="pre">MY_IOCTL_DOWN</span></code> to add the process to a queue;
+* <code class="docutils literal"><span class="pre">MY_IOCTL_UP</span></code> to remove the process from a queue.</li>
+<li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a
+<code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> flag.</li>
+<li>Do not forget to initialize the wait queue and flag.</li>
+<li>Remove exclusive access condition from previous exercise</li>
+<li>Change the user-space program to allow testing.</li>
+</ol>
+</div></blockquote>
+<p>When the process is added to the queue, it will remain blocked in execution; To
+run the queue command open a new console in the virtual machine with Alt+F2 ;
+You can return to the previous console with Alt+F1 . If you’re connected via
+SSH to the virtual machine, open a new console.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Read the <a class="reference internal" href="#ioctl">ioctl</a> and <a class="reference internal" href="#waiting-queues">Waiting queues</a> sections in the lab.</p>
+</div>
+</div>
+<div class="section" id="o-nonblock-implementation">
+<h3>O_NONBLOCK implementation<a class="headerlink" href="#o-nonblock-implementation" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If a file is open with the <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code> flag, then its
+operations will be non-blocking.</p>
+<p>In case data is not available when performing a read, the following
+happens:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>if the file has been open with <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code>, the read call
+will return <code class="docutils literal"><span class="pre">-EWOULDBLOCK</span></code>.</li>
+<li>otherwise, the current task (process) will be placed in a waiting
+queue and will be unblocked as soon as data becomes available
+(in our case, at write).</li>
+</ul>
+</div></blockquote>
+</div>
+<ul class="simple">
+<li>Modify the userspace program to allow testing.</li>
+<li>To allow unblocking the read operation, remove the exclusive access
+condition from previous exercises.</li>
+<li>You can use the queue defined for the previous exercise.</li>
+<li>You can ignore the file offset.</li>
+<li>Modify the initial size of data to <code class="docutils literal"><span class="pre">0</span></code>, to allow testing.</li>
+<li>Add a new operation in the user-space program which:<ul>
+<li>changes open flags (using <code class="docutils literal"><span class="pre">fcntl</span></code>).</li>
+<li>performs a read</li>
+</ul>
+</li>
+<li>What are the flags used to open the file when running <code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/so2_dev</span></code>?</li>
+</ul>
 </div>
 </div>
 </div>
