@@ -1,0 +1,6 @@
+@import url(slides.css);
+
+.slides > article.level-2 > h2 {
+    position: static;
+    margin-top: 0;
+}
