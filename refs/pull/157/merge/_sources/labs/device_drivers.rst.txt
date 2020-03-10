@@ -976,7 +976,8 @@ driver. Use fixed-length buffer ( BUFFER_SIZE ).
      * ``MY_IOCTL_GET_BUFFER`` to read a message from your device.
   2. Change the user-space program to allow testing.
 
-.. note:: Read the ioctl sections and Access to the address space of the lab process.
+.. note:: Read the `ioctl`_ and `Access to the address space of the process`_
+   sections of the lab.
 
 Ioctl with waiting queues
 -------------------------
@@ -997,7 +998,7 @@ run the queue command open a new console in the virtual machine with Alt+F2 ;
 You can return to the previous console with Alt+F1 . If you're connected via
 SSH to the virtual machine, open a new console.
 
-.. note:: Read the ioctl and Synchronization sections - waiting queues in the lab.
+.. note:: Read the `ioctl`_ and `Waiting queues`_ sections in the lab.
 
 O_NONBLOCK implementation
 -------------------------
