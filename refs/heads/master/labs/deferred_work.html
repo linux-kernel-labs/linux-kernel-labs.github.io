@@ -507,7 +507,7 @@ calls for synchronization like <code class="xref c c-func docutils literal"><spa
 base unit with which they work is called work. There are two types of
 work:</p>
 <ul class="simple">
-<li><code class="xref c c-type docutils literal"><span class="pre">structure</span> <span class="pre">work_struct</span></code> - it schedules a task to run at
+<li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">work_struct</span></code> - it schedules a task to run at
 a later time</li>
 <li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">delayed_work</span></code> - it schedules a task to run after at
 least a given time interval</li>
@@ -613,7 +613,7 @@ use <code class="xref c c-func docutils literal"><span class="pre">container_of(
 
 <span class="kt">void</span> <span class="nf">my_work_handler</span><span class="p">(</span><span class="k">struct</span> <span class="n">work_struct</span> <span class="o">*</span><span class="n">work</span><span class="p">)</span>
 <span class="p">{</span>
-   <span class="n">structure</span> <span class="n">my_device_data</span> <span class="o">*</span> <span class="n">my_data</span><span class="p">;</span>
+   <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span> <span class="n">my_data</span><span class="p">;</span>
 
    <span class="n">my_data</span> <span class="o">=</span> <span class="n">container_of</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="k">struct</span> <span class="n">my_device_data</span><span class="p">,</span>  <span class="n">my_work</span><span class="p">);</span>
    <span class="c1">// ...</span>
@@ -665,7 +665,7 @@ with a given delay. The time unit for the delay is jiffies.</p>
 </pre></div>
 </div>
 <p>And to destroy the workqueue call <code class="xref c c-func docutils literal"><span class="pre">destroy_workqueue()</span></code></p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">destroy_workqueue</span><span class="p">(</span><span class="n">structure</span> <span class="n">workqueque_struct</span> <span class="o">*</span><span class="n">queue</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">destroy_workqueue</span><span class="p">(</span><span class="k">struct</span> <span class="n">workqueue_struct</span> <span class="o">*</span><span class="n">queue</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The next sequence declares and initializes an additional workqueue,
@@ -699,7 +699,7 @@ kernel mode and has no user address space or other user attributes.</p>
 <p>To create a thread kernel, use <code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
 
-<span class="n">structure</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">kthread_create</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">),</span>
+<span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">kthread_create</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">),</span>
                                       <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">namefmt</span><span class="p">[],</span> <span class="p">...);</span>
 </pre></div>
 </div>
@@ -759,7 +759,7 @@ common mistakes:</p>
 <span class="n">DECLARE_WAIT_QUEUE_HEAD</span><span class="p">(</span><span class="n">wq</span><span class="p">);</span>
 
 <span class="c1">// list events to be processed by kernel thread</span>
-<span class="n">structure</span> <span class="n">list_head</span> <span class="n">events_list</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">list_head</span> <span class="n">events_list</span><span class="p">;</span>
 <span class="k">struct</span> <span class="n">spin_lock</span> <span class="n">events_lock</span><span class="p">;</span>
 
 
@@ -808,8 +808,8 @@ with:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">send_event</span><span class="p">(</span><span class="k">struct</span> <span class="n">event</span> <span class="o">*</span><span class="n">ev</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
-    <span class="n">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">list_events</span><span class="p">);</span>
-    <span class="n">spin_unlock</span><span class="p">(</span><span class="n">events_lock</span><span class="p">);</span>
+    <span class="n">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">events_list</span><span class="p">);</span>
+    <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
     <span class="n">wake_up</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
