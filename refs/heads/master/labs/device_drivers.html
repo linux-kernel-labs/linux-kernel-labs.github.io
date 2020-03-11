@@ -1155,10 +1155,13 @@ if your host is 64 bit then you need to install <code class="docutils literal"><
 driver. Use fixed-length buffer ( BUFFER_SIZE ).</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:
-* <code class="docutils literal"><span class="pre">MY_IOCTL_SET_BUFFER</span></code> for writing a message to the device;
-* <code class="docutils literal"><span class="pre">MY_IOCTL_GET_BUFFER</span></code> to read a message from your device.</li>
-<li>Change the user-space program to allow testing.</li>
+<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:<ul>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_SET_BUFFER</span></code> for writing a message to the device;</li>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_GET_BUFFER</span></code> to read a message from your device.</li>
+</ul>
+</li>
+<li>For testing, pass the required command line arguments to the
+user-space program.</li>
 </ol>
 </div></blockquote>
 <div class="admonition note">
@@ -1172,14 +1175,17 @@ sections of the lab.</p>
 <p>Add two ioctl operations to the device driver for queuing.</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:
-* <code class="docutils literal"><span class="pre">MY_IOCTL_DOWN</span></code> to add the process to a queue;
-* <code class="docutils literal"><span class="pre">MY_IOCTL_UP</span></code> to remove the process from a queue.</li>
+<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:<ul>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_DOWN</span></code> to add the process to a queue;</li>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_UP</span></code> to remove the process from a queue.</li>
+</ul>
+</li>
 <li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a
 <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> flag.</li>
 <li>Do not forget to initialize the wait queue and flag.</li>
 <li>Remove exclusive access condition from previous exercise</li>
-<li>Change the user-space program to allow testing.</li>
+<li>For testing, pass the required command line arguments to the
+user-space program.</li>
 </ol>
 </div></blockquote>
 <p>When the process is added to the queue, it will remain blocked in execution; To
@@ -1210,15 +1216,15 @@ queue and will be unblocked as soon as data becomes available
 </div></blockquote>
 </div>
 <ul class="simple">
-<li>Modify the userspace program to allow testing.</li>
 <li>To allow unblocking the read operation, remove the exclusive access
 condition from previous exercises.</li>
 <li>You can use the queue defined for the previous exercise.</li>
 <li>You can ignore the file offset.</li>
 <li>Modify the initial size of data to <code class="docutils literal"><span class="pre">0</span></code>, to allow testing.</li>
-<li>Add a new operation in the user-space program which:<ul>
-<li>changes open flags (using <code class="docutils literal"><span class="pre">fcntl</span></code>).</li>
-<li>performs a read</li>
+<li>For testing, pass the required command line arguments to the
+user-space program.<ul>
+<li>when using the <code class="docutils literal"><span class="pre">n</span></code> option, the test program will change the open flags
+to <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code> and then perform a <code class="docutils literal"><span class="pre">read</span></code>.</li>
 </ul>
 </li>
 <li>What are the flags used to open the file when running <code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/so2_dev</span></code>?</li>
