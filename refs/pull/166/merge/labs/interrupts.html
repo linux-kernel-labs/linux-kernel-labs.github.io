@@ -315,7 +315,7 @@ make sure there is only one user. In order to do so, one must use the
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/ioport.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">resource</span> <span class="o">*</span><span class="nf">request_region</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">first</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">,</span>
-                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+            <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>To release a reserved region one must use the <code class="xref c c-func docutils literal"><span class="pre">release_region()</span></code> function:</p>
@@ -331,8 +331,8 @@ these ports:</p>
 <span class="cp">#define MY_NR_PORTS 8</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">request_region</span><span class="p">(</span><span class="n">MY_BASEPORT</span><span class="p">,</span> <span class="n">MY_NR_PORTS</span><span class="p">,</span> <span class="s">&quot;com1&quot;</span><span class="p">))</span> <span class="p">{</span>
-     <span class="cm">/* handle error */</span>
-     <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
+<span class="cm">/* handle error */</span>
+<span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -343,7 +343,8 @@ these ports:</p>
 <p>Most of the time, port requests are done at the driver initialization
 or probe time and the port releasing is done at the removal of the
 device or module.</p>
-<p>All of the port requests can be seen from userspace via the /proc/ioports file:</p>
+<p>All of the port requests can be seen from userspace via the
+<code class="file docutils literal"><span class="pre">/proc/ioports</span></code> file:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ cat /proc/ioports
 <span class="m">0000</span>-001f : dma1
 <span class="m">0020</span>-0021 : pic1
@@ -415,11 +416,11 @@ first 3 ports of the serial port, and then releases them:</p>
 <span class="cp">#define MY_BASEPORT 0x3F8</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="n">ioperm</span><span class="p">(</span><span class="n">MY_BASEPORT</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
-     <span class="cm">/* handle error */</span>
+<span class="cm">/* handle error */</span>
 <span class="p">}</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="n">ioperm</span><span class="p">(</span><span class="n">MY_BASEPORT</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
-     <span class="cm">/* handle error */</span>
+<span class="cm">/* handle error */</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -440,7 +441,7 @@ the <code class="xref c c-func docutils literal"><span class="pre">requests_irq(
 <span class="k">typedef</span> <span class="nf">irqreturn_t</span> <span class="p">(</span><span class="o">*</span><span class="n">irq_handler_t</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="p">);</span>
 
 <span class="kt">int</span> <span class="nf">request_irq</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="n">irq_handler_t</span> <span class="n">handler</span><span class="p">,</span>
-                <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">dev_name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
+      <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">dev_name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
 
 <span class="kt">void</span> <span class="nf">free_irq</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">irq_no</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
 </pre></div>
@@ -483,8 +484,8 @@ context phase:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/interrupt.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">request_threaded_irq</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">irq</span><span class="p">,</span> <span class="n">irq_handler_t</span> <span class="n">handler</span><span class="p">,</span>
-                         <span class="n">irq_handler_t</span> <span class="n">thread_fn</span><span class="p">,</span>
-                         <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+          <span class="n">irq_handler_t</span> <span class="n">thread_fn</span><span class="p">,</span>
+          <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
 </pre></div>
 </div>
 <p><em>handler</em> is the function running in interrupt context, and will
@@ -525,17 +526,17 @@ serial port:</p>
 
 <span class="k">static</span> <span class="nf">my_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-     <span class="p">[...]</span>
-     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span><span class="p">;</span>
-     <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+<span class="p">[...]</span>
+<span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
 
-     <span class="n">err</span> <span class="o">=</span> <span class="n">request_irq</span><span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_handler</span><span class="p">,</span> <span class="n">IRQF_SHARED</span><span class="p">,</span>
-                       <span class="s">&quot;com1&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
-     <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-         <span class="cm">/* handle error*/</span>
-         <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
-     <span class="p">}</span>
-     <span class="p">[...]</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">request_irq</span><span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_handler</span><span class="p">,</span> <span class="n">IRQF_SHARED</span><span class="p">,</span>
+        <span class="s">&quot;com1&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* handle error*/</span>
+    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">[...]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -596,7 +597,7 @@ processing function.</p>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
 
     <span class="cm">/* if interrupt is not for this device (shared interrupts) */</span>
-        <span class="cm">/* return IRQ_NONE;*/</span>
+   <span class="cm">/* return IRQ_NONE;*/</span>
 
     <span class="cm">/* clear interrupt-pending bit */</span>
     <span class="cm">/* read from device or write to device*/</span>
@@ -749,7 +750,7 @@ the flag, since this is actually a macro.</p>
 <em>/proc/interrupts</em> or <em>/proc/stat</em>. Only system interrupts with
 associated interrupt handlers appear in <em>/proc/interrupts</em>:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># cat /proc/interrupts</span>
-                CPU0
+      CPU0
 <span class="m">0</span>:           <span class="m">7514294</span>       IO-APIC-edge   timer
 <span class="m">1</span>:              <span class="m">4528</span>       IO-APIC-edge   i8042
 <span class="m">6</span>:                 <span class="m">2</span>       IO-APIC-edge   floppy
@@ -909,9 +910,9 @@ clean-up in case of errors. Also, add code to release the I/O ports in
 <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can review the <a class="reference internal" href="#request-access-to-i-o-ports">Request access to I/O ports</a> section before</p>
+<p class="last">You can review the <a class="reference internal" href="#request-access-to-i-o-ports">Request access to I/O ports</a> section before
+proceeding.</p>
 </div>
-<p>proceeding.</p>
 <p>Now build the module and copy it to the VM image:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 tools/labs $ make copy
@@ -925,8 +926,8 @@ insmod: can&#39;t insert &#39;skels/interrupts/kbd.ko&#39;: Device or resource b
 </div>
 <p>Notice that you get an error when trying to request the I/O
 ports. This is because we already have a driver that has requested the
-I/O ports. To validate check the /proc/ioports file for the STATUS_REG
-and DATA_REG values:</p>
+I/O ports. To validate check the <code class="file docutils literal"><span class="pre">/proc/ioports</span></code> file for the
+<code class="docutils literal"><span class="pre">STATUS_REG</span></code> and <code class="docutils literal"><span class="pre">DATA_REG</span></code> values:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# cat /proc/ioports <span class="p">|</span> egrep <span class="s2">&quot;(0060|0064)&quot;</span>
 <span class="m">0060</span>-0060 : keyboard
 <span class="m">0064</span>-0064 : keyboard
@@ -1034,27 +1035,26 @@ them in the buffer of the device</li>
 <p>Follow the sections marked <strong>TODO 3</strong> in the skeleton.</p>
 <div class="section" id="reading-the-data-register">
 <h4>Reading the data register<a class="headerlink" href="#reading-the-data-register" title="Permalink to this headline">¶</a></h4>
-<p>First, fill in the i8042_read_data() function to read the
-I8042_DATA_REG I8042_DATA_REG of the keyboard controller. The function
+<p>First, fill in the <code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> function to read the
+<code class="docutils literal"><span class="pre">I8042_DATA_REG</span></code> of the keyboard controller. The function
 just needs to return the value of the register. The value of the
 registry is also called scancode, which is what is generated at each
 keystroke.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p>Read the I8042_DATA_REG register using <code class="xref c c-func docutils literal"><span class="pre">inb()</span></code> and
-store the value in the local variable <code class="xref c c-type docutils literal"><span class="pre">val</span></code>.</p>
-<blockquote class="last">
-<div>Revisit the <a class="reference internal" href="#accessing-i-o-ports">Accessing I/O ports</a> section.</div></blockquote>
+<p class="last">Read the <code class="docutils literal"><span class="pre">I8042_DATA_REG</span></code> register using <code class="xref c c-func docutils literal"><span class="pre">inb()</span></code> and
+store the value in the local variable <code class="xref c c-type docutils literal"><span class="pre">val</span></code>.
+Revisit the <a class="reference internal" href="#accessing-i-o-ports">Accessing I/O ports</a> section.</p>
 </div>
-<p>Call the <a href="#id2"><span class="problematic" id="id3">:c:function:`i8042_read_data`</span></a> in the
+<p>Call the <code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> in the
 <code class="xref c c-func docutils literal"><span class="pre">kbd_interrupt_handler()</span></code> and print the value read.</p>
 <p>Print information about the keystrokes in the following format:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ:% d, scancode = 0x%x (%u,%c)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-        <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">);</span>
+   <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Where scancode is the value of the read register using the
-i8042_read_data() function.</p>
+<code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> function.</p>
 <p>Notice that the scancode (reading of the read register) is not an ASCII
 character of the pressed key. We’ll have to understand the scancode.</p>
 </div>
@@ -1102,49 +1102,105 @@ have the same keycode. For the keys shown above we have
 the following table:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="25%" />
-<col width="25%" />
-<col width="25%" />
-<col width="25%" />
+<col width="100%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>Key</td>
-<td>Key Press Scancode</td>
-<td>Key Release Scancode</td>
-<td>Keycode</td>
-</tr>
-<tr class="row-even"><td>ENTER</td>
-<td>0x1e</td>
-<td>0x9e</td>
-<td>0x1e (30)</td>
-</tr>
-<tr class="row-odd"><td>a</td>
-<td>0x1e</td>
-<td>0x9e</td>
-<td>0x1e (30)</td>
-</tr>
-<tr class="row-even"><td>b</td>
-<td>0x3e</td>
-<td>0x9e</td>
-<td>0x30 (48)</td>
-</tr>
-<tr class="row-odd"><td>c</td>
-<td>0x2e</td>
-<td>0x9e</td>
-<td>0x2e (46)</td>
-</tr>
-<tr class="row-even"><td>Shift</td>
-<td>0x2a</td>
-<td>0xaa</td>
-<td>0x2a (42)</td>
-</tr>
-<tr class="row-odd"><td>Ctrl</td>
-<td>0x1d</td>
-<td>0x9d</td>
-<td>0x1d (29)</td>
 </tr>
 </tbody>
 </table>
+<ul>
+<li><p class="first">Key Press Scancode</p>
+</li>
+<li><p class="first">Key Release Scancode</p>
+</li>
+<li><p class="first">Keycode</p>
+<blockquote>
+<div><ul class="simple">
+<li><ul class="first">
+<li>ENTER</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">0x1e</p>
+</li>
+<li><p class="first">0x9e</p>
+</li>
+<li><p class="first">0x1e (30)</p>
+<blockquote>
+<div><ul class="simple">
+<li><ul class="first">
+<li>a</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">0x1e</p>
+</li>
+<li><p class="first">0x9e</p>
+</li>
+<li><p class="first">0x1e (30)</p>
+<blockquote>
+<div><ul class="simple">
+<li><ul class="first">
+<li>b</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">0x3e</p>
+</li>
+<li><p class="first">0x9e</p>
+</li>
+<li><p class="first">0x30 (48)</p>
+<blockquote>
+<div><ul class="simple">
+<li><ul class="first">
+<li>c</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">0x2e</p>
+</li>
+<li><p class="first">0x9e</p>
+</li>
+<li><p class="first">0x2e (46)</p>
+<blockquote>
+<div><ul class="simple">
+<li><ul class="first">
+<li>Shift</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">0x2a</p>
+</li>
+<li><p class="first">0xaa</p>
+</li>
+<li><p class="first">0x2a (42)</p>
+<blockquote>
+<div><ul class="simple">
+<li><ul class="first">
+<li>Ctrl</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">0x1d</p>
+</li>
+<li><p class="first">0x9d</p>
+</li>
+<li><p class="first">0x1d (29)</p>
+</li>
+</ul>
 <p>The press / release key is performed in the is_key_press()
 function and obtaining the ASCII character of a scancode
 takes place in the get_ascii() function.</p>
@@ -1165,7 +1221,7 @@ ASCII code. Both functions expects the scancode.</p>
 <p>To display the received information use the following
 format.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ %d: scancode=0x%x (%u) pressed=%d ch=%c</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-        <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">pressed</span><span class="p">,</span> <span class="n">ch</span><span class="p">);</span>
+   <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">pressed</span><span class="p">,</span> <span class="n">ch</span><span class="p">);</span>
 </pre></div>
 </div>
 <p class="last">Where scancode is the value of the data register, and ch is
@@ -1197,11 +1253,9 @@ added to the circular buffer.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<dl class="docutils">
-<dt>Synchronize the access to the buffer and the helper</dt>
-<dd>indexes with a spinlock.</dd>
-</dl>
-<p>Define the spinlock in the device struct <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>
+<p>Synchronize the access to the buffer and the helper
+indexes with a spinlock.
+Define the spinlock in the device struct <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>
 and initialize it in <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code>.</p>
 <p>Use the <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> functions
 to protect the buffer in the interrupt handler.</p>
@@ -1228,10 +1282,8 @@ and put_user to store it to the user buffer.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<dl class="docutils">
-<dt>In the read function Use <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and</dt>
-<dd><code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irqrestore()</span></code> for locking.</dd>
-</dl>
+<p>In the read function, ue <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irqrestore()</span></code> for locking.</p>
 <p class="last">Revisit the <a class="reference internal" href="#locking">Locking</a> section.</p>
 </div>
 <div class="admonition attention">
@@ -1278,7 +1330,7 @@ Test it using the command:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span>
 </pre></div>
 </div>
-<p>Press some keys, then run the command <strong class="command">echo “clear” &gt; /dev/kbd</strong>.
+<p>Press some keys, then run the command <strong class="command">echo &quot;clear&quot; &gt; /dev/kbd</strong>.
 Check the buffer’s content again. It should be reset.</p>
 </div>
 </div>
@@ -1291,7 +1343,7 @@ Check the buffer’s content again. It should be reset.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Follow the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/samples/kfifo">API call examples from the kernel code</a>.
-For example, the file <a href="#id4"><span class="problematic" id="id5">`bytestream-examples.c&lt;https://elixir.bootlin.com/linux/v4.15/source/samples/kfifo/bytestream-example.c&gt;`_</span></a>.</p>
+For example, the file <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/samples/kfifo/bytestream-example.c">bytestream-examples.c</a>.</p>
 </div>
 </div>
 </div>
