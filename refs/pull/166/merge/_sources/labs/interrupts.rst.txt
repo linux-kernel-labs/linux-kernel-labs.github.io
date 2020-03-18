@@ -96,7 +96,7 @@ make sure there is only one user. In order to do so, one must use the
    #include <linux/ioport.h>
 
    struct resource *request_region(unsigned long first, unsigned long n,
-               const char *name);
+				   const char *name);
 
 To release a reserved region one must use the :c:func:`release_region` function:
 
@@ -117,8 +117,8 @@ these ports:
    #define MY_NR_PORTS 8
 
    if (!request_region(MY_BASEPORT, MY_NR_PORTS, "com1")) {
-   /* handle error */
-   return -ENODEV;
+	/* handle error */
+	return -ENODEV;
    }
 
 To release the ports one would use something like:
@@ -216,11 +216,11 @@ first 3 ports of the serial port, and then releases them:
    #define MY_BASEPORT 0x3F8
 
    if (ioperm(MY_BASEPORT, 3, 1)) {
-   /* handle error */
+	/* handle error */
    }
 
    if (ioperm(MY_BASEPORT, 3, 0)) {
-   /* handle error */
+	/* handle error */
    }
 
 The third parameter of the ioperm function is used to request or
@@ -245,7 +245,7 @@ the :c:func:`requests_irq` and :c:func:`free_irq` functions:
    typedef irqreturn_t (*irq_handler_t)(int, void *);
 
    int request_irq(unsigned int irq_no, irq_handler_t handler,
-         unsigned long flags, const char *dev_name, void *dev_id);
+		   unsigned long flags, const char *dev_name, void *dev_id);
 
    void free_irq(unsigned int irq_no, void *dev_id);
 
@@ -293,8 +293,8 @@ context phase:
    #include <linux/interrupt.h>
 
    int request_threaded_irq(unsigned int irq, irq_handler_t handler,
-             irq_handler_t thread_fn,
-             unsigned long flags, const char *name, void *dev);
+			    irq_handler_t thread_fn,
+			    unsigned long flags, const char *name, void *dev);
 
 *handler* is the function running in interrupt context, and will
 implement critical operations while the thread_fn function runs in
@@ -341,24 +341,24 @@ serial port:
 
    static my_init(void)
    {
-   [...]
-   struct my_device_data *my_data;
-   int err;
+	[...]
+	struct my_device_data *my_data;
+	int err;
 
-   err = request_irq(MY_IRQ, my_handler, IRQF_SHARED,
-           "com1", my_data);
-   if (err < 0) {
-       /* handle error*/
-       return err;
-   }
-   [...]
+	err = request_irq(MY_IRQ, my_handler, IRQF_SHARED,
+			  "com1", my_data);
+	if (err < 0) {
+	     /* handle error*/
+	     return err;
+	}
+	[...]
    }
 
 As you can see, the IRQ for serial port COM1 is 4, which is used in
 shared mode (IRQF_SHARED).
 
 .. attention:: When requesting a shared interrupt (IRQF_SHARED) the
-          *dev_id* argument can not be NULL.
+	       *dev_id* argument can not be NULL.
 
 To release the interrupt associated with the serial port, the
 following operations will be executed:
@@ -425,7 +425,7 @@ The skeleton for an interrupt handler is:
        struct my_device_data *my_data = (struct my_device_data *) dev_id;
 
        /* if interrupt is not for this device (shared interrupts) */
-      /* return IRQ_NONE;*/
+	   /* return IRQ_NONE;*/
 
        /* clear interrupt-pending bit */
        /* read from device or write to device*/
@@ -583,9 +583,9 @@ In the interrupt handling routine, we use the :c:func:`spin_lock` and
 :c:func:`spin_unlock` functions to access the shared resource.
 
 .. note:: The *flags* argument for :c:func:`spin_lock_irqsave` and
-     :c:func:`spin_unlock_irqrestore` is a value and not a pointer but keep
-     in mind that :c:func:`spin_lock_irqsave` function changes the value of
-     the flag, since this is actually a macro.
+	  :c:func:`spin_unlock_irqrestore` is a value and not a pointer but keep
+	  in mind that :c:func:`spin_lock_irqsave` function changes the value of
+	  the flag, since this is actually a macro.
 
 Interrupt statistics
 --------------------
@@ -597,7 +597,7 @@ associated interrupt handlers appear in */proc/interrupts*:
 .. code-block:: shell
 
    # cat /proc/interrupts
-         CPU0
+		   CPU0
    0:           7514294       IO-APIC-edge   timer
    1:              4528       IO-APIC-edge   i8042
    6:                 2       IO-APIC-edge   floppy
@@ -802,9 +802,9 @@ Follow the sections maked with **TODO 2** in the skeleton.
 First, define an empty interrupt handling routine.
 
 .. note:: Since we already have a driver that uses this interrupt we
-     should report the interrupt as not handled (i.e. return
-     :c:type:`IRQF_NONE`) so that the original driver still has a
-     chance to process it.
+	  should report the interrupt as not handled (i.e. return
+	  :c:type:`IRQF_NONE`) so that the original driver still has a
+	  chance to process it.
 
 Then register the interrupt handler routine using
 :c:type:`request_irq`. The interrupt number is defined by the
@@ -813,16 +813,16 @@ requested with :c:type:`IRQF_SHARED` to share the interrupt line with
 the keyboard driver (i8042).
 
 .. note:: For shared interrupts, *dev_id* can not be NULL . Use
-     ``&devs[0]``, that is pointer to :c:type:`struct kbd`. This
-     structure contains all the information needed for device
-     management. To see the interrupt in */proc/interrupts*, do
-     not use NULL for *dev_name* . You can use the MODULE_NAME
-     macro.
+	  ``&devs[0]``, that is pointer to :c:type:`struct kbd`. This
+	  structure contains all the information needed for device
+	  management. To see the interrupt in */proc/interrupts*, do
+	  not use NULL for *dev_name* . You can use the MODULE_NAME
+	  macro.
 
-     If the interrupt requesting fails make sure to properly
-     cleanup by jumping to the right label, in this case the one
-     the releases the I/O ports and continues with unregistering
-     the character device driver.
+	  If the interrupt requesting fails make sure to properly
+	  cleanup by jumping to the right label, in this case the one
+	  the releases the I/O ports and continues with unregistering
+	  the character device driver.
 
 Compile, copy and load module in the kernel. Check that the interrupt
 line has been registered by looking at */proc/interrupts* . Determine
@@ -832,8 +832,7 @@ means that we have a shared interrupt line): the i8042 initial driver
 and our driver.
 
 .. note:: More details about the format of the */proc/interrupts* can
-     be found in the `Interrupt statistics`_ section.
-
+	  be found in the `Interrupt statistics`_ section.
 
 Print a message inside the routine to make sure it is called. Compile
 and reload the module into the kernel. Check that the interrupt handling
@@ -842,7 +841,7 @@ using :command:dmesg. Also note that when you use the serial port no
 keyboard interrupt is generated.
 
 .. attention:: To get access to the keyboard on the virtual machine
-          boot with "QEMU_DISPLAY=sdl make boot".
+	       boot with "QEMU_DISPLAY=sdl make boot".
 
 3. Store ASCII keys to buffer
 -----------------------------
@@ -898,98 +897,98 @@ the code when the key is pressed and then and decode the ASCII
 character.
 
 .. note:: To check scancode, we can use the showkey command (showkey
-     -s).
+	  -s).
 
-     In this form, the command will display the key scancodes for
-     10 seconds after the last pressed key end then it will
-     stop. If you press and release a key you will get two
-     scancodes: one for the pressed key and one for the released
-     key. E.g:
+	  In this form, the command will display the key scancodes for
+	  10 seconds after the last pressed key end then it will
+	  stop. If you press and release a key you will get two
+	  scancodes: one for the pressed key and one for the released
+	  key. E.g:
 
-     * If you press the ENTER key, you will get the 0x1c ( 0x1c )
-       and 0x9c (for the released key)
-     * If you press the key a you will get the 0x1e (key pressed)
-       and 0x9e (for the key release)
-     * If you press b you will get 0x30 (key pressed) and 0xb0
-       (for the release key)
-     * If you press the c key, you will get the 0x2e (key
-       pressed) 0xae and 0xae (for the released key)
-     * If you press the Shift key you will get the 0x2a (key
-       pressed) 0xaa and 0xaa (for the released key)
-     * If you press the Ctrl key you will get the 0x1d (key
-       pressed) and 0x9d (for the release key)
+	  * If you press the ENTER key, you will get the 0x1c ( 0x1c )
+	    and 0x9c (for the released key)
+	  * If you press the key a you will get the 0x1e (key pressed)
+	    and 0x9e (for the key release)
+	  * If you press b you will get 0x30 (key pressed) and 0xb0
+	    (for the release key)
+	  * If you press the c key, you will get the 0x2e (key
+	    pressed) 0xae and 0xae (for the released key)
+	  * If you press the Shift key you will get the 0x2a (key
+	    pressed) 0xaa and 0xaa (for the released key)
+	  * If you press the Ctrl key you will get the 0x1d (key
+	    pressed) and 0x9d (for the release key)
 
-       As also indicated in this `article
-       <http://www.linuxjournal.com/article/1080>`_, a key
-       release scancode is 128 (0x80) higher then a key press
-       scancode. This is how we can distinguish between a press
-       key scancode and a release scancode.
+	    As also indicated in this `article
+	    <http://www.linuxjournal.com/article/1080>`_, a key
+	    release scancode is 128 (0x80) higher then a key press
+	    scancode. This is how we can distinguish between a press
+	    key scancode and a release scancode.
 
-       A scancode is translated into a keycode that matches a
-       key. A pressed scanned keycode and a released scancode
-       have the same keycode. For the keys shown above we have
-       the following table:
+	    A scancode is translated into a keycode that matches a
+	    key. A pressed scanned keycode and a released scancode
+	    have the same keycode. For the keys shown above we have
+	    the following table:
 
-       .. flat-table::
+	    .. flat-table::
 
-          * - Key
-       - Key Press Scancode
-       - Key Release Scancode
-       - Keycode
+	       * - Key
+		 - Key Press Scancode
+		 - Key Release Scancode
+		 - Keycode
 
-          * - ENTER
-       - 0x1e
-       - 0x9e
-       - 0x1e (30)
+	       * - ENTER
+		 - 0x1e
+		 - 0x9e
+		 - 0x1e (30)
 
-          * - a
-       - 0x1e
-       - 0x9e
-       - 0x1e (30)
+	       * - a
+		 - 0x1e
+		 - 0x9e
+		 - 0x1e (30)
 
-          * - b
-       - 0x3e
-       - 0x9e
-       - 0x30 (48)
+	       * - b
+		 - 0x3e
+		 - 0x9e
+		 - 0x30 (48)
 
-          * - c
-       - 0x2e
-       - 0x9e
-       - 0x2e (46)
+	       * - c
+		 - 0x2e
+		 - 0x9e
+		 - 0x2e (46)
 
-          * - Shift
-       - 0x2a
-       - 0xaa
-       - 0x2a (42)
+	       * - Shift
+		 - 0x2a
+		 - 0xaa
+		 - 0x2a (42)
 
-          * - Ctrl
-       - 0x1d
-       - 0x9d
-       - 0x1d (29)
+	       * - Ctrl
+		 - 0x1d
+		 - 0x9d
+		 - 0x1d (29)
 
-       The press / release key is performed in the is_key_press()
-       function and obtaining the ASCII character of a scancode
-       takes place in the get_ascii() function.
+	    The press / release key is performed in the is_key_press()
+	    function and obtaining the ASCII character of a scancode
+	    takes place in the get_ascii() function.
 
 In the interrupt handler check the scancode to see if the key is
 pressed or released then determine the corresponding ASCII
 character.
 
 .. hint:: To check for press / release, use :c:func:`is_key_press`.
-      Use :c:func:`get_ascii` function to get the corresponding
-      ASCII code. Both functions expects the scancode.
+	   Use :c:func:`get_ascii` function to get the corresponding
+	   ASCII code. Both functions expect the scancode.
 
 
 .. hint:: To display the received information use the following
-     format.
+	  format.
 
-     .. code-block:: c
+	  .. code-block:: c
 
-        pr_info("IRQ %d: scancode=0x%x (%u) pressed=%d ch=%c\n",
-           irq_no, scancode, scancode, pressed, ch);
+	     pr_info("IRQ %d: scancode=0x%x (%u) pressed=%d ch=%c\n",
+		     irq_no, scancode, scancode, pressed, ch);
 
-     Where scancode is the value of the data register, and ch is
-     the value returned by the get_ascii() function.
+	  Where scancode is the value of the data register, and ch is
+	  the value returned by the get_ascii() function.
 
 Store characters to the buffer
 ...............................
@@ -1002,28 +1001,28 @@ end of the device buffer. If the buffer is full, the character will be
 discarded.
 
 .. hint:: The device buffer is the field :c:type:`buf` in the device's
-    :c:type:`struct kbd`. To get the device data from the interrupt handler
-    use the following construct:
+	  :c:type:`struct kbd`. To get the device data from the interrupt handler
+	  use the following construct:
 
-     .. code-block:: c
+	  .. code-block:: c
 
-        struct kbd *data = (struct kbd *) dev_id;
+	    struct kbd *data = (struct kbd *) dev_id;
 
-    The buffer's dimension is located in :c:type:`struct kbd`'s field,
-    :c:type:`count`. The :c:type:`put_idx` and :c:type:`get_idx` fields
-    specify the next writing and reading index. Take a look at the
-    :c:func:`put_char` function's implementation to observe how the data is
-    added to the circular buffer.
+	  The buffer's dimension is located in :c:type:`struct kbd`'s field,
+	  :c:type:`count`. The :c:type:`put_idx` and :c:type:`get_idx` fields
+	  specify the next writing and reading index. Take a look at the
+	  :c:func:`put_char` function's implementation to observe how the data is
+	  added to the circular buffer.
 
 .. attention:: Synchronize the access to the buffer and the helper
-         indexes with a spinlock.
-         Define the spinlock in the device struct :c:type:`struct kbd`
-         and initialize it in :c:func:`kbd_init`.
+	       indexes with a spinlock.
+	       Define the spinlock in the device struct :c:type:`struct kbd`
+	       and initialize it in :c:func:`kbd_init`.
 
-         Use the :c:func:`spin_lock` and :c:func:`spin_unlock` functions
-         to protect the buffer in the interrupt handler.
+	       Use the :c:func:`spin_lock` and :c:func:`spin_unlock` functions
+	       to protect the buffer in the interrupt handler.
 
-         Revisit the `Locking`_ section.
+	       Revisit the `Locking`_ section.
 
 4. Reading the buffer
 ----------------------
@@ -1043,20 +1042,20 @@ In the :c:func:`kbd_read` function copy the data from the buffer to the
 userspace buffer.
 
 .. hint:: Use :c:func:`get_char` to read a character from the buffer
-     and put_user to store it to the user buffer.
+	  and put_user to store it to the user buffer.
 
 .. attention:: In the read function, ue :c:func:`spin_lock_irqsave` and
-         :c:func:`spin_unlock_irqrestore` for locking.
+	       :c:func:`spin_unlock_irqrestore` for locking.
 
-         Revisit the `Locking`_ section.
+	       Revisit the `Locking`_ section.
 
 .. attention:: We cannot use :c:func:`put_user` or :c:func:`copy_to_user`
-         while holding the lock, as userpace access is not permitted from
-         atomic contexts.
+	       while holding the lock, as userpace access is not permitted from
+	       atomic contexts.
 
-         For more info, read the :ref:`Access to the address space of the
-         process section <_access_to_process_address_space>` in the
-         previous lab.
+	       For more info, read the :ref:`Access to the address space of the
+	       process section <_access_to_process_address_space>` in the
+	       previous lab.
 
 For testing, you will need to create the */dev/kbd* character device
 driver using the mknod before reading from it. The device master and
