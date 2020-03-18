@@ -533,8 +533,8 @@ serial port:</p>
      <span class="n">err</span> <span class="o">=</span> <span class="n">request_irq</span><span class="p">(</span><span class="n">MY_IRQ</span><span class="p">,</span> <span class="n">my_handler</span><span class="p">,</span> <span class="n">IRQF_SHARED</span><span class="p">,</span>
                        <span class="s">&quot;com1&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">);</span>
      <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-          <span class="cm">/* handle error*/</span>
-          <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+         <span class="cm">/* handle error*/</span>
+         <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
      <span class="p">}</span>
      <span class="p">[...]</span>
 <span class="p">}</span>

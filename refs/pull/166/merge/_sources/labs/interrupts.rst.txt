@@ -348,8 +348,8 @@ serial port:
 	err = request_irq(MY_IRQ, my_handler, IRQF_SHARED,
 			  "com1", my_data);
 	if (err < 0) {
-	     /* handle error*/
-	     return err;
+	    /* handle error*/
+	    return err;
 	}
 	[...]
    }
