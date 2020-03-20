@@ -107,10 +107,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#hardware-concepts">Hardware concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hardware-concepts">Hardware Concepts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#advanced-programmable-interrupt-controller">Advanced Programmable Interrupt Controller</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#interrupt-control">Interrupt control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interrupt-control">Interrupt Control</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#architecture-specific-interrupt-handling-in-linux">Architecture specific interrupt handling in Linux</a><ul>
@@ -284,7 +284,7 @@ of the instruction after the instuction that caused the trap. (e.g debug trap).<
 </div>
 </div>
 <div class="section" id="hardware-concepts">
-<h2>Hardware concepts<a class="headerlink" href="#hardware-concepts" title="Permalink to this headline">¶</a></h2>
+<h2>Hardware Concepts<a class="headerlink" href="#hardware-concepts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="programmable-interrupt-controller">
 <h3>Programmable Interrupt Controller<a class="headerlink" href="#programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
 <img alt="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" class="admonition-hardware-pic" src="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" />
@@ -316,8 +316,8 @@ from locally connected devices like timers or thermals sensors.</p>
 <p>After discussing the hardware, now let’s see how the processor handles an interrupt.</p>
 </div>
 <div class="section" id="interrupt-control">
-<h3>Interrupt control<a class="headerlink" href="#interrupt-control" title="Permalink to this headline">¶</a></h3>
-<p>In order to synchronize the access to shared data between the interrupt handler
+<h3>Interrupt Control<a class="headerlink" href="#interrupt-control" title="Permalink to this headline">¶</a></h3>
+<p>In order to synchronize access to shared data between the interrupt handler
 and other potential concurrent activities such as driver initialization or
 driver data processing, it is often required to enable and disable interrupts in
 a controlled fashion.</p>
@@ -438,7 +438,7 @@ saved flags into EFLAGS register.</p>
 <ul class="admonition-returning-from-an-interrupt simple">
 <li>pop the eror code (in case of an abort)</li>
 <li>call IRET<ul>
-<li>pops values from the stack and restore the follwing register: CS, EIP, EFLAGS</li>
+<li>pops values from the stack and restore the following register: CS, EIP, EFLAGS</li>
 <li>if privilege level changed returns to the old stack and old privilege level</li>
 </ul>
 </li>
@@ -576,7 +576,7 @@ more than <code class="xref c c-macro docutils literal"><span class="pre">MAX_SO
 and all of the rest of pending soft irqs will be run from the context of this
 kernel thread.</p>
 <p>Soft irqs usage is restricted, they are use by a handful of subsystems that have
-low latency requirements. At the moment this is the full list of soft irqs:</p>
+low latency requirements. For 4.19 this is the full list of soft irqs:</p>
 <blockquote class="admonition-types-of-soft-irq">
 <div><ul class="simple">
 <li>HI_SOFTIRQ</li>
@@ -584,16 +584,19 @@ low latency requirements. At the moment this is the full list of soft irqs:</p>
 <li>NET_TX_SOFTIRQ</li>
 <li>NET_RX_SOFTIRQ</li>
 <li>BLOCK_SOFTIRQ</li>
+<li>IRQ_POLL_SOFTIRQ</li>
 <li>TASKLET_SOFTIRQ</li>
-<li>HRTIMER_SOFTIRQ</li>
+<li>SCHED_SOFTIRQ</li>
+<li>HRTIMER_SOFTIRQ,</li>
+<li>RCU_SOFTIRQ</li>
 </ul>
 </div></blockquote>
 </div>
 <div class="section" id="tasklets">
 <h3>Tasklets<a class="headerlink" href="#tasklets" title="Permalink to this headline">¶</a></h3>
-<p class="admonition-tasklets">Tasklets are a dynamic type (not limited to a fixed number) of interrupt
-context deferred work.</p>
-<p>Tasklets APIs:</p>
+<p class="admonition-tasklets">Tasklets are a dynamic type (not limited to a fixed number) of
+deferred work running in interrupt context.</p>
+<p>Tasklets API:</p>
 <blockquote>
 <div><ul class="simple">
 <li>initialization: <code class="xref c c-func docutils literal"><span class="pre">tasklet_init()</span></code></li>
@@ -610,7 +613,7 @@ context deferred work.</p>
 <blockquote>
 <div><p class="admonition-workqueues">Workqueues are a type of defer work that runs in process context.</p>
 <p>They are implemented on top of kernel threads.</p>
-<p>Workqueues APIs:</p>
+<p>Workqueues API:</p>
 <blockquote>
 <div><ul class="simple">
 <li>init: <code class="xref c c-macro docutils literal"><span class="pre">INIT_WORK</span></code></li>
@@ -623,7 +626,7 @@ context deferred work.</p>
 <h3>Timers<a class="headerlink" href="#timers" title="Permalink to this headline">¶</a></h3>
 <blockquote class="admonition-timers">
 <div><p>Timers are implemented on top of the <code class="xref c c-macro docutils literal"><span class="pre">TIMER_SOFTIRQ</span></code></p>
-<p>Timer APIs:</p>
+<p>Timer API:</p>
 <ul class="simple">
 <li>initialization: <code class="xref c c-func docutils literal"><span class="pre">setup_timer()</span></code></li>
 <li>activation: <code class="xref c c-func docutils literal"><span class="pre">mod_timer()</span></code></li>

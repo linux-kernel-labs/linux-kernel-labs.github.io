@@ -143,10 +143,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#store-ascii-keys-to-buffer">3. Store ASCII keys to buffer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#reading-the-data-register">Reading the data register</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interpreting-the-scancode">Interpreting the scancode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#store-characters-to-the-buffer">Store characters to the buffer</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#store-characters-to-the-buffer">4. Store characters to the buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reading-the-buffer">4. Reading the buffer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reset-the-buffer">5. Reset the buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#kfifo">1. kfifo</a></li>
 </ul>
 </li>
 </ul>
@@ -338,7 +343,8 @@ these ports:</p>
 <p>Most of the time, port requests are done at the driver initialization
 or probe time and the port releasing is done at the removal of the
 device or module.</p>
-<p>All of the port requests can be seen from userspace via the /proc/ioports file:</p>
+<p>All of the port requests can be seen from userspace via the
+<code class="file docutils literal"><span class="pre">/proc/ioports</span></code> file:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ cat /proc/ioports
 <span class="m">0000</span>-001f : dma1
 <span class="m">0020</span>-0021 : pic1
@@ -891,27 +897,37 @@ device driver.</p>
 </div>
 <div class="section" id="request-the-i-o-ports">
 <h3>1. Request the I/O ports<a class="headerlink" href="#request-the-i-o-ports" title="Permalink to this headline">¶</a></h3>
+<p>To start with, we aim to allocate memory in the I/O space for hardware
+devices. We will see that we cannot allocate space for the keyboard
+because the designated region is already allocated. Then we will allocate
+I/O space for unused ports.</p>
 <p>The <em>kbd.c</em> file contains a skeleton for the keyboard driver. Browse
 the source code and inspect <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code>. Notice that the I/O
 ports we need are I8042_STATUS_REG and I8042_DATA_REG.</p>
-<p>Request the I/O ports int <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code> and make sure to check
-for errors and to properly clean-up in case of errors. Also add code
-to release the I/O ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
+<p>Follow the sections maked with <strong>TODO 1</strong> in the skeleton. Request the I/O
+ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code> and make sure to check for errors and to properly
+clean-up in case of errors. Also, add code to release the I/O ports in
+<code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can review the <a class="reference internal" href="#request-access-to-i-o-ports">Request access to I/O ports</a> section before
+proceeding.</p>
+</div>
 <p>Now build the module and copy it to the VM image:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 tools/labs $ make copy
 </pre></div>
 </div>
 <p>Now start the VM and insert the module:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/interrupts/kbd.ko
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# insmod skels/interrupts/kbd.ko
 kbd: loading out-of-tree module taints kernel.
 insmod: can&#39;t insert &#39;skels/interrupts/kbd.ko&#39;: Device or resource busy
 </pre></div>
 </div>
 <p>Notice that you get an error when trying to request the I/O
-ports. This is because we already have a driver that has requestedthe
-I/O ports. To validate check the /proc/ioports file for the STATUS_REG
-and DATA_REG values:</p>
+ports. This is because we already have a driver that has requested the
+I/O ports. To validate check the <code class="file docutils literal"><span class="pre">/proc/ioports</span></code> file for the
+<code class="docutils literal"><span class="pre">STATUS_REG</span></code> and <code class="docutils literal"><span class="pre">DATA_REG</span></code> values:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# cat /proc/ioports <span class="p">|</span> egrep <span class="s2">&quot;(0060|0064)&quot;</span>
 <span class="m">0060</span>-0060 : keyboard
 <span class="m">0064</span>-0064 : keyboard
@@ -930,8 +946,11 @@ find -name <span class="se">\*</span>.c <span class="p">|</span> xargs grep <spa
 <p>It looks like the I/O ports are registered by the kernel during the
 boot and we won’t be able to remove the associated module. Instead
 lets trick the kernel and register ports 0x61 and 0x65.</p>
+<p>Use the function <code class="xref c c-func docutils literal"><span class="pre">request_region`(inside</span> <span class="pre">the</span> <span class="pre">:c:func:`kbd_init()</span></code>
+function) to allocate the ports and the function <code class="xref c c-func docutils literal"><span class="pre">release_region()</span></code>
+(inside the <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code> function) to release the allocated memory.</p>
 <p>This time we can load the module and <em>/proc/ioports</em> shows that the
-owner of these ports are our module:</p>
+owner of these ports is our module:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# insmod skels/interrupts/kbd.ko
 kbd: loading out-of-tree module taints kernel.
 Driver kbd loaded
@@ -959,7 +978,7 @@ section before proceeding.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">Since we already have a driver that uses this interrupt we
 should report the interrupt as not handled (i.e. return
-<code class="xref c c-type docutils literal"><span class="pre">IRQF_NONE</span></code>) so that the original driver still has a
+<code class="xref c c-type docutils literal"><span class="pre">IRQ_NONE</span></code>) so that the original driver still has a
 chance to process it.</p>
 </div>
 <p>Then register the interrupt handler routine using
@@ -991,9 +1010,10 @@ and our driver.</p>
 <p class="last">More details about the format of the <em>/proc/interrupts</em> can
 be found in the <a class="reference internal" href="#interrupt-statistics">Interrupt statistics</a> section.</p>
 </div>
-<p>called. Compile and reload the module into the kernel. Check that the
-interrupt handling routine is called when you press the keyboard on
-the virtual machine. Also note that when you use the serial port no
+<p>Print a message inside the routine to make sure it is called. Compile
+and reload the module into the kernel. Check that the interrupt handling
+routine is called when you press the keyboard on the virtual machine,
+using :command:dmesg. Also note that when you use the serial port no
 keyboard interrupt is generated.</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
@@ -1015,23 +1035,28 @@ them in the buffer of the device</li>
 <p>Follow the sections marked <strong>TODO 3</strong> in the skeleton.</p>
 <div class="section" id="reading-the-data-register">
 <h4>Reading the data register<a class="headerlink" href="#reading-the-data-register" title="Permalink to this headline">¶</a></h4>
-<p>First, fill in the i8042_read_data() function to read the
-I8042_DATA_REG I8042_DATA_REG of the keyboard controller. The function
+<p>First, fill in the <code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> function to read the
+<code class="docutils literal"><span class="pre">I8042_DATA_REG</span></code> of the keyboard controller. The function
 just needs to return the value of the register. The value of the
 registry is also called scancode, which is what is generated at each
 keystroke.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Read the I8042_DATA_REG register using <code class="xref c c-func docutils literal"><span class="pre">inb()</span></code>.</p>
+<p class="last">Read the <code class="docutils literal"><span class="pre">I8042_DATA_REG</span></code> register using <code class="xref c c-func docutils literal"><span class="pre">inb()</span></code> and
+store the value in the local variable <code class="xref c c-type docutils literal"><span class="pre">val</span></code>.
+Revisit the <a class="reference internal" href="#accessing-i-o-ports">Accessing I/O ports</a> section.</p>
 </div>
-<p>Then print information about the keystrokes int the following format:</p>
+<p>Call the <code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> in the
+<code class="xref c c-func docutils literal"><span class="pre">kbd_interrupt_handler()</span></code> and print the value read.</p>
+<p>Print information about the keystrokes in the following format:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;IRQ:% d, scancode = 0x%x (%u,%c)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-        <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">);</span>
+   <span class="n">irq_no</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">,</span> <span class="n">scancode</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Where scancode is the value of the read register using the
-i8042_read_data() function.</p>
-<p>Notice that the scancode (reading of the read register) is not an ASCII character of the pressed key. We’ll have to understand the scancode.</p>
+<code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> function.</p>
+<p>Notice that the scancode (reading of the read register) is not an ASCII
+character of the pressed key. We’ll have to understand the scancode.</p>
 </div>
 <div class="section" id="interpreting-the-scancode">
 <h4>Interpreting the scancode<a class="headerlink" href="#interpreting-the-scancode" title="Permalink to this headline">¶</a></h4>
@@ -1133,7 +1158,7 @@ character.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">To check for press / release, use <code class="xref c c-func docutils literal"><span class="pre">is_key_press()</span></code>.
 Use <code class="xref c c-func docutils literal"><span class="pre">get_ascii()</span></code> function to get the corresponding
-ASCII code. Both functions expects the scancode.</p>
+ASCII code. Both functions expect the scancode.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1147,31 +1172,51 @@ format.</p>
 the value returned by the get_ascii() function.</p>
 </div>
 </div>
-</div>
 <div class="section" id="store-characters-to-the-buffer">
-<h3>4. Store characters to the buffer<a class="headerlink" href="#store-characters-to-the-buffer" title="Permalink to this headline">¶</a></h3>
+<h4>Store characters to the buffer<a class="headerlink" href="#store-characters-to-the-buffer" title="Permalink to this headline">¶</a></h4>
 <p>We want to collect the pressed characters (not the other keys) into
-circular a buffer that can be consumed from user space. For this step
-follow the sections marked with <strong>TODO 4</strong> in the skeleton.</p>
-<p>Implement <code class="xref c c-func docutils literal"><span class="pre">get_char()</span></code> in a similar way to <code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code>.</p>
+circular a buffer that can be consumed from user space.</p>
 <p>Update the interrupt handler to add a pressed ASCII character to the
 end of the device buffer. If the buffer is full, the character will be
 discarded.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p>To get the device data from the interrupt handler use the
-following construct:</p>
-<div class="last highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
+<p>The device buffer is the field <code class="xref c c-type docutils literal"><span class="pre">buf</span></code> in the device’s
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>. To get the device data from the interrupt handler
+use the following construct:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
 </pre></div>
 </div>
+<p class="last">The buffer’s dimension is located in <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>’s field,
+<code class="xref c c-type docutils literal"><span class="pre">count</span></code>. The <code class="xref c c-type docutils literal"><span class="pre">put_idx</span></code> and <code class="xref c c-type docutils literal"><span class="pre">get_idx</span></code> fields
+specify the next writing and reading index. Take a look at the
+<code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code> function’s implementation to observe how the data is
+added to the circular buffer.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<p class="last">Synchronize the access to the buffer and the helper
-indexes with a spinlock.</p>
+<p>Synchronize the access to the buffer and the helper
+indexes with a spinlock.
+Define the spinlock in the device struct <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>
+and initialize it in <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code>.</p>
+<p>Use the <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> functions
+to protect the buffer in the interrupt handler.</p>
+<p class="last">Revisit the <a class="reference internal" href="#locking">Locking</a> section.</p>
 </div>
-<p>In the read function copy the data from the buffer to the userspace
-buffer.</p>
+</div>
+</div>
+<div class="section" id="reading-the-buffer">
+<h3>4. Reading the buffer<a class="headerlink" href="#reading-the-buffer" title="Permalink to this headline">¶</a></h3>
+<p>In order to have access to the keylogger’s data, we have to send it to
+the user space. We will do this using the <em>/dev/kbd</em> character device. When
+reading from this device, we will get the data from the buffer in the kernel
+space, where we collected the keys pressed.</p>
+<p>For this step
+follow the sections marked with <strong>TODO 4</strong> in the <code class="xref c c-func docutils literal"><span class="pre">kbd_read()</span></code> function.</p>
+<p>Implement <code class="xref c c-func docutils literal"><span class="pre">get_char()</span></code> in a similar way to <code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code>. Be careful
+when implementing the circular buffer.</p>
+<p>In the <code class="xref c c-func docutils literal"><span class="pre">kbd_read()</span></code> function copy the data from the buffer to the
+userspace buffer.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-func docutils literal"><span class="pre">get_char()</span></code> to read a character from the buffer
@@ -1179,20 +1224,28 @@ and put_user to store it to the user buffer.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<p>In the read function Use <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
+<p>In the read function, ue <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irqrestore()</span></code> for locking.</p>
 <p class="last">Revisit the <a class="reference internal" href="#locking">Locking</a> section.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<p class="last">Do use <code class="xref c c-func docutils literal"><span class="pre">put_user()</span></code> while holding the lock, as
-userpace access is not permitted from atomic contexts.</p>
+<p>We cannot use <code class="xref c c-func docutils literal"><span class="pre">put_user()</span></code> or <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>
+while holding the lock, as userpace access is not permitted from
+atomic contexts.</p>
+<p class="last">For more info, read the <span class="xref std std-ref">Access to the address space of the
+process section</span> in the
+previous lab.</p>
 </div>
 <p>For testing, you will need to create the <em>/dev/kbd</em> character device
 driver using the mknod before reading from it. The device master and
 minor are defined as <code class="docutils literal"><span class="pre">KBD_MAJOR</span></code> and <code class="docutils literal"><span class="pre">KBD_MINOR</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">mknod</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span> <span class="n">c</span> <span class="mi">42</span> <span class="mi">0</span>
-<span class="n">cat</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span>
+</pre></div>
+</div>
+<p>Build, copy and boot the virtual machine and load the module. Test it
+using the command:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span>
 </pre></div>
 </div>
 </div>
@@ -1201,6 +1254,39 @@ minor are defined as <code class="docutils literal"><span class="pre">KBD_MAJOR<
 <p>Reset the buffer if the device is written to. For this step follow the
 sections marked with <strong>TODO 5</strong> in the skeleton.</p>
 <p>Implement <code class="xref c c-func docutils literal"><span class="pre">reset_buffer()</span></code> and add the write operation to <em>kbd_fops</em>.</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p>In the write function Use <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">spin_unlock_irqrestore()</span></code> for locking when resetting the
+buffer.</p>
+<p class="last">Revisit the <a class="reference internal" href="#locking">Locking</a> section.</p>
+</div>
+<p>For testing, you will need to create the <em>/dev/kbd</em> character device
+driver using the mknod before reading from it. The device master and
+minor are defined as <code class="docutils literal"><span class="pre">KBD_MAJOR</span></code> and <code class="docutils literal"><span class="pre">KBD_MINOR</span></code>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">mknod</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span> <span class="n">c</span> <span class="mi">42</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Build, copy and boot the virtual machine and load the module.
+Test it using the command:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">kbd</span>
+</pre></div>
+</div>
+<p>Press some keys, then run the command <strong class="command">echo &quot;clear&quot; &gt; /dev/kbd</strong>.
+Check the buffer’s content again. It should be reset.</p>
+</div>
+</div>
+<div class="section" id="extra-exercises">
+<h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kfifo">
+<h3>1. kfifo<a class="headerlink" href="#kfifo" title="Permalink to this headline">¶</a></h3>
+<p>Implement a keylogger using the
+<a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/include/linux/kfifo.h">kfifo API</a>.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Follow the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/samples/kfifo">API call examples from the kernel code</a>.
+For example, the file <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/samples/kfifo/bytestream-example.c">bytestream-examples.c</a>.</p>
+</div>
 </div>
 </div>
 </div>

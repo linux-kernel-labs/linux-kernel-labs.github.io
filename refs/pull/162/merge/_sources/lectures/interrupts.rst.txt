@@ -85,7 +85,7 @@ A trap is a type of exception that is reported after the execution of the
 instruction in which the exception was detected. The saved EIP is the address
 of the instruction after the instuction that caused the trap. (e.g debug trap).
 
-Hardware concepts
+Hardware Concepts
 =================
 
 Programmable Interrupt Controller
@@ -177,10 +177,10 @@ I/O APIC is used to distribute IRQ from external devices to CPU cores.
 
 After discussing the hardware, now let's see how the processor handles an interrupt.
 
-Interrupt control
+Interrupt Control
 -----------------
 
-In order to synchronize the access to shared data between the interrupt handler
+In order to synchronize access to shared data between the interrupt handler
 and other potential concurrent activities such as driver initialization or
 driver data processing, it is often required to enable and disable interrupts in
 a controlled fashion.
@@ -436,7 +436,7 @@ To resume the execution after an interrupt the following sequence is used (x86):
    * pop the eror code (in case of an abort)
    * call IRET
 
-     * pops values from the stack and restore the follwing register: CS, EIP, EFLAGS
+     * pops values from the stack and restore the following register: CS, EIP, EFLAGS
      * if privilege level changed returns to the old stack and old privilege level
 
 
@@ -643,7 +643,7 @@ and all of the rest of pending soft irqs will be run from the context of this
 kernel thread.
 
 Soft irqs usage is restricted, they are use by a handful of subsystems that have
-low latency requirements. At the moment this is the full list of soft irqs:
+low latency requirements. For 4.19 this is the full list of soft irqs:
 
 .. slide:: Types of soft IRQ
    :inline-contents: True
@@ -654,8 +654,11 @@ low latency requirements. At the moment this is the full list of soft irqs:
     * NET_TX_SOFTIRQ
     * NET_RX_SOFTIRQ
     * BLOCK_SOFTIRQ
+    * IRQ_POLL_SOFTIRQ
     * TASKLET_SOFTIRQ
-    * HRTIMER_SOFTIRQ
+    * SCHED_SOFTIRQ
+    * HRTIMER_SOFTIRQ,
+    * RCU_SOFTIRQ
 
 Tasklets
 --------
@@ -664,10 +667,10 @@ Tasklets
    :inline-contents: True
    :level: 2
 
-   Tasklets are a dynamic type (not limited to a fixed number) of interrupt
-   context deferred work.
+   Tasklets are a dynamic type (not limited to a fixed number) of
+   deferred work running in interrupt context.
 
-   Tasklets APIs:
+   Tasklets API:
 
     * initialization: :c:func:`tasklet_init`
     * activation: :c:func:`tasklet_schedule`
@@ -690,7 +693,7 @@ Workqueues
 
    They are implemented on top of kernel threads.
 
-   Workqueues APIs:
+   Workqueues API:
 
     * init: :c:macro:`INIT_WORK`
     * activation: :c:func:`schedule_work`
@@ -704,7 +707,7 @@ Timers
 
     Timers are implemented on top of the :c:macro:`TIMER_SOFTIRQ`
 
-    Timer APIs:
+    Timer API:
 
     * initialization: :c:func:`setup_timer`
     * activation: :c:func:`mod_timer`

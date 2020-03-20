@@ -247,7 +247,7 @@ instructions:</li>
 <ul class="simple">
 <li>pop the eror code (in case of an abort)</li>
 <li>call IRET<ul>
-<li>pops values from the stack and restore the follwing register: CS, EIP, EFLAGS</li>
+<li>pops values from the stack and restore the following register: CS, EIP, EFLAGS</li>
 <li>if privilege level changed returns to the old stack and old privilege level</li>
 </ul>
 </li>
@@ -390,8 +390,11 @@ one level of interrupt nesting is allowed</li>
 <li>NET_TX_SOFTIRQ</li>
 <li>NET_RX_SOFTIRQ</li>
 <li>BLOCK_SOFTIRQ</li>
+<li>IRQ_POLL_SOFTIRQ</li>
 <li>TASKLET_SOFTIRQ</li>
-<li>HRTIMER_SOFTIRQ</li>
+<li>SCHED_SOFTIRQ</li>
+<li>HRTIMER_SOFTIRQ,</li>
+<li>RCU_SOFTIRQ</li>
 </ul>
 </div></blockquote>
 
@@ -403,9 +406,9 @@ one level of interrupt nesting is allowed</li>
 
 <h2>Tasklets</h2>
 
-<p>Tasklets are a dynamic type (not limited to a fixed number) of interrupt
-context deferred work.</p>
-<p>Tasklets APIs:</p>
+<p>Tasklets are a dynamic type (not limited to a fixed number) of
+deferred work running in interrupt context.</p>
+<p>Tasklets API:</p>
 <blockquote>
 <div><ul class="simple">
 <li>initialization: <code class="xref c c-func docutils literal"><span class="pre">tasklet_init()</span></code></li>
@@ -427,7 +430,7 @@ context deferred work.</p>
 
 <p>Workqueues are a type of defer work that runs in process context.</p>
 <p>They are implemented on top of kernel threads.</p>
-<p>Workqueues APIs:</p>
+<p>Workqueues API:</p>
 <blockquote>
 <div><ul class="simple">
 <li>init: <code class="xref c c-macro docutils literal"><span class="pre">INIT_WORK</span></code></li>
@@ -445,7 +448,7 @@ context deferred work.</p>
 
 <blockquote>
 <div><p>Timers are implemented on top of the <code class="xref c c-macro docutils literal"><span class="pre">TIMER_SOFTIRQ</span></code></p>
-<p>Timer APIs:</p>
+<p>Timer API:</p>
 <ul class="simple">
 <li>initialization: <code class="xref c c-func docutils literal"><span class="pre">setup_timer()</span></code></li>
 <li>activation: <code class="xref c c-func docutils literal"><span class="pre">mod_timer()</span></code></li>
