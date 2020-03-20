@@ -689,7 +689,7 @@ Workqueues
    :inline-contents: True
    :level: 2
 
-   Workqueues are a type of defer work that runs in process context.
+   Workqueues are a type of deferred work that runs in process context.
 
    They are implemented on top of kernel threads.
 
