@@ -7,7 +7,7 @@
 | - ACK IRQ      +-----+   |                 |          |   deferred     |
 |                |     +---> - IRQ disabled  |          +----------------+
 +----------------+         | - device handler|          |                |
-                           |                 +-----+    | - IRQ enabled  |
+                           | - EOI IRQ       +-----+    | - IRQ enabled  |
                            +-----------------+     +----> - execute later|
                                                         |                |
                                                         +----------------+

@@ -107,18 +107,30 @@
 <li class="toctree-l3"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#hardware">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hardware-concepts">Hardware Concepts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#advanced-programmable-interrupt-controller">Advanced Programmable Interrupt Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interrupt-control">Interrupt Control</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-specific-interrupt-handling-in-linux">Architecture specific interrupt handling in Linux</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#interrupt-handler-address">Interrupt handler address</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#interrupt-handler-execution">Interrupt handler execution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#returning-from-an-interrupt">Returning from an interrupt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-an-interrupt-request">Handling an interrupt request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#returning-from-an-interrupt-handler">Returning from an interrupt handler</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#deferrable-actions">Deferrable actions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generic-interrupt-handling-in-linux">Generic interrupt handling in Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interrupt-context">Interrupt context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deferrable-actions">Deferrable actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#soft-irqs">Soft IRQs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tasklets">Tasklets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workqueues">Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timers">Timers</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
@@ -271,8 +283,8 @@ instruction in which the exception was detected. The saved EIP is the address
 of the instruction after the instuction that caused the trap. (e.g debug trap).</p>
 </div>
 </div>
-<div class="section" id="hardware">
-<h2>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="hardware-concepts">
+<h2>Hardware Concepts<a class="headerlink" href="#hardware-concepts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="programmable-interrupt-controller">
 <h3>Programmable Interrupt Controller<a class="headerlink" href="#programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
 <img alt="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" class="admonition-hardware-pic" src="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" />
@@ -302,13 +314,25 @@ interrupt handlers are always executed serially.</p>
 from locally connected devices like timers or thermals sensors.</p>
 <p>I/O APIC is used to distribute IRQ from external devices to CPU cores.</p>
 <p>After discussing the hardware, now let’s see how the processor handles an interrupt.</p>
+</div>
+<div class="section" id="interrupt-control">
+<h3>Interrupt Control<a class="headerlink" href="#interrupt-control" title="Permalink to this headline">¶</a></h3>
+<p>In order to synchronize access to shared data between the interrupt handler
+and other potential concurrent activities such as driver initialization or
+driver data processing, it is often required to enable and disable interrupts in
+a controlled fashion.</p>
+<p>This can be accomplished at several levels:</p>
 <ul class="admonition-enabling-disabling-the-interrupts simple">
+<li>at the device level<ul>
+<li>by programming the device control registers</li>
+</ul>
+</li>
 <li>at the PIC level<ul>
-<li>programming the PIC</li>
 <li>PIC can be programmed to disable a given IRQ line</li>
 </ul>
 </li>
-<li>at the CPU level</li>
+<li>at the CPU level; for example, on x86 one can use the following
+instructions:</li>
 </ul>
 <blockquote>
 <div><ul class="simple">
@@ -317,6 +341,10 @@ from locally connected devices like timers or thermals sensors.</p>
 </ul>
 </div></blockquote>
 </div>
+</div>
+<div class="section" id="architecture-specific-interrupt-handling-in-linux">
+<h2>Architecture specific interrupt handling in Linux<a class="headerlink" href="#architecture-specific-interrupt-handling-in-linux" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will discuss how Linux handles interrupts for the x86 architecture.</p>
 <div class="section" id="interrupt-descriptor-table">
 <h3>Interrupt Descriptor Table<a class="headerlink" href="#interrupt-descriptor-table" title="Permalink to this headline">¶</a></h3>
 <p>The interrupt descriptor table (IDT) associates each interrupt or exception
@@ -376,10 +404,12 @@ of exceptions also cause an error code to be pushed on the stack to help
 debug the exception.</p>
 <img alt="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" />
 </div>
-<div class="section" id="interrupt-handler-execution">
-<h3>Interrupt handler execution<a class="headerlink" href="#interrupt-handler-execution" title="Permalink to this headline">¶</a></h3>
-<ul class="admonition-interrupt-execution">
-<li><p class="first">check current privilege level</p>
+<div class="section" id="handling-an-interrupt-request">
+<h3>Handling an interrupt request<a class="headerlink" href="#handling-an-interrupt-request" title="Permalink to this headline">¶</a></h3>
+<p>After an interrupt request has been generated the processor runs a sequence of
+events that eventually ends up with running the kernel interrupt handler:</p>
+<ul class="admonition-handling-an-interrupt-request">
+<li><p class="first">CPU checks the current privilege level</p>
 </li>
 <li><p class="first">if need to change privilege level</p>
 <blockquote>
@@ -393,49 +423,106 @@ debug the exception.</p>
 </li>
 <li><p class="first">save error code on stack in case of an abort</p>
 </li>
-<li><p class="first">execute interrupt handler</p>
+<li><p class="first">execute the kernel interrupt handler</p>
 </li>
 </ul>
 </div>
-<div class="section" id="returning-from-an-interrupt">
-<h3>Returning from an interrupt<a class="headerlink" href="#returning-from-an-interrupt" title="Permalink to this headline">¶</a></h3>
-<p>IRET is used to from an interrupt handler. IRET is similar with RET except
-that IRET increments ESP by extra four bytes (because of the flags on stack)
-and moves the saved flags into EFLAGS register.</p>
+<div class="section" id="returning-from-an-interrupt-handler">
+<h3>Returning from an interrupt handler<a class="headerlink" href="#returning-from-an-interrupt-handler" title="Permalink to this headline">¶</a></h3>
+<p>Most architectures offers special instructions to clean-up the stack and resume
+the execution after the interrupt handler has been executed. On x86 IRET is used
+to return from an interrupt handler. IRET is similar with RET except that IRET
+increments ESP by extra four bytes (because of the flags on stack) and moves the
+saved flags into EFLAGS register.</p>
+<p>To resume the execution after an interrupt the following sequence is used (x86):</p>
 <ul class="admonition-returning-from-an-interrupt simple">
 <li>pop the eror code (in case of an abort)</li>
-<li>use IRET<ul>
-<li>pops CS, EIP, EFLAGS</li>
+<li>call IRET<ul>
+<li>pops values from the stack and restore the following register: CS, EIP, EFLAGS</li>
 <li>if privilege level changed returns to the old stack and old privilege level</li>
 </ul>
 </li>
 </ul>
 </div>
+</div>
+<div class="section" id="generic-interrupt-handling-in-linux">
+<h2>Generic interrupt handling in Linux<a class="headerlink" href="#generic-interrupt-handling-in-linux" title="Permalink to this headline">¶</a></h2>
+<p>In Linux the interrupt handling is done in three phases: critical, immediate and
+deferred.</p>
+<p>In the first phase the kernel will run the generic interrupt handler that
+determines the interrupt number, the interrupt handler for this particular
+interrupt and the interrupt controller. At this point any timing critical
+actions will also be performed (e.g. acknowledge the interrupt at the interrupt
+controller level). Local processor interrupts are disabled for the duration of
+this phase and continue to be disabled in the next phase.</p>
+<p>In the second phase all of the device drivers handler associated with this
+interrupt will be executed <a class="footnote-reference" href="#f1" id="id1">[1]</a>. At the end of this phase the interrupt controller’s
+“end of interrupt” method is called to allow the interrupt controller to
+reassert this interrupt. The local processor interrupts are enabled at this
+point.</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Note that it is possible that one interrupt is associated with multiple
+devices and in this case it is said that the interrupt is
+shared. Usually, when using shared interrupts it is the responsibility
+of the device driver to determine if the interrupt is target to it’s
+device or not.</td></tr>
+</tbody>
+</table>
+<p>Finally, in the last phase of interrupt handling interrupt context deferrable
+actions will be run. These are also sometimes known as “bottom half” of the
+interrupt (the upper half being the part of the interrupt handling that runs
+with interrupts disabled). At this point interrupts are enabled on the local
+processor.</p>
+<img alt="../_images/ditaa-eb56c6fa9d7ffb1693268ef2ca9de9d78a9868a7.png" class="admonition-interrupt-handling-in-linux" src="../_images/ditaa-eb56c6fa9d7ffb1693268ef2ca9de9d78a9868a7.png" />
 <div class="section" id="nested-interrupts-and-exceptions">
 <h3>Nested interrupts and exceptions<a class="headerlink" href="#nested-interrupts-and-exceptions" title="Permalink to this headline">¶</a></h3>
-<p>An interrupt handler may preempt both other interrupt handlers and exception handlers.
-On the other hand, an exception handler never preempts an interrupt handler.</p>
-<img alt="../_images/ditaa-e64238e31c9d1500c15e6d92c6a543aef95515aa.png" class="admonition-interrupt-exception-nesting" src="../_images/ditaa-e64238e31c9d1500c15e6d92c6a543aef95515aa.png" />
+<p>Nesting interrupts is permitted on many architectures. Some architecture define
+interrupt levels that allow preemption of an interrupt only if the pending
+interrupt has a greater priority then the current (settable) level (e.g see
+ARM’s priority mask).</p>
+<p>In order to support as many architectures as possible, Linux has a more
+restrictive interrupt nesting implementation:</p>
+<ul class="admonition-irq-nesting-in-linux simple">
+<li>an exception (e.g. page fault, system call) can not preempt an interrupt;
+if that occurs it is considered a bug</li>
+<li>an interrupt can preempt an exception or other interrupts; however, only
+one level of interrupt nesting is allowed</li>
+</ul>
+<p>The diagram below shows the possible nesting scenarios:</p>
+<img alt="../_images/ditaa-8bab5b1e954e998c106f4a97d90ab30c70943cb4.png" class="admonition-interrupt-exception-nesting" src="../_images/ditaa-8bab5b1e954e998c106f4a97d90ab30c70943cb4.png" />
+</div>
+<div class="section" id="interrupt-context">
+<h3>Interrupt context<a class="headerlink" href="#interrupt-context" title="Permalink to this headline">¶</a></h3>
+<p>While an interrupt is handled (from the time the CPU jumps to the interrupt
+handler until the interrupt handler returns - e.g.  IRET is issued) it is said
+that code runs in “interrupt context”.</p>
+<p>Code that runs in interrupt context has the following properties:</p>
 <blockquote class="admonition-interrupt-context">
 <div><ul class="simple">
-<li>runs as a result of an IRQ (not of an exception)</li>
-<li>there is no ‘process’ context associated</li>
-<li>can’t trigger a context switch<ul>
-<li>no sleep</li>
-<li>no schedule</li>
-<li>no user memory access</li>
-</ul>
-</li>
+<li>it runs as a result of an IRQ (not of an exception)</li>
+<li>there is no well defined process context associated</li>
+<li>not allowed to trigger a context switch (no sleep, schedule, or user memory access)</li>
 </ul>
 </div></blockquote>
-<img alt="../_images/ditaa-5a402cd7f81a0ddbe1a435bc3ab7949828f731f0.png" class="admonition-interrupt-handling" src="../_images/ditaa-5a402cd7f81a0ddbe1a435bc3ab7949828f731f0.png" />
-</div>
 </div>
 <div class="section" id="deferrable-actions">
-<h2>Deferrable actions<a class="headerlink" href="#deferrable-actions" title="Permalink to this headline">¶</a></h2>
+<h3>Deferrable actions<a class="headerlink" href="#deferrable-actions" title="Permalink to this headline">¶</a></h3>
+<p>Deferrable actions are used to run callback functions at a later time. If
+deferrable actions scheduled from an interrupt handler, the associated callback
+function will run after the interrupt handler has completed.</p>
+<p>There are two large categories of deferrable actions: those that run in
+interrupt context and those that run in process context.</p>
+<p>The purpose of interrupt context deferrable actions is to avoid doing too much
+work in the interrupt handler function. Running for too long with interrupts
+disabled can have undesired effects such as increased latency or poor system
+performance due to missing other interrupts (e.g. dropping network packets
+because the CPU did not react in time to dequeue packets from the network
+interface and the network card buffer is full).</p>
+<p>In Linux there are three types of deferrable actions:</p>
 <blockquote class="admonition-deferrable-actions-in-linux">
 <div><ul class="simple">
-<li>implemented using deferrable functions</li>
 <li>softIRQ<ul>
 <li>runs in interrupt context</li>
 <li>statically allocated</li>
@@ -454,18 +541,42 @@ On the other hand, an exception handler never preempts an interrupt handler.</p>
 </li>
 </ul>
 </div></blockquote>
-<blockquote class="admonition-soft-irq">
+<p>Deferrable actions have APIs to: <strong>initialize</strong> an instance, <strong>activate</strong> or
+<strong>schedule</strong> the action and <strong>mask/disable</strong> and <strong>unmask/enable</strong> the execution
+of the callback function. The later is used for synchronization purposes between
+the callback function and other contexts.</p>
+</div>
+<div class="section" id="soft-irqs">
+<h3>Soft IRQs<a class="headerlink" href="#soft-irqs" title="Permalink to this headline">¶</a></h3>
+<p>Soft IRQs is the term used for the low level mechanism that implements deferring
+work from interrupt handlers but that still runs in interrupt context.</p>
+<blockquote class="admonition-soft-irqs">
+<div><p>Soft IRQ APIs:</p>
+<blockquote>
 <div><ul class="simple">
-<li>init: open_softirq()</li>
-<li>activation: raise_softirq()</li>
-<li>execution: do_softirq()</li>
-<li>it runs<ul>
-<li>after an interrupt handler</li>
-<li>from the ksoftirqd kernel thread</li>
-</ul>
-</li>
+<li>initialize: <code class="xref c c-func docutils literal"><span class="pre">open_softirq()</span></code></li>
+<li>activation: <code class="xref c c-func docutils literal"><span class="pre">raise_softirq()</span></code></li>
+<li>masking: <code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code></li>
 </ul>
 </div></blockquote>
+<p>Once activated, the callback function <code class="xref c c-func docutils literal"><span class="pre">do_softirq()</span></code> runs either:</p>
+<blockquote>
+<div><ul class="simple">
+<li>after an interrupt handler or</li>
+<li>from the ksoftirqd kernel thread</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<span class="admonition-ksoftirqd"></span><p>Since softirqs can reschedule themselves or other interrupts can occur that
+reschedules them, they can potentially lead to (temporary) process starvation if
+checks are not put into place. Currently, the Linux kernel does not allow
+running soft irqs for more than <code class="xref c c-macro docutils literal"><span class="pre">MAX_SOFTIRQ_TIME</span></code> or rescheduling for
+more than <code class="xref c c-macro docutils literal"><span class="pre">MAX_SOFTIRQ_RESTART</span></code> consecutive times.</p>
+<p>Once these limits are reached a special kernel thread, <strong>ksoftirqd</strong> is wake-up
+and all of the rest of pending soft irqs will be run from the context of this
+kernel thread.</p>
+<p>Soft irqs usage is restricted, they are use by a handful of subsystems that have
+low latency requirements. For 4.19 this is the full list of soft irqs:</p>
 <blockquote class="admonition-types-of-soft-irq">
 <div><ul class="simple">
 <li>HI_SOFTIRQ</li>
@@ -473,45 +584,55 @@ On the other hand, an exception handler never preempts an interrupt handler.</p>
 <li>NET_TX_SOFTIRQ</li>
 <li>NET_RX_SOFTIRQ</li>
 <li>BLOCK_SOFTIRQ</li>
+<li>IRQ_POLL_SOFTIRQ</li>
 <li>TASKLET_SOFTIRQ</li>
-<li>HRTIMER_SOFTIRQ</li>
+<li>SCHED_SOFTIRQ</li>
+<li>HRTIMER_SOFTIRQ,</li>
+<li>RCU_SOFTIRQ</li>
 </ul>
 </div></blockquote>
-<blockquote class="admonition-ksoftirqd">
+</div>
+<div class="section" id="tasklets">
+<h3>Tasklets<a class="headerlink" href="#tasklets" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-tasklets">Tasklets are a dynamic type (not limited to a fixed number) of
+deferred work running in interrupt context.</p>
+<p>Tasklets API:</p>
+<blockquote>
 <div><ul class="simple">
-<li>minimum priority kernel thread</li>
-<li>runs self raised softirqs</li>
-<li>trade-off between softirqs and process/kernel threads</li>
+<li>initialization: <code class="xref c c-func docutils literal"><span class="pre">tasklet_init()</span></code></li>
+<li>activation: <code class="xref c c-func docutils literal"><span class="pre">tasklet_schedule()</span></code></li>
+<li>masking: <code class="xref c c-func docutils literal"><span class="pre">tasklet_disable()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">tasklet_enable()</span></code></li>
 </ul>
 </div></blockquote>
-<blockquote class="admonition-tasklets">
+<p>Tasklets are implemented on top of two dedicated softirqs:
+<code class="xref c c-macro docutils literal"><span class="pre">TASKLET_SOFITIRQ</span></code> and <code class="xref c c-macro docutils literal"><span class="pre">HI_SOFTIRQ</span></code></p>
+<p>Tasklets are also serialized, i.e. the same tasklet can only execute on one processor.</p>
+</div>
+<div class="section" id="workqueues">
+<h3>Workqueues<a class="headerlink" href="#workqueues" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p class="admonition-workqueues">Workqueues are a type of deferred work that runs in process context.</p>
+<p>They are implemented on top of kernel threads.</p>
+<p>Workqueues API:</p>
+<blockquote>
 <div><ul class="simple">
-<li>implemented on top of soft IRQ<ul>
-<li>TASKLET_SOFITIRQ, HI_SOFTIRQ</li>
-</ul>
-</li>
-<li>init: tasklet_init</li>
-<li>activation: tasklet_schedule</li>
-<li>masking: tasklet_disable(), tasklet_enable()</li>
+<li>init: <code class="xref c c-macro docutils literal"><span class="pre">INIT_WORK</span></code></li>
+<li>activation: <code class="xref c c-func docutils literal"><span class="pre">schedule_work()</span></code></li>
 </ul>
 </div></blockquote>
-<blockquote class="admonition-workqueues">
-<div><ul class="simple">
-<li>implemented on top of kernel threads<ul>
-<li>TASKLET_SOFITIRQ, HI_SOFTIRQ</li>
-</ul>
-</li>
-<li>init: INIT_WORK</li>
-<li>activation: schedule_work()</li>
-</ul>
 </div></blockquote>
+</div>
+<div class="section" id="timers">
+<h3>Timers<a class="headerlink" href="#timers" title="Permalink to this headline">¶</a></h3>
 <blockquote class="admonition-timers">
-<div><ul class="simple">
-<li>implemented on top of TIMER_SOFTIRQ</li>
-<li>init: setup_timer</li>
-<li>activation: mod_timer</li>
+<div><p>Timers are implemented on top of the <code class="xref c c-macro docutils literal"><span class="pre">TIMER_SOFTIRQ</span></code></p>
+<p>Timer API:</p>
+<ul class="simple">
+<li>initialization: <code class="xref c c-func docutils literal"><span class="pre">setup_timer()</span></code></li>
+<li>activation: <code class="xref c c-func docutils literal"><span class="pre">mod_timer()</span></code></li>
 </ul>
 </div></blockquote>
+</div>
 </div>
 </div>
 
