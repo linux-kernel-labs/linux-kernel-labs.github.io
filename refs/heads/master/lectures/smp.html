@@ -314,18 +314,14 @@ has interrupts as the only source of concurrency.</p>
 <p>In certain circumstances we can avoid race conditions by using atomic
 operations that are provided by hardware. Linux provides a unified API
 to access atomic operations:</p>
-<ul class="admonition-atomic-operations">
-<li><p class="first">integer based:</p>
-<ul class="simple">
-<li>simple: <code class="xref c c-func docutils literal"><span class="pre">atomic_inc()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_dec()</span></code>,</li>
-</ul>
-<p><code class="xref c c-func docutils literal"><span class="pre">atomic_add()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_sub()</span></code></p>
-<ul class="simple">
+<ul class="admonition-atomic-operations simple">
+<li>integer based:<ul>
+<li>simple: <code class="xref c c-func docutils literal"><span class="pre">atomic_inc()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_dec()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">atomic_add()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_sub()</span></code></li>
 <li>conditional: <code class="xref c c-func docutils literal"><span class="pre">atomic_dec_and_test()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_sub_and_test()</span></code></li>
 </ul>
 </li>
-<li><p class="first">bit based:</p>
-<ul class="simple">
+<li>bit based:<ul>
 <li>simple: <code class="xref c c-func docutils literal"><span class="pre">test_bit()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">set_bit()</span></code>,
 <code class="xref c c-func docutils literal"><span class="pre">change_bit()</span></code></li>
 <li>conditional: <code class="xref c c-func docutils literal"><span class="pre">test_and_set_bit()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">test_and_clear_bit()</span></code>,
@@ -389,7 +385,8 @@ architecture independent APIs to disable and enable interrupts:</p>
 
 <span class="cp">#define local_irq_save(flags) \</span>
 <span class="cp">    asm volatile (&quot;pushf ; pop %0&quot; :&quot;=g&quot; (flags)</span>
-                  <span class="o">:</span> <span class="cm">/* no input */</span><span class="o">:</span> <span class="s">&quot;memory&quot;</span><span class="p">)</span>
+                  <span class="o">:</span> <span class="cm">/* no input */</span><span class="o">:</span> <span class="s">&quot;memory&quot;</span><span class="p">)</span> \
+    <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&quot;cli&quot;</span><span class="o">:</span> <span class="o">:</span> <span class="o">:</span><span class="s">&quot;memory&quot;</span><span class="p">)</span>
 
 <span class="cp">#define local_irq_restore(flags) \</span>
 <span class="cp">    asm volatile (&quot;push %0 ; popf&quot;</span>
@@ -425,8 +422,12 @@ spin_unlock:
     mov [my_lock], 0
 </pre></div>
 </div>
-<p><strong>bts</strong> - bit test and set; it copies the src bit from the dts
-memory address to the carry flag and then sets it</p>
+<p><strong>bts dts, src</strong> - bit test and set; it copies the src bit from the dts
+memory address to the carry flag and then sets it:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">CF</span> <span class="o">&lt;-</span> <span class="n">dts</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+<span class="n">dts</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="mi">1</span>
+</pre></div>
+</div>
 <p>As it can be seen, the spin lock uses an atomic instruction to make
 sure that only one core can enter the critical section. If there are
 multiple cores trying to enter they will continuously “spin” until the
@@ -566,7 +567,8 @@ to add a small delay (proportional with the memory bus frequency) to
 reduce power consumption.</p>
 <p>A similar implementation with support for fairness (the CPU cores are
 allowed in the critical section based on the time of arrival) is used
-in the Linux kernel (the ticket spin lock) for many architectures.</p>
+in the Linux kernel (the <a class="reference external" href="https://lwn.net/Articles/267968/">ticket spin lock</a>)
+for many architectures.</p>
 <p>However, for the x86 architecture, the current spin lock
 implementation uses a queued spin lock where the CPU cores spin on
 different locks (hopefully distributed in different cache lines) to
@@ -617,17 +619,15 @@ context running on different processors</li>
 softirqs, tasklets or timers and while disabling interrupts might
 work, it is recommended to use dedicated APIs:</p>
 <ul class="admonition-bottom-half-synchronization-for-smp simple">
-<li>In process context use <code class="xref c c-func docutils literal"><span class="pre">spin_lock_bh()</span></code> (which combines</li>
-</ul>
-<p><code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code>) and
+<li>In process context use <code class="xref c c-func docutils literal"><span class="pre">spin_lock_bh()</span></code> (which combines
+<code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code>) and
 <code class="xref c c-func docutils literal"><span class="pre">spin_unlock_bh()</span></code> (which combines <code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> and
-<code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code>)</p>
-<ul class="simple">
-<li>In bottom half context use: <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code> and</li>
-</ul>
-<p><code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> (or <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code>)</li>
+<li>In bottom half context use: <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> (or <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqrestore()</span></code> if sharing data with interrupt
-handlers)</p>
+handlers)</li>
+</ul>
 <p>As mentioned before, another source of concurrency in the Linux kernel
 can be other processes, due to preemption.</p>
 <p class="admonition-preemption">&nbsp;</p>
@@ -880,7 +880,7 @@ readers won’t affect the quiescent cycle.</li>
 <p>As an example, lets take a look on how to delete an element from a
 list using RCU:</p>
 <p class="admonition-rcu-list-delete">&nbsp;</p>
-<img alt="../_images/ditaa-d4920f2ac4d57d722b14d5a539d15f5aea4db17d.png" src="../_images/ditaa-d4920f2ac4d57d722b14d5a539d15f5aea4db17d.png" />
+<img alt="../_images/ditaa-353c3d23d47a5252f128d20968eeaacd725737a6.png" src="../_images/ditaa-353c3d23d47a5252f128d20968eeaacd725737a6.png" />
 <p>In the first step it can be seen that while readers traverse the list
 all elements are referenced. In step two a writer removes
 element B. Reclamation is postponed since there are still readers that
