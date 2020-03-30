@@ -721,7 +721,7 @@ all read operation before the barrier are complete before
 executing the first instruction after the barrier</li>
 <li>A write barrier (<code class="xref c c-func docutils literal"><span class="pre">wmb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_wmb()</span></code>) is used to
 make sure that no write operation crosses the barrier</li>
-<li>A simple barrier (<code class="xref c c-func docutils literal"><span class="pre">wmb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_wmb()</span></code>) is used
+<li>A simple barrier (<code class="xref c c-func docutils literal"><span class="pre">mb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_mb()</span></code>) is used
 to make sure that no write or read operation crosses the barrier</li>
 </ul>
 
