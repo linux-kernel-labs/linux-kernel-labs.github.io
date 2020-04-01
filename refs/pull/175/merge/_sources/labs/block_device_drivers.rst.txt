@@ -921,7 +921,7 @@ Follow the comments marked with **TODO 2**. Use the
 
 .. hint:: Review the `Register a disk`_ and `Process a request`_ sections.
 
-Fill in the :c:func:`my_block_request` function to processes the request queue
+Fill in the :c:func:`my_block_request` function to process the request queue
 without actually processing your request: display the "request received" message
 and the following information: start sector, total size, data size from the
 current :c:type:`struct bio` structure, direction. To validate a request type,
@@ -949,7 +949,7 @@ To generate writing requests, use the command:
 
    echo "abc"> /dev/myblock
 
-Notice that a write request is created preceded by a read request. The request
+Notice that a write request is preceded by a read request. The request
 is done to read the block from the disk and "update" its content with the
 data provided by the user, without overwriting the rest. After reading and
 updating, writing takes place.
@@ -996,7 +996,7 @@ using the command:
    ./ram-disk-test
 
 There is no need to insert the module into the kernel, it will be inserted by
-the test command.
+the ``ram-disk-test`` command.
 
 Some tests may fail because of lack of synchronization between the transmitted
 data (flush).

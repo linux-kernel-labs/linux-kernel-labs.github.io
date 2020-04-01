@@ -1117,7 +1117,7 @@ the <code class="file docutils literal"><span class="pre">ram-disk.c</span></cod
 <p class="first admonition-title">Hint</p>
 <p class="last">Review the <a class="reference internal" href="#register-a-disk">Register a disk</a> and <a class="reference internal" href="#process-a-request">Process a request</a> sections.</p>
 </div>
-<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to processes the request queue
+<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to process the request queue
 without actually processing your request: display the “request received” message
 and the following information: start sector, total size, data size from the
 current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, direction. To validate a request type,
@@ -1141,7 +1141,7 @@ using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;abc&quot;</span>&gt; /dev/myblock
 </pre></div>
 </div>
-<p>Notice that a write request is created preceded by a read request. The request
+<p>Notice that a write request is preceded by a read request. The request
 is done to read the block from the disk and “update” its content with the
 data provided by the user, without overwriting the rest. After reading and
 updating, writing takes place.</p>
@@ -1192,7 +1192,7 @@ using the command:</p>
 </pre></div>
 </div>
 <p>There is no need to insert the module into the kernel, it will be inserted by
-the test command.</p>
+the <code class="docutils literal"><span class="pre">ram-disk-test</span></code> command.</p>
 <p>Some tests may fail because of lack of synchronization between the transmitted
 data (flush).</p>
 </div>
