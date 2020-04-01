@@ -1086,7 +1086,7 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 <h3>1. Block device<a class="headerlink" href="#block-device" title="Permalink to this headline">¶</a></h3>
 <p>Create a kernel module that allows you to register or deregister a block device.
 Start from the files in the <code class="file docutils literal"><span class="pre">1-2-3-6-ram-disk/kernel</span></code> directory in the
-labs task archive.</p>
+lab skeleton.</p>
 <p>Follow the comments marked with <strong>TODO 1</strong> in the laboratory skeleton. Use the
 existing macrodefinitions (<code class="xref c c-macro docutils literal"><span class="pre">MY_BLOCK_MAJOR</span></code>,
 <code class="xref c c-macro docutils literal"><span class="pre">MY_BLKDEV_NAME</span></code>). Check the value returned by the register function,
@@ -1102,7 +1102,7 @@ You will see a device with major 240.</p>
 </div>
 <p>Change the <code class="xref c c-macro docutils literal"><span class="pre">MY_BLOCK_MAJOR</span></code> value to 7. Compile the module, copy it to
 the virtual machine, and insert it into the kernel. Notice that the insertion
-fails because there is already another driver /device registered in the kernel
+fails because there is already another driver/device registered in the kernel
 with the major 7.</p>
 <p>Restore the 240 value for the <code class="xref c c-macro docutils literal"><span class="pre">MY_BLOCK_MAJOR</span></code> macro.</p>
 </div>
@@ -1117,7 +1117,7 @@ the <code class="file docutils literal"><span class="pre">ram-disk.c</span></cod
 <p class="first admonition-title">Hint</p>
 <p class="last">Review the <a class="reference internal" href="#register-a-disk">Register a disk</a> and <a class="reference internal" href="#process-a-request">Process a request</a> sections.</p>
 </div>
-<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function which processes the request queue
+<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to process the request queue
 without actually processing your request: display the “request received” message
 and the following information: start sector, total size, data size from the
 current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, direction. To validate a request type,
@@ -1130,7 +1130,7 @@ section.</p>
 </div>
 <p>Use the <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request_all()</span></code> function to finish processing the
 request.</p>
-<p>Insert the module into the kernel. Use <strong class="command">dmesg</strong> to view a message sent
+<p>Insert the module into the kernel and inspect the messages printed
 by the module. When a device is added, a request is sent to the device. Check
 the presence of <code class="file docutils literal"><span class="pre">/dev/myblock</span></code> and if it doesn’t exist, create the device
 using the command:</p>
@@ -1141,26 +1141,26 @@ using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;abc&quot;</span>&gt; /dev/myblock
 </pre></div>
 </div>
-<p>Notice that is created a write request preceded by a read request. The read
-request takes place to read the block from the disk and “update” in its content
-what it was provided by the user without overwriting the rest. After reading and
+<p>Notice that a write request is preceded by a read request. The request
+is done to read the block from the disk and “update” its content with the
+data provided by the user, without overwriting the rest. After reading and
 updating, writing takes place.</p>
 </div>
 <div class="section" id="ram-disk">
 <h3>3. RAM disk<a class="headerlink" href="#ram-disk" title="Permalink to this headline">¶</a></h3>
 <p>Modify the previous module to create a RAM disk: requests to the device will
-result in read/write in a memory area.</p>
+result in reads/writes in a memory area.</p>
 <p>The memory area <code class="xref c c-data docutils literal"><span class="pre">dev-&gt;data</span></code> is already allocated in the source code of
-the module using <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>. To deallocate, use <code class="xref c c-func docutils literal"><span class="pre">vfree()</span></code>.</p>
+the module using <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code> and deallocated using <code class="xref c c-func docutils literal"><span class="pre">vfree()</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Review the <a class="reference internal" href="#process-a-request">Process a request</a> section.</p>
 </div>
 <p>Follow the comments marked with <strong>TODO 3</strong> to complete the
-<code class="xref c c-func docutils literal"><span class="pre">my_block_transfer()</span></code> function to write /read the request information
-in /from the memory area. The function will be called for each request within
-the queue processing function: <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>. To write /read
-in /from the memory area use <code class="xref c c-func docutils literal"><span class="pre">memcpy()</span></code>. To determine the write /read
+<code class="xref c c-func docutils literal"><span class="pre">my_block_transfer()</span></code> function to write/read the request information
+in/from the memory area. The function will be called for each request within
+the queue processing function: <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>. To write/read
+to/from the memory area, use <code class="xref c c-func docutils literal"><span class="pre">memcpy()</span></code>. To determine the write/read
 information, use the fields of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1178,20 +1178,22 @@ information, use the fields of the <code class="xref c c-type docutils literal">
 <p class="last">A description of useful macros is in the <a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a>
 section.</p>
 </div>
-<p>Useful information can be found in the example of the block device driver in
-Linux Device Drivers.</p>
-<p>For testing, use the <code class="file docutils literal"><span class="pre">ram-disk-test.c</span></code> test file. You compile it using on
-the host, the command:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>make -f Makefile.test
-</pre></div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">You can find useful information in the
+[block device driver example](<a class="reference external" href="https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c">https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c</a>)
+from [Linux Device Driver](<a class="reference external" href="http://lwn.net/Kernel/LDD3/">http://lwn.net/Kernel/LDD3/</a>).</p>
 </div>
-<p>and then run it using the QEMU virtual machine command:</p>
+<p>For testing, use the test file <code class="file docutils literal"><span class="pre">user/ram-disk-test.c</span></code>.
+The test program is compiled automatically at <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code>, copied to the
+virtual machine at <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code> and can be run on the QEMU virtual machine
+using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./ram-disk-test
 </pre></div>
 </div>
 <p>There is no need to insert the module into the kernel, it will be inserted by
-the <strong class="command">ram-disk-test</strong> executable.</p>
-<p>Some tests may crash because of lack of synchronization between the transmitted
+the <code class="docutils literal"><span class="pre">ram-disk-test</span></code> command.</p>
+<p>Some tests may fail because of lack of synchronization between the transmitted
 data (flush).</p>
 </div>
 <div class="section" id="read-data-from-the-disk">
@@ -1200,18 +1202,20 @@ data (flush).</p>
 <code class="xref c c-macro docutils literal"><span class="pre">PHYSICAL_DISK_NAME</span></code> disk (<code class="file docutils literal"><span class="pre">/dev/vdb</span></code>) directly from the kernel.</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<p class="last">Before solving the exercise, we need to add the disk to the
-virtual machine. To do this, generate a file that we will use as
+<p>Before solving the exercise, we need to make sure the disk is
+added to the virtual machine.</p>
+<p>Check the variable <code class="docutils literal"><span class="pre">QEMU_OPTS</span></code> from <code class="file docutils literal"><span class="pre">qemu/Makefile</span></code>.
+There should already be two extra disks added using <code class="docutils literal"><span class="pre">-drive</span> <span class="pre">...</span></code>.</p>
+<p class="last">If there are not, generate a file that we will use as
 the disk image using the command:
 <strong class="command">dd if=/dev/zero of=qemu/mydisk.img bs=1024 count=1</strong>
 and add the following option:
-<strong class="command">-drive file = qemu/mydisk.img, if=virtio, format=raw
-qemu</strong>
-in the <code class="file docutils literal"><span class="pre">qemu/Makefile</span></code> file (in the
-<code class="xref c c-data docutils literal"><span class="pre">QEMU_OPTS</span></code> variable)</p>
+<strong class="command">-drive file=qemu/mydisk.img,if=virtio,format=raw</strong>
+to <code class="file docutils literal"><span class="pre">qemu/Makefile</span></code> (in the <code class="xref c c-data docutils literal"><span class="pre">QEMU_OPTS</span></code> variable,
+after the root disk).</p>
 </div>
 <p>Follow the comments marked with <strong>TODO 4</strong> in the directory <code class="file docutils literal"><span class="pre">4-5-relay/</span></code>
-and implement the <code class="xref c c-func docutils literal"><span class="pre">open_disk()</span></code> and the <code class="xref c c-func docutils literal"><span class="pre">close_disk()</span></code> functions.
+and implement <code class="xref c c-func docutils literal"><span class="pre">open_disk()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">close_disk()</span></code>.
 Use the <code class="xref c c-func docutils literal"><span class="pre">blkdev_get_by_path()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">blkdev_put()</span></code> functions. The
 device must be opened in read-write mode exclusively
 (<code class="xref c c-macro docutils literal"><span class="pre">FMODE_READ</span></code> | <code class="xref c c-macro docutils literal"><span class="pre">FMODE_WRITE</span></code> | <code class="xref c c-macro docutils literal"><span class="pre">FMODE_EXCL</span></code>), and
@@ -1221,14 +1225,14 @@ as holder you must use the current module (<code class="xref c c-macro docutils 
 first sector of the disk. To wait, call the <code class="xref c c-func docutils literal"><span class="pre">submit_bio_wait()</span></code> function.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">The first sector of the disk is the sector with the index 0. At this
-value the field <code class="xref c c-member docutils literal"><span class="pre">bi_iter.bi_sector</span></code> of the
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure must be initialized.</p>
+<p>The first sector of the disk is the sector with the index 0.
+This value must be used to initialize the field
+<code class="xref c c-member docutils literal"><span class="pre">bi_iter.bi_sector</span></code> of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>.</p>
+<p class="last">For the read operation, use the macros <code class="xref c c-macro docutils literal"><span class="pre">REQ_OP_READ</span></code> and
+<code class="xref c c-macro docutils literal"><span class="pre">bio_set_op_attrs</span></code>.</p>
 </div>
-<p>For the read operation, use the <code class="xref c c-macro docutils literal"><span class="pre">REQ_OP_READ</span></code> and the
-<code class="xref c c-macro docutils literal"><span class="pre">bio_set_op_attrs</span></code> macros.</p>
 <p>After finishing the operation, display the first 3 bytes of data read by
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure. Use the format “% 02x” for the <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure. Use the format <code class="docutils literal"><span class="pre">&quot;%</span> <span class="pre">02x&quot;</span></code> for <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
 to display the data and the <code class="xref c c-macro docutils literal"><span class="pre">kmap_atomic</span></code> and <code class="xref c c-macro docutils literal"><span class="pre">kunmap_atomic</span></code>
 macros respectively.</p>
 <div class="admonition hint">
@@ -1247,7 +1251,7 @@ sure it is executable:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>chmod +x test-relay-disk
 </pre></div>
 </div>
-<p>There is no need to load the module into the kernel, it will be loaded by the
+<p>There is no need to load the module into the kernel, it will be loaded by
 <strong class="command">test-relay-disk</strong>.</p>
 <p>Use the command below to run the script:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./test-relay-disk
@@ -1274,14 +1278,14 @@ the buffer associated to the <code class="xref c c-type docutils literal"><span 
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">You need to update the type of the operation associated to the
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure operation using
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure using the
 <code class="xref c c-macro docutils literal"><span class="pre">bio_set_op_attrs</span></code> macrodefinition.</p>
 </div>
 <p>For testing, run the <code class="file docutils literal"><span class="pre">test-relay-disk</span></code> script using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./test-relay-disk
 </pre></div>
 </div>
-<p>The script will display the “read from /dev/sdb: 64 65 66” message at the
+<p>The script will display the <code class="docutils literal"><span class="pre">&quot;read</span> <span class="pre">from</span> <span class="pre">/dev/sdb:</span> <span class="pre">64</span> <span class="pre">65</span> <span class="pre">66&quot;</span></code> message at the
 standard output.</p>
 </div>
 <div class="section" id="processing-requests-from-the-request-queue-at-struct-bio-level">
@@ -1324,12 +1328,7 @@ direction for a <code class="xref c c-type docutils literal"><span class="pre">s
 the pages of each <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure and access its associated
 buffers. For the actual transfer, call the <code class="xref c c-func docutils literal"><span class="pre">my_block_transfer()</span></code> function
 implemented in the previous exercise.</p>
-<p>For testing, use the <code class="file docutils literal"><span class="pre">ram-disk-test.c</span></code> test file. Compile it on
-the host, using the command:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>make -f Makefile.test
-</pre></div>
-</div>
-<p>and then run it in the QEMU virtual machine using the following command:</p>
+<p>For testing, use the <code class="file docutils literal"><span class="pre">ram-disk-test.c</span></code> test file:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./ram-disk-test
 </pre></div>
 </div>
