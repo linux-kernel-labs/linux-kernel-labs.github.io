@@ -1,0 +1,152 @@
+.. _vm_link:
+
+=====================
+Virtual Machine Setup
+=====================
+
+Practice work is to designed to run on a QEMU based virtual machine. In order
+to run and use the virtual machine the following packages are required:
+
+* ``build-essential``
+* ``qemu-system-x86``
+* ``qemu-system-arm``
+* ``kvm``
+* ``python3``
+* ``minicom``
+
+The virtual machine setup uses prebuild Yocto images that it downloads
+from downloads.yoctoproject.org and a kernel image that it builds
+itself. The following images are supported:
+
+* ``core-image-minimal-qemu``
+* ``core-image-minimal-dev-qemu``
+* ``core-image-sato-dev-qemu``
+* ``core-image-sato-qemu``
+* ``core-image-sato-sdk-qemu``
+
+By default, ``core-image-minimal-qemu`` it used. This setting can be changed by
+updating the ``YOCTO_IMAGE`` file in ``tools/labs/qemu/Makefile``.
+
+Starting the Virtual Machine
+----------------------------
+
+You start the virtual machine in the ``tools/labs/`` folder by running ``make
+boot``:
+
+.. code-block:: shell
+
+   .../linux/tools/labs$ make boot
+
+The first run of the ``make boot`` command will compile the kernel image and it
+will take longer. Subsequent runs will only start the QEMU virtual machine,
+with verbose output provided:
+
+.. code-block:: shell
+
+   .../linux/tools/labs$ make boot
+   mkdir /tmp/tmp.7rWv63E9Wf
+   sudo mount -t ext4 -o loop core-image-minimal-qemux86.ext4 /tmp/tmp.7rWv63E9Wf
+   sudo make -C /home/razvan/school/so2/linux.git modules_install INSTALL_MOD_PATH=/tmp/tmp.7rWv63E9Wf
+   make: Entering directory '/home/razvan/school/so2/linux.git'
+     INSTALL crypto/crypto_engine.ko
+     INSTALL drivers/crypto/virtio/virtio_crypto.ko
+     INSTALL drivers/net/netconsole.ko
+     DEPMOD  4.19.0+
+   make: Leaving directory '/home/razvan/school/so2/linux.git'
+   sudo umount /tmp/tmp.7rWv63E9Wf
+   rmdir /tmp/tmp.7rWv63E9Wf
+   sleep 1 && touch .modinst
+   qemu/create_net.sh tap0
+
+   dnsmasq: failed to create listening socket for 172.213.0.1: Address already in use
+   qemu/create_net.sh tap1
+
+   dnsmasq: failed to create listening socket for 127.0.0.1: Address already in use
+   /home/razvan/school/so2/linux.git/tools/labs/templates/assignments/6-e100/nttcp -v -i &
+   nttcp-l: nttcp, version 1.47
+   nttcp-l: running in inetd mode on port 5037 - ignoring options beside -v and -p
+   bind: Address already in use
+   nttcp-l: service-socket: bind:: Address already in use, errno=98
+   ARCH=x86 qemu/qemu.sh -kernel /home/razvan/school/so2/linux.git/arch/x86/boot/bzImage -device virtio-serial -chardev pty,id=virtiocon0 -device virtconsole,chardev=virtiocon0 -serial pipe:pipe1 -serial pipe:pipe2 -netdev tap,id=tap0,ifname=tap0,script=no,downscript=no -net nic,netdev=tap0,model=virtio -netdev tap,id=tap1,ifname=tap1,script=no,downscript=no -net nic,netdev=tap1,model=i82559er -drive file=core-image-minimal-qemux86.ext4,if=virtio,format=raw -drive file=disk1.img,if=virtio,format=raw -drive file=disk2.img,if=virtio,format=raw --append "root=/dev/vda loglevel=15 console=hvc0" --display none -s
+   qemu-system-i386: -chardev pty,id=virtiocon0: char device redirected to /dev/pts/68 (label virtiocon0)
+
+.. note:: To show the QEMU console use ``QEMU_DISPLAY=sdl make
+          boot```. This will show the VGA output and will also give
+          access to the standard keyboard.
+
+.. note:: The virtual machine setup scripts and configuration files are located
+          in ``tools/labs/qemu/``.
+
+.. note:: The kernel image is only built the first time the virtual machine is
+          started. It will be rebuilt each time there are updates to local
+          kernel source code.
+
+.. _vm_interaction_link:
+
+Connecting to the Virtual Machine
+---------------------------------
+
+Once the virtual machine is started you can connect to it on the serial port. A
+symbolic link named ``serial.pts`` is created to the emulated serial port
+device:
+
+.. code-block:: shell
+
+   .../linux/tools/labs$ ls -l serial.pts
+   lrwxrwxrwx 1 razvan razvan 11 Apr  1 08:03 serial.pts -> /dev/pts/68
+
+On the host you use the ``minicom`` command to connect to the virtual machine
+via the ``serial.pts`` link:
+
+.. code-block:: shell
+
+   .../linux/tools/labs$ minicom -D serial.pts
+   [...]
+   Poky (Yocto Project Reference Distro) 2.3 qemux86 /dev/hvc0
+
+   qemux86 login: root
+   root@qemux86:~#
+
+Connecting a Debugger to the Virtual Machine Kernel
+---------------------------------------------------
+
+You can use GDB to connec to the running virtual machine kernel and inspect the
+state of the kernel. You run ``make gdb`` in ``tools/labs/``:
+
+.. code-block:: shell
+
+   .../linux/tools/labs$ make gdb
+   ln -fs /home/tavi/src/linux/vmlinux vmlinux
+   gdb -ex "target remote localhost:1234" vmlinux
+   GNU gdb (Ubuntu 7.11.1-0ubuntu1~16.04) 7.11.1
+   Copyright (C) 2016 Free Software Foundation, Inc.
+   License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+   This is free software: you are free to change and redistribute it.
+   There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+   and "show warranty" for details.
+   This GDB was configured as "x86_64-linux-gnu".
+   Type "show configuration" for configuration details.
+   For bug reporting instructions, please see:
+   <http://www.gnu.org/software/gdb/bugs/>.
+   Find the GDB manual and other documentation resources online at:
+   <http://www.gnu.org/software/gdb/documentation/>.
+   For help, type "help".
+   Type "apropos word" to search for commands related to "word"...
+   Reading symbols from vmlinux...done.
+   Remote debugging using localhost:1234
+   0xc13cf2f2 in native_safe_halt () at ./arch/x86/include/asm/irqflags.h:53
+   53asm volatile("sti; hlt": : :"memory");
+   (gdb) bt
+   #0  0xc13cf2f2 in native_safe_halt () at ./arch/x86/include/asm/irqflags.h:53
+   #1  arch_safe_halt () at ./arch/x86/include/asm/irqflags.h:95
+   #2  default_idle () at arch/x86/kernel/process.c:341
+   #3  0xc101f136 in arch_cpu_idle () at arch/x86/kernel/process.c:332
+   #4  0xc106a6dd in cpuidle_idle_call () at kernel/sched/idle.c:156
+   #5  do_idle () at kernel/sched/idle.c:245
+   #6  0xc106a8c5 in cpu_startup_entry (state=<optimized out>)
+   at kernel/sched/idle.c:350
+   #7  0xc13cb14a in rest_init () at init/main.c:415
+   #8  0xc1507a7a in start_kernel () at init/main.c:679
+   #9  0xc10001da in startup_32_smp () at arch/x86/kernel/head_32.S:368
+   #10 0x00000000 in ?? ()
+   (gdb)
