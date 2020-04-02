@@ -196,7 +196,7 @@
             
   <div class="section" id="virtual-machine-setup">
 <span id="vm-link"></span><h1>Virtual Machine Setup<a class="headerlink" href="#virtual-machine-setup" title="Permalink to this headline">¶</a></h1>
-<p>Practice work is to designed to run on a QEMU based virtual machine. In order
+<p>Practice work is designed to run on a QEMU based virtual machine. In order
 to run and use the virtual machine the following packages are required:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">build-essential</span></code></li>
@@ -206,9 +206,8 @@ to run and use the virtual machine the following packages are required:</p>
 <li><code class="docutils literal"><span class="pre">python3</span></code></li>
 <li><code class="docutils literal"><span class="pre">minicom</span></code></li>
 </ul>
-<p>The virtual machine setup uses prebuild Yocto images that it downloads
-from downloads.yoctoproject.org and a kernel image that it builds
-itself. The following images are supported:</p>
+<p>The virtual machine setup uses prebuild Yocto images that it downloads and a
+kernel image that it builds itself. The following images are supported:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">core-image-minimal-qemu</span></code></li>
 <li><code class="docutils literal"><span class="pre">core-image-minimal-dev-qemu</span></code></li>
@@ -267,12 +266,6 @@ access to the standard keyboard.</p>
 <p class="last">The virtual machine setup scripts and configuration files are located
 in <code class="docutils literal"><span class="pre">tools/labs/qemu/</span></code>.</p>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The kernel image is only built the first time the virtual machine is
-started. It will be rebuilt each time there are updates to local
-kernel source code.</p>
-</div>
 </div>
 <div class="section" id="connecting-to-the-virtual-machine">
 <span id="vm-interaction-link"></span><h2>Connecting to the Virtual Machine<a class="headerlink" href="#connecting-to-the-virtual-machine" title="Permalink to this headline">¶</a></h2>
@@ -296,8 +289,8 @@ root@qemux86:~#
 </div>
 <div class="section" id="connecting-a-debugger-to-the-virtual-machine-kernel">
 <h2>Connecting a Debugger to the Virtual Machine Kernel<a class="headerlink" href="#connecting-a-debugger-to-the-virtual-machine-kernel" title="Permalink to this headline">¶</a></h2>
-<p>You can use GDB to connec to the running virtual machine kernel and inspect the
-state of the kernel. You run <code class="docutils literal"><span class="pre">make</span> <span class="pre">gdb</span></code> in <code class="docutils literal"><span class="pre">tools/labs/</span></code>:</p>
+<p>You can use GDB to connect to the running virtual machine kernel and inspect
+the state of the kernel. You run <code class="docutils literal"><span class="pre">make</span> <span class="pre">gdb</span></code> in <code class="docutils literal"><span class="pre">tools/labs/</span></code>:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ make gdb
 ln -fs /home/tavi/src/linux/vmlinux vmlinux
 gdb -ex <span class="s2">&quot;target remote localhost:1234&quot;</span> vmlinux

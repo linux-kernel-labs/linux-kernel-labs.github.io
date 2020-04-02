@@ -4,7 +4,7 @@
 Virtual Machine Setup
 =====================
 
-Practice work is to designed to run on a QEMU based virtual machine. In order
+Practice work is designed to run on a QEMU based virtual machine. In order
 to run and use the virtual machine the following packages are required:
 
 * ``build-essential``
@@ -14,9 +14,8 @@ to run and use the virtual machine the following packages are required:
 * ``python3``
 * ``minicom``
 
-The virtual machine setup uses prebuild Yocto images that it downloads
-from downloads.yoctoproject.org and a kernel image that it builds
-itself. The following images are supported:
+The virtual machine setup uses prebuild Yocto images that it downloads and a
+kernel image that it builds itself. The following images are supported:
 
 * ``core-image-minimal-qemu``
 * ``core-image-minimal-dev-qemu``
@@ -77,10 +76,6 @@ with verbose output provided:
 .. note:: The virtual machine setup scripts and configuration files are located
           in ``tools/labs/qemu/``.
 
-.. note:: The kernel image is only built the first time the virtual machine is
-          started. It will be rebuilt each time there are updates to local
-          kernel source code.
-
 .. _vm_interaction_link:
 
 Connecting to the Virtual Machine
@@ -110,8 +105,8 @@ via the ``serial.pts`` link:
 Connecting a Debugger to the Virtual Machine Kernel
 ---------------------------------------------------
 
-You can use GDB to connec to the running virtual machine kernel and inspect the
-state of the kernel. You run ``make gdb`` in ``tools/labs/``:
+You can use GDB to connect to the running virtual machine kernel and inspect
+the state of the kernel. You run ``make gdb`` in ``tools/labs/``:
 
 .. code-block:: shell
 
