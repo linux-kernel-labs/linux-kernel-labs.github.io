@@ -5,9 +5,11 @@ Virtual Machine Setup
 =====================
 
 Practice work is designed to run on a QEMU based virtual machine. In order
-to run and use the virtual machine the following packages are required:
+to run and use the virtual machine the following packages are required on a
+Debian/Ubuntu system:
 
 * ``build-essential``
+* ``gcc-multilib``
 * ``qemu-system-x86``
 * ``qemu-system-arm``
 * ``kvm``
