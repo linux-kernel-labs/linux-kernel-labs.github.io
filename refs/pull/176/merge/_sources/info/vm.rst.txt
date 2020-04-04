@@ -26,7 +26,7 @@ kernel image that it builds itself. The following images are supported:
 * ``core-image-sato-sdk-qemu``
 
 By default, ``core-image-minimal-qemu`` it used. This setting can be changed by
-updating the ``YOCTO_IMAGE`` file in ``tools/labs/qemu/Makefile``.
+updating the ``YOCTO_IMAGE`` variable in ``tools/labs/qemu/Makefile``.
 
 Starting the Virtual Machine
 ----------------------------
