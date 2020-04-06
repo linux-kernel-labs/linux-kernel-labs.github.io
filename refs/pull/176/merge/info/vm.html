@@ -126,7 +126,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Virtual Machine Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#starting-the-virtual-machine">Starting the Virtual Machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#connecting-to-the-virtual-machine">Connecting to the Virtual Machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#connecting-a-debugger-to-the-virtual-machine-kernel">Connecting a Debugger to the Virtual Machine Kernel</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to linux-kernel-labs</a></li>
@@ -196,12 +195,15 @@
             
   <div class="section" id="virtual-machine-setup">
 <span id="vm-link"></span><h1>Virtual Machine Setup<a class="headerlink" href="#virtual-machine-setup" title="Permalink to this headline">¶</a></h1>
-<p>Practice work is designed to run on a QEMU based virtual machine. In order
-to run and use the virtual machine the following packages are required on a
-Debian/Ubuntu system:</p>
+<p>Practice work is designed to run on a QEMU based virtual machine. Kernel code
+is developed and built on the host machine and then deployed and run on the
+virtual machine.</p>
+<p>In order to run and use the virtual machine the following packages are required
+on a Debian/Ubuntu system:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">build-essential</span></code></li>
 <li><code class="docutils literal"><span class="pre">gcc-multilib</span></code></li>
+<li><code class="docutils literal"><span class="pre">libncurses5-dev</span></code></li>
 <li><code class="docutils literal"><span class="pre">qemu-system-x86</span></code></li>
 <li><code class="docutils literal"><span class="pre">qemu-system-arm</span></code></li>
 <li><code class="docutils literal"><span class="pre">kvm</span></code></li>
@@ -259,9 +261,13 @@ qemu-system-i386: -chardev pty,id<span class="o">=</span>virtiocon0: char device
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">To show the QEMU console use <code class="docutils literal"><span class="pre">QEMU_DISPLAY=sdl</span> <span class="pre">make</span>
-<span class="pre">boot`</span></code>. This will show the VGA output and will also give
-access to the standard keyboard.</p>
+<p class="last">To show the QEMU console use</p>
+</div>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ <span class="nv">QEMU_DISPLAY</span><span class="o">=</span>sdl make boot
+
+       This will show the VGA output and will also give
+       access to the standard keyboard.
+</pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -288,47 +294,15 @@ qemux86 login: root
 root@qemux86:~#
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When you connect to the virtual machine, simply enter <code class="docutils literal"><span class="pre">root</span></code> at the
+login prompt and you will get a root console, no password required.</p>
 </div>
-<div class="section" id="connecting-a-debugger-to-the-virtual-machine-kernel">
-<h2>Connecting a Debugger to the Virtual Machine Kernel<a class="headerlink" href="#connecting-a-debugger-to-the-virtual-machine-kernel" title="Permalink to this headline">¶</a></h2>
-<p>You can use GDB to connect to the running virtual machine kernel and inspect
-the state of the kernel. You run <code class="docutils literal"><span class="pre">make</span> <span class="pre">gdb</span></code> in <code class="docutils literal"><span class="pre">tools/labs/</span></code>:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ make gdb
-ln -fs /home/tavi/src/linux/vmlinux vmlinux
-gdb -ex <span class="s2">&quot;target remote localhost:1234&quot;</span> vmlinux
-GNU gdb <span class="o">(</span>Ubuntu <span class="m">7</span>.11.1-0ubuntu1~16.04<span class="o">)</span> <span class="m">7</span>.11.1
-Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2016</span> Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version <span class="m">3</span> or later &lt;http://gnu.org/licenses/gpl.html&gt;
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.  Type <span class="s2">&quot;show copying&quot;</span>
-and <span class="s2">&quot;show warranty&quot;</span> <span class="k">for</span> details.
-This GDB was configured as <span class="s2">&quot;x86_64-linux-gnu&quot;</span>.
-Type <span class="s2">&quot;show configuration&quot;</span> <span class="k">for</span> configuration details.
-For bug reporting instructions, please see:
-&lt;http://www.gnu.org/software/gdb/bugs/&gt;.
-Find the GDB manual and other documentation resources online at:
-&lt;http://www.gnu.org/software/gdb/documentation/&gt;.
-For help, <span class="nb">type</span> <span class="s2">&quot;help&quot;</span>.
-Type <span class="s2">&quot;apropos word&quot;</span> to search <span class="k">for</span> commands related to <span class="s2">&quot;word&quot;</span>...
-Reading symbols from vmlinux...done.
-Remote debugging using localhost:1234
-0xc13cf2f2 in native_safe_halt <span class="o">()</span> at ./arch/x86/include/asm/irqflags.h:53
-53asm volatile<span class="o">(</span><span class="s2">&quot;sti; hlt&quot;</span>: : :<span class="s2">&quot;memory&quot;</span><span class="o">)</span><span class="p">;</span>
-<span class="o">(</span>gdb<span class="o">)</span> bt
-<span class="c1">#0  0xc13cf2f2 in native_safe_halt () at ./arch/x86/include/asm/irqflags.h:53</span>
-<span class="c1">#1  arch_safe_halt () at ./arch/x86/include/asm/irqflags.h:95</span>
-<span class="c1">#2  default_idle () at arch/x86/kernel/process.c:341</span>
-<span class="c1">#3  0xc101f136 in arch_cpu_idle () at arch/x86/kernel/process.c:332</span>
-<span class="c1">#4  0xc106a6dd in cpuidle_idle_call () at kernel/sched/idle.c:156</span>
-<span class="c1">#5  do_idle () at kernel/sched/idle.c:245</span>
-<span class="c1">#6  0xc106a8c5 in cpu_startup_entry (state=&lt;optimized out&gt;)</span>
-at kernel/sched/idle.c:350
-<span class="c1">#7  0xc13cb14a in rest_init () at init/main.c:415</span>
-<span class="c1">#8  0xc1507a7a in start_kernel () at init/main.c:679</span>
-<span class="c1">#9  0xc10001da in startup_32_smp () at arch/x86/kernel/head_32.S:368</span>
-<span class="c1">#10 0x00000000 in ?? ()</span>
-<span class="o">(</span>gdb<span class="o">)</span>
-</pre></div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You exit <code class="docutils literal"><span class="pre">minicom</span></code> by pressing <code class="docutils literal"><span class="pre">Ctrl+a</span></code> and then <code class="docutils literal"><span class="pre">x</span></code>. You will
+get a confirmation prompt and then you will exit <code class="docutils literal"><span class="pre">minicom</span></code>.</p>
 </div>
 </div>
 </div>
