@@ -873,13 +873,12 @@ mentioned above, the <code class="xref c c-member docutils literal"><span class=
 called when the processing of the structure is finished. The
 <code class="xref c c-member docutils literal"><span class="pre">bi_private</span></code> field is used to store useful data that can be accessed
 in the function pointed by <code class="xref c c-member docutils literal"><span class="pre">bi_end_io</span></code>.</p>
-<p>The <code class="xref c c-member docutils literal"><span class="pre">bi_opf</span></code> field specifies the type of operation. Use the
-<code class="xref c c-member docutils literal"><span class="pre">bio_set_op_attrs</span></code> to initialize the type of operation.</p>
+<p>The <code class="xref c c-member docutils literal"><span class="pre">bi_opf</span></code> field specifies the type of operation.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span> <span class="o">=</span> <span class="n">bio_alloc</span><span class="p">(</span><span class="n">GFP_NOIO</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 <span class="c1">//...</span>
 <span class="n">bio</span><span class="o">-&gt;</span><span class="n">bi_disk</span> <span class="o">=</span> <span class="n">bdev</span><span class="o">-&gt;</span><span class="n">bd_disk</span><span class="p">;</span>
 <span class="n">bio</span><span class="o">-&gt;</span><span class="n">bi_iter</span><span class="p">.</span><span class="n">bi_sector</span> <span class="o">=</span> <span class="n">sector</span><span class="p">;</span>
-<span class="n">bio_set_op_attrs</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">REQ_OP_READ</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">bio</span><span class="o">-&gt;</span><span class="n">bi_opf</span> <span class="o">=</span> <span class="n">REQ_OP_READ</span><span class="p">;</span>
 <span class="n">bio_add_page</span><span class="p">(</span><span class="n">bio</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
 <span class="c1">//...</span>
 </pre></div>
@@ -1228,8 +1227,8 @@ first sector of the disk. To wait, call the <code class="xref c c-func docutils 
 <p>The first sector of the disk is the sector with the index 0.
 This value must be used to initialize the field
 <code class="xref c c-member docutils literal"><span class="pre">bi_iter.bi_sector</span></code> of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>.</p>
-<p class="last">For the read operation, use the macros <code class="xref c c-macro docutils literal"><span class="pre">REQ_OP_READ</span></code> and
-<code class="xref c c-macro docutils literal"><span class="pre">bio_set_op_attrs</span></code>.</p>
+<p class="last">For the read operation, use the <code class="xref c c-macro docutils literal"><span class="pre">REQ_OP_READ</span></code> macro to
+initialize the <code class="xref c c-member docutils literal"><span class="pre">bi_opf</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>.</p>
 </div>
 <p>After finishing the operation, display the first 3 bytes of data read by
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure. Use the format <code class="docutils literal"><span class="pre">&quot;%</span> <span class="pre">02x&quot;</span></code> for <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
@@ -1278,8 +1277,8 @@ the buffer associated to the <code class="xref c c-type docutils literal"><span 
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">You need to update the type of the operation associated to the
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure using the
-<code class="xref c c-macro docutils literal"><span class="pre">bio_set_op_attrs</span></code> macrodefinition.</p>
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure by setting the <code class="xref c c-member docutils literal"><span class="pre">bi_opf</span></code> field
+accordingly.</p>
 </div>
 <p>For testing, run the <code class="file docutils literal"><span class="pre">test-relay-disk</span></code> script using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./test-relay-disk
