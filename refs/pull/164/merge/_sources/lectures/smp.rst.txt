@@ -207,7 +207,7 @@ to access atomic operations:
    * integer based:
 
      * simple: :c:func:`atomic_inc`, :c:func:`atomic_dec`,
-     :c:func:`atomic_add`, :c:func:`atomic_sub`
+       :c:func:`atomic_add`, :c:func:`atomic_sub`
 
      * conditional: :c:func:`atomic_dec_and_test`, :c:func:`atomic_sub_and_test`
 
@@ -339,7 +339,8 @@ architecture independent APIs to disable and enable interrupts:
 
       #define local_irq_save(flags) \
           asm volatile ("pushf ; pop %0" :"=g" (flags)
-                        : /* no input */: "memory")
+                        : /* no input */: "memory") \
+          asm volatile("cli": : :"memory")
 
       #define local_irq_restore(flags) \
           asm volatile ("push %0 ; popf"
@@ -384,8 +385,13 @@ parallelism. This is a typical spin lock implementation:
       spin_unlock:
           mov [my_lock], 0
 
-   **bts** - bit test and set; it copies the src bit from the dts
-   memory address to the carry flag and then sets it
+   **bts dts, src** - bit test and set; it copies the src bit from the dts
+   memory address to the carry flag and then sets it:
+
+   .. code-block:: c
+
+      CF <- dts[src]
+      dts[src] <- 1
 
 
 As it can be seen, the spin lock uses an atomic instruction to make
@@ -659,7 +665,8 @@ reduce power consumption.
 
 A similar implementation with support for fairness (the CPU cores are
 allowed in the critical section based on the time of arrival) is used
-in the Linux kernel (the ticket spin lock) for many architectures.
+in the Linux kernel (the `ticket spin lock <https://lwn.net/Articles/267968/>`_)
+for many architectures.
 
 However, for the x86 architecture, the current spin lock
 implementation uses a queued spin lock where the CPU cores spin on
@@ -761,15 +768,14 @@ work, it is recommended to use dedicated APIs:
    :level: 2
 
    * In process context use :c:func:`spin_lock_bh` (which combines
-   :c:func:`local_bh_disable` and :c:func:`spin_lock`) and
-   :c:func:`spin_unlock_bh` (which combines :c:func:`spin_unlock` and
-   :c:func:`local_bh_enable`)
-
+     :c:func:`local_bh_disable` and :c:func:`spin_lock`) and
+     :c:func:`spin_unlock_bh` (which combines :c:func:`spin_unlock` and
+     :c:func:`local_bh_enable`)
 
    * In bottom half context use: :c:func:`spin_lock` and
-   :c:func:`spin_unlock` (or :c:func:`spin_lock_irqsave` and
-   :c:func:`spin_lock_irqrestore` if sharing data with interrupt
-   handlers)
+     :c:func:`spin_unlock` (or :c:func:`spin_lock_irqsave` and
+     :c:func:`spin_lock_irqrestore` if sharing data with interrupt
+     handlers)
 
 
 As mentioned before, another source of concurrency in the Linux kernel
@@ -1053,7 +1059,7 @@ For this purpose we can use barriers to order memory operations:
    * A write barrier (:c:func:`wmb()`, :c:func:`smp_wmb()`) is used to
      make sure that no write operation crosses the barrier
 
-   * A simple barrier (:c:func:`wmb()`, :c:func:`smp_wmb()`) is used
+   * A simple barrier (:c:func:`mb()`, :c:func:`smp_mb()`) is used
      to make sure that no write or read operation crosses the barrier
 
 
@@ -1112,7 +1118,7 @@ list using RCU:
                                                     +-----------+
       +-----+     +-----+     +-----+      +-----+  |  +-----+  |  +-----+
       |     |     |     |     |     |      |     |  |  |     |  |  |     |
-      |  A  |---->|  B  |---->|  C  |      |  A  |--+  |  B  |  +->|  C  |
+      |  A  |---->|  B  |---->|  C  |      |  A  |--+  |  B  |--+->|  C  |
       |     |     |     |     |     |      |     |     |     |     |     |
       +-----+     +-----+     +-----+      +-----+     +-----+     +-----+
          ^           ^           ^            ^           ^           ^

@@ -295,18 +295,30 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#hardware">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#hardware-concepts">Hardware Concepts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#advanced-programmable-interrupt-controller">Advanced Programmable Interrupt Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-control">Interrupt Control</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#architecture-specific-interrupt-handling-in-linux">Architecture specific interrupt handling in Linux</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-handler-address">Interrupt handler address</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-handler-execution">Interrupt handler execution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#returning-from-an-interrupt">Returning from an interrupt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#handling-an-interrupt-request">Handling an interrupt request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#returning-from-an-interrupt-handler">Returning from an interrupt handler</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions">Deferrable actions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#generic-interrupt-handling-in-linux">Generic interrupt handling in Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-context">Interrupt context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions">Deferrable actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#soft-irqs">Soft IRQs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#tasklets">Tasklets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#workqueues">Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#timers">Timers</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a><ul>
@@ -337,16 +349,18 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#list-debugging">List debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#memory-debugging">Memory debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#debug-slab">DEBUG_SLAB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kasan">KASAN</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#comparison-between-memory-debugging-tools">Comparison between memory debugging tools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kmemcheck">kmemcheck</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#slab-debugging">Slab debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#slub-debug">SLUB_DEBUG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kasan">KASan</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lectures/debugging.html#kasan-vs-debug-pagealloc">KASan vs DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/debugging.html#kasan-vs-slub-debug">KASan vs SLUB_DEBUG</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#kmemleak">Kmemleak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kmemleak">Kmemleak</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#perf">perf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#other-tools">Other tools</a></li>
 </ul>
 </li>
@@ -528,10 +542,15 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#store-ascii-keys-to-buffer">3. Store ASCII keys to buffer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="labs/interrupts.html#reading-the-data-register">Reading the data register</a></li>
 <li class="toctree-l4"><a class="reference internal" href="labs/interrupts.html#interpreting-the-scancode">Interpreting the scancode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/interrupts.html#store-characters-to-the-buffer">Store characters to the buffer</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#store-characters-to-the-buffer">4. Store characters to the buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#reading-the-buffer">4. Reading the buffer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#reset-the-buffer">5. Reset the buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#kfifo">1. kfifo</a></li>
 </ul>
 </li>
 </ul>
