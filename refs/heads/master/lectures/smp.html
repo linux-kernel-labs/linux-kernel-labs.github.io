@@ -507,7 +507,7 @@ flushed to memory</li>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The most important characteristic of the MESI protocol is
-that is a write-invalidate cache protocol. When writing to a
+that it is a write-invalidate cache protocol. When writing to a
 shared location all other caches are invalidated.</p>
 </div>
 <p>This has important performance impact in certain access patterns, and
@@ -597,8 +597,8 @@ disabling interrupts, but that won’t work on multi-core systems,
 as we can have the process running on one CPU core and the interrupt
 context running on a different CPU core.</p>
 <p>Using a spin lock, which was designed for multi-processor systems,
-seems like the right solution, but doing so will can cause common
-deadlock condition, as detailed by the following scenario:</p>
+seems like the right solution, but doing so can cause common
+deadlock conditions, as detailed by the following scenario:</p>
 <ul class="admonition-process-and-interrupt-handler-synchronization-deadlock simple">
 <li>In the process context we take the spin lock</li>
 <li>An interrupt occurs and it is scheduled on the same CPU core</li>
@@ -673,11 +673,11 @@ until the critical section is vacated.</p>
 <p>Since mutexes and spin locks usage intersect, it is useful to compare
 the two:</p>
 <ul class="admonition-mutexes simple">
-<li>They don’t “waste” CPU cycles; system throughput is better then
-spin locks if context switch overhead is lower then medium
+<li>They don’t “waste” CPU cycles; system throughput is better than
+spin locks if context switch overhead is lower than medium
 spinning time</li>
 <li>They can’t be used in interrupt context</li>
-<li>They have a higher latency then spin locks</li>
+<li>They have a higher latency than spin locks</li>
 </ul>
 <p>Conceptually, the <code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> operation is relatively simple:
 if the mutex is not acquired we an take the fast path via an atomic
@@ -790,10 +790,10 @@ list and wake it up:</p>
 <h2>Per CPU data<a class="headerlink" href="#per-cpu-data" title="Permalink to this headline">¶</a></h2>
 <p>Per CPU data avoids race conditions by avoiding to use shared
 data. Instead, an array sized to the maximum possible CPU cores is
-used and each core will used its own array entry to read and write
+used and each core will use its own array entry to read and write
 data. This approach certainly has advantages:</p>
 <ul class="admonition-per-cpu-data simple">
-<li>No need to synchronization to access the data</li>
+<li>No need to synchronize to access the data</li>
 <li>No contention, no performance impact</li>
 <li>Well suited for distributed processing where aggregation is only
 seldom necessary (e.g. statistics counters)</li>

@@ -645,7 +645,7 @@ my_open and my_release in the driver. An example of a user-space call:</p>
 <div class="section" id="read-and-write">
 <h2>Read and write<a class="headerlink" href="#read-and-write" title="Permalink to this headline">¶</a></h2>
 <p>The read and write operations are reaching the device driver as a
-result of a userpsace program calling the read of write system calls:</p>
+result of a userspace program calling the read or write system calls:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* handle error */</span>
 <span class="p">}</span>
