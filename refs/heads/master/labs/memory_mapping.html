@@ -561,8 +561,11 @@ use <code class="xref c c-func docutils literal"><span class="pre">virt_to_phys(
 <p class="last">To convert a physical address to its PFN, shift the address
 with PAGE_SHIFT bits to the right.</p>
 </div>
-<p>For testing, use <code class="file docutils literal"><span class="pre">test/mmap-test</span></code>. If everything goes well, the test
-will show “matched” messages.</p>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">1</span>
+</pre></div>
+</div>
+<p>If everything goes well, the test will show “matched” messages.</p>
 </div>
 <div class="section" id="mapping-non-contiguous-physical-memory-to-userspace">
 <h3>2. Mapping non-contiguous physical memory to userspace<a class="headerlink" href="#mapping-non-contiguous-physical-memory-to-userspace" title="Permalink to this headline">¶</a></h3>
@@ -570,7 +573,7 @@ will show “matched” messages.</p>
 (e.g. obtained via <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>) to userspace.</p>
 <p>Review the <a class="reference internal" href="#device-driver-memory-mapping">Device driver memory mapping</a> section, generate the
 skeleton for the task named <strong>vmmap</strong> and fill in the areas marked
-with <strong>TODO 2</strong>.</p>
+with <strong>TODO 1</strong>.</p>
 <p>Allocate a memory area of NPAGES with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -605,8 +608,11 @@ needed to use <code class="xref c c-func docutils literal"><span class="pre">rem
 <p class="last">Make sure the that you determine the physical address
 each time and that you use a range of one page for mapping.</p>
 </div>
-<p>For testing, use <em>test/mmap-test</em>. If everything goes well the test
-will show “matched” messages.</p>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">1</span>
+</pre></div>
+</div>
+<p>If everything goes well, the test will show “matched” messages.</p>
 </div>
 <div class="section" id="read-write-operations-in-mapped-memory">
 <h3>3. Read / write operations in mapped memory<a class="headerlink" href="#read-write-operations-in-mapped-memory" title="Permalink to this headline">¶</a></h3>
@@ -614,15 +620,15 @@ will show “matched” messages.</p>
 your device. This is a didactic exercise to see that the same space
 can also be used with the <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> call and with <code class="xref c c-func docutils literal"><span class="pre">read()</span></code>
 and <code class="xref c c-func docutils literal"><span class="pre">write()</span></code> calls.</p>
-<p>Fill in areas marked with <strong>TODO 3</strong>.</p>
+<p>Fill in areas marked with <strong>TODO 2</strong>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The offset parameter sent to the read / write operation can
 be ignored as all reads / writes from the test program will
 be done with 0 offsets.</p>
 </div>
-<p>For testing run <code class="file docutils literal"><span class="pre">test/mmap-test</span></code> with 3 as parameter:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">3</span>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">2</span>
 </pre></div>
 </div>
 </div>
@@ -630,7 +636,7 @@ be done with 0 offsets.</p>
 <h3>4. Display memory mapped in procfs<a class="headerlink" href="#display-memory-mapped-in-procfs" title="Permalink to this headline">¶</a></h3>
 <p>Using one of the previous modules, create a procfs file in which you
 display the total memory mapped by the calling process.</p>
-<p>Fill in the areas marked with <strong>TODO 4</strong>.</p>
+<p>Fill in the areas marked with <strong>TODO 3</strong>.</p>
 <p>Create a new entry in procfs (<code class="xref c c-macro docutils literal"><span class="pre">PROC_ENTRY_NAME</span></code>, defined in
 <code class="file docutils literal"><span class="pre">mmap-test.h</span></code>) that will show the total memory mapped by the process
 that called the <code class="xref c c-func docutils literal"><span class="pre">read()</span></code> on that file.</p>
@@ -688,8 +694,8 @@ no other messages. Do not even show newline (n).</p>
 <p class="first admonition-title">Note</p>
 <p class="last"><code class="xref c c-func docutils literal"><span class="pre">single_open()</span></code> can use <code class="xref c c-macro docutils literal"><span class="pre">NULL</span></code> as its third argument.</p>
 </div>
-<p>For testing run <code class="file docutils literal"><span class="pre">kmmap/mmap-test</span></code> with 4 as parameter:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/kmmap/mmap-test <span class="m">4</span>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">3</span>
 </pre></div>
 </div>
 <div class="admonition note">
