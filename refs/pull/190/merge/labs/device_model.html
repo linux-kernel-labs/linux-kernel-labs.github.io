@@ -404,10 +404,10 @@ in sysfs.</p>
         <span class="k">struct</span> <span class="n">driver_attribute</span> <span class="o">*</span><span class="n">drv_attrs</span><span class="p">;</span>
         <span class="k">struct</span> <span class="n">subsys_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
 
-        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">match</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span> <span class="n">drv</span><span class="p">);</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">match</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span><span class="p">);</span>
         <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">uevent</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">);</span>
-        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
-        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
         <span class="c1">//...</span>
 <span class="p">};</span>
 </pre></div>
@@ -426,26 +426,26 @@ inspection of the devices connected to the bus.</p>
 
 <span class="c1">//bus type</span>
 <span class="k">struct</span> <span class="n">bus_type</span> <span class="n">my_bus_type</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;mybus&quot;</span><span class="p">,</span>
+  <span class="p">.</span><span class="n">name</span>   <span class="o">=</span> <span class="s">&quot;mybus&quot;</span><span class="p">,</span>
   <span class="p">.</span><span class="n">match</span>  <span class="o">=</span> <span class="n">my_match</span><span class="p">,</span>
   <span class="p">.</span><span class="n">uevent</span> <span class="o">=</span> <span class="n">my_uevent</span><span class="p">,</span>
 <span class="p">};</span>
 
-<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_bus_init</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_bus_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
 
   <span class="c1">//...</span>
-  <span class="n">err</span> <span class="o">=</span> <span class="n">bus_register</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">);</span>
+  <span class="n">err</span> <span class="o">=</span> <span class="n">bus_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
   <span class="c1">//...</span>
 <span class="p">}</span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_bus_exit</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_bus_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="c1">//...</span>
-  <span class="n">bus_unregister</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">);</span>
+  <span class="n">bus_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">);</span>
   <span class="c1">//...</span>
 <span class="p">}</span>
 </pre></div>
@@ -457,13 +457,13 @@ inspection of the devices connected to the bus.</p>
 <span class="cm">/* mybus.c */</span>
 
 <span class="c1">// match devices to drivers; just do a simple name test</span>
-<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_match</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_match</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
 <span class="p">{</span>
-  <span class="k">return</span> <span class="n">strncmp</span> <span class="p">(</span><span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">),</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">strlen</span> <span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">));</span>
+  <span class="k">return</span> <span class="n">strncmp</span><span class="p">(</span><span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">),</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">));</span>
 <span class="p">}</span>
 
 <span class="c1">// respond to hotplug user events; add environment variable DEV_NAME</span>
-<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_uevent</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_uevent</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="n">add_uevent_var</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&quot;DEV_NAME=%s&quot;</span><span class="p">,</span> <span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">));</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
@@ -486,8 +486,8 @@ bus subdirectory in sysfs. The attributes associated with a bus are
 described by the bus_attribute structure :</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bus_attribute</span> <span class="p">{</span>
          <span class="k">struct</span> <span class="n">attribute</span>        <span class="n">attr</span><span class="p">;</span>
-         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">show</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">buf</span><span class="p">);</span>
-         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">store</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span>
+         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">show</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">);</span>
+         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">store</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -500,9 +500,9 @@ used to add/delete an attribute within the bus structure.</p>
 <span class="cp">#define MY_BUS_DESCR     &quot;SO2 rules forever&quot;</span>
 
 <span class="c1">// export a simple bus attribute</span>
-<span class="k">static</span> <span class="kt">ssize_t</span> <span class="nf">my_show_bus_descr</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bus</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">ssize_t</span> <span class="nf">my_show_bus_descr</span><span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bus</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="k">return</span> <span class="n">snprintf</span> <span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">PAGE_SIZE</span><span class="p">,</span> <span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">MY_BUS_DESCR</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">PAGE_SIZE</span><span class="p">,</span> <span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">MY_BUS_DESCR</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="cm">/*</span>
@@ -510,24 +510,24 @@ used to add/delete an attribute within the bus structure.</p>
 <span class="cm"> * full name is bus_attr_descr;</span>
 <span class="cm"> * sysfs entry should be /sys/bus/mybus/descr</span>
 <span class="cm"> */</span>
-<span class="n">BUS_ATTR</span> <span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="mo">0444</span><span class="p">,</span> <span class="n">my_show_bus_descr</span> <span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">BUS_ATTR</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="mo">0444</span><span class="p">,</span> <span class="n">my_show_bus_descr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
 <span class="c1">// specify attribute - in module init function</span>
-<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_bus_init</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_bus_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
         <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
         <span class="c1">//...</span>
-        <span class="n">err</span> <span class="o">=</span> <span class="n">bus_create_file</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bus_attr_descr</span><span class="p">);</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">bus_create_file</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bus_attr_descr</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
                 <span class="cm">/* handle error */</span>
         <span class="p">}</span>
         <span class="c1">//...</span>
 <span class="p">}</span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_bus_exit</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_bus_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
         <span class="c1">//...</span>
-        <span class="n">bus_remove_file</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bus_attr_descr</span><span class="p">);</span>
+        <span class="n">bus_remove_file</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bus_attr_descr</span><span class="p">);</span>
         <span class="c1">//...</span>
 <span class="p">}</span>
 </pre></div>
@@ -556,7 +556,7 @@ the kernel has an entry in <code class="docutils literal"><span class="pre">/sys
         <span class="k">struct</span> <span class="n">device_driver</span>    <span class="o">*</span><span class="n">driver</span><span class="p">;</span>    <span class="cm">/* which driver has allocated this</span>
 <span class="cm">                                             device */</span>
         <span class="c1">//...</span>
-        <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
+        <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -586,14 +586,14 @@ device, as shown below:</p>
 <span class="cm">/* BUS DEVICE (parent) */</span>
 
 <span class="c1">// parent device release</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_bus_device_release</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_bus_device_release</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="p">}</span>
 
 <span class="c1">// parent device</span>
 <span class="k">static</span> <span class="k">struct</span> <span class="n">device</span> <span class="n">my_bus_device</span> <span class="o">=</span> <span class="p">{</span>
   <span class="p">.</span><span class="n">init_name</span>   <span class="o">=</span> <span class="s">&quot;mybus0&quot;</span><span class="p">,</span>
-  <span class="p">.</span><span class="n">release</span>  <span class="o">=</span> <span class="n">my_bus_device_release</span>
+  <span class="p">.</span><span class="n">release</span>     <span class="o">=</span> <span class="n">my_bus_device_release</span>
 <span class="p">};</span>
 
 <span class="cm">/* DEVICE */</span>
@@ -602,28 +602,28 @@ device, as shown below:</p>
 <span class="cm"> * as we are not using the reference count, we use a no-op</span>
 <span class="cm"> * release function</span>
 <span class="cm"> */</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_dev_release</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_dev_release</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">my_register_device</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device</span> <span class="o">*</span><span class="n">mydev</span><span class="p">)</span>
+<span class="kt">int</span> <span class="nf">my_register_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_device</span> <span class="o">*</span><span class="n">mydev</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">bus</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">;</span>
   <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">parent</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_bus_device</span><span class="p">;</span>
   <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">release</span> <span class="o">=</span> <span class="n">my_dev_release</span><span class="p">;</span>
   <span class="n">dev_set_name</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
 
-  <span class="k">return</span> <span class="n">device_register</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">device_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="nf">my_unregister_device</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device</span> <span class="o">*</span> <span class="n">mydev</span><span class="p">)</span>
+<span class="kt">void</span> <span class="nf">my_unregister_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_device</span> <span class="o">*</span><span class="n">mydev</span><span class="p">)</span>
 <span class="p">{</span>
-  <span class="n">device_unregister</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
+  <span class="n">device_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="cm">/* export register/unregister device functions */</span>
-<span class="n">EXPORT_SYMBOL</span> <span class="p">(</span><span class="n">my_register_device</span><span class="p">);</span>
-<span class="n">EXPORT_SYMBOL</span> <span class="p">(</span><span class="n">my_unregister_device</span><span class="p">);</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_register_device</span><span class="p">);</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_unregister_device</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>As seen, the functions <code class="docutils literal"><span class="pre">my_register_device</span></code> and <code class="docutils literal"><span class="pre">my_unregister_device</span></code>, used
@@ -680,11 +680,11 @@ the drivers associated to each bus.</p>
          <span class="k">struct</span> <span class="n">module</span>           <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
          <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">mod_name</span><span class="p">;</span>     <span class="cm">/* used for built-in modules */</span>
 
-         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)</span>        <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
-         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)</span>       <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
-         <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)</span>     <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
-         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">suspend</span><span class="p">)</span>      <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span> <span class="n">pm_message_t</span> <span class="n">state</span><span class="p">);</span>
-         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">resume</span><span class="p">)</span>       <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)</span>        <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)</span>       <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)</span>     <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">suspend</span><span class="p">)</span>      <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="n">pm_message_t</span> <span class="n">state</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">resume</span><span class="p">)</span>       <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -709,25 +709,25 @@ incorporated into another structure specific to a particular bus (PCI, USB, etc.
 
 <span class="cp">#define to_my_driver(drv) container_of(drv, struct my_driver, driver);</span>
 
-<span class="kt">int</span> <span class="nf">my_register_driver</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="kt">int</span> <span class="nf">my_register_driver</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
 
   <span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">.</span><span class="n">bus</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">;</span>
-  <span class="n">err</span><span class="o">=</span> <span class="n">driver_register</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">);</span>
+  <span class="n">err</span><span class="o">=</span> <span class="n">driver_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="nf">my_unregister_driver</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="kt">void</span> <span class="nf">my_unregister_driver</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
 <span class="p">{</span>
-  <span class="n">driver_unregister</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">);</span>
+  <span class="n">driver_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="cm">/* export register/unregister driver functions */</span>
-<span class="n">EXPORT_SYMBOL</span> <span class="p">(</span><span class="n">my_register_driver</span><span class="p">);</span>
-<span class="n">EXPORT_SYMBOL</span> <span class="p">(</span><span class="n">my_unregister_driver</span><span class="p">);</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_register_driver</span><span class="p">);</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_unregister_driver</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Driver registration/unregistration operations are exported for use in
@@ -816,7 +816,7 @@ used for initialization/deinitialization.</p>
         <span class="c1">//...</span>
 <span class="p">}</span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_cleanup</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_cleanup</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
         <span class="c1">//...</span>
         <span class="n">class_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">);</span>
@@ -952,9 +952,9 @@ the table <code class="docutils literal"><span class="pre">parport_pc_pnp_tbl</s
 </div>
 <p>Each driver declares and initializes a structure <code class="docutils literal"><span class="pre">pnp_driver</span></code>, such as
 <code class="docutils literal"><span class="pre">parport_pc_pnp_driver</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">parport_pc_pnp_probe</span> <span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
-                                                      <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">parport_pc_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">parport_pc_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
+                                                     <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">parport_pc_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span><span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
 
 <span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">parport_pc_pnp_driver</span> <span class="o">=</span> <span class="p">{</span>
          <span class="p">.</span><span class="n">name</span>           <span class="o">=</span> <span class="s">&quot;parport_pc&quot;</span><span class="p">,</span>
@@ -971,7 +971,7 @@ As all the structures presented above, the driver must be registered to the
 system:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">parport_pc_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
                 <span class="cm">/* handle error */</span>
         <span class="p">}</span>
@@ -979,7 +979,7 @@ system:</p>
 
 <span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">parport_pc_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="n">pnp_unregister_driver</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
+        <span class="n">pnp_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1015,7 +1015,7 @@ structure of type <code class="xref c c-type docutils literal"><span class="pre"
 
 <span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1069,7 +1069,7 @@ structure using the <code class="xref c c-func docutils literal"><span class="pr
 
 <span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="n">pnp_unregister_driver</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
+        <span class="n">pnp_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1084,8 +1084,8 @@ from <code class="docutils literal"><span class="pre">sysfs</span></code> will a
 This operation will take place in the <code class="docutils literal"><span class="pre">probe</span></code> function, which is called when
 a new device is detected. A device attached to the <code class="docutils literal"><span class="pre">PNP</span></code> bus will be added to
 the system by the function <code class="docutils literal"><span class="pre">probe</span></code> from the <code class="docutils literal"><span class="pre">pnp_driver</span></code> structure:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_pnp_probe</span> <span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
-                                                      <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
+                                             <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">{</span>
         <span class="kt">int</span> <span class="n">err</span><span class="p">,</span> <span class="n">iobase</span><span class="p">,</span> <span class="n">nr_ports</span><span class="p">,</span> <span class="n">irq</span><span class="p">;</span>
 
         <span class="c1">//get irq &amp; ports</span>
@@ -1126,7 +1126,7 @@ driver is unloaded. This operation is done in the <code class="docutils literal"
 is called when a device is removed from the system.
 In case of a device attached to the <code class="docutils literal"><span class="pre">PNP</span></code> bus, the unregister will be done
 in the <code class="docutils literal"><span class="pre">remove</span></code> function specified in the <code class="docutils literal"><span class="pre">pnp_driver</span></code> structure:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
          <span class="cm">/* unregister device dev */</span>
 <span class="p">}</span>
 
@@ -1272,6 +1272,11 @@ and create a new device.</p>
 <span class="p">}</span>
 <span class="n">BUS_ATTR</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="n">S_IWUSR</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">add_store</span><span class="p">);</span>
 </pre></div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The store functions should return <code class="docutils literal"><span class="pre">0</span></code> if
+<code class="docutils literal"><span class="pre">bex_add_dev</span></code>/<code class="docutils literal"><span class="pre">bex_del_dev</span></code> fail and <code class="docutils literal"><span class="pre">count</span></code> otherwise.</p>
 </div>
 <p>Create a new device and observe that is visible in
 <code class="docutils literal"><span class="pre">/sys/bus/devices</span></code>. Delete it and observe it disapears from <code class="docutils literal"><span class="pre">sysfs</span></code>.</p>

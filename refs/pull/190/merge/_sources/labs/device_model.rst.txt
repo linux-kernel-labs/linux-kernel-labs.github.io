@@ -53,7 +53,6 @@ To maintain this information, the kernel uses the following entities:
     include devices (hierarchical view of all devices in the system), buses (bus
     view of devices according to how they are attached to buses), classes, etc.
 
-
 sysfs
 =====
 
@@ -200,10 +199,10 @@ In the Linux Device Model, a bus is represented by the structure
             struct driver_attribute *drv_attrs;
             struct subsys_private *p;
 
-            int             (*match)(struct device * dev, struct device_driver * drv);
+            int             (*match)(struct device *dev, struct device_driver *drv);
             int             (*uevent)(struct device *dev, struct kobj_uevent_env *env);
-            int             (*probe)(struct device * dev);
-            int             (*remove)(struct device * dev);
+            int             (*probe)(struct device *dev);
+            int             (*remove)(struct device *dev);
             //...
     };
 
@@ -227,26 +226,26 @@ Implementation example:
 
     //bus type
     struct bus_type my_bus_type = {
-      .name = "mybus",
+      .name   = "mybus",
       .match  = my_match,
       .uevent = my_uevent,
     };
 
-    static int __init my_bus_init (void)
+    static int __init my_bus_init(void)
     {
       int err;
 
       //...
-      err = bus_register (&my_bus_type);
+      err = bus_register(&my_bus_type);
       if (err)
         return err;
       //...
     }
 
-    static void __exit my_bus_exit (void)
+    static void __exit my_bus_exit(void)
     {
       //...
-      bus_unregister (&my_bus_type);
+      bus_unregister(&my_bus_type);
       //...
     }
 
@@ -261,13 +260,13 @@ The functions that will normally be initialized within a bus_type structure are
     /* mybus.c */
 
     // match devices to drivers; just do a simple name test
-    static int my_match (struct device *dev, struct device_driver *driver)
+    static int my_match(struct device *dev, struct device_driver *driver)
     {
-      return strncmp (dev_name(dev), driver->name, strlen (driver->name));
+      return strncmp(dev_name(dev), driver->name, strlen(driver->name));
     }
 
     // respond to hotplug user events; add environment variable DEV_NAME
-    static int my_uevent (struct device *dev, struct kobj_uevent_env *env)
+    static int my_uevent(struct device *dev, struct kobj_uevent_env *env)
     {
       add_uevent_var(env, "DEV_NAME=%s", dev_name(dev));
       return 0;
@@ -294,8 +293,8 @@ described by the bus_attribute structure :
 
   struct bus_attribute {
            struct attribute        attr;
-           ssize_t (*show)(struct bus_type *, char * buf);
-           ssize_t (*store)(struct bus_type *, const char * buf, size_t count);
+           ssize_t (*show)(struct bus_type *, char *buf);
+           ssize_t (*store)(struct bus_type *, const char *buf, size_t count);
   };
 
 Typically, an attribute is defined by the :c:macro:`BUS_ATTR` macro.
@@ -311,9 +310,9 @@ An example of defining an attribute for ``my_bus`` is shown below:
     #define MY_BUS_DESCR     "SO2 rules forever"
 
     // export a simple bus attribute
-    static ssize_t my_show_bus_descr (struct bus_type *bus, char *buf)
+    static ssize_t my_show_bus_descr(struct bus_type *bus, char *buf)
     {
-            return snprintf (buf, PAGE_SIZE, "%s\n", MY_BUS_DESCR);
+            return snprintf(buf, PAGE_SIZE, "%s\n", MY_BUS_DESCR);
     }
 
     /*
@@ -321,24 +320,24 @@ An example of defining an attribute for ``my_bus`` is shown below:
      * full name is bus_attr_descr;
      * sysfs entry should be /sys/bus/mybus/descr
      */
-    BUS_ATTR (descr, 0444, my_show_bus_descr , NULL);
+    BUS_ATTR(descr, 0444, my_show_bus_descr, NULL);
 
     // specify attribute - in module init function
-    static int __init my_bus_init (void)
+    static int __init my_bus_init(void)
     {
             int err;
             //...
-            err = bus_create_file (&my_bus_type, &bus_attr_descr);
-            if(err) {
+            err = bus_create_file(&my_bus_type, &bus_attr_descr);
+            if (err) {
                     /* handle error */
             }
             //...
     }
 
-    static void __exit my_bus_exit (void)
+    static void __exit my_bus_exit(void)
     {
             //...
-            bus_remove_file (&my_bus_type, &bus_attr_descr);
+            bus_remove_file(&my_bus_type, &bus_attr_descr);
             //...
     }
 
@@ -372,7 +371,7 @@ At the lowest level, a device in Linux Device Model is represented by a
             struct device_driver    *driver;    /* which driver has allocated this
                                                  device */
             //...
-            void    (*release)(struct device * dev);
+            void    (*release)(struct device *dev);
     };
 
 Structure fields include the parent device that is usually a controller, the
@@ -409,14 +408,14 @@ device, as shown below:
     /* BUS DEVICE (parent) */
 
     // parent device release
-    static void my_bus_device_release (struct device *dev)
+    static void my_bus_device_release(struct device *dev)
     {
     }
 
     // parent device
     static struct device my_bus_device = {
       .init_name   = "mybus0",
-      .release  = my_bus_device_release
+      .release     = my_bus_device_release
     };
 
     /* DEVICE */
@@ -425,28 +424,28 @@ device, as shown below:
      * as we are not using the reference count, we use a no-op
      * release function
      */
-    static void my_dev_release (struct device *dev)
+    static void my_dev_release(struct device *dev)
     {
     }
 
-    int my_register_device (struct my_device *mydev)
+    int my_register_device(struct my_device *mydev)
     {
       mydev->dev.bus = &my_bus_type;
       mydev->dev.parent = &my_bus_device;
       mydev->dev.release = my_dev_release;
       dev_set_name(&mydev->dev, mydev->name);
 
-      return device_register (&mydev->dev);
+      return device_register(&mydev->dev);
     }
 
-    void my_unregister_device (struct my_device * mydev)
+    void my_unregister_device(struct my_device *mydev)
     {
-      device_unregister (&mydev->dev);
+      device_unregister(&mydev->dev);
     }
 
     /* export register/unregister device functions */
-    EXPORT_SYMBOL (my_register_device);
-    EXPORT_SYMBOL (my_unregister_device);
+    EXPORT_SYMBOL(my_register_device);
+    EXPORT_SYMBOL(my_unregister_device);
 
 As seen, the functions ``my_register_device`` and ``my_unregister_device``, used
 to add/remove a device to/from a bus, are defined in the same file where the
@@ -510,11 +509,11 @@ A device driver is identified by the structure :c:type:`struct device_driver`:
              struct module           *owner;
              const char              *mod_name;     /* used for built-in modules */
 
-             int     (*probe)        (struct device * dev);
-             int     (*remove)       (struct device * dev);
-             void    (*shutdown)     (struct device * dev);
-             int     (*suspend)      (struct device * dev, pm_message_t state);
-             int     (*resume)       (struct device * dev);
+             int     (*probe)        (struct device *dev);
+             int     (*remove)       (struct device *dev);
+             void    (*shutdown)     (struct device *dev);
+             int     (*suspend)      (struct device *dev, pm_message_t state);
+             int     (*resume)       (struct device *dev);
     };
 
 Among the structure fields we find the name of the driver (appears in ``sysfs``),
@@ -544,25 +543,25 @@ incorporated into another structure specific to a particular bus (PCI, USB, etc.
 
     #define to_my_driver(drv) container_of(drv, struct my_driver, driver);
 
-    int my_register_driver (struct my_driver *driver)
+    int my_register_driver(struct my_driver *driver)
     {
       int err;
 
       driver->driver.bus = &my_bus_type;
-      err= driver_register (&driver->driver);
+      err= driver_register(&driver->driver);
       if (err)
         return err;
       return 0;
     }
 
-    void my_unregister_driver (struct my_driver *driver)
+    void my_unregister_driver(struct my_driver *driver)
     {
-      driver_unregister (&driver->driver);
+      driver_unregister(&driver->driver);
     }
 
     /* export register/unregister driver functions */
-    EXPORT_SYMBOL (my_register_driver);
-    EXPORT_SYMBOL (my_unregister_driver);
+    EXPORT_SYMBOL(my_register_driver);
+    EXPORT_SYMBOL(my_unregister_driver);
 
 Driver registration/unregistration operations are exported for use in
 other modules.
@@ -664,7 +663,7 @@ used for initialization/deinitialization.
             //...
     }
 
-    static void __exit my_cleanup (void)
+    static void __exit my_cleanup(void)
     {
             //...
             class_unregister(&my_class);
@@ -817,9 +816,9 @@ Each driver declares and initializes a structure ``pnp_driver``, such as
 
 .. code-block:: c
 
-    static int parport_pc_pnp_probe (struct pnp_dev * dev, const struct pnp_id *card_id,
-                                                          const struct pnp_id *dev_id);
-    static void parport_pc_pnp_remove(struct pnp_dev * dev);
+    static int parport_pc_pnp_probe(struct pnp_dev *dev, const struct pnp_id *card_id,
+                                                         const struct pnp_id *dev_id);
+    static void parport_pc_pnp_remove(struct pnp_dev* dev);
 
     static struct pnp_driver parport_pc_pnp_driver = {
              .name           = "parport_pc",
@@ -838,7 +837,7 @@ system:
 
     static int __init parport_pc_init(void)
     {
-            err = pnp_register_driver (&parport_pc_pnp_driver);
+            err = pnp_register_driver(&parport_pc_pnp_driver);
             if (err < 0) {
                     /* handle error */
             }
@@ -846,7 +845,7 @@ system:
 
     static void __exit parport_pc_exit(void)
     {
-            pnp_unregister_driver (&parport_pc_pnp_driver);
+            pnp_unregister_driver(&parport_pc_pnp_driver);
     }
 
 PNP operations
@@ -887,7 +886,7 @@ structure of type :c:type:`struct pnp_driver` and register it using
 
     static int __init my_init(void)
     {
-            err = pnp_register_driver (&my_pnp_driver);
+            err = pnp_register_driver(&my_pnp_driver);
     }
 
 Unlike legacy drivers, plug and play drivers don't register devices at
@@ -947,7 +946,7 @@ structure using the :c:func:`pnp_unregister_driver` function:
 
     static void __exit my_exit(void)
     {
-            pnp_unregister_driver (&my_pnp_driver);
+            pnp_unregister_driver(&my_pnp_driver);
     }
 
 Unlike legacy drivers, plug and play drivers don't unregister devices in the
@@ -965,8 +964,8 @@ the system by the function ``probe`` from the ``pnp_driver`` structure:
 
 .. code-block:: c
 
-    static int my_pnp_probe (struct pnp_dev * dev, const struct pnp_id *card_id,
-                                                          const struct pnp_id *dev_id) {
+    static int my_pnp_probe(struct pnp_dev *dev, const struct pnp_id *card_id,
+                                                 const struct pnp_id *dev_id) {
             int err, iobase, nr_ports, irq;
 
             //get irq & ports
@@ -1010,7 +1009,7 @@ in the ``remove`` function specified in the ``pnp_driver`` structure:
 
 .. code-block:: c
 
-    static void my_pnp_remove(struct pnp_dev * dev) {
+    static void my_pnp_remove(struct pnp_dev *dev) {
              /* unregister device dev */
     }
 
@@ -1113,6 +1112,9 @@ An example for the store function is the following:
       ...
     }
     BUS_ATTR(add, S_IWUSR, NULL, add_store);
+
+.. hint:: The store functions should return ``0`` if
+          ``bex_add_dev``/``bex_del_dev`` fail and ``count`` otherwise.
 
 Create a new device and observe that is visible in
 ``/sys/bus/devices``. Delete it and observe it disapears from ``sysfs``.
