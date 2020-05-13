@@ -267,7 +267,7 @@ The functions that will normally be initialized within a bus_type structure are
     }
 
     // respond to hotplug user events; add environment variable DEV_NAME
-     static int my_uevent (struct device *dev, struct kobj_uevent_env *env)
+    static int my_uevent (struct device *dev, struct kobj_uevent_env *env)
     {
       add_uevent_var(env, "DEV_NAME=%s", dev_name(dev));
       return 0;
@@ -356,7 +356,7 @@ system initialization) and are registered in the system. Each device present in
 the kernel has an entry in ``/sys/devices``.
 
 At the lowest level, a device in Linux Device Model is represented by a
-:c:type`struct device` structure:
+:c:type:`struct device` structure:
 
 .. code-block:: c
 
@@ -537,7 +537,7 @@ incorporated into another structure specific to a particular bus (PCI, USB, etc.
     /* mybus.c */
 
     // my driver type
-     struct my_driver {
+    struct my_driver {
       struct module *module;
       struct device_driver driver;
     };
@@ -871,9 +871,9 @@ Thus, it will be registered in the system using the functions provided by
 the bus for this purpose.
 Usually, the bus provides a particular driver structure containing a
 :c:type:`struct device_driver` structure, that the driver must initialize and
-register using a function ``\*_register_driver``.
+register using a function ``*_register_driver``.
 For example, for the ``PNP`` bus, the driver must declare and initialize a
-structure of type :c:type:`struct pnp_driver`` and register it using
+structure of type :c:type:`struct pnp_driver` and register it using
 ``pnp_register_drvier``:
 
 .. code-block:: c
@@ -907,7 +907,7 @@ For example, a driver associated to a ``PNP`` bus defines a table of type
 :c:type:`struct pnp_device_id` and initializes the field ``id_table`` from the
 structure ``pnp_driver my_pnp_driver`` with a pointer to it:
 
-.. code-block::c
+.. code-block:: c
 
     static const struct pnp_device_id my_pnp_tbl[] = {
              /* Standard LPT Printer Port */
@@ -941,7 +941,7 @@ legacy driver, we must unregister the ``device_driver`` structure.
 For a driver associated with the ``PNP`` bus, we must unregister the ``pnp_driver``
 structure using the :c:func:`pnp_unregister_driver` function:
 
-.. code-block::c
+.. code-block:: c
 
     static struct pnp_driver my_pnp_driver;
 
@@ -1146,7 +1146,7 @@ time the ``probe`` function from the ``bex_misc`` driver is called.
 5. Register misc device in the bex_misc probe function
 ------------------------------------------------------
 
-Modify **bex.c** to refuse probing if ``version > 1``. Also, register the
+Modify **bex_misc.c** to refuse probing if ``version > 1``. Also, register the
 defined misc device in ``bex_misc_probe`` and deregister it in
 ``bex_misc_remove``. Follow the **TODO 6** markings.
 

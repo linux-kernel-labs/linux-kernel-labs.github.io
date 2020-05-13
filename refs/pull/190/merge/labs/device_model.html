@@ -463,7 +463,7 @@ inspection of the devices connected to the bus.</p>
 <span class="p">}</span>
 
 <span class="c1">// respond to hotplug user events; add environment variable DEV_NAME</span>
- <span class="k">static</span> <span class="kt">int</span> <span class="nf">my_uevent</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_uevent</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="n">add_uevent_var</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&quot;DEV_NAME=%s&quot;</span><span class="p">,</span> <span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">));</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
@@ -543,7 +543,7 @@ Devices are discovered by different kernel methods (hotplug, device drivers,
 system initialization) and are registered in the system. Each device present in
 the kernel has an entry in <code class="docutils literal"><span class="pre">/sys/devices</span></code>.</p>
 <p>At the lowest level, a device in Linux Device Model is represented by a
-:c:type`struct device` structure:</p>
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code> structure:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
         <span class="c1">//...</span>
         <span class="k">struct</span> <span class="n">device</span>           <span class="o">*</span><span class="n">parent</span><span class="p">;</span>
@@ -702,7 +702,7 @@ incorporated into another structure specific to a particular bus (PCI, USB, etc.
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* mybus.c */</span>
 
 <span class="c1">// my driver type</span>
- <span class="k">struct</span> <span class="n">my_driver</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="n">my_driver</span> <span class="p">{</span>
   <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">module</span><span class="p">;</span>
   <span class="k">struct</span> <span class="n">device_driver</span> <span class="n">driver</span><span class="p">;</span>
 <span class="p">};</span>
@@ -1002,9 +1002,9 @@ Thus, it will be registered in the system using the functions provided by
 the bus for this purpose.
 Usually, the bus provides a particular driver structure containing a
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code> structure, that the driver must initialize and
-register using a function <code class="docutils literal"><span class="pre">\*_register_driver</span></code>.
+register using a function <code class="docutils literal"><span class="pre">*_register_driver</span></code>.
 For example, for the <code class="docutils literal"><span class="pre">PNP</span></code> bus, the driver must declare and initialize a
-structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_driver`</span></code> and register it using
+structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_driver</span></code> and register it using
 <code class="docutils literal"><span class="pre">pnp_register_drvier</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span> <span class="p">{</span>
          <span class="p">.</span><span class="n">name</span>           <span class="o">=</span> <span class="s">&quot;mydriver&quot;</span><span class="p">,</span>
@@ -1034,6 +1034,23 @@ driver structure.
 For example, a driver associated to a <code class="docutils literal"><span class="pre">PNP</span></code> bus defines a table of type
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_device_id</span></code> and initializes the field <code class="docutils literal"><span class="pre">id_table</span></code> from the
 structure <code class="docutils literal"><span class="pre">pnp_driver</span> <span class="pre">my_pnp_driver</span></code> with a pointer to it:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_device_id</span> <span class="n">my_pnp_tbl</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="cm">/* Standard LPT Printer Port */</span>
+         <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0400&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
+         <span class="cm">/* ECP Printer Port */</span>
+         <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0401&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
+         <span class="p">{</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pnp</span><span class="p">,</span><span class="n">my_pnp_tbl</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="c1">//...</span>
+         <span class="p">.</span><span class="n">id_table</span>       <span class="o">=</span> <span class="n">my_pnp_tbl</span><span class="p">,</span>
+         <span class="c1">//...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
 <p>In the example above, the driver supports multiple parallel port devices,
 defined in the table <code class="docutils literal"><span class="pre">my_pnp_tbl</span></code>.  This information is used by the bus in
 the <code class="docutils literal"><span class="pre">match_device</span></code> function.
@@ -1048,6 +1065,14 @@ to associate the driver with any connected device that it supports.</p>
 legacy driver, we must unregister the <code class="docutils literal"><span class="pre">device_driver</span></code> structure.
 For a driver associated with the <code class="docutils literal"><span class="pre">PNP</span></code> bus, we must unregister the <code class="docutils literal"><span class="pre">pnp_driver</span></code>
 structure using the <code class="xref c c-func docutils literal"><span class="pre">pnp_unregister_driver()</span></code> function:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">pnp_unregister_driver</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>Unlike legacy drivers, plug and play drivers don’t unregister devices in the
 module unload function (<code class="docutils literal"><span class="pre">my_exit</span></code>). When a driver is removed, all the
 references to it will be removed for all the devices it supports, and entries
@@ -1278,7 +1303,7 @@ time the <code class="docutils literal"><span class="pre">probe</span></code> fu
 </div>
 <div class="section" id="register-misc-device-in-the-bex-misc-probe-function">
 <h3>5. Register misc device in the bex_misc probe function<a class="headerlink" href="#register-misc-device-in-the-bex-misc-probe-function" title="Permalink to this headline">¶</a></h3>
-<p>Modify <strong>bex.c</strong> to refuse probing if <code class="docutils literal"><span class="pre">version</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>. Also, register the
+<p>Modify <strong>bex_misc.c</strong> to refuse probing if <code class="docutils literal"><span class="pre">version</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>. Also, register the
 defined misc device in <code class="docutils literal"><span class="pre">bex_misc_probe</span></code> and deregister it in
 <code class="docutils literal"><span class="pre">bex_misc_remove</span></code>. Follow the <strong>TODO 6</strong> markings.</p>
 <div class="admonition hint">
