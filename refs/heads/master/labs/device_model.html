@@ -129,10 +129,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#drivers">Drivers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#hotplug">Hotplug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#plug-and-play">Plug and Play</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#plug-and-play">Plug and Play</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pnp-bus">PNP bus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pnp-operations">PNP operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#add-driver">Add driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-driver">Adding a driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removing-a-driver">Removing a driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-device">Adding a new device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removing-a-device">Removing a device</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
@@ -221,12 +226,12 @@
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Plug and Play is a technology that offers support for automatically adding and
-removing devices to your system. This reduces conflicts with the resources they
+removing devices to the system. This reduces conflicts with the resources they
 use by automatically configuring them at system startup. In order to achieve
 these goals, the following features are required:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Automatic detection of adding and removing devices in the system (the  device
+<li>Automatic detection of adding and removing devices in the system (the device
 and its bus must notify the appropriate driver that a configuration change
 occurred).</li>
 <li>Resource management (addresses, irq lines, DMA channels, memory areas),
@@ -237,18 +242,18 @@ interrupts, DMA resources - must allow for driver assignment).</li>
 operating system when needed.</li>
 <li>When the device and its bus allow, the system should be able to add or
 remove the device from the system while it is running, without having to reboot
-the system ( hotplug ).</li>
+the system (hotplug).</li>
 </ul>
 </div></blockquote>
-<p>For a system to support plug and play, the BIOS , operating system and device
-must support this technology. The device must have an ID that will provide the
+<p>For a system to support plug and play, the BIOS, operating system and the device
+must support this technology. The device must have an ID that will provide to the
 driver for identification, and the operating system must be able to identify
 these configuration changes as they appear.</p>
 <p>Plug and play devices are: PCI devices (network cards), USB (keyboard, mouse,
 printer), etc.</p>
 <p>Prior to version 2.6, the kernel did not have a unified model to get
-information about it. For this reason, a model for Linux devices, Linux Device
-Model, was developed.</p>
+information about devices.
+For this reason, a model for Linux devices, Linux Device Model, was developed.</p>
 <p>The primary purpose of this model is to maintain internal data structures that
 reflect the state and structure of the system. Such information includes what
 devices are in the system, how they are in terms of power management, what bus
@@ -262,7 +267,7 @@ buses, devices, drivers in the system.</p>
 operations with it</li>
 <li>bus - a device to which other devices can be attached</li>
 <li>class - a type of device that has a similar behavior; There is a class for
-discs, partitions, serial ports, etc.</li>
+disks, partitions, serial ports, etc.</li>
 <li>subsystem - a view on the structure of the system; Kernel subsystems
 include devices (hierarchical view of all devices in the system), buses (bus
 view of devices according to how they are attached to buses), classes, etc.</li>
@@ -307,335 +312,453 @@ example, the ethi PCI card)</li>
 </ul>
 </div></blockquote>
 <p>Other attributes are available, depending on the bus and driver used.</p>
+<img alt="../_images/plug_and_play-sysfs.png" src="../_images/plug_and_play-sysfs.png" />
 </div>
 <div class="section" id="basic-structures-in-linux-devices">
 <h2>Basic Structures in Linux Devices<a class="headerlink" href="#basic-structures-in-linux-devices" title="Permalink to this headline">¶</a></h2>
 <p>Linux Device Model provides a number of structures to ensure the interaction
 between a hardware device and a device driver. The whole model is based on
-kobject structure. With this structure, hierarchies are built and the following
+kobject structure. Hierarchies are built using this structure and the following
 structures are implemented:</p>
 <blockquote>
 <div><ul class="simple">
-<li>structure bus_type</li>
+<li>struct bus_type</li>
 <li>struct device</li>
 <li>struct device_driver</li>
 </ul>
 </div></blockquote>
+<img alt="../_images/plug_and_play-linux_device_model_structures.png" src="../_images/plug_and_play-linux_device_model_structures.png" />
 <div class="section" id="the-kobject-structure">
 <h3>The kobject structure<a class="headerlink" href="#the-kobject-structure" title="Permalink to this headline">¶</a></h3>
-<p>A kobject structure does not perform a single function. Such a structure is
-usually integrated into a larger structure. A kobject structure actually
+<p>A kobject structure does not perform a single function. This structure is
+usually integrated into a larger one. A kobject structure actually
 incorporates a set of features that will be offered to a higher abstraction
 object in the Linux Device Model hierarchy.</p>
 <p>For example, the cdev structure has the following definition:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">cdev</span> <span class="p">{</span>
-        <span class="k">struct</span> <span class="n">kobject</span> <span class="n">kobj</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span> <span class="n">owner</span> <span class="p">;</span>
-        <span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="o">*</span> <span class="n">ops</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">list_head</span> <span class="n">list</span> <span class="p">;</span>
-        <span class="kt">dev_t</span> <span class="n">dev</span> <span class="p">;</span>
-        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span> <span class="p">;</span>
-<span class="p">}</span> <span class="p">;</span>
-</pre></div>
-</div>
-<p>Note that this structure includes a kobject structure field.</p>
-<p>A kobject structure structure is defined as follows:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">kobject</span> <span class="p">{</span>
-        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">list_head</span> <span class="n">entry</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">kobject</span> <span class="o">*</span> <span class="n">parent</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">kset</span> <span class="o">*</span> <span class="n">kset</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">kobj_type</span> <span class="o">*</span> <span class="n">ktype</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">sysfs_dirent</span> <span class="o">*</span> <span class="n">sd</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">kref</span> <span class="n">kref</span> <span class="p">;</span>
-        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_initialized</span> <span class="p">:</span> <span class="mi">1</span> <span class="p">;</span>
-        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_in_sysfs</span> <span class="p">:</span> <span class="mi">1</span> <span class="p">;</span>
-        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_add_uevent_sent</span> <span class="p">:</span> <span class="mi">1</span> <span class="p">;</span>
-        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_remove_uevent_sent</span> <span class="p">:</span> <span class="mi">1</span> <span class="p">;</span>
-        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">uevent_suppress</span> <span class="p">:</span> <span class="mi">1</span> <span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">cdev</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">kobject</span> <span class="n">kob</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+        <span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="o">*</span><span class="n">ops</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">list_head</span> <span class="n">list</span><span class="p">;</span>
+        <span class="kt">dev_t</span> <span class="n">dev</span><span class="p">;</span>
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>As we can see, the kobject structures are in a hierarchy : an object has a
+<p>Note that this structure includes a <code class="docutils literal"><span class="pre">kobject</span></code> structure field.</p>
+<p>A kobject structure is defined as follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kobject</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">list_head</span>        <span class="n">entry</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kobject</span>          <span class="o">*</span><span class="n">parent</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kset</span>             <span class="o">*</span><span class="n">kset</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kobj_type</span>        <span class="o">*</span><span class="n">ktype</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">sysfs_dirent</span>     <span class="o">*</span><span class="n">sd</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kref</span>             <span class="n">kref</span><span class="p">;</span>
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_initialized</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_in_sysfs</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_add_uevent_sent</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">state_remove_uevent_sent</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">uevent_suppress</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>As we can see, the kobject structures are in a hierarchy: an object has a
 parent and holds a kset member, which contains objects on the same level.</p>
-<p>Working with the structure involves initializing it with the kobject_init
-function. Also in the initialization process it is necessary to establish the
-name of the kobject structure, which will appear in sysfs, using the
-kobject_set_name function.</p>
-<p>Any operation on a kobject is done by incrementing its internal counter with
-kobject_get, or decrementing if it is no longer used with kobject_put . Thus,
-a kobject object will only be released when its internal counter reaches 0. A
-method of notifying this is needed so that the resources associated with the
-device structure are released Included kobject structure (for example, cdev ).
-The method is called release and is associated with the object via the ktype
-field (struct kobj_type).</p>
-<p>The kobject structure structure is the basic structure of the Linux Device
-Model. The structures in the higher levels of the model are struct bus_type ,
-struct device and struct device_driver .</p>
+<p>Working with the structure involves initializing it with the
+<code class="xref c c-func docutils literal"><span class="pre">kobject_init()</span></code> function.
+Also in the initialization process it is necessary to set the name of the
+<code class="docutils literal"><span class="pre">kobject</span></code> structure, which will appear in sysfs, using the
+<code class="xref c c-func docutils literal"><span class="pre">kobject_set_name()</span></code> function.</p>
+<p>Any operation on a kobject is done by incrementing its internal counter using
+<code class="xref c c-func docutils literal"><span class="pre">kobject_get()</span></code>, or decrementing if it is no longer used using
+<code class="xref c c-func docutils literal"><span class="pre">kobject_put()</span></code>.
+Thus, a kobject object will only be released when its internal counter reaches 0.
+A method of notifying this is needed so that the resources associated with the
+device structure which included the kobject structure are released
+(for example, cdev).
+The method is called <code class="docutils literal"><span class="pre">release</span></code> and is associated with the object via the ktype
+field (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kobj_type</span></code>).</p>
+<p>The kobject structure is the basic structure of the Linux Device Model.
+The structures in the higher levels of the model are <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bus_type</span></code>,
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code>.</p>
 </div>
 <div class="section" id="buses">
 <h3>Buses<a class="headerlink" href="#buses" title="Permalink to this headline">¶</a></h3>
-<p>A bus is a communication channel between the processor and an input / output
-device. To ensure that the model is generic, all input / output devices are
+<p>A bus is a communication channel between the processor and an input/output
+device. To ensure that the model is generic, all input/output devices are
 connected to the processor via such a bus (even if it can be a virtual one
 without a physical hardware correspondent).</p>
-<p>When adding a system bus, it will appear in the sysfs file system in /sys/bus
+<p>When adding a system bus, it will appear in the sysfs file system in
+<code class="docutils literal"><span class="pre">/sys/bus</span></code>.
 As with kobjects, buses can be organized into hierarchies and will be represented
 in sysfs.</p>
-<p>In the Linux Device Model, a bus is represented by the struct bus_type:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">bus_type</span> <span class="p">{</span>
-        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
-        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">dev_name</span><span class="p">;</span>
-        <span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev_root</span> <span class="p">;</span>
-        <span class="k">struct</span> <span class="n">bus_attribute</span> <span class="o">*</span><span class="n">bus_attrs</span><span class="p">;</span>
+<p>In the Linux Device Model, a bus is represented by the structure
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bus_type</span></code>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bus_type</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">dev_name</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">device</span>           <span class="o">*</span><span class="n">dev_root</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">bus_attribute</span>    <span class="o">*</span><span class="n">bus_attrs</span><span class="p">;</span>
         <span class="k">struct</span> <span class="n">device_attribute</span> <span class="o">*</span><span class="n">dev_attrs</span><span class="p">;</span>
         <span class="k">struct</span> <span class="n">driver_attribute</span> <span class="o">*</span><span class="n">drv_attrs</span><span class="p">;</span>
-        <span class="n">structure</span> <span class="n">subsys_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">subsys_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
 
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">match</span><span class="p">)</span> <span class="p">(</span><span class="n">device</span> <span class="n">structure</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span><span class="p">);</span>
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">uevent</span><span class="p">)</span> <span class="p">(</span><span class="n">structure</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">);</span>
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)</span> <span class="p">(</span><span class="n">device</span> <span class="n">structure</span> <span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
-        <span class="c1">// ...</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">match</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span><span class="p">);</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">uevent</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">);</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+        <span class="kt">int</span>             <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+        <span class="c1">//...</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>It is noticed that a bus is associated with a name, lists of default
-attributes, a number of specific functions, and the driver’s private data. The
-uevent function (formerly hotplug) is used with hotplug devices.</p>
-<p>Bus operations are the registration operations, the implementation of the
-operations described in the bus_type structure structure and the scrolling and
-inspection operations of the devices connected to the bus.</p>
-<p>Recording a bus is done using bus_register , and registering using bus_unregister.</p>
-<p>Show example implementation</p>
-<p>The functions that will normally be initialized within a bus_type structure are
-match and uevent :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="cpf">&lt;linux/device.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="cpf">&lt;linux/string.h&gt;</span><span class="cp"></span>
+<p>It can be noticed that a bus has a name, lists of default attributes, a number
+of specific functions, and the driver’s private data.
+The <code class="docutils literal"><span class="pre">uevent</span></code> function (formerly <code class="docutils literal"><span class="pre">hotplug</span></code>) is used with hotplug devices.</p>
+<p>Bus operations are the registration, the implementation of the operations
+described in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bus_type</span></code> structure and the iteration and
+inspection of the devices connected to the bus.</p>
+<p>A bus is registered using <code class="xref c c-func docutils literal"><span class="pre">bus_register()</span></code>, and unregistered using
+<code class="xref c c-func docutils literal"><span class="pre">bus_unregister()</span></code>.</p>
+<p>Implementation example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/device.h&gt;</span><span class="cp"></span>
+<span class="cm">/* mybus.c */</span>
 
-<span class="cm">/* match devices to drivers;  Just do a simple name test */</span>
-<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_match</span> <span class="p">(</span><span class="n">structure</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="c1">//bus type</span>
+<span class="k">struct</span> <span class="n">bus_type</span> <span class="n">my_bus_type</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">.</span><span class="n">name</span>   <span class="o">=</span> <span class="s">&quot;mybus&quot;</span><span class="p">,</span>
+  <span class="p">.</span><span class="n">match</span>  <span class="o">=</span> <span class="n">my_match</span><span class="p">,</span>
+  <span class="p">.</span><span class="n">uevent</span> <span class="o">=</span> <span class="n">my_uevent</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_bus_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-   <span class="k">return</span> <span class="o">!</span><span class="n">strncmp</span><span class="p">(</span><span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">),</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">))</span> <span class="p">;</span>
+  <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+
+  <span class="c1">//...</span>
+  <span class="n">err</span> <span class="o">=</span> <span class="n">bus_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+  <span class="c1">//...</span>
 <span class="p">}</span>
 
-<span class="cm">/*  respond to hotplug user events;  Add environment variable DEV_NAME */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_bus_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">//...</span>
+  <span class="n">bus_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">);</span>
+  <span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The functions that will normally be initialized within a bus_type structure are
+<code class="docutils literal"><span class="pre">match</span></code> and <code class="docutils literal"><span class="pre">uevent</span></code>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/device.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;linux/string.h&gt;</span><span class="cp"></span>
+<span class="cm">/* mybus.c */</span>
+
+<span class="c1">// match devices to drivers; just do a simple name test</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_match</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">strncmp</span><span class="p">(</span><span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">),</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// respond to hotplug user events; add environment variable DEV_NAME</span>
 <span class="k">static</span> <span class="kt">int</span> <span class="nf">my_uevent</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">)</span>
 <span class="p">{</span>
-   <span class="n">add_uevent_var</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&quot;DEV_NAME =% s&quot;</span><span class="p">,</span> <span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">));</span>
-   <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span>
+  <span class="n">add_uevent_var</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&quot;DEV_NAME=%s&quot;</span><span class="p">,</span> <span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">));</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The match function is used when a new device or a new driver is added to the
+<p>The <code class="docutils literal"><span class="pre">match</span></code> function is used when a new device or a new driver is added to the
 bus. Its role is to make a comparison between the device ID and the driver ID.
-The uevent function is called before generating a hotplug in user-space and has
-the role of adding environment variables.</p>
-<p>Other possible operations on a bus are browsing the drivers or devices attached
-to it. Although we can not directly access them (lists of drives and devices
-being stored in the private data of the driver, the subsys_private * p field ),
-these can be scanned using the bus_for_each_dev and bus_for_each_drv
-macrodefines .</p>
+The <code class="docutils literal"><span class="pre">uevent</span></code> function is called before generating a hotplug in user-space and
+has the role of adding environment variables.</p>
+<p>Other possible operations on a bus are iterating over the drivers or devices
+attached to it.
+Although we can not directly access them (lists of drives and devices
+being stored in the private data of the driver, the <code class="docutils literal"><span class="pre">subsys_private</span> <span class="pre">*p</span></code> field),
+these can be iterated using the <code class="xref c c-macro docutils literal"><span class="pre">bus_for_each_dev</span></code> and
+<code class="xref c c-macro docutils literal"><span class="pre">bus_for_each_drv</span></code> macros.</p>
 <p>The Linux Device Model interface allows you to create attributes for the
 associated objects. These attributes will have a corresponding file in the
-subdirectory of the sysfs bus. The attributes associated with a bus are
+bus subdirectory in sysfs. The attributes associated with a bus are
 described by the bus_attribute structure :</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bus_attribute</span> <span class="p">{</span>
-        <span class="n">attribute</span> <span class="n">attribute</span> <span class="n">attr</span> <span class="p">;</span>
-        <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">show</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">);</span>
-        <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">store</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span> <span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span>
+         <span class="k">struct</span> <span class="n">attribute</span>        <span class="n">attr</span><span class="p">;</span>
+         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">show</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">);</span>
+         <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">store</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>Typically, an attribute is defined by the BUS_ATTR macrodefine . To add /
-delete an attribute within the bus structure, the bus_create_file and
-bus_remove_file functions are used.</p>
-<p>An example of defining an attribute for my_bus is shown below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">ssize_t</span>
-<span class="nf">del_store</span><span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">)</span>
+<p>Typically, an attribute is defined by the <code class="xref c c-macro docutils literal"><span class="pre">BUS_ATTR</span></code> macro.
+The <code class="xref c c-func docutils literal"><span class="pre">bus_create_file()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">bus_remove_file()</span></code> functions can be
+used to add/delete an attribute within the bus structure.</p>
+<p>An example of defining an attribute for <code class="docutils literal"><span class="pre">my_bus</span></code> is shown below:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* mybus.c */</span>
+
+<span class="cp">#define MY_BUS_DESCR     &quot;SO2 rules forever&quot;</span>
+
+<span class="c1">// export a simple bus attribute</span>
+<span class="k">static</span> <span class="kt">ssize_t</span> <span class="nf">my_show_bus_descr</span><span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bus</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">)</span>
 <span class="p">{</span>
-     <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
-     <span class="kt">int</span> <span class="n">version</span><span class="p">;</span>
-
-     <span class="k">if</span> <span class="p">(</span><span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
-             <span class="k">return</span> <span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
-
-     <span class="k">return</span> <span class="n">bex_del_dev</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">count</span><span class="p">;</span>
-
+        <span class="k">return</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">PAGE_SIZE</span><span class="p">,</span> <span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">MY_BUS_DESCR</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="n">BUS_ATTR</span><span class="p">(</span><span class="n">del</span><span class="p">,</span> <span class="n">S_IWUSR</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">del_store</span><span class="p">);</span>
 
-<span class="k">static</span> <span class="k">struct</span> <span class="n">attribute</span> <span class="o">*</span><span class="n">bex_bus_attrs</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
-     <span class="o">&amp;</span><span class="n">bus_attr_add</span><span class="p">.</span><span class="n">attr</span><span class="p">,</span>
-     <span class="o">&amp;</span><span class="n">bus_attr_del</span><span class="p">.</span><span class="n">attr</span><span class="p">,</span>
-     <span class="nb">NULL</span>
-<span class="p">};</span>
-<span class="n">ATTRIBUTE_GROUPS</span><span class="p">(</span><span class="n">bex_bus</span><span class="p">);</span>
+<span class="cm">/*</span>
+<span class="cm"> * define attribute - attribute name is descr;</span>
+<span class="cm"> * full name is bus_attr_descr;</span>
+<span class="cm"> * sysfs entry should be /sys/bus/mybus/descr</span>
+<span class="cm"> */</span>
+<span class="n">BUS_ATTR</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="mo">0444</span><span class="p">,</span> <span class="n">my_show_bus_descr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
-<span class="k">struct</span> <span class="n">bus_type</span> <span class="n">bex_bus_type</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="p">.</span><span class="n">bus_groups</span> <span class="o">=</span> <span class="n">bex_bus_groups</span><span class="p">,</span>
-<span class="p">};</span>
+<span class="c1">// specify attribute - in module init function</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_bus_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+        <span class="c1">//...</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">bus_create_file</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bus_attr_descr</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
+                <span class="cm">/* handle error */</span>
+        <span class="p">}</span>
+        <span class="c1">//...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_bus_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="c1">//...</span>
+        <span class="n">bus_remove_file</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bus_attr_descr</span><span class="p">);</span>
+        <span class="c1">//...</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>The bus is represented by both a bus_type object and a device object, as we
-will see later (the bus is also a device).</p>
+<p>The bus is represented by both a <code class="docutils literal"><span class="pre">bus_type</span></code> object and a <code class="docutils literal"><span class="pre">device</span></code> object,
+as we will see later (the bus is also a device).</p>
 </div>
 <div class="section" id="devices">
 <h3>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h3>
-<p>Any device in the system has a struct structure structure associated with it.
+<p>Any device in the system has a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code> structure associated
+with it.
 Devices are discovered by different kernel methods (hotplug, device drivers,
-system initialization) and are recorded in the system. All devices present in
-the kernel have an entry in /sys/devices .</p>
-<p>At the bottom level, a device in Linux Device Model is a struct structure
-device :</p>
+system initialization) and are registered in the system. Each device present in
+the kernel has an entry in <code class="docutils literal"><span class="pre">/sys/devices</span></code>.</p>
+<p>At the lowest level, a device in Linux Device Model is represented by a
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code> structure:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
+        <span class="c1">//...</span>
+        <span class="k">struct</span> <span class="n">device</span>           <span class="o">*</span><span class="n">parent</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">device_private</span>   <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kobject</span>          <span class="n">kobj</span><span class="p">;</span>
 
-      <span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">parent</span> <span class="p">;</span>
-      <span class="k">struct</span> <span class="n">device_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
-      <span class="k">struct</span> <span class="n">kobject</span> <span class="n">kobj</span><span class="p">;</span>
-
-      <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">init_name</span><span class="p">;</span>  <span class="cm">/* Initial name of the device */</span>
-
-      <span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bus</span> <span class="p">;</span>  <span class="cm">/* Type of bus device is on */</span>
-      <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">driver</span> <span class="p">;</span>  <span class="cm">/* Which driver has assigned this Device */</span>
-
-      <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+        <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">init_name</span><span class="p">;</span> <span class="cm">/* initial name of the device */</span>
+        <span class="c1">//...</span>
+        <span class="k">struct</span> <span class="n">bus_type</span>         <span class="o">*</span><span class="n">bus</span><span class="p">;</span>       <span class="cm">/* type of bus device is on */</span>
+        <span class="k">struct</span> <span class="n">device_driver</span>    <span class="o">*</span><span class="n">driver</span><span class="p">;</span>    <span class="cm">/* which driver has allocated this</span>
+<span class="cm">                                             device */</span>
+        <span class="c1">//...</span>
+        <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>Structure fields include the parent device that is usually a controller, the
-associated kobject object, the bus it is located on, the device driver, and a
-called function when the device counter reaches 0.</p>
-<p>As usual, we have registration_registration / registration functions
-device_register and device_unregister.</p>
-<p>To work with the attributes, we have structure structure_atribute_attribute ,
-DEVICE_ATTR macrodefine for definition, and device_create_file and
-device_remove_file functions to add the attribute to the device.</p>
-<p>One important thing to note is that it usually does not work directly with a
-struct device structure, but with a structure that contains it, like:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* my device type */</span>
- <span class="k">struct</span> <span class="n">my_device</span> <span class="p">{</span>
-       <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span> <span class="p">;</span>
-       <span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">;</span>
-       <span class="k">struct</span> <span class="n">device</span> <span class="n">dev</span><span class="p">;</span>
- <span class="p">};</span>
+associated <code class="docutils literal"><span class="pre">kobject</span></code>, the bus it is connected to, the device driver, and a
+function called when the device counter reaches 0 (<code class="docutils literal"><span class="pre">release</span></code>).</p>
+<p>As usual, we have the registration/unregistration functions
+<code class="xref c c-func docutils literal"><span class="pre">device_register()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">device_unregister()</span></code>.</p>
+<p>To work with attributes, we have structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_attribute</span></code>,
+the macro <code class="xref c c-macro docutils literal"><span class="pre">DEVICE_ATTR</span></code> for definition, and the functions
+<code class="xref c c-func docutils literal"><span class="pre">device_create_file()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">device_remove_file()</span></code> for adding/removing
+the attribute to/from the device.</p>
+<p>One important thing to note is that the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code> structure is
+usually not used directly, but it is added to another structure. For example:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="c1">// my device type</span>
+<span class="k">struct</span> <span class="n">my_device</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">device</span> <span class="n">dev</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
-<p>Typically, a bus driver will export function to add or remove such a
+<p>Typically, a bus driver will export functions to add or remove such a
 device, as shown below:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">bex_add_dev</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">version</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* mybus.c */</span>
+
+<span class="cm">/* BUS DEVICE (parent) */</span>
+
+<span class="c1">// parent device release</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_bus_device_release</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
-     <span class="k">struct</span> <span class="n">bex_device</span> <span class="o">*</span><span class="n">bex_dev</span><span class="p">;</span>
-
-     <span class="n">bex_dev</span> <span class="o">=</span> <span class="n">kzalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">bex_dev</span><span class="p">),</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
-     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">bex_dev</span><span class="p">)</span>
-             <span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
-
-     <span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">=</span> <span class="n">kstrdup</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
-     <span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">;</span>
-
-     <span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">bus</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">bex_bus_type</span><span class="p">;</span>
-     <span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">bex_device_type</span><span class="p">;</span>
-     <span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">parent</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-
-     <span class="n">dev_set_name</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
-
-     <span class="k">return</span> <span class="n">device_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">}</span>
 
+<span class="c1">// parent device</span>
+<span class="k">static</span> <span class="k">struct</span> <span class="n">device</span> <span class="n">my_bus_device</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">.</span><span class="n">init_name</span>   <span class="o">=</span> <span class="s">&quot;mybus0&quot;</span><span class="p">,</span>
+  <span class="p">.</span><span class="n">release</span>     <span class="o">=</span> <span class="n">my_bus_device_release</span>
+<span class="p">};</span>
 
-<span class="k">static</span> <span class="kt">int</span> <span class="nf">bex_del_dev</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">)</span>
+<span class="cm">/* DEVICE */</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * as we are not using the reference count, we use a no-op</span>
+<span class="cm"> * release function</span>
+<span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_dev_release</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
-     <span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">;</span>
-
-     <span class="n">dev</span> <span class="o">=</span> <span class="n">bus_find_device_by_name</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bex_bus_type</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
-     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
-             <span class="k">return</span> <span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
-
-     <span class="n">device_unregister</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-     <span class="n">put_device</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-
-     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">my_register_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_device</span> <span class="o">*</span><span class="n">mydev</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">bus</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">;</span>
+  <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">parent</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_bus_device</span><span class="p">;</span>
+  <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">.</span><span class="n">release</span> <span class="o">=</span> <span class="n">my_dev_release</span><span class="p">;</span>
+  <span class="n">dev_set_name</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="n">mydev</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">device_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">my_unregister_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_device</span> <span class="o">*</span><span class="n">mydev</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">device_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* export register/unregister device functions */</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_register_device</span><span class="p">);</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_unregister_device</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>As seen, the functions <code class="docutils literal"><span class="pre">my_register_device</span></code> and <code class="docutils literal"><span class="pre">my_unregister_device</span></code>, used
+to add/remove a device to/from a bus, are defined in the same file where the
+bus is defined. Device structures are not initialized; they will be initialized
+when the devices are discovered by the system (by hotplug or direct registration
+from driver) and the function <code class="docutils literal"><span class="pre">my_register_device</span></code> will be called to add a
+device to the bus.</p>
+<p>To use the bus defined above in the driver implementation, we must define a
+structure of type <code class="docutils literal"><span class="pre">my_device</span></code>, initialize it and register it using the function
+exported by the bus (<code class="docutils literal"><span class="pre">my_register_device</span></code>).</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* mydriver.c */</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">my_device</span> <span class="n">mydev</span><span class="p">;</span>
+<span class="kt">char</span> <span class="n">devname</span><span class="p">[</span><span class="n">NAME_SIZE</span><span class="p">];</span>
+<span class="c1">//...</span>
+
+<span class="c1">//register</span>
+<span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+
+<span class="n">sprintf</span><span class="p">(</span><span class="n">devname</span><span class="p">,</span> <span class="s">&quot;mydev0&quot;</span><span class="p">);</span>
+<span class="n">mydev</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">devname</span><span class="p">;</span>
+<span class="n">mydev</span><span class="p">.</span><span class="n">driver</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">mydriver</span><span class="p">;</span>
+<span class="n">dev_set_drvdata</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="p">.</span><span class="n">dev</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mydev</span><span class="p">);</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">my_register_device</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/*handle error */</span>
+<span class="p">}</span>
+
+<span class="c1">//..</span>
+
+<span class="c1">//unregister</span>
+<span class="n">my_unregister_device</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydev</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="drivers">
 <h3>Drivers<a class="headerlink" href="#drivers" title="Permalink to this headline">¶</a></h3>
-<p>Linux Device Model is used to allow very easy association between system
+<p>Linux Device Model is used to allow simple association between system
 devices and drivers. Drivers can export information independent of the physical
 device.</p>
-<p>In sysfs driver information has no single subdirectory associated; They can be
-found in the directory structure in different places: in the /sys/module there
-is the loaded module, in the devices you can find the driver associated with
-each device, in the classes belonging to the drivers in the /sys/bus drivers
-associated to each bus .</p>
-<p>A device driver is identified by the structure structure of device_driver :</p>
+<p>In sysfs, driver information has no single subdirectory associated; They can be
+found in the directory structure in different places: the loaded module is in
+<code class="docutils literal"><span class="pre">/sys/module</span></code>, in <code class="docutils literal"><span class="pre">devices</span></code> you can find the driver associated with
+each device, in <code class="docutils literal"><span class="pre">classes</span></code> the drivers belonging to a class, in <code class="docutils literal"><span class="pre">/sys/bus</span></code>
+the drivers associated to each bus.</p>
+<p>A device driver is identified by the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device_driver</span> <span class="p">{</span>
-        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
-        <span class="n">structure</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bus</span><span class="p">;</span>
+         <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">bus_type</span>         <span class="o">*</span><span class="n">bus</span><span class="p">;</span>
 
-        <span class="k">struct</span> <span class="n">driver_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">driver_private</span>   <span class="o">*</span><span class="n">p</span><span class="p">;</span>
 
-        <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
-        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">mod_name</span><span class="p">;</span>  <span class="o">/</span> <span class="o">*</span> <span class="n">Used</span> <span class="k">for</span> <span class="n">built</span><span class="o">-</span><span class="n">in</span> <span class="n">modules</span> <span class="o">*</span> <span class="o">/</span>
+         <span class="k">struct</span> <span class="n">module</span>           <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+         <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">mod_name</span><span class="p">;</span>     <span class="cm">/* used for built-in modules */</span>
 
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
-        <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">suspend</span><span class="p">)</span> <span class="p">(</span><span class="n">structure</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span> <span class="p">,</span> <span class="n">pm_message_t</span> <span class="n">state</span> <span class="p">);</span>
-        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">resume</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span> <span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)</span>        <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)</span>       <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)</span>     <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">suspend</span><span class="p">)</span>      <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="n">pm_message_t</span> <span class="n">state</span><span class="p">);</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">resume</span><span class="p">)</span>       <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>Among the structure fields we find the name of the driver (appears in sysfs ),
+<p>Among the structure fields we find the name of the driver (appears in <code class="docutils literal"><span class="pre">sysfs</span></code>),
 the bus with which the driver works, and functions called at various times in a
 device’s operation.</p>
-<p>As before, we have the registration / registration functions of driver_register
-and driver_unregister .</p>
-<p>To work with attributes, we have the driver_attribute structure , the macro
-definition of DRIVER_ATTR for definition, and the driver_create_file and
-driver_remove_file functions for adding the attribute to the device.</p>
-<p>As with devices, the device_driver structure structure is usually incorporated
-into another structure specific to a particular bus (PCI, USB, etc.):</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bex_driver</span> <span class="p">{</span>
-     <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type</span><span class="p">;</span>
+<p>As before, we have the functions <code class="xref c c-func docutils literal"><span class="pre">driver_register()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">driver_unregister()</span></code> to register/unregister a driver.</p>
+<p>To work with attributes, we have the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">driver_attribute</span></code> structure,
+the macro <code class="xref c c-type docutils literal"><span class="pre">DRIVER_ATTR</span></code> for definition, and the functions
+<code class="xref c c-func docutils literal"><span class="pre">driver_create_file()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">driver_remove_file()</span></code> functions for
+adding the attribute to the device.</p>
+<p>As with devices, the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code> is usually
+incorporated into another structure specific to a particular bus (PCI, USB, etc.):</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* mybus.c */</span>
 
-     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">probe</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bex_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
-     <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">remove</span><span class="p">)(</span><span class="k">struct</span> <span class="n">bex_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
-
-     <span class="k">struct</span> <span class="n">device_driver</span> <span class="n">driver</span><span class="p">;</span>
+<span class="c1">// my driver type</span>
+<span class="k">struct</span> <span class="n">my_driver</span> <span class="p">{</span>
+  <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">module</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">device_driver</span> <span class="n">driver</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="cp">#define to_my_driver(drv) container_of(drv, struct my_driver, driver);</span>
+
+<span class="kt">int</span> <span class="nf">my_register_driver</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+
+  <span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">.</span><span class="n">bus</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_bus_type</span><span class="p">;</span>
+  <span class="n">err</span><span class="o">=</span> <span class="n">driver_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">my_unregister_driver</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">driver_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* export register/unregister driver functions */</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_register_driver</span><span class="p">);</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">my_unregister_driver</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Driver registration / registration operations are exported for use in
-other modules:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">bex_driver</span> <span class="n">bex_misc_driver</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&quot;misc&quot;</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">bex_misc_probe</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">bex_misc_remove</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">driver</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="p">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
-        <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;bex_misc&quot;</span><span class="p">,</span>
-    <span class="p">},</span>
+<p>Driver registration/unregistration operations are exported for use in
+other modules.</p>
+<p>As for devices, the operations for drivers are defined when the bus is
+initialized and they are exported to be used by drivers. When implementing a
+driver that works with devices attached to the bus, we will call the functions
+<code class="docutils literal"><span class="pre">my_register_driver</span></code> and <code class="docutils literal"><span class="pre">my_unregister_driver</span></code> to associate with the bus.</p>
+<p>To use the functions (in the driver implementation), we must declare a structure
+of type <code class="docutils literal"><span class="pre">my_driver</span></code>, initialize it and register using the function exported
+by the bus.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* mydriver.c */</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">my_driver</span> <span class="n">mydriver</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+  <span class="p">.</span><span class="n">driver</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;mydriver&quot;</span><span class="p">,</span>
+  <span class="p">},</span>
 <span class="p">};</span>
+<span class="c1">//...</span>
 
-<span class="p">...</span>
-
-<span class="cm">/* register driver */</span>
-<span class="n">ret</span> <span class="o">=</span> <span class="n">bex_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bex_misc_driver</span><span class="p">);</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">...</span>
+<span class="c1">//register</span>
+<span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">my_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydriver</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/*handle error */</span>
 <span class="p">}</span>
+<span class="c1">//..</span>
 
-<span class="p">...</span>
-
-<span class="cm">/* unregister driver */</span>
-<span class="n">err</span> <span class="o">=</span> <span class="n">bex_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bex_misc_driver</span><span class="p">);</span>
-<span class="k">if</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">...</span>
-<span class="p">}</span>
+<span class="c1">//unregister</span>
+<span class="n">my_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mydriver</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -643,162 +766,180 @@ other modules:</p>
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
 <p>A class is a high-level view of the Linux Device Model, which abstracts
 implementation details. For example, there are drivers for SCSI and ATA
-drivers, but all belong to the class of drives. Classes provide a grouping of
+drivers, but all belong to the class of disks. Classes provide a grouping of
 devices based on functionality, not how they are connected or how they work.
-Classes have a correspondent in /sys/classes.</p>
-<p>There are two main structures that describe the classes: struct class and
-struct device . The class structure describes a generic class, while the
-structure struct device describes a class associated with a device. There are
-functions for initializing / deinitiating and adding attributes for each of
-these, include/linux/device.h in include/linux/device.h.</p>
-<p>The advantage of using classes is that the udev program in userspace, which we
-will discuss later, allows the automatic creation of devices in the /dev
+Classes have a correspondent in <code class="docutils literal"><span class="pre">/sys/classes</span></code>.</p>
+<p>There are two main structures that describe the classes: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">class</span></code>
+and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code>.
+The class structure describes a generic class, while the structure
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code> describes a class associated with a device.
+There are functions for initializing/deinitiating and adding attributes for each
+of these, described in <code class="docutils literal"><span class="pre">include/linux/device.h</span></code>.</p>
+<p>The advantage of using classes is that the <code class="docutils literal"><span class="pre">udev</span></code> program in userspace, which we
+will discuss later, allows the automatic creation of devices in the <code class="docutils literal"><span class="pre">/dev</span></code>
 directory based on class information.</p>
 <p>For this reason, we will continue to present a small set of functions that work
 with classes to simplify the use of the plug and play mechanism.</p>
 <p>A generic class is described by structure class structure:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="n">class</span> <span class="p">{</span>
-         <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">name</span> <span class="p">;</span>
-         <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span> <span class="p">;</span>
-         <span class="k">struct</span> <span class="n">kobject</span> <span class="o">*</span><span class="n">dev_kobj</span> <span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">class</span> <span class="p">{</span>
+         <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">module</span>           <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">kobject</span>          <span class="o">*</span><span class="n">dev_kobj</span><span class="p">;</span>
 
-         <span class="k">struct</span> <span class="n">subsys_private</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">subsys_private</span>   <span class="o">*</span><span class="n">p</span><span class="p">;</span>
 
-         <span class="k">struct</span> <span class="n">class_attribute</span> <span class="o">*</span><span class="n">class_attrs</span> <span class="p">;</span>
-         <span class="k">struct</span> <span class="n">class_device_attribute</span> <span class="o">*</span><span class="n">class_dev_attrs</span> <span class="p">;</span>
-         <span class="k">struct</span> <span class="n">device_attribute</span> <span class="o">*</span><span class="n">dev_attrs</span> <span class="p">;</span>
+         <span class="k">struct</span> <span class="n">class_attribute</span>          <span class="o">*</span><span class="n">class_attrs</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">class_device_attribute</span>   <span class="o">*</span><span class="n">class_dev_attrs</span><span class="p">;</span>
+         <span class="k">struct</span> <span class="n">device_attribute</span>         <span class="o">*</span><span class="n">dev_attrs</span><span class="p">;</span>
 
-         <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">dev_uevent</span><span class="p">)</span> <span class="p">(</span><span class="n">structure</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span> <span class="n">env</span><span class="p">);</span>
-         <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">class_release</span><span class="p">)</span> <span class="p">(</span><span class="n">class</span> <span class="n">class</span> <span class="o">*</span> <span class="n">class</span><span class="p">)</span> <span class="p">;</span>
-         <span class="kt">void</span> <span class="p">(</span> <span class="n">dev_release</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span> <span class="n">dev</span><span class="p">)</span> <span class="p">;</span>
-         <span class="c1">// ...</span>
+         <span class="kt">int</span>     <span class="p">(</span><span class="o">*</span><span class="n">dev_uevent</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">kobj_uevent_env</span> <span class="o">*</span><span class="n">env</span><span class="p">);</span>
+         <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">class_release</span><span class="p">)(</span><span class="k">struct</span> <span class="n">class</span> <span class="o">*</span><span class="n">class</span><span class="p">);</span>
+         <span class="kt">void</span>    <span class="p">(</span><span class="o">*</span><span class="n">dev_release</span><span class="p">)(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+         <span class="c1">//...</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>The class_register and class_unregister functions for initialization /
-and cleanup :</p>
+<p>The <code class="xref c c-func docutils literal"><span class="pre">class_register()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">class_unregister()</span></code> functions can be
+used for initialization/deinitialization.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">class</span> <span class="n">my_class</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;myclass&quot;</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;myclass&quot;</span><span class="p">,</span>
 <span class="p">};</span>
 
 <span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
-    <span class="p">...</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="n">class_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-        <span class="cm">/* handle error */</span>
-    <span class="p">}</span>
-    <span class="p">...</span>
+        <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+        <span class="c1">//...</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">class_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="cm">/* handle error */</span>
+        <span class="p">}</span>
+        <span class="c1">//...</span>
 <span class="p">}</span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_cleanup</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_cleanup</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="n">class_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">);</span>
-    <span class="p">...</span>
+        <span class="c1">//...</span>
+        <span class="n">class_unregister</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">);</span>
+        <span class="c1">//...</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>A class associated with a device is described by the device structure. The
-device_create and device_destroy functions are available for initialization /
-deinterlacing . The device_create function initializes the device structure,
-associates its generic class structure with the received device as a parameter;
-In addition, it will create an attribute of the class, dev , which contains the
-minor and major of the device ( minor:major ). Thus, udev utility in usermode
-can read the necessary data from this attribute file to create a node in the
-/dev makenod by calling makenod .</p>
+<p>A class associated with a device is described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code>
+structure.
+The <code class="xref c c-func docutils literal"><span class="pre">device_create()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">device_destroy()</span></code> functions can be used
+for initialization/deinitialization.
+The <code class="xref c c-func docutils literal"><span class="pre">device_create()</span></code> function initializes the <code class="docutils literal"><span class="pre">device</span></code> structure,
+and assigns the generic <code class="docutils literal"><span class="pre">class</span></code> structure and the device received as a
+parameter to it;
+In addition, it will create an attribute of the class, <code class="docutils literal"><span class="pre">dev</span></code>, which contains
+the minor and major of the device (<code class="docutils literal"><span class="pre">minor:major</span></code>).
+Thus, udev utility in usermode can read the necessary data from this attribute
+file to create a node in the <code class="docutils literal"><span class="pre">/dev</span></code> directory by calling <code class="docutils literal"><span class="pre">makenod</span></code>.</p>
 <p>An example of initialization:</p>
-<dl class="docutils">
-<dt>..code-block:: c</dt>
-<dd><p class="first">struct device * my_classdev ;
-cdev cdev struct ;
-struct device dev ;</p>
-<p>// init class for device cdev.dev
-my_classdev = device_create (&amp;my_class, NULL, cdev.dev, &amp;dev, “myclass0”);</p>
-<p class="last">// destroy class for device cdev.dev
-device_destroy (&amp;my_class, cdev.dev);</p>
-</dd>
-</dl>
-<p>When a new device is discovered, a class and a node will be assigned to the
-/dev directory. For the example above, a /dev/myclass0 node will be
-/dev/myclass0.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device</span><span class="o">*</span> <span class="n">my_classdev</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">cdev</span> <span class="n">cdev</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">device</span> <span class="n">dev</span><span class="p">;</span>
+
+<span class="c1">//init class for device cdev.dev</span>
+<span class="n">my_classdev</span> <span class="o">=</span> <span class="n">device_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">cdev</span><span class="p">.</span><span class="n">dev</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dev</span><span class="p">,</span> <span class="s">&quot;myclass0&quot;</span><span class="p">);</span>
+
+<span class="c1">//destroy class for device cdev.dev</span>
+<span class="n">device_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_class</span><span class="p">,</span> <span class="n">cdev</span><span class="p">.</span><span class="n">dev</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>When a new device is discovered, a class and a node will be assigned to it and
+a node will be created in the <code class="docutils literal"><span class="pre">/dev</span></code> directory.
+For the example above, the node <code class="docutils literal"><span class="pre">/dev/myclass0</span></code> will be generated.</p>
 </div>
 <div class="section" id="hotplug">
 <h3>Hotplug<a class="headerlink" href="#hotplug" title="Permalink to this headline">¶</a></h3>
-<p>Hotplug describes the mechanism for adding or removing a device from the system
-while it is running without having to reboot the system.</p>
-<p>A hotplug is a notification from the kernel to the user-space when something
+<p><code class="docutils literal"><span class="pre">Hotplug</span></code> describes the mechanism for adding or removing a device from the
+system while it is running without having to reboot the system.</p>
+<p>A hotplug event is a notification from the kernel to the user-space when something
 changes in the system configuration. These events are generated when creating
 or removing a kobject from the kernel. Since these objects are the basis of the
-Linux Device Model, they are included in all structures(struct bus_type,
-struct device, struct device_driver, struct class, etc.), a hotplug event
-will be created to create or remove any of these structures ( uevent ). When a
-device is discovered in the system, an event is generated. Depending on the
-point in the Linux Device Model , the functions associated with the occurrence
-of an event (usually the case of the bus or class uevent function) are called.
-The driver has the ability to set system variables for user-space through these
-functions. The generated event reaches the user-space then. Here is the udev
+Linux Device Model, being included in all structures (<code class="docutils literal"><span class="pre">struct</span> <span class="pre">bus_type</span></code>,
+<code class="docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code>, <code class="docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code>, <code class="docutils literal"><span class="pre">struct</span> <span class="pre">class</span></code>, etc.), a hotplug event
+will be generated when any of these structures is created or removed (<code class="docutils literal"><span class="pre">uevent</span></code>).</p>
+<p>When a device is discovered in the system, an event is generated.  Depending on
+the point where it resides in Linux Device Model, the functions corresponding
+to the event will be called (usually, the <code class="docutils literal"><span class="pre">uevent</span></code> function associated to the
+bus or the class). Using these functions, the driver has the ability to set
+system variables for the user-space.
+The generated event then reaches the user-space. Here is the <code class="docutils literal"><span class="pre">udev</span></code>
 utility that captures these events. There are configuration files for this
-utility in the /etc/udev/ directory. Different rules can be specified to
+utility in the <code class="docutils literal"><span class="pre">/etc/udev/</span></code> directory. Different rules can be specified to
 capture only certain events and perform certain actions, depending on the
-system variables set in the kernel or in uevent uevent .</p>
+system variables set in the kernel or in <code class="docutils literal"><span class="pre">uevent</span></code> functions.</p>
 <p>An important consequence is that in this way the plug and play mechanism can be
-achieved;with his help udevand classes described above may automatically create
-entries in the directory /devdevice, and using udevit can automatically load
-necessary drivers for a device. In this way, the entire process is automated.</p>
-<p>Rules udevare located /etc/udev/rules.d. Any file that ends with .conf here
-will be parsed when an event occurs. For more details on how to write rules in
-these files see Writing udev rules . For testing, there are utilities
-udevmonitor, udevinfoand udevtest.</p>
+achieved; with the help of <code class="docutils literal"><span class="pre">udev</span></code> and the classes (described above), entries
+in the <code class="docutils literal"><span class="pre">/dev/</span></code> directories can be automatically created for devices, and using
+<code class="docutils literal"><span class="pre">udev</span></code> drivers can be automatically loaded for a device.</p>
+<p>Rules for <code class="docutils literal"><span class="pre">udev</span></code> are located <code class="docutils literal"><span class="pre">/etc/udev/rules.d</span></code>.
+Any file that ends with <code class="docutils literal"><span class="pre">.conf</span></code> in this directory will be parsed when an event
+occurs. For more details on how to write rules in these files see
+<a class="reference external" href="http://www.reactivated.net/writing_udev_rules.html">Writing udev rules</a>.
+For testing, there are utilities such as <code class="docutils literal"><span class="pre">udevmonitor</span></code>, <code class="docutils literal"><span class="pre">udevinfo</span></code> and
+<code class="docutils literal"><span class="pre">udevtest</span></code>.</p>
 <p>For a quick example, consider the situation where we want to automatically load
-a driver for a device at the time of an event. We can create a new file
+a driver for a device when an event occurs. We can create a new file
 /etc/udev/rules.d/myrules.rules, we will have the following line:</p>
-<p>Subsystem == “PNP” , attrs {  id  } == “PNP0400” , RUN + = “/ sbin / insmod
-/root/mydriver.ko”</p>
-<p>This will choose between events generated only those belonging subsystem
-pnp(connected to bus PNP) and an id attribute value PNP0400. When will find
-this rule will execute the command that inserts the appropriate driver in the
-kernel.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">SUBSYSTEM</span><span class="o">==</span><span class="s2">&quot;pnp&quot;</span>, ATTRS<span class="o">{</span>id<span class="o">}==</span><span class="s2">&quot;PNP0400&quot;</span>, <span class="nv">RUN</span><span class="o">+=</span><span class="s2">&quot;/sbin/insmod /root/mydriver.ko&quot;</span>
+</pre></div>
+</div>
+<p>This will choose from the events generated only those belonging to the <code class="docutils literal"><span class="pre">pnp</span></code>
+subsystem (connected to <code class="docutils literal"><span class="pre">PNP</span></code> bus) and having an id attribute with the value
+<code class="docutils literal"><span class="pre">PNP0400</span></code>.</p>
+<p>When this rule will be found, the command specified under <code class="docutils literal"><span class="pre">RUN</span></code> will be
+executed to insert the appropriate driver in the kernel.</p>
+</div>
 </div>
 <div class="section" id="plug-and-play">
-<h3>Plug and Play<a class="headerlink" href="#plug-and-play" title="Permalink to this headline">¶</a></h3>
-<p>As noted above, Linux Device Model all devices are connected by a bus, even if
-it has the corresponding physical or virtual hardware.</p>
-<p>The kernel is already implemented most buses by defining a structure bus_type
-and recording functions / Unregistering drivers and appliances. To implement a
-bus driver to be determined attaching supported devices and also used its
-structures and functions. The main highways are PCI , USB , PNP , IDE , SCSI ,
-platform , ACPI , etc.</p>
-</div>
+<h2>Plug and Play<a class="headerlink" href="#plug-and-play" title="Permalink to this headline">¶</a></h2>
+<p>As noted above, in Linux Device Model all devices are connected by a bus, even if
+it has a corresponding physical hardware or it is virtual.</p>
+<p>The kernel already has implemented most buses using a <code class="docutils literal"><span class="pre">bus_type</span></code> structure
+and functions to register/unregister drivers and devices.
+To implement a driver, we must first determine the bus to which the supported
+devices are connected and use the structures and functions exported by this bus.
+The main buses are <code class="docutils literal"><span class="pre">PCI</span></code>, <code class="docutils literal"><span class="pre">USB</span></code>, <code class="docutils literal"><span class="pre">PNP</span></code>, <code class="docutils literal"><span class="pre">IDE</span></code>, <code class="docutils literal"><span class="pre">SCSI</span></code>, <code class="docutils literal"><span class="pre">platform</span></code>,
+<code class="docutils literal"><span class="pre">ACPI</span></code>, etc.</p>
 <div class="section" id="pnp-bus">
 <h3>PNP bus<a class="headerlink" href="#pnp-bus" title="Permalink to this headline">¶</a></h3>
-<p>Plug and play mechanism provides a means of detecting and setting the resources
+<p>The plug and play mechanism provides a means of detecting and setting the resources
 for legacy driver that may not be configured or otherwise. All plug and play
-drivers, protocols, services based on level Plug and Play. It is responsible
+drivers, protocols, services are based on Plug and Play level. It is responsible
 for the exchange of information between drivers and protocols. The following
 protocols are available:</p>
 <blockquote>
-<div>PNPBIOS - used for systems such as serial and parallel ports
-ISAPNP - supports ISA bus
-ACPI - offering, among other things, information about system-level devices</div></blockquote>
-<p>The kernel there is a bus pnp_busthat is used to connect many drivers.
-Implementation and working with the bus follow the model Linux Device Modeland
-is very similar to what thus far.</p>
-<p>Main functions and structures exported by the bus, and can be used by drivers
-are:</p>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">PNPBIOS</span></code> - used for systems such as serial and parallel ports</li>
+<li><code class="docutils literal"><span class="pre">ISAPNP</span></code> - offers support for the ISA bus</li>
+<li><code class="docutils literal"><span class="pre">ACPI</span></code> - offering, among other things, information about system-level devices</li>
+</ul>
+</div></blockquote>
+<p>The kernel contains a bus, called <code class="docutils literal"><span class="pre">pnp_bus</span></code>, that is used for connecting by
+many drivers.
+The implementation and working with the bus follow the model Linux Device Model
+and is very similar to what we discussed above.</p>
+<p>The main functions and structures exported by the bus, which can be used by
+drivers, are:</p>
 <blockquote>
-<div>pnp_driver type associated bus driver
-pnp_register_driver to record a PNP driver system
-pnp_unregister_driver to deînregistra a PNP driver system</div></blockquote>
-<p>As noted in previous sections, the bus has a function matchwith which the
-devices associated with the appropriate drivers. For example, if a device
-discovery will search for the driver who satisfies the condition given by the
-function for the device. Usually this condition is a comparison of IDs and
-device driver. One mechanism is to use a static tables spread each driver,
-containing information about supported devices and driver bus will be used for
-comparison. For example, a parallel port driver will be making
-parport_pc_pnp_tbl:</p>
+<div><ul class="simple">
+<li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_driver</span></code> - driver type associated to the bus</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">pnp_register_driver()</span></code> - function used to record a PNP driver in the system</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">pnp_unregister_driver()</span></code> - function used to unregister a PNP driver from the system</li>
+</ul>
+</div></blockquote>
+<p>As noted in previous sections, the bus has a function called <code class="docutils literal"><span class="pre">match</span></code> used to
+associate the devices with the appropriate drivers.
+For example, when discovering a new device, a driver which meets the condition
+given by the <code class="docutils literal"><span class="pre">match</span></code> function regarding to the new device. Usually, this
+condition is a comparation of IDs (driver id and device id).
+A common approach is using a static table in each driver, which holds information
+about the devices supported by the driver, which will be used by the bus
+when verifying the condition. For example, for a parallel port device we have
+the table <code class="docutils literal"><span class="pre">parport_pc_pnp_tbl</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_device_id</span> <span class="n">parport_pc_pnp_tbl</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
          <span class="cm">/* Standard LPT Printer Port */</span>
          <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0400&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
@@ -806,106 +947,145 @@ parport_pc_pnp_tbl:</p>
          <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0401&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
 <span class="p">};</span>
 
-<span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pnp</span><span class="p">,</span><span class="n">parport_pc_pnp_tbl</span><span class="p">);</span>
+<span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pnp</span><span class="p">,</span> <span class="n">parport_pc_pnp_tbl</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>It declares and initializes a structure pnp_driver such as
-parport_pc_pnp_driver:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="kt">int</span> <span class="nf">parport_pc_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
-                                 <span class="k">const</span>  <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
-                                 <span class="k">const</span>  <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">;</span>
+<p>Each driver declares and initializes a structure <code class="docutils literal"><span class="pre">pnp_driver</span></code>, such as
+<code class="docutils literal"><span class="pre">parport_pc_pnp_driver</span></code>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">parport_pc_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
+                                                     <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">parport_pc_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span><span class="o">*</span> <span class="n">dev</span><span class="p">);</span>
 
- <span class="k">static</span>  <span class="kt">void</span> <span class="nf">parport_pc_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span> <span class="p">;</span>
-
-<span class="k">static</span>  <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">parport_pc_pnp_driver</span> <span class="o">=</span>  <span class="p">{</span>
-          <span class="p">.</span><span class="n">name</span>  <span class="o">=</span>  <span class="s">&quot;parport_pc&quot;</span><span class="p">,</span>
-          <span class="p">.</span><span class="n">id_table</span>  <span class="o">=</span> <span class="n">parport_pc_pnp_tbl</span><span class="p">,</span>
-          <span class="p">.</span><span class="n">samples</span>  <span class="o">=</span> <span class="n">parport_pc_pnp_probe</span><span class="p">,</span>
-          <span class="p">.</span><span class="n">remove</span>  <span class="o">=</span> <span class="n">parport_pc_pnp_remove</span><span class="p">,</span>
+<span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">parport_pc_pnp_driver</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="p">.</span><span class="n">name</span>           <span class="o">=</span> <span class="s">&quot;parport_pc&quot;</span><span class="p">,</span>
+         <span class="p">.</span><span class="n">id_table</span>       <span class="o">=</span> <span class="n">parport_pc_pnp_tbl</span><span class="p">,</span>
+         <span class="p">.</span><span class="n">probe</span>          <span class="o">=</span> <span class="n">parport_pc_pnp_probe</span><span class="p">,</span>
+         <span class="p">.</span><span class="n">remove</span>         <span class="o">=</span> <span class="n">parport_pc_pnp_remove</span><span class="p">,</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>As can be seen, the structure has as parameters a pointer to the table above
-stated two functions is called a detection device or to remove it from the
-system. Like all layouts, the driver must be registered in the system:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span>  <span class="kt">int</span> <span class="n">__init</span> <span class="nf">parport_pc_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<p>We can notice that the structure has as fields a pointer to the table declared
+above and two functions, which are called when a new device is detected and when
+it is removed from the system.
+As all the structures presented above, the driver must be registered to the
+system:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">parport_pc_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-      <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
-      <span class="k">if</span>  <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="p">{</span>
-              <span class="o">/</span> <span class="o">*</span> <span class="n">handle</span> <span class="n">error</span> <span class="o">*</span> <span class="o">/</span>
-       <span class="p">}</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="cm">/* handle error */</span>
+        <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="k">static</span>  <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">parport_pc_exit</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">parport_pc_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-      <span class="n">pnp_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
+        <span class="n">pnp_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parport_pc_pnp_driver</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="pnp-operations">
 <h3>PNP operations<a class="headerlink" href="#pnp-operations" title="Permalink to this headline">¶</a></h3>
-<p>So far we have discussed the model Linux Device Modeland API CPC used. To
-implement a driver plug and play, must be respected model Linux Device Model.</p>
-<p>Most often, adding a main kernel is not necessary (bus), as already implemented
-most highways ( PCI, USB, etc.). The first to be identified that is attached to
-the device bus. In the examples below, we believe that this bus is bus PNP.
-Thus, use of the above structures and functions.</p>
+<p>So far we have discussed the Linux Device Model and its API. To
+implement a plug and play driver, we must respect the Linux Device Model model.</p>
+<p>Most often, adding a bus in the kernel is not necessary, as most of the existing
+buses are already implemented (PCI, USB, etc.). Thus, we must first identify the
+bus to which the device is attached.
+In the examples below, we will consider that this bus is bus PNP and we will
+use the structures and functions described above.</p>
+<img alt="../_images/plug_and_play-linux_device_model_operations.png" src="../_images/plug_and_play-linux_device_model_operations.png" />
 </div>
-<div class="section" id="add-driver">
-<h3>Add driver<a class="headerlink" href="#add-driver" title="Permalink to this headline">¶</a></h3>
-<p>In addition to the usual operations, a driver must obey Linux Device Model.
-This will register in the system using functions provided by bus for this
-purpose. Usually, the bus provides the driver a particular structure containing
-a structure device_driver , that driver must initialize and record a function
-*_register_driver. For example, the bus PNPdriver must declare and initialize a
-structure type pnp_driver which to register with pnp_register_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span>  <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span>  <span class="p">{</span>
-        <span class="p">.</span><span class="n">name</span>     <span class="o">=</span> <span class="s">&quot;mydriver&quot;</span><span class="p">,</span>
-        <span class="p">.</span><span class="n">id_table</span> <span class="o">=</span> <span class="n">my_pnp_tbl</span><span class="p">,</span>
-        <span class="p">.</span><span class="n">samples</span>  <span class="o">=</span> <span class="n">my_pnp_probe</span><span class="p">,</span>
-        <span class="p">.</span><span class="n">remove</span>   <span class="o">=</span> <span class="n">my_pnp_remove</span><span class="p">,</span>
+<div class="section" id="adding-a-driver">
+<h3>Adding a driver<a class="headerlink" href="#adding-a-driver" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the usual operations, a driver must follow the Linux Device Model.
+Thus, it will be registered in the system using the functions provided by
+the bus for this purpose.
+Usually, the bus provides a particular driver structure containing a
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code> structure, that the driver must initialize and
+register using a function <code class="docutils literal"><span class="pre">*_register_driver</span></code>.
+For example, for the <code class="docutils literal"><span class="pre">PNP</span></code> bus, the driver must declare and initialize a
+structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_driver</span></code> and register it using
+<code class="docutils literal"><span class="pre">pnp_register_drvier</span></code>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="p">.</span><span class="n">name</span>           <span class="o">=</span> <span class="s">&quot;mydriver&quot;</span><span class="p">,</span>
+         <span class="p">.</span><span class="n">id_table</span>       <span class="o">=</span> <span class="n">my_pnp_tbl</span><span class="p">,</span>
+         <span class="p">.</span><span class="n">probe</span>          <span class="o">=</span> <span class="n">my_pnp_probe</span><span class="p">,</span>
+         <span class="p">.</span><span class="n">remove</span>         <span class="o">=</span> <span class="n">my_pnp_remove</span><span class="p">,</span>
 <span class="p">};</span>
 
-<span class="k">static</span>  <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_init</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">my_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-       <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span> <span class="p">)</span>  <span class="p">;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">pnp_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Unlike legacy drivers, drivers, plug and play device initialization is not
-recorded in the position my_init( register_device). As described above, each
-bus has a function matchwhich is called when an associated manager application
-to determine its driver. Therefore, there must be a way for each driver to
-export information about which devices support in order to pass this comparison
-and to be called his functions. In the examples shown in the laboratory to make
-a simple comparison between the device name and driver name. Most drivers use a
-table with information about the device, for which a structure pointer in the
-driver. For example, one associated with a bus driver PNP, a table declares the
-type pnp_device_id , and initializes the field id_tableof structure pnp_driver
-with a pointer to it:</p>
-<p>In the example above driver support parallel port operations. This information
-is used by bus in function match_device. When adding a driver, bus driver will
-assign and create entries sysfsbased on the driver name. Then call the function
-matchbus for all devices associated to associate the driver with any connected
-device that supports it.
-Remove driver</p>
-<p>To remove a driver in the kernel, in addition to operations required a legacy
-driver must deînregistrată device_driver structure. If a bus driver for a
-paired device PNP, it deînregistrată structure pnp_driver by using the tool
-pnp_unregister_driver :</p>
-<p>Unlike legacy drivers, plug and play drivers deînregistrează not
-Unregistering driver devices to the function my_exit(unregister_device). When
-you remove a driver, will remove all references to it for all devices it
-supports and also deletes entries sysfs.
-Add device</p>
-<p>As we saw above, plug and play drivers do not register initialization devices.
-This operation will take the position probethat will appeal to a detection
-device. In the case of a driver for a device attached to the bus PNP, the
-addition will be carried out in function probeof the structure pnp_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_pnp_probe</span> <span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">,</span>
-                         <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
-                         <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">{</span>
+<p>Unlike legacy drivers, plug and play drivers don’t register devices at
+initialization in the init function (<code class="docutils literal"><span class="pre">my_init</span></code> in the example above) using
+<code class="xref c c-func docutils literal"><span class="pre">register_device()</span></code>.</p>
+<p>As described above, each bus has a <cite>match</cite> function which is called when a new
+device is detected in the system to determine the associated driver.
+Thus, there must be a way for each driver to export information about the
+devices it supports, to allow this check to pass and have its functions further
+called.
+In the examples presented in this lab, the match function does a simple
+comparison between the device name and the driver name. Most drivers use a table
+containing information devices and store a pointer to this table in the
+driver structure.
+For example, a driver associated to a <code class="docutils literal"><span class="pre">PNP</span></code> bus defines a table of type
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_device_id</span></code> and initializes the field <code class="docutils literal"><span class="pre">id_table</span></code> from the
+structure <code class="docutils literal"><span class="pre">pnp_driver</span> <span class="pre">my_pnp_driver</span></code> with a pointer to it:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_device_id</span> <span class="n">my_pnp_tbl</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="cm">/* Standard LPT Printer Port */</span>
+         <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0400&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
+         <span class="cm">/* ECP Printer Port */</span>
+         <span class="p">{.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&quot;PNP0401&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">driver_data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
+         <span class="p">{</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pnp</span><span class="p">,</span><span class="n">my_pnp_tbl</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="c1">//...</span>
+         <span class="p">.</span><span class="n">id_table</span>       <span class="o">=</span> <span class="n">my_pnp_tbl</span><span class="p">,</span>
+         <span class="c1">//...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>In the example above, the driver supports multiple parallel port devices,
+defined in the table <code class="docutils literal"><span class="pre">my_pnp_tbl</span></code>.  This information is used by the bus in
+the <code class="docutils literal"><span class="pre">match_device</span></code> function.
+When adding a driver, the bus driver will be associated to it and new entires
+in <code class="docutils literal"><span class="pre">sysfs</span></code> will be created based on the driver name.
+Then the bus <code class="docutils literal"><span class="pre">match</span></code> function will be called for every supported device,
+to associate the driver with any connected device that it supports.</p>
+</div>
+<div class="section" id="removing-a-driver">
+<h3>Removing a driver<a class="headerlink" href="#removing-a-driver" title="Permalink to this headline">¶</a></h3>
+<p>To remove a driver from the kernel, in addition to operations required for a
+legacy driver, we must unregister the <code class="docutils literal"><span class="pre">device_driver</span></code> structure.
+For a driver associated with the <code class="docutils literal"><span class="pre">PNP</span></code> bus, we must unregister the <code class="docutils literal"><span class="pre">pnp_driver</span></code>
+structure using the <code class="xref c c-func docutils literal"><span class="pre">pnp_unregister_driver()</span></code> function:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">pnp_driver</span> <span class="n">my_pnp_driver</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">my_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">pnp_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_pnp_driver</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Unlike legacy drivers, plug and play drivers don’t unregister devices in the
+module unload function (<code class="docutils literal"><span class="pre">my_exit</span></code>). When a driver is removed, all the
+references to it will be removed for all the devices it supports, and entries
+from <code class="docutils literal"><span class="pre">sysfs</span></code> will also be removed.</p>
+</div>
+<div class="section" id="adding-a-new-device">
+<h3>Adding a new device<a class="headerlink" href="#adding-a-new-device" title="Permalink to this headline">¶</a></h3>
+<p>As we saw above, plug and play drivers do not register devices at initialization.
+This operation will take place in the <code class="docutils literal"><span class="pre">probe</span></code> function, which is called when
+a new device is detected. A device attached to the <code class="docutils literal"><span class="pre">PNP</span></code> bus will be added to
+the system by the function <code class="docutils literal"><span class="pre">probe</span></code> from the <code class="docutils literal"><span class="pre">pnp_driver</span></code> structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_pnp_probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">card_id</span><span class="p">,</span>
+                                             <span class="k">const</span> <span class="k">struct</span> <span class="n">pnp_id</span> <span class="o">*</span><span class="n">dev_id</span><span class="p">)</span> <span class="p">{</span>
         <span class="kt">int</span> <span class="n">err</span><span class="p">,</span> <span class="n">iobase</span><span class="p">,</span> <span class="n">nr_ports</span><span class="p">,</span> <span class="n">irq</span><span class="p">;</span>
 
         <span class="c1">//get irq &amp; ports</span>
@@ -927,22 +1107,26 @@ addition will be carried out in function probeof the structure pnp_driver :</p>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>Upon detection of a device in the kernel (in the boot or by the addition of the
-device hotplug), it transmits an interrupt to get to the bus system. The device
-is recorded with the device_register and is attached to the bus (and will
-generate a call userspace, which can be detected udev). Then will cycle through
-the bus drivers and will call the function matchfor each of them. Function
-matchtries to associate a driver with a device. After being determined
-associated device driver will call the function probeof the driver. If the
-function ends successfully, the device is added to the list of devices the
-driver and creates corresponding entries sysfsbased on the device name.
-Remove device</p>
-<p>As we saw above, drivers deînregistrează not plug and play devices to
-Unregistering driver. This operation will take the position removethat will
-appeal to eliminate detection device in the kernel. In the case of a driver for
-a device attached to the bus PNP, the addition will be carried out in function
-removeof the structure pnp_driver :</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span> <span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
+<p>Upon detection of a device in the kernel (at boot or by the insertion of the
+device through <code class="docutils literal"><span class="pre">hotplug</span></code>), an interrupt is generated and reaches the bus
+driver.
+The device is registered using the function <code class="xref c c-func docutils literal"><span class="pre">device_register()</span></code> and it is
+attached to the bus. A call to the user space will also be generated, and the
+event can be treated by <code class="docutils literal"><span class="pre">udev</span></code>. Then, the list of drivers associated with the
+bus is iterated and the <code class="docutils literal"><span class="pre">match</span></code> function is called for each of them.
+The <code class="docutils literal"><span class="pre">match</span></code> function tries to find a driver for the new device. After a
+suitable driver is found for the device, the <code class="docutils literal"><span class="pre">probe</span></code> function of the driver
+is called. If the function ends successfully, the device is added to the driver’s
+list of devices and new entries are created in <code class="docutils literal"><span class="pre">sysfs</span></code> based on the device name.</p>
+</div>
+<div class="section" id="removing-a-device">
+<h3>Removing a device<a class="headerlink" href="#removing-a-device" title="Permalink to this headline">¶</a></h3>
+<p>As we saw above, the plug and play drivers don’t unregister devices when the
+driver is unloaded. This operation is done in the <code class="docutils literal"><span class="pre">remove</span></code> function, which
+is called when a device is removed from the system.
+In case of a device attached to the <code class="docutils literal"><span class="pre">PNP</span></code> bus, the unregister will be done
+in the <code class="docutils literal"><span class="pre">remove</span></code> function specified in the <code class="docutils literal"><span class="pre">pnp_driver</span></code> structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_pnp_remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pnp_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
          <span class="cm">/* unregister device dev */</span>
 <span class="p">}</span>
 
@@ -952,9 +1136,9 @@ removeof the structure pnp_driver :</p>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>As can be seen, the detection device disposal system will call the function
-remove the driver will generate a call in user space, which can be detected
-udevand dispose entries sysfs.</p>
+<p>As seen in the example above, when the removal of a device is detected, the
+<code class="docutils literal"><span class="pre">my_pnp_remove</span></code> function is called. A user-space call is also generated, which
+can be detected by <code class="docutils literal"><span class="pre">udev</span></code>, and entries are removed from <code class="docutils literal"><span class="pre">sysfs</span></code>.</p>
 </div>
 </div>
 <div class="section" id="exercises">
@@ -1010,35 +1194,61 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 <p>Find the definitions of the following symbols in the Linux kernel:</p>
 <blockquote>
 <div><ul class="simple">
-<li>dev_name, dev_set_name</li>
-<li>pnp_device_probe, pnp_bus_match , pnp_register_driver and pnp_bus_type</li>
+<li>functions <code class="docutils literal"><span class="pre">dev_name</span></code>, <code class="docutils literal"><span class="pre">dev_set_name</span></code>.</li>
+<li>functions <code class="docutils literal"><span class="pre">pnp_device_probe</span></code>, <code class="docutils literal"><span class="pre">pnp_bus_match</span></code>, <code class="docutils literal"><span class="pre">pnp_register_driver</span></code>
+and the <code class="docutils literal"><span class="pre">pnp_bus_type</span></code> variable.</li>
 </ul>
 </div></blockquote>
 </div>
 <div class="section" id="bus-implementation">
 <h3>1. Bus implementation<a class="headerlink" href="#bus-implementation" title="Permalink to this headline">¶</a></h3>
-<p>Analyze the contents of the <strong>bex.c</strong>, a modul that implements a bus
-driver. Implement the missing functionality marked by <strong>TODO 1</strong>:
-register the bus driver and add a new device named “root” with the
-type “none” and version 1.</p>
+<p>Analyze the contents of the <code class="docutils literal"><span class="pre">bex.c</span></code>, a module that implements a bus
+driver. Follow the comments marked with <strong>TODO 1</strong> and implement the missing
+functionality: register the bus driver and add a new device named <code class="docutils literal"><span class="pre">root</span></code>
+with type <code class="docutils literal"><span class="pre">none</span></code> and version 1.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">See <code class="xref c c-func docutils literal"><span class="pre">bex_add_dev()</span></code>.</p>
 </div>
-<p>Load the module and verify that the bus is visible in /sys/bus. Verify
-that the device is visible int /sys/bus/bex/devices.</p>
-<p>Remove the module and notice that the sysfs entries are removed.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The register and unregister must be done using <code class="xref c c-func docutils literal"><span class="pre">bus_register()</span></code>
+and <code class="xref c c-func docutils literal"><span class="pre">bus_unregister()</span></code>.</p>
+</div>
+<p>Load the module and verify that the bus is visible in <code class="docutils literal"><span class="pre">/sys/bus</span></code>. Verify
+that the device is visible in <code class="docutils literal"><span class="pre">/sys/bus/bex/devices</span></code>.</p>
+<p>Remove the module and notice that the <code class="docutils literal"><span class="pre">sysfs</span></code> entries are removed.</p>
 </div>
 <div class="section" id="add-type-and-version-device-attributes">
 <h3>2. Add type and version device attributes<a class="headerlink" href="#add-type-and-version-device-attributes" title="Permalink to this headline">¶</a></h3>
-<p>Add two read-only device attributes, type and version. Follow the
+<p>Add two read-only device attributes, <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">version</span></code>. Follow the
 <strong>TODO 2</strong> markings.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>You will need to add the two attributes in the structure
+<code class="docutils literal"><span class="pre">bex_dev_attrs</span></code>, as follows:</p>
+<p class="last"><code class="docutils literal"><span class="pre">&amp;dev_attr_&lt;insert-attribute-type-here&gt;.attr,</span></code></p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>A possible implementation for the show function is the following:</p>
+<div class="last highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">ssize_t</span>
+<span class="nf">type_show</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_attribute</span> <span class="o">*</span><span class="n">attr</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">struct</span> <span class="n">bex_device</span> <span class="o">*</span><span class="n">bex_dev</span> <span class="o">=</span> <span class="n">to_bex_device</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">bex_dev</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">DEVICE_ATTR_RO</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 <p>Observe that two new attributes are visible in
 /sys/bus/bex/devices/root. Check the contents of these attributes.</p>
 </div>
 <div class="section" id="add-del-and-add-bus-attributes">
 <h3>3. Add del and add bus attributes<a class="headerlink" href="#add-del-and-add-bus-attributes" title="Permalink to this headline">¶</a></h3>
-<p>Add two write-only bus attributes, del and add. del expects the name
+<p>Add two write-only bus attributes, <code class="docutils literal"><span class="pre">del</span></code> and <code class="docutils literal"><span class="pre">add</span></code>. del expects the name
 of a device to delete, while add expects the name, type and version to
 create a new device. Follow the <strong>TODO 3</strong> markings and review
 <a class="reference internal" href="#buses">Buses</a>.</p>
@@ -1048,13 +1258,32 @@ create a new device. Follow the <strong>TODO 3</strong> markings and review
 <code class="xref c c-func docutils literal"><span class="pre">bex_del_dev()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">bex_add_dev()</span></code> to delete
 and create a new device.</p>
 </div>
+<p>An example for the store function is the following:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">ssize_t</span> <span class="nf">add_store</span><span class="p">(</span><span class="k">struct</span> <span class="n">bus_type</span> <span class="o">*</span><span class="n">bt</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+  <span class="n">ret</span> <span class="o">=</span> <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&quot;%31s&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+
+  <span class="p">...</span>
+<span class="p">}</span>
+<span class="n">BUS_ATTR</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="n">S_IWUSR</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">add_store</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The store functions should return <code class="docutils literal"><span class="pre">0</span></code> if
+<code class="docutils literal"><span class="pre">bex_add_dev</span></code>/<code class="docutils literal"><span class="pre">bex_del_dev</span></code> fail and <code class="docutils literal"><span class="pre">count</span></code> otherwise.</p>
+</div>
 <p>Create a new device and observe that is visible in
-/sys/bus/devices. Delete it and observe it disapears from sysfs.</p>
+<code class="docutils literal"><span class="pre">/sys/bus/devices</span></code>. Delete it and observe it disapears from <code class="docutils literal"><span class="pre">sysfs</span></code>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p>Use echo to write into the bus attributes:</p>
 <div class="last highlight-shell"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> <span class="s2">&quot;name type 1&quot;</span> &gt; /sys/bus/bex/add
-
 $ <span class="nb">echo</span> <span class="s2">&quot;name&quot;</span> &gt; /sys/bus/bex/del
 </pre></div>
 </div>
@@ -1063,25 +1292,25 @@ $ <span class="nb">echo</span> <span class="s2">&quot;name&quot;</span> &gt; /sy
 <div class="section" id="register-the-bex-misc-driver">
 <h3>4. Register the bex misc driver<a class="headerlink" href="#register-the-bex-misc-driver" title="Permalink to this headline">¶</a></h3>
 <p>Modify <strong>bex-misc.c</strong> so that it registers the driver with the bex
-bus. Insert the bmx_misc.ko module and create a new bex device from
+bus. Insert the <code class="docutils literal"><span class="pre">bmx_misc.ko</span></code> module and create a new bex device from
 sysfs with the name “test”, type “misc”, version 2. Follow the <strong>TODO
 4</strong> markings.</p>
-<p>Observe that the driver is visible in /sys/bus/bex/drivers.</p>
+<p>Observe that the driver is visible in <code class="docutils literal"><span class="pre">/sys/bus/bex/drivers</span></code>.</p>
 <p>Why isn’t the probe function called?</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">notice that the bus match function in <strong>bex.c</strong> is not
+<p class="last">Notice that the bus match function in <strong>bex.c</strong> is not
 implemented.</p>
 </div>
-<p>Implemet the bus matching function in <strong>bex.c</strong>. Follow the <strong>TODO 5</strong>
-markings. Try again to create a new bex device and observ that this
-time the bex_misc probe function is called.</p>
+<p>Implement the bus matching function in <strong>bex.c</strong>. Follow the <strong>TODO 5</strong>
+markings. Try again to create a new bex device and observe that this
+time the <code class="docutils literal"><span class="pre">probe</span></code> function from the <code class="docutils literal"><span class="pre">bex_misc</span></code> driver is called.</p>
 </div>
 <div class="section" id="register-misc-device-in-the-bex-misc-probe-function">
 <h3>5. Register misc device in the bex_misc probe function<a class="headerlink" href="#register-misc-device-in-the-bex-misc-probe-function" title="Permalink to this headline">¶</a></h3>
-<p>Modify <strong>bex.c</strong> to refuse probing for versions &gt; 1. Also register the
-defined misc device in bex_misc_probe and deregister it in
-bex_misc_remove. Follow the <strong>TODO 6</strong> markings.</p>
+<p>Modify <strong>bex_misc.c</strong> to refuse probing if <code class="docutils literal"><span class="pre">version</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>. Also, register the
+defined misc device in <code class="docutils literal"><span class="pre">bex_misc_probe</span></code> and deregister it in
+<code class="docutils literal"><span class="pre">bex_misc_remove</span></code>. Follow the <strong>TODO 6</strong> markings.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-func docutils literal"><span class="pre">misc_register()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">misc_deregister()</span></code>.</p>
@@ -1089,8 +1318,8 @@ bex_misc_remove. Follow the <strong>TODO 6</strong> markings.</p>
 <p>Create a new device with the name “test”, type “misc” and version 2
 and observe that the probe fails. Create a new device with the name
 “test”, type “misc” and version 1 and observe that the probe is
-succesfull.</p>
-<p>Inspect the /sys/bus/bex/devices/test and observe that we have a new
+successful.</p>
+<p>Inspect <code class="docutils literal"><span class="pre">/sys/bus/bex/devices/test</span></code> and observe that we have a new
 entry. Identify the major and minor for the misc device, create a
 character device file and try to read and write from the misc device
 buffer.</p>
@@ -1102,13 +1331,13 @@ of the misc device</p>
 </div>
 <div class="section" id="monitor-uevent-notifications">
 <h3>6. Monitor uevent notifications<a class="headerlink" href="#monitor-uevent-notifications" title="Permalink to this headline">¶</a></h3>
-<p>Use the <strong>udevadm monitor</strong> command and observe what happens when:</p>
+<p>Use the <code class="docutils literal"><span class="pre">udevadm</span> <span class="pre">monitor</span></code> command and observe what happens when:</p>
 <ul class="simple">
-<li>the bex.ko and bex_misc.ko modeules are inserted</li>
+<li>the <code class="docutils literal"><span class="pre">bex.ko</span></code> and <code class="docutils literal"><span class="pre">bex_misc.ko</span></code> modules are inserted</li>
 <li>a new device with the type “test” is created</li>
 <li>a new device with the type “misc” and version 2 is created</li>
 <li>a new device with the type “misc” and version 1 is created</li>
-<li>all of the above devices are removed</li>
+<li>all of the above are removed</li>
 </ul>
 </div>
 </div>
