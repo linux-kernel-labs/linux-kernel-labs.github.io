@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Virtual Machine Setup" href="../info/vm.html" />
@@ -62,7 +63,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -89,6 +90,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -162,6 +164,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -200,7 +203,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Linux Device Model</li>
     
@@ -312,7 +315,7 @@ example, the ethi PCI card)</li>
 </ul>
 </div></blockquote>
 <p>Other attributes are available, depending on the bus and driver used.</p>
-<img alt="../_images/plug_and_play-sysfs.png" src="../_images/plug_and_play-sysfs.png" />
+<img alt="../_images/ditaa-4c56f9eb77982ec1acca9b4857c557f6e33e612b.png" src="../_images/ditaa-4c56f9eb77982ec1acca9b4857c557f6e33e612b.png" />
 </div>
 <div class="section" id="basic-structures-in-linux-devices">
 <h2>Basic Structures in Linux Devices<a class="headerlink" href="#basic-structures-in-linux-devices" title="Permalink to this headline">¶</a></h2>
@@ -327,7 +330,7 @@ structures are implemented:</p>
 <li>struct device_driver</li>
 </ul>
 </div></blockquote>
-<img alt="../_images/plug_and_play-linux_device_model_structures.png" src="../_images/plug_and_play-linux_device_model_structures.png" />
+<img alt="../_images/ditaa-c55585722717db7cbe800b0d78eca80729e13221.png" src="../_images/ditaa-c55585722717db7cbe800b0d78eca80729e13221.png" />
 <div class="section" id="the-kobject-structure">
 <h3>The kobject structure<a class="headerlink" href="#the-kobject-structure" title="Permalink to this headline">¶</a></h3>
 <p>A kobject structure does not perform a single function. This structure is
@@ -993,7 +996,7 @@ buses are already implemented (PCI, USB, etc.). Thus, we must first identify the
 bus to which the device is attached.
 In the examples below, we will consider that this bus is bus PNP and we will
 use the structures and functions described above.</p>
-<img alt="../_images/plug_and_play-linux_device_model_operations.png" src="../_images/plug_and_play-linux_device_model_operations.png" />
+<img alt="../_images/ditaa-40b41d095c2153c26e18d2db162f80ddbed77630.png" src="../_images/ditaa-40b41d095c2153c26e18d2db162f80ddbed77630.png" />
 </div>
 <div class="section" id="adding-a-driver">
 <h3>Adding a driver<a class="headerlink" href="#adding-a-driver" title="Permalink to this headline">¶</a></h3>
@@ -1363,11 +1366,19 @@ of the misc device</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1378,7 +1389,6 @@ of the misc device</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
