@@ -279,7 +279,7 @@ etc.). Most times, the major identifies the driver, while the minor identifies
 each physical device served by the driver. In general, a driver will have a
 major associate and will be responsible for all minors associated with that
 major.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># ls -la /dev/hda? /dev/ttyS?</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ ls -la /dev/hda? /dev/ttyS?
 brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">1</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda1
 brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">2</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda2
 crw-rw----  <span class="m">1</span> root dialout <span class="m">4</span>, <span class="m">64</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:52 /dev/ttyS0
@@ -300,12 +300,12 @@ loaded devices, along with the major identifier.</p>
 type (<code class="docutils literal"><span class="pre">block</span></code> or <code class="docutils literal"><span class="pre">character</span></code>), <code class="docutils literal"><span class="pre">major</span></code> and <code class="docutils literal"><span class="pre">minor</span></code> of the device
 (<code class="docutils literal"><span class="pre">mknod</span> <span class="pre">name</span> <span class="pre">type</span> <span class="pre">major</span> <span class="pre">minor</span></code>). Thus, if you want to create a character device
 named <code class="docutils literal"><span class="pre">mycdev</span></code> with the major <code class="docutils literal"><span class="pre">42</span></code> and minor <code class="docutils literal"><span class="pre">0</span></code>, use the command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ mknod /dev/mycdev c <span class="m">42</span> <span class="m">0</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mycdev c 42 0</span>
 </pre></div>
 </div>
 <p>To create the block device with the name <code class="docutils literal"><span class="pre">mybdev</span></code> with the major 240 and minor 0
 the command will be:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="c1"># mknod /dev/mybdev b 240 0</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mybdev b 240 0</span>
 </pre></div>
 </div>
 <p>Next, we’ll refer to character devices as drivers.</p>
