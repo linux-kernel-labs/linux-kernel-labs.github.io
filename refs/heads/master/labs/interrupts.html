@@ -300,7 +300,7 @@ the one running (B).</p>
 <p>Using only a spinlock can lead to a deadlock. The classic example of
 deadlock in this case is:</p>
 <ol class="arabic simple">
-<li>We run a process process on the X processor, and we acquire the lock</li>
+<li>We run a process on the X processor, and we acquire the lock</li>
 <li>Before releasing the lock, an interrupt is generated on the X processor</li>
 <li>The interrupt handling routine will try to acquire the lock and it
 will go into an infinite loop</li>
