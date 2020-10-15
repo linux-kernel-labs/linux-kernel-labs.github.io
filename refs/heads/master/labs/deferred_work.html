@@ -624,7 +624,7 @@ use <code class="xref c c-func docutils literal"><span class="pre">container_of(
 </pre></div>
 </div>
 <p>Scheduling work items with the functions above will run the handler in
-the context of a thread kernel called <em>events/x</em>, where x is the
+the context of a kernel thread called <em>events/x</em>, where x is the
 processor number. The kernel will initialize a kernel thread (or a
 pool of workers) for each processor present in the system:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ ps -e
@@ -690,16 +690,16 @@ declares and initializes a work item and adds it to the queue:</p>
 </pre></div>
 </div>
 <p>The work items planned with these functions will run in the context of
-a new thread kernel called <em>my_workqueue</em>, the name passed to
+a new kernel thread called <em>my_workqueue</em>, the name passed to
 <code class="xref c c-func docutils literal"><span class="pre">create_singlethread_workqueue()</span></code>.</p>
 </div>
 <div class="section" id="kernel-threads">
 <h2>Kernel threads<a class="headerlink" href="#kernel-threads" title="Permalink to this headline">¶</a></h2>
 <p>Kernel threads have emerged from the need to run kernel code in
 process context. Kernel threads are the basis of the workqueue
-mechanism. Essentially, a thread kernel is a thread that only runs in
+mechanism. Essentially, a kernel thread is a thread that only runs in
 kernel mode and has no user address space or other user attributes.</p>
-<p>To create a thread kernel, use <code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code>:</p>
+<p>To create a kernel thread, use <code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">kthread_create</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">),</span>
@@ -717,7 +717,7 @@ according to the standard printf syntax.</li>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">kthread_create</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot;%skthread%d&quot;</span><span class="p">,</span> <span class="s">&quot;my&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Will create a thread kernel with the name mykthread0.</p>
+<p>Will create a kernel thread with the name mykthread0.</p>
 <p>The kernel thread created with this function will be stopped (in the
 <em>TASK_INTERRUPTIBLE</em> state). To start the kernel thread, call the
 <code class="xref c c-func docutils literal"><span class="pre">wake_up_process()</span></code>:</p>
@@ -736,10 +736,10 @@ kernel thread:</p>
 the kernel thread are more relaxed and scheduling is closer to
 scheduling in userspace, there are, however, some limitations to be
 taken into account. We will list below the actions that can or can not
-be made from a thread kernel:</p>
+be made from a kernel thread:</p>
 <ul class="simple">
 <li>can’t access the user address space (even with copy_from_user,
-copy_to_user) because a thread kernel does not have a user address
+copy_to_user) because a kernel thread does not have a user address
 space</li>
 <li>can’t implement busy wait code that runs for a long time; if the
 kernel is compiled without the preemptive option, that code will run
@@ -749,8 +749,8 @@ thus hogging the system</li>
 <li>can use spinlocks, but if the hold time of the lock is significant,
 it is recommended to use mutexes</li>
 </ul>
-<p>The termination of a thread kernel is done voluntarily, within the
-function running in the thread kernel, by calling <code class="xref c c-func docutils literal"><span class="pre">do_exit()</span></code>:</p>
+<p>The termination of a kernel thread is done voluntarily, within the
+function running in the kernel thread, by calling <code class="xref c c-func docutils literal"><span class="pre">do_exit()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">fastcall</span> <span class="n">NORET_TYPE</span> <span class="kt">void</span> <span class="nf">do_exit</span><span class="p">(</span><span class="kt">long</span> <span class="n">code</span><span class="p">);</span>
 </pre></div>
 </div>
