@@ -650,7 +650,7 @@ student@eg106:~/src/linux/tools/labs$ make boot
 </div>
 <p>By default, you will not get a prompt or any graphical interface, but you can connect to
 a console exposed by the virtual machine using <strong class="command">minicom</strong> or <strong class="command">screen</strong>.</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux/tools/labs$ minicom -D serial.pts
+<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~/src/linux/tools/labs$ minicom -D serial.pts
 
 &lt;press enter&gt;
 
@@ -676,7 +676,7 @@ root account.</p>
 it from the address <a class="reference external" href="http://elf.cs.pub.ro/so2/res/laboratoare/mydisk.img">http://elf.cs.pub.ro/so2/res/laboratoare/mydisk.img</a>.
 The file must be placed in <code class="file docutils literal"><span class="pre">tools/labs</span></code>.</p>
 </div>
-<p>In the <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs/qemu</span></code> directory, you have a new virtual
+<p>In the <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs</span></code> directory, you have a new virtual
 machine disk, in the file <code class="file docutils literal"><span class="pre">mydisk.img</span></code>. We want to add the disk
 to the virtual machine and use it within the virtual machine.</p>
 <p>Edit <code class="file docutils literal"><span class="pre">qemu/Makefile</span></code> and add <code class="code docutils literal"><span class="pre">-drive</span> <span class="pre">file=mydisk.img,if=virtio,format=raw</span></code>
@@ -838,7 +838,7 @@ you would use in the <strong class="command">gdb</strong> console the command:</
 </div>
 <div class="section" id="cscope-spelunking">
 <h3>5. Cscope spelunking<a class="headerlink" href="#cscope-spelunking" title="Permalink to this headline">¶</a></h3>
-<p>Use LXR or cscope in the <code class="file docutils literal"><span class="pre">~/so2/linux/</span></code> directory to discover
+<p>Use LXR or cscope in the <code class="file docutils literal"><span class="pre">~/src/linux/</span></code> directory to discover
 the location of certain structures or functions.</p>
 <p>Cscope index files are already generated. Use <strong class="command">vim</strong> and other related commands
 to scroll through the source code. For example, use the command:</p>

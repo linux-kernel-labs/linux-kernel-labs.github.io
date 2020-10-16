@@ -260,7 +260,7 @@ First, install <code class="docutils literal"><span class="pre">docker</span></c
 <a class="reference external" href="https://github.com/linux-kernel-labs/linux">linux-kernel-labs repo</a>
 repository locally:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ mkdir -p ~/so2
-$ git clone git@github.com:linux-kernel-labs/linux.git ~/so2/linux
+$ git clone git@github.com:linux-kernel-labs/linux.git ~/src/linux
 </pre></div>
 </div>
 </li>
@@ -287,8 +287,8 @@ in and click <code class="docutils literal"><span class="pre">Fork</span></code>
 <li>Go to the master branch and make sure you have no local changes:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git checkout master
-student@eg106:~/so2/linux$ git status
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git checkout master
+student@eg106:~/src/linux$ git status
 On branch master
 Your branch is up-to-date with <span class="s1">&#39;origin/master&#39;</span>.
 nothing to commit, working directory clean
@@ -299,13 +299,13 @@ nothing to commit, working directory clean
 <li>Make sure the local master branch is up-to-date with linux-kernel-labs:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git pull origin master
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git pull origin master
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>You can also push the latest master to your forked repo:</p>
-<div class="last highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git push my_fork master
+<div class="last highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork master
 </pre></div>
 </div>
 </div>
@@ -314,7 +314,7 @@ nothing to commit, working directory clean
 <li>Create a new branch for your change:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git checkout -b &lt;your_branch_name&gt;
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git checkout -b &lt;your_branch_name&gt;
 </pre></div>
 </div>
 </div></blockquote>
@@ -323,9 +323,9 @@ nothing to commit, working directory clean
 <code class="docutils literal"><span class="pre">Documentation/teaching/index.rst</span></code>:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ vim Documentation/teaching/index.rst
-student@eg106:~/so2/linux$ git add Documentation/teaching/index.rst
-student@eg106:~/so2/linux$ git commit -m <span class="s2">&quot;&lt;commit message&gt;&quot;</span>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ vim Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git add Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git commit -m <span class="s2">&quot;&lt;commit message&gt;&quot;</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -345,7 +345,7 @@ and the location of the changed component.</p>
 <li>Push the local branch to your forked repository:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git push my_fork &lt;your_branch_name&gt;
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork &lt;your_branch_name&gt;
 </pre></div>
 </div>
 </div></blockquote>
@@ -374,8 +374,8 @@ Your goal is to do a new push on the same branch. For this, follow the next step
 <code class="docutils literal"><span class="pre">master</span></code> branch.</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git fetch origin master
-student@eg106:~/so2/linux$ git rebase FETCH_HEAD
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git fetch origin master
+student@eg106:~/src/linux$ git rebase FETCH_HEAD
 </pre></div>
 </div>
 <div class="admonition note">
@@ -395,8 +395,8 @@ After fixing the conflicts, add them using <code class="docutils literal"><span 
 we will amend the changes to the initial commit.</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git add Documentation/teaching/index.rst
-student@eg106:~/so2/linux$ git commit --amend
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git add Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git commit --amend
 </pre></div>
 </div>
 </div></blockquote>
@@ -404,7 +404,7 @@ student@eg106:~/so2/linux$ git commit --amend
 <li>Force-push the updated commit:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git push my_fork &lt;your_branch_name&gt; -f
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork &lt;your_branch_name&gt; -f
 </pre></div>
 </div>
 <p>After this step, the Pull Request is updated. It is now up to the

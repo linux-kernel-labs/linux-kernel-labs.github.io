@@ -136,7 +136,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#printk">2. Printk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error">3. Error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sub-modules">4. Sub-modules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">5. Kernel oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">5. Kernel oops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-parameters">6. Module parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#proc-info">7. Proc info</a></li>
 </ul>
@@ -145,7 +145,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#kdb">1. KDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ps-module">2. PS Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memory-info">3. Memory Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">4. Dynamic Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">4. Dynamic Debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dynamic-debugging-during-initialization">5. Dynamic Debugging During Initialization</a></li>
 </ul>
 </li>
@@ -331,7 +331,7 @@ as instructed in this file.</p>
 <p class="first admonition-title">Note</p>
 <p>For labs we will configure different <strong class="command">KDIR</strong>, according to
 the virtual machine specifications:</p>
-<div class="last highlight-bash"><div class="highlight"><pre><span></span><span class="nv">KDIR</span> <span class="o">=</span> /home/student/so2/linux
+<div class="last highlight-bash"><div class="highlight"><pre><span></span><span class="nv">KDIR</span> <span class="o">=</span> /home/student/src/linux
 <span class="o">[</span>...<span class="o">]</span>
 </pre></div>
 </div>
@@ -881,11 +881,11 @@ of the function in which the current instruction is found.</li>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last"><code class="code docutils literal"><span class="pre">__FILE__</span></code> and <code class="code docutils literal"><span class="pre">__LINE__</span></code> are part of the ANSI C specifications:
-:code`__func__` is part of specification C99; <code class="code docutils literal"><span class="pre">__FUNCTION__</span></code> is a GNU
-:codeC extension and is not portable; However, since we write code for the
-:codeLinux kernel, we can use it without any problems.</p>
+<code class="code docutils literal"><span class="pre">__func__</span></code> is part of specification C99; <code class="code docutils literal"><span class="pre">__FUNCTION__</span></code> is a GNU
+<code class="code docutils literal"><span class="pre">C</span></code> extension and is not portable; However, since we write code for the
+<code class="code docutils literal"><span class="pre">Linux</span></code> kernel, we can use it without any problems.</p>
 </div>
-<p>The following macrodefinition can be used in this case:</p>
+<p>The following macro definition can be used in this case:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define PRINT_DEBUG \</span>
 <span class="cp">       printk (KERN_DEBUG &quot;[% s]: FUNC:% s: LINE:% d \ n&quot;, __FILE__,</span>
                <span class="n">__FUNCTION__</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">)</span>
@@ -979,7 +979,7 @@ $ <span class="nb">echo</span> <span class="s1">&#39;file svcsock.c line -1605 +
 </li>
 </ul>
 <p>In addition to the above options, a series of flags can be added, removed, or set
-with operators <code class="docutils literal"><span class="pre">+`,</span> <span class="pre">``-</span></code> or <code class="docutils literal"><span class="pre">=</span></code>:</p>
+with operators <code class="docutils literal"><span class="pre">+</span></code>, <code class="docutils literal"><span class="pre">-</span></code> or <code class="docutils literal"><span class="pre">=</span></code>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">p</span></code> activates the pr_debug() .</li>
@@ -995,11 +995,11 @@ with operators <code class="docutils literal"><span class="pre">+`,</span> <span
 <div class="section" id="kdb-kernel-debugger">
 <h3>KDB: Kernel debugger<a class="headerlink" href="#kdb-kernel-debugger" title="Permalink to this headline">¶</a></h3>
 <p>The kernel debugger has proven to be very useful to facilitate the development and
-debugging process. One of its main advantages it the possibility to perform live debugging.
+debugging process. One of its main advantages is the possibility to perform live debugging.
 This allows us to monitor, in real time, the accesses to memory or even modify the memory
 while debugging.
 The debugger has been integrated in the mainline kernel starting with version 2.6.26-rci.
-KDB is not a <a href="#id1"><span class="problematic" id="id2">*</span></a>source debugger”, but for a complete analysis it can be used in parallel with
+KDB is not a <em>source debugger</em>, but for a complete analysis it can be used in parallel with
 gdb and symbol files – see <a class="reference internal" href="introduction.html#gdb-intro"><span class="std std-ref">the GDB debugging section</span></a></p>
 <p>To use KDB, you have the following options:</p>
 <blockquote>
@@ -1217,8 +1217,8 @@ from the two C source files.</p>
 <p>Compile, copy, boot the VM, load and unload the kernel module. Make sure messages
 are properly displayed on the console.</p>
 </div>
-<div class="section" id="id3">
-<h3>5. Kernel oops<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>5. Kernel oops<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Enter the directory for the task <strong>5-oops-mod</strong> and inspect the
 C source file. Notice where the problem will occur. Add the compilation flag
 <code class="docutils literal"><span class="pre">-g</span></code> in the Kbuild file.</p>
@@ -1264,7 +1264,7 @@ the module. Find more information <a class="reference external" href="http://tld
 </div>
 </div>
 <div class="section" id="proc-info">
-<span id="id4"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>7. Proc info<a class="headerlink" href="#proc-info" title="Permalink to this headline">¶</a></h3>
 <p>Check the skeleton for the task named <strong>7-list-proc</strong>. Add code to
 display the Process ID (<code class="docutils literal"><span class="pre">PID</span></code>) and the executable name for the current
 process.</p>
@@ -1303,7 +1303,7 @@ when the module is unloaded a process is created from the executable
 <h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="kdb">
 <h3>1. KDB<a class="headerlink" href="#kdb" title="Permalink to this headline">¶</a></h3>
-<p>Go to the <strong>8-kdb</strong> directory. Activate KDB the over serial port and enter KDB
+<p>Go to the <strong>8-kdb</strong> directory. Activate KDB over the serial port and enter KDB
 mode using <strong class="command">SysRq</strong>. Connect to the pseudo-terminal linked to virtiocon0
 using <strong class="command">minicom</strong>, configure KDB to use the hvc0 serial port:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
@@ -1370,8 +1370,8 @@ defined.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id5">
-<h3>4. Dynamic Debugging<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>4. Dynamic Debugging<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>Go to the <strong>9-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
 <p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in
 <code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file
