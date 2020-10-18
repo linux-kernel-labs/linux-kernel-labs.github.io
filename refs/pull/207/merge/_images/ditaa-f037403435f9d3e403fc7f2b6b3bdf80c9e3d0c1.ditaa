@@ -1,0 +1,15 @@
++--------------+-----------------------+--------------+
+|  cF88        |        c8F8           |  cF88        |
+|  Buffer      |    Allocated buffer   |  Buffer      |
+|  Underflow   |      0x5a5a5a5a       |  Overflow    |
+|  Poison      |      0x5a5a5a5a       |  Poison      |
+|              |      0x5a5a5a5a       |              |
++--------------+-----------------------+--------------+
+
++--------------+-----------------------+--------------+
+|  cF88        |        c888           |  cF88        |
+|  Buffer      |     Freed buffer      |  Buffer      |
+|  Underflow   |      0x6b6b6b6b       |  Overflow    |
+|  Poison      |      0x6b6b6b6b       |  Poison      |
+|              |      0x6b6b6b6b       |              |
++--------------+-----------------------+--------------+
