@@ -911,7 +911,6 @@ the <code class="xref c c-macro docutils literal"><span class="pre">kunmap_atomi
 
 <span class="k">static</span> <span class="kt">int</span> <span class="nf">my_xfer_bio</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_block_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">bio_vec</span> <span class="n">bvec</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">bvec_iter</span> <span class="n">i</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">bio_data_dir</span><span class="p">(</span><span class="n">bio</span><span class="p">);</span>
