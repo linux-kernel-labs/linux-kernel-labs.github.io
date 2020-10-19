@@ -958,18 +958,16 @@ file /usr/src/packages/BUILD/sgi-enhancednfs-1.4/default/net/sunrpc/svcsock.c
 </div>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">module</span></code> - module name.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>Modules sunrpc
+<div class="highlight-bash"><div class="highlight"><pre><span></span>module sunrpc
 </pre></div>
 </div>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">format</span></code> - only messages whose display format contains the specified string.</p>
-<blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>format <span class="s2">&quot;nfsd: SETATTR&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>format <span class="s2">&quot;nfsd: SETATTR&quot;</span>
 </pre></div>
 </div>
-</div></blockquote>
 </li>
-<li><p class="first">line - the line or lines for which we want to enable debug calls.</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">line</span></code> - the line or lines for which we want to enable debug calls.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># Triggers debug messages between lines 1603 and 1605 in the svcsock.c file</span>
 $ <span class="nb">echo</span> <span class="s1">&#39;file svcsock.c line 1603-1605 +p&#39;</span> &gt; /sys/kernel/debug/dynamic_debug/control
 <span class="c1"># Enables debug messages from the beginning of the file to line 1605</span>
@@ -984,9 +982,9 @@ with operators <code class="docutils literal"><span class="pre">+</span></code>,
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">p</span></code> activates the pr_debug() .</li>
 <li><code class="docutils literal"><span class="pre">f</span></code> includes the name of the function in the printed message.</li>
-<li><code class="docutils literal"><span class="pre">I</span></code> includes the line number in the printed message.</li>
-<li><code class="docutils literal"><span class="pre">M</span></code> includes the module name in the printed message.</li>
-<li><code class="docutils literal"><span class="pre">T</span></code> includes the thread id if it is not called from interrupt context</li>
+<li><code class="docutils literal"><span class="pre">l</span></code> includes the line number in the printed message.</li>
+<li><code class="docutils literal"><span class="pre">m</span></code> includes the module name in the printed message.</li>
+<li><code class="docutils literal"><span class="pre">t</span></code> includes the thread id if it is not called from interrupt context</li>
 <li><code class="docutils literal"><span class="pre">_</span></code> no flag is set.</li>
 </ul>
 </div></blockquote>
@@ -1208,8 +1206,8 @@ the module.</p>
 <h3>4. Sub-modules<a class="headerlink" href="#sub-modules" title="Permalink to this headline">¶</a></h3>
 <p>Inspect the C source files <code class="docutils literal"><span class="pre">mod1.c</span></code> and <code class="docutils literal"><span class="pre">mod2.c</span></code> in <code class="file docutils literal"><span class="pre">4-multi-mod/</span></code>.
 Module 2 contains only the definition of a function used by module 1.</p>
-<p>Change the <code class="file docutils literal"><span class="pre">Kbuild</span></code> file to create the <code class="docutils literal"><span class="pre">multi_mod.ko</span></code> module from
-from the two C source files.</p>
+<p>Change the <code class="file docutils literal"><span class="pre">Kbuild</span></code> file to create the <code class="docutils literal"><span class="pre">multi_mod.ko</span></code> module from the
+two C source files.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Read the <a class="reference internal" href="#compiling-kernel-modules">Compiling kernel modules</a> section of the lab.</p>
