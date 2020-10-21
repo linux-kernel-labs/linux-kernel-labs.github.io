@@ -1,0 +1,14 @@
++-------------------------------------------+
+|              Queued Spin Lock        cEEE |
+|                                           |
+|   +---+      +---+      +---+      +---+  |
+|   |   |----->|   |----->|   |----->|   |  |
+|   +---+      +---+      +---+      +---+  |
+|     ^          ^          ^          ^    |
+|     |          |          |          |    |
++-------------------------------------------+
+      |          |          |          |
+    CPU10      CPU17       CPU99     CPU0
+   owns the   spins on    spins on  spins on
+    lock      private     private   private
+               lock        lock      lock
