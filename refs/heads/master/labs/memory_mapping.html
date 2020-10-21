@@ -433,7 +433,7 @@ like:</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Note that memory allocated with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code> is not
-physically contiguous so if we want to map a range alocated
+physically contiguous so if we want to map a range allocated
 with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>, we have to map each page individually
 and compute the physical address for each page.</p>
 </div>
@@ -450,17 +450,17 @@ Enabling is done using <code class="xref c c-func docutils literal"><span class=
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">mem</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
 
-    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span>
         <span class="n">SetPageReserved</span><span class="p">(</span><span class="n">virt_to_page</span><span class="p">(((</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
 
     <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="n">free_mmap_pages</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">mem</span><span class="p">,</span> <span class="kt">int</span> <span class="n">npages</span><span class="p">)</span>
+<span class="kt">void</span> <span class="nf">free_mmap_pages</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">mem</span><span class="p">,</span> <span class="kt">int</span> <span class="n">npages</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 
-    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span>
         <span class="n">ClearPageReserved</span><span class="p">(</span><span class="n">virt_to_page</span><span class="p">(((</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
 
     <span class="n">kfree</span><span class="p">(</span><span class="n">mem</span><span class="p">);</span>
