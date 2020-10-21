@@ -60,7 +60,7 @@ this case, the device driver must use special features and not directly access
 the buffer. This is necessary to prevent access to invalid memory areas.
 
 Another difference from the user-space scheduling, relative to memory, is due to
-the stack, a stack whose size is fixed and limited. A stack of 4K it is used in
+the stack, a stack whose size is fixed and limited. A stack of 4K is used in
 Linux, and a stack of 12K is used in Windows. For this reason, the
 allocation of large structures on stack or the use of recursive calls should
 be avoided.
@@ -385,10 +385,10 @@ operations associated with a spinlock are :c:func:`spin_lock_init`,
 In Linux, you can use reader-writer spinlocks, useful for readers-writers
 problems.
 These types of locks are identified by :c:type:`rwlock_t`, and the functions
-that can work on a reader-writer spinlock are:
-* :c:func:`rwlock_init`
-* :c:func:`read_lock`
-* :c:func:`write_lock`
+that can work on a reader-writer spinlock are
+:c:func:`rwlock_init`,
+:c:func:`read_lock`,
+:c:func:`write_lock`.
 An example of use:
 
 
@@ -500,7 +500,7 @@ Such an usage is shown schematically in the code below:
 	int initial_flag;
 
 	/*
-	 * Check if flag is UNLOCKED; if not, lock it and do it atomically.
+	 * Check if flag is UNLOCKED; if so, lock it and do it atomically.
 	 *
 	 * This is the atomic equivalent of
 	 *	if (flag == UNLOCKED)
