@@ -558,8 +558,8 @@ be NULL.</p>
 <div class="section" id="access-to-the-address-space-of-the-process">
 <span id="access-to-process-address-space"></span><h2>Access to the address space of the process<a class="headerlink" href="#access-to-the-address-space-of-the-process" title="Permalink to this headline">¶</a></h2>
 <p>A driver for a device is the interface between an application and hardware. As
-a result, we often have to access a given user-space data. Accessing it can not
-be done directly (by de-referencing a user-space pointer). Direct access of a
+a result, we often have to access user-space data. Accessing it can not be done
+directly (by de-referencing a user-space pointer). Direct access of a
 user-space pointer can lead to incorrect behavior (depending on architecture, a
 user-space pointer may not be valid or mapped to kernel-space), a kernel oops
 (the user-mode pointer can refer to a non-resident memory area) or security
@@ -577,7 +577,7 @@ functions below:</p>
 error and have the following roles:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">put_user</span></code> put in the user-space at the address a value of the val;
+<li><code class="docutils literal"><span class="pre">put_user</span></code> store the value <code class="docutils literal"><span class="pre">val</span></code> to user-space address <code class="docutils literal"><span class="pre">address</span></code>;
 Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
 hardware platform);</li>
 <li><code class="docutils literal"><span class="pre">get_user</span></code> analogue to the previous function, only that val will be set to a
