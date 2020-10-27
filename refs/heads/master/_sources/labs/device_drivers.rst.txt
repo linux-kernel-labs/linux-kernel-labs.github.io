@@ -175,7 +175,7 @@ data.
 
 The file structure contains, among many fields:
 
-   * ``f_mode``, which specifies read ``FMODE_READ`` (``FMODE_READ``) or write
+   * ``f_mode``, which specifies read (``FMODE_READ``) or write
      (``FMODE_WRITE``);
    * ``f_flags``, which specifies the file opening flags (``O_RDONLY``,
      ``O_NONBLOCK``, ``O_SYNC``, ``O_APPEND``, ``O_TRUNC``, etc.);
@@ -261,9 +261,9 @@ For the static assignment and unallocation of device identifiers, the
 It is recommended that device identifiers be dynamically assigned to the
 ``alloc_chrdev_region`` function.
 
-The ``my_minor_count`` sequence reserves my_minor_count devices, starting with
-``my_major`` major and my_first_minor minor (if the max value for minor is
-exceeded, move to the next major):
+Below sequence reserves ``my_minor_count`` devices, starting with ``my_major``
+major and ``my_first_minor`` minor (if the max value for minor is exceeded,
+move to the next major):
 
 .. code-block:: c
 
@@ -375,13 +375,13 @@ Access to the address space of the process
 ==========================================
 
 A driver for a device is the interface between an application and hardware. As
-a result, we often have to access a given user-space driver device. Accessing
-process address space can not be done directly (by de-referencing a user-space
-pointer). Direct access of a user-space pointer can lead to incorrect behavior
-(depending on architecture, a user-space pointer may not be valid or mapped to
-kernel-space), a kernel oops (the user-mode pointer can refer to a non-resident
-memory area) or security issues. Proper access to user-space data is done by
-calling the macros / functions below:
+a result, we often have to access user-space data. Accessing it can not be done
+directly (by de-referencing a user-space pointer). Direct access of a
+user-space pointer can lead to incorrect behavior (depending on architecture, a
+user-space pointer may not be valid or mapped to kernel-space), a kernel oops
+(the user-mode pointer can refer to a non-resident memory area) or security
+issues. Proper access to user-space data is done by calling the macros /
+functions below:
 
 .. code-block:: c
 
@@ -390,14 +390,14 @@ calling the macros / functions below:
    put_user(type val, type *address);
    get_user(type val, type *address);
    unsigned long copy_to_user(void __user *to, const void *from, unsigned long n);
-   unsigned long copy_from_user(void *to, const void __user *from, unsigned long n)
+   unsigned long copy_from_user(void *to, const void __user *from, unsigned long n);
 
 .. **
 
 All macros / functions return 0 in case of success and another value in case of
 error and have the following roles:
 
-   * ``put_user`` put in the user-space at the address address value of the val;
+   * ``put_user`` store the value ``val`` to user-space address ``address``;
      Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
      hardware platform);
    * ``get_user`` analogue to the previous function, only that val will be set to a
@@ -611,7 +611,7 @@ http://lwn.net/Articles/119652/
 
 .. **
 
-``cmd`` is the command sent from user-space. If a value is being sent to the
+``cmd`` is the command sent from user-space. If a value is being sent from the
 user-space call, it can be accessed directly. If a buffer is fetched, the arg
 value will be a pointer to it, and must be accessed through the ``copy_to_user``
 or ``copy_from_user``.
@@ -639,10 +639,10 @@ The following example shows an implementation for a ``ioctl`` function:
    {
        struct my_device_data *my_data =
             (struct my_device_data*) file->private_data;
-        my_ioctl_data mid;
+       my_ioctl_data mid;
 
-        switch(cmd) {
-        case MY_IOCTL_IN:
+       switch(cmd) {
+       case MY_IOCTL_IN:
            if( copy_from_user(&mid, (my_ioctl_data *) arg,
                               sizeof(my_ioctl_data)) )
                return -EFAULT;
@@ -805,7 +805,7 @@ The driver will control a single device with the ``MY_MAJOR`` major and
       .. note:: Entries in /dev are not created by loading the module. These can be created
                 in two ways:
 
-                * manually, using the ``mknod`` command as we will do in the following exercises.
+                * manually, using the ``mknod`` command as we did above.
                 * automatically using udev daemon
 
    4. Unload the kernel module
@@ -994,8 +994,7 @@ Add two ioctl operations to the device driver for queuing.
       * ``MY_IOCTL_DOWN`` to add the process to a queue;
       * ``MY_IOCTL_UP`` to remove the process from a queue.
 
-   2. Fill the device structure with a ``wait_queue_head_t`` field and a
-      ``wait_queue_head_t`` flag.
+   2. Fill the device structure with a ``wait_queue_head_t`` field and a flag.
    3. Do not forget to initialize the wait queue and flag.
    4. Remove exclusive access condition from previous exercise
    5. For testing, pass the required command line arguments to the

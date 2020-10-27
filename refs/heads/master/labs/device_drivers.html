@@ -384,7 +384,7 @@ data.</p>
 <p>The file structure contains, among many fields:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">f_mode</span></code>, which specifies read <code class="docutils literal"><span class="pre">FMODE_READ</span></code> (<code class="docutils literal"><span class="pre">FMODE_READ</span></code>) or write
+<li><code class="docutils literal"><span class="pre">f_mode</span></code>, which specifies read (<code class="docutils literal"><span class="pre">FMODE_READ</span></code>) or write
 (<code class="docutils literal"><span class="pre">FMODE_WRITE</span></code>);</li>
 <li><code class="docutils literal"><span class="pre">f_flags</span></code>, which specifies the file opening flags (<code class="docutils literal"><span class="pre">O_RDONLY</span></code>,
 <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code>, <code class="docutils literal"><span class="pre">O_SYNC</span></code>, <code class="docutils literal"><span class="pre">O_APPEND</span></code>, <code class="docutils literal"><span class="pre">O_TRUNC</span></code>, etc.);</li>
@@ -460,9 +460,9 @@ and minor) and can be obtained using the <code class="docutils literal"><span cl
 </div>
 <p>It is recommended that device identifiers be dynamically assigned to the
 <code class="docutils literal"><span class="pre">alloc_chrdev_region</span></code> function.</p>
-<p>The <code class="docutils literal"><span class="pre">my_minor_count</span></code> sequence reserves my_minor_count devices, starting with
-<code class="docutils literal"><span class="pre">my_major</span></code> major and my_first_minor minor (if the max value for minor is
-exceeded, move to the next major):</p>
+<p>Below sequence reserves <code class="docutils literal"><span class="pre">my_minor_count</span></code> devices, starting with <code class="docutils literal"><span class="pre">my_major</span></code>
+major and <code class="docutils literal"><span class="pre">my_first_minor</span></code> minor (if the max value for minor is exceeded,
+move to the next major):</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 <span class="p">...</span>
 
@@ -558,26 +558,26 @@ be NULL.</p>
 <div class="section" id="access-to-the-address-space-of-the-process">
 <span id="access-to-process-address-space"></span><h2>Access to the address space of the process<a class="headerlink" href="#access-to-the-address-space-of-the-process" title="Permalink to this headline">¶</a></h2>
 <p>A driver for a device is the interface between an application and hardware. As
-a result, we often have to access a given user-space driver device. Accessing
-process address space can not be done directly (by de-referencing a user-space
-pointer). Direct access of a user-space pointer can lead to incorrect behavior
-(depending on architecture, a user-space pointer may not be valid or mapped to
-kernel-space), a kernel oops (the user-mode pointer can refer to a non-resident
-memory area) or security issues. Proper access to user-space data is done by
-calling the macros / functions below:</p>
+a result, we often have to access user-space data. Accessing it can not be done
+directly (by de-referencing a user-space pointer). Direct access of a
+user-space pointer can lead to incorrect behavior (depending on architecture, a
+user-space pointer may not be valid or mapped to kernel-space), a kernel oops
+(the user-mode pointer can refer to a non-resident memory area) or security
+issues. Proper access to user-space data is done by calling the macros /
+functions below:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
 
 <span class="n">put_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
 <span class="n">get_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">copy_to_user</span><span class="p">(</span><span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
-<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">)</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">copy_from_user</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>All macros / functions return 0 in case of success and another value in case of
 error and have the following roles:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">put_user</span></code> put in the user-space at the address address value of the val;
+<li><code class="docutils literal"><span class="pre">put_user</span></code> store the value <code class="docutils literal"><span class="pre">val</span></code> to user-space address <code class="docutils literal"><span class="pre">address</span></code>;
 Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
 hardware platform);</li>
 <li><code class="docutils literal"><span class="pre">get_user</span></code> analogue to the previous function, only that val will be set to a
@@ -759,7 +759,7 @@ called <code class="docutils literal"><span class="pre">unlocked_ioctl</span></c
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">cmd</span></code> is the command sent from user-space. If a value is being sent to the
+<p><code class="docutils literal"><span class="pre">cmd</span></code> is the command sent from user-space. If a value is being sent from the
 user-space call, it can be accessed directly. If a buffer is fetched, the arg
 value will be a pointer to it, and must be accessed through the <code class="docutils literal"><span class="pre">copy_to_user</span></code>
 or <code class="docutils literal"><span class="pre">copy_from_user</span></code>.</p>
@@ -785,10 +785,10 @@ to generate ioctl codes. The macrodefinition parameters are as follows:</p>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span>
          <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span><span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
-     <span class="n">my_ioctl_data</span> <span class="n">mid</span><span class="p">;</span>
+    <span class="n">my_ioctl_data</span> <span class="n">mid</span><span class="p">;</span>
 
-     <span class="k">switch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
-     <span class="k">case</span> <span class="nl">MY_IOCTL_IN</span><span class="p">:</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">MY_IOCTL_IN</span><span class="p">:</span>
         <span class="k">if</span><span class="p">(</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mid</span><span class="p">,</span> <span class="p">(</span><span class="n">my_ioctl_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">arg</span><span class="p">,</span>
                            <span class="k">sizeof</span><span class="p">(</span><span class="n">my_ioctl_data</span><span class="p">))</span> <span class="p">)</span>
             <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
@@ -976,7 +976,7 @@ contains only the device types (major) but not the actual devices (i.e. minors).
 <p>Entries in /dev are not created by loading the module. These can be created
 in two ways:</p>
 <ul class="last simple">
-<li>manually, using the <code class="docutils literal"><span class="pre">mknod</span></code> command as we will do in the following exercises.</li>
+<li>manually, using the <code class="docutils literal"><span class="pre">mknod</span></code> command as we did above.</li>
 <li>automatically using udev daemon</li>
 </ul>
 </div>
@@ -1183,8 +1183,7 @@ sections of the lab.</p>
 <li><code class="docutils literal"><span class="pre">MY_IOCTL_UP</span></code> to remove the process from a queue.</li>
 </ul>
 </li>
-<li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a
-<code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> flag.</li>
+<li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a flag.</li>
 <li>Do not forget to initialize the wait queue and flag.</li>
 <li>Remove exclusive access condition from previous exercise</li>
 <li>For testing, pass the required command line arguments to the
