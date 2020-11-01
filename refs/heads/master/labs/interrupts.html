@@ -909,8 +909,9 @@ the source code and inspect <code class="xref c c-func docutils literal"><span c
 ports we need are I8042_STATUS_REG and I8042_DATA_REG.</p>
 <p>Follow the sections maked with <strong>TODO 1</strong> in the skeleton. Request the I/O
 ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code> and make sure to check for errors and to properly
-clean-up in case of errors. Also, add code to release the I/O ports in
-<code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
+clean-up in case of errors. When requesting, set the reserving caller’s ID
+string (<code class="docutils literal"><span class="pre">name</span></code>) with <code class="docutils literal"><span class="pre">MODULE_NAME</span></code> macro. Also, add code to release the I/O
+ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can review the <a class="reference internal" href="#request-access-to-i-o-ports">Request access to I/O ports</a> section before
@@ -949,7 +950,7 @@ find -name <span class="se">\*</span>.c <span class="p">|</span> xargs grep <spa
 <p>It looks like the I/O ports are registered by the kernel during the
 boot and we won’t be able to remove the associated module. Instead
 lets trick the kernel and register ports 0x61 and 0x65.</p>
-<p>Use the function <code class="xref c c-func docutils literal"><span class="pre">request_region`(inside</span> <span class="pre">the</span> <span class="pre">:c:func:`kbd_init()</span></code>
+<p>Use the function <code class="xref c c-func docutils literal"><span class="pre">request_region()</span></code> (inside the <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code>
 function) to allocate the ports and the function <code class="xref c c-func docutils literal"><span class="pre">release_region()</span></code>
 (inside the <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code> function) to release the allocated memory.</p>
 <p>This time we can load the module and <em>/proc/ioports</em> shows that the
@@ -976,7 +977,8 @@ root@qemux86:~#
 the keyboard interrupt. You can review the <a class="reference internal" href="#requesting-an-interrupt">Requesting an interrupt</a>
 section before proceeding.</p>
 <p>Follow the sections maked with <strong>TODO 2</strong> in the skeleton.</p>
-<p>First, define an empty interrupt handling routine.</p>
+<p>First, define an empty interrupt handling routine named
+c:func:<cite>kbd_interrupt_handler</cite>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Since we already have a driver that uses this interrupt we
@@ -1016,7 +1018,7 @@ be found in the <a class="reference internal" href="#interrupt-statistics">Inter
 <p>Print a message inside the routine to make sure it is called. Compile
 and reload the module into the kernel. Check that the interrupt handling
 routine is called when you press the keyboard on the virtual machine,
-using :command:dmesg. Also note that when you use the serial port no
+using <strong class="command">dmesg</strong>. Also note that when you use the serial port no
 keyboard interrupt is generated.</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
