@@ -234,7 +234,7 @@ spin_unlock_bh, workqueue, struct work_struct, kernel thread, events/x</p>
 <h2>Background information<a class="headerlink" href="#background-information" title="Permalink to this headline">¶</a></h2>
 <p>Deferred work is a class of kernel facilities that allows one to
 schedule code to be executed at a later timer. This scheduled code can
-run either in the context process or in interruption context depending
+run either in the process context or in interruption context depending
 on the type of deferred work. Deferred work is used to complement the
 interrupt handler functionality since interrupts have important
 requirements and limitations:</p>
@@ -279,7 +279,7 @@ the deferred work.</p>
 </div>
 <p>The main types of deferred work are kernel threads and softirqs. Work
 queues are implemented on top of kernel threads and tasklets and
-timers on top of softirqs. Bottom-half handlers was the first
+timers on top of softirqs. Bottom-half handlers were the first
 implementation of deferred work in Linux, but in the meantime it was
 replaced by softirqs. That is why some of the functions presented
 contain <em>bh</em> in their name.</p>
@@ -406,7 +406,7 @@ with the treatment function.</p>
 </div>
 <p>Where <em>expires</em> is the time (in the future) to run the handler
 function. The function can be used to schedule or reschedule a timer.</p>
-<p>The time unit timers is <em>jiffie</em>. The absolute value of a jiffie
+<p>The time unit is <em>jiffie</em>. The absolute value of a jiffie
 is dependent on the platform and it can be found using the
 <code class="xref c c-type docutils literal"><span class="pre">HZ</span></code> macro that defines the number of jiffies for 1 second. To
 convert between jiffies (<em>jiffies_value</em>) and seconds (<em>seconds_value</em>),
@@ -663,7 +663,7 @@ thread.</p>
 </div>
 <p><code class="xref c c-func docutils literal"><span class="pre">queue_delayed_work()</span></code> can be used to plan a work for execution
 with a given delay. The time unit for the delay is jiffies.</p>
-<p>To wait for all work item to finish call <code class="xref c c-func docutils literal"><span class="pre">flush_workqueue()</span></code>:</p>
+<p>To wait for all work items to finish call <code class="xref c c-func docutils literal"><span class="pre">flush_workqueue()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">flush_workqueue</span><span class="p">(</span><span class="k">struct</span> <span class="n">worksqueue_struct</span> <span class="o">*</span> <span class="n">queue</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -780,7 +780,7 @@ common mistakes:</p>
     <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">list_first_entry</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_list</span><span class="p">,</span> <span class="k">struct</span> <span class="n">event</span><span class="o">*</span><span class="p">,</span> <span class="n">lh</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
+        <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
     <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
 
     <span class="k">return</span> <span class="n">e</span>
@@ -946,7 +946,7 @@ review <a class="reference internal" href="kernel_modules.html#proc-info"><span 
 <p class="last">To use the device driver from userspace you must create the
 device character file <em>/dev/deferred</em> using the mknod
 utility. Alternatively, you can run the
-<em>3-4-5-deferred/kernel/ makenode</em> script that performs this
+<em>3-4-5-deferred/kernel/makenode</em> script that performs this
 operation.</p>
 </div>
 <p>Enable and disable the timer by calling user-space ioctl
@@ -1031,7 +1031,7 @@ then start it running with <code class="xref c c-func docutils literal"><span cl
 <p class="first admonition-title">Attention</p>
 <p>Synchronize the thread termination with module unloading:</p>
 <ul class="last simple">
-<li>The thread should finish when the module in unloaded</li>
+<li>The thread should finish when the module is unloaded</li>
 <li>Wait for the kernel thread to exit before continuing
 with unloading</li>
 </ul>
@@ -1048,12 +1048,12 @@ with unloading</li>
 <p>The purpose of this task is to exercise the synchronization between a
 deferrable action (a timer) and process context. Setup a periodic
 timer that monitors a list of processes. If one of the processes
-terminate a message is printed. Processes can be dinamically added to
+terminate a message is printed. Processes can be dynamically added to
 the list. Use the <em>3-4-5-deferred/kernel/</em> skeleton as a base and
 follow the <strong>TODO 4</strong> markings to complete the task.</p>
 <p>When the <em>MY_IOCTL_TIMER_MON</em> command is received check that the given
-process exists and if so added to the monitored list of
-processed and then arm the timer after setting its type.</p>
+process exists and if so add to the monitored list of
+processes and then arm the timer after setting its type.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-func docutils literal"><span class="pre">get_proc()</span></code> which checks the pid, finds the
