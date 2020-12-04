@@ -389,7 +389,7 @@ into the virtual space represented by <code class="xref c c-type docutils litera
 <li><em>addr</em> - the virtual address space from where remapping begins; page
 tables for the virtual address space between addr and addr + size
 will be formed as needed</li>
-<li><em>pfn</em> the page frame number to which the virtual address should be
+<li><em>pfn</em> - the page frame number to which the virtual address should be
 mapped</li>
 <li><em>size</em> - the size (in bytes) of the memory to be mapped</li>
 <li><em>prot</em> - protection flags for this mapping</li>
@@ -607,8 +607,8 @@ use <code class="xref c c-func docutils literal"><span class="pre">vmalloc_to_pf
 needed to use <code class="xref c c-func docutils literal"><span class="pre">remap_pfn_range()</span></code> for each page.</p>
 <p>Loop through all virtual pages and for each:
 * determine the physical address
-* map it with <code class="xref c c-func docutils literal"><span class="pre">remap_fpn_range()</span></code></p>
-<p class="last">Make sure the that you determine the physical address
+* map it with <code class="xref c c-func docutils literal"><span class="pre">remap_pfn_range()</span></code></p>
+<p class="last">Make sure that you determine the physical address
 each time and that you use a range of one page for mapping.</p>
 </div>
 <p>For testing, load the kernel module and run:</p>
