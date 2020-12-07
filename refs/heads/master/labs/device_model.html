@@ -291,7 +291,7 @@ contains the following subdirectories:</p>
 <li>firmware - information from system firmware (ACPI)</li>
 <li>fs - information about mounted file systems</li>
 <li>kernel - kernel status information (logged-in users, hotplug)</li>
-<li>modules - the list of modules currently loaded</li>
+<li>module - the list of modules currently loaded</li>
 <li>power - information related to the power management subsystem</li>
 </ul>
 </div></blockquote>
@@ -462,7 +462,7 @@ inspection of the devices connected to the bus.</p>
 <span class="c1">// match devices to drivers; just do a simple name test</span>
 <span class="k">static</span> <span class="kt">int</span> <span class="nf">my_match</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">driver</span><span class="p">)</span>
 <span class="p">{</span>
-  <span class="k">return</span> <span class="n">strncmp</span><span class="p">(</span><span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">),</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">));</span>
+  <span class="k">return</span> <span class="o">!</span><span class="n">strncmp</span><span class="p">(</span><span class="n">dev_name</span><span class="p">(</span><span class="n">dev</span><span class="p">),</span> <span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">driver</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">));</span>
 <span class="p">}</span>
 
 <span class="c1">// respond to hotplug user events; add environment variable DEV_NAME</span>
@@ -479,7 +479,7 @@ The <code class="docutils literal"><span class="pre">uevent</span></code> functi
 has the role of adding environment variables.</p>
 <p>Other possible operations on a bus are iterating over the drivers or devices
 attached to it.
-Although we can not directly access them (lists of drives and devices
+Although we can not directly access them (lists of drivers and devices
 being stored in the private data of the driver, the <code class="docutils literal"><span class="pre">subsys_private</span> <span class="pre">*p</span></code> field),
 these can be iterated using the <code class="xref c c-macro docutils literal"><span class="pre">bus_for_each_dev</span></code> and
 <code class="xref c c-macro docutils literal"><span class="pre">bus_for_each_drv</span></code> macros.</p>
@@ -670,9 +670,9 @@ devices and drivers. Drivers can export information independent of the physical
 device.</p>
 <p>In sysfs, driver information has no single subdirectory associated; They can be
 found in the directory structure in different places: the loaded module is in
-<code class="docutils literal"><span class="pre">/sys/module</span></code>, in <code class="docutils literal"><span class="pre">devices</span></code> you can find the driver associated with
-each device, in <code class="docutils literal"><span class="pre">classes</span></code> the drivers belonging to a class, in <code class="docutils literal"><span class="pre">/sys/bus</span></code>
-the drivers associated to each bus.</p>
+<code class="docutils literal"><span class="pre">/sys/module</span></code>, in <code class="docutils literal"><span class="pre">/sys/devices</span></code> you can find the driver associated with
+each device, in <code class="docutils literal"><span class="pre">/sys/class</span></code> the drivers belonging to a class, in
+<code class="docutils literal"><span class="pre">/sys/bus</span></code> the drivers associated to each bus.</p>
 <p>A device driver is identified by the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">device_driver</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">device_driver</span> <span class="p">{</span>
          <span class="k">const</span> <span class="kt">char</span>              <span class="o">*</span><span class="n">name</span><span class="p">;</span>
@@ -879,8 +879,8 @@ achieved; with the help of <code class="docutils literal"><span class="pre">udev
 in the <code class="docutils literal"><span class="pre">/dev/</span></code> directories can be automatically created for devices, and using
 <code class="docutils literal"><span class="pre">udev</span></code> drivers can be automatically loaded for a device.</p>
 <p>Rules for <code class="docutils literal"><span class="pre">udev</span></code> are located <code class="docutils literal"><span class="pre">/etc/udev/rules.d</span></code>.
-Any file that ends with <code class="docutils literal"><span class="pre">.conf</span></code> in this directory will be parsed when an event
-occurs. For more details on how to write rules in these files see
+Any file that ends with <code class="docutils literal"><span class="pre">.rules</span></code> in this directory will be parsed when an
+event occurs. For more details on how to write rules in these files see
 <a class="reference external" href="http://www.reactivated.net/writing_udev_rules.html">Writing udev rules</a>.
 For testing, there are utilities such as <code class="docutils literal"><span class="pre">udevmonitor</span></code>, <code class="docutils literal"><span class="pre">udevinfo</span></code> and
 <code class="docutils literal"><span class="pre">udevtest</span></code>.</p>
@@ -923,14 +923,14 @@ protocols are available:</p>
 </div></blockquote>
 <p>The kernel contains a bus, called <code class="docutils literal"><span class="pre">pnp_bus</span></code>, that is used for connecting by
 many drivers.
-The implementation and working with the bus follow the model Linux Device Model
-and is very similar to what we discussed above.</p>
+The implementation and working with the bus follow the Linux Device Model and
+is very similar to what we discussed above.</p>
 <p>The main functions and structures exported by the bus, which can be used by
 drivers, are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">pnp_driver</span></code> - driver type associated to the bus</li>
-<li><code class="xref c c-func docutils literal"><span class="pre">pnp_register_driver()</span></code> - function used to record a PNP driver in the system</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">pnp_register_driver()</span></code> - function used to register a PNP driver in the system</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">pnp_unregister_driver()</span></code> - function used to unregister a PNP driver from the system</li>
 </ul>
 </div></blockquote>
@@ -1320,9 +1320,9 @@ defined misc device in <code class="docutils literal"><span class="pre">bex_misc
 </div>
 <p>Create a new device with the name “test”, type “misc” and version 2
 and observe that the probe fails. Create a new device with the name
-“test”, type “misc” and version 1 and observe that the probe is
+“test2”, type “misc” and version 1 and observe that the probe is
 successful.</p>
-<p>Inspect <code class="docutils literal"><span class="pre">/sys/bus/bex/devices/test</span></code> and observe that we have a new
+<p>Inspect <code class="docutils literal"><span class="pre">/sys/bus/bex/devices/test2</span></code> and observe that we have a new
 entry. Identify the major and minor for the misc device, create a
 character device file and try to read and write from the misc device
 buffer.</p>
@@ -1337,7 +1337,7 @@ of the misc device</p>
 <p>Use the <code class="docutils literal"><span class="pre">udevadm</span> <span class="pre">monitor</span></code> command and observe what happens when:</p>
 <ul class="simple">
 <li>the <code class="docutils literal"><span class="pre">bex.ko</span></code> and <code class="docutils literal"><span class="pre">bex_misc.ko</span></code> modules are inserted</li>
-<li>a new device with the type “test” is created</li>
+<li>a new device with the type “type” is created</li>
 <li>a new device with the type “misc” and version 2 is created</li>
 <li>a new device with the type “misc” and version 1 is created</li>
 <li>all of the above are removed</li>
