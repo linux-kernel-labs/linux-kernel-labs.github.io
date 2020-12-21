@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="I/O access and Interrupts" href="interrupts.html" />
@@ -62,7 +63,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -89,6 +90,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -164,6 +166,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -202,7 +205,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Character device drivers</li>
     
@@ -276,7 +279,7 @@ etc.). Most times, the major identifies the driver, while the minor identifies
 each physical device served by the driver. In general, a driver will have a
 major associate and will be responsible for all minors associated with that
 major.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># ls -la /dev/hda? /dev/ttyS?</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ ls -la /dev/hda? /dev/ttyS?
 brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">1</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda1
 brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">2</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda2
 crw-rw----  <span class="m">1</span> root dialout <span class="m">4</span>, <span class="m">64</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:52 /dev/ttyS0
@@ -297,12 +300,12 @@ loaded devices, along with the major identifier.</p>
 type (<code class="docutils literal"><span class="pre">block</span></code> or <code class="docutils literal"><span class="pre">character</span></code>), <code class="docutils literal"><span class="pre">major</span></code> and <code class="docutils literal"><span class="pre">minor</span></code> of the device
 (<code class="docutils literal"><span class="pre">mknod</span> <span class="pre">name</span> <span class="pre">type</span> <span class="pre">major</span> <span class="pre">minor</span></code>). Thus, if you want to create a character device
 named <code class="docutils literal"><span class="pre">mycdev</span></code> with the major <code class="docutils literal"><span class="pre">42</span></code> and minor <code class="docutils literal"><span class="pre">0</span></code>, use the command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ mknod /dev/mycdev c <span class="m">42</span> <span class="m">0</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mycdev c 42 0</span>
 </pre></div>
 </div>
 <p>To create the block device with the name <code class="docutils literal"><span class="pre">mybdev</span></code> with the major 240 and minor 0
 the command will be:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="c1"># mknod /dev/mybdev b 240 0</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mybdev b 240 0</span>
 </pre></div>
 </div>
 <p>Next, we’ll refer to character devices as drivers.</p>
@@ -381,7 +384,7 @@ data.</p>
 <p>The file structure contains, among many fields:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">f_mode</span></code>, which specifies read <code class="docutils literal"><span class="pre">FMODE_READ</span></code> (<code class="docutils literal"><span class="pre">FMODE_READ</span></code>) or write
+<li><code class="docutils literal"><span class="pre">f_mode</span></code>, which specifies read (<code class="docutils literal"><span class="pre">FMODE_READ</span></code>) or write
 (<code class="docutils literal"><span class="pre">FMODE_WRITE</span></code>);</li>
 <li><code class="docutils literal"><span class="pre">f_flags</span></code>, which specifies the file opening flags (<code class="docutils literal"><span class="pre">O_RDONLY</span></code>,
 <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code>, <code class="docutils literal"><span class="pre">O_SYNC</span></code>, <code class="docutils literal"><span class="pre">O_APPEND</span></code>, <code class="docutils literal"><span class="pre">O_TRUNC</span></code>, etc.);</li>
@@ -457,9 +460,9 @@ and minor) and can be obtained using the <code class="docutils literal"><span cl
 </div>
 <p>It is recommended that device identifiers be dynamically assigned to the
 <code class="docutils literal"><span class="pre">alloc_chrdev_region</span></code> function.</p>
-<p>The <code class="docutils literal"><span class="pre">my_minor_count</span></code> sequence reserves my_minor_count devices, starting with
-<code class="docutils literal"><span class="pre">my_major</span></code> major and my_first_minor minor (if the max value for minor is
-exceeded, move to the next major):</p>
+<p>Below sequence reserves <code class="docutils literal"><span class="pre">my_minor_count</span></code> devices, starting with <code class="docutils literal"><span class="pre">my_major</span></code>
+major and <code class="docutils literal"><span class="pre">my_first_minor</span></code> minor (if the max value for minor is exceeded,
+move to the next major):</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 <span class="p">...</span>
 
@@ -555,26 +558,26 @@ be NULL.</p>
 <div class="section" id="access-to-the-address-space-of-the-process">
 <span id="access-to-process-address-space"></span><h2>Access to the address space of the process<a class="headerlink" href="#access-to-the-address-space-of-the-process" title="Permalink to this headline">¶</a></h2>
 <p>A driver for a device is the interface between an application and hardware. As
-a result, we often have to access a given user-space driver device. Accessing
-process address space can not be done directly (by de-referencing a user-space
-pointer). Direct access of a user-space pointer can lead to incorrect behavior
-(depending on architecture, a user-space pointer may not be valid or mapped to
-kernel-space), a kernel oops (the user-mode pointer can refer to a non-resident
-memory area) or security issues. Proper access to user-space data is done by
-calling the macros / functions below:</p>
+a result, we often have to access user-space data. Accessing it can not be done
+directly (by de-referencing a user-space pointer). Direct access of a
+user-space pointer can lead to incorrect behavior (depending on architecture, a
+user-space pointer may not be valid or mapped to kernel-space), a kernel oops
+(the user-mode pointer can refer to a non-resident memory area) or security
+issues. Proper access to user-space data is done by calling the macros /
+functions below:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
 
 <span class="n">put_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
 <span class="n">get_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">copy_to_user</span><span class="p">(</span><span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
-<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">)</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">copy_from_user</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>All macros / functions return 0 in case of success and another value in case of
 error and have the following roles:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">put_user</span></code> put in the user-space at the address address value of the val;
+<li><code class="docutils literal"><span class="pre">put_user</span></code> store the value <code class="docutils literal"><span class="pre">val</span></code> to user-space address <code class="docutils literal"><span class="pre">address</span></code>;
 Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
 hardware platform);</li>
 <li><code class="docutils literal"><span class="pre">get_user</span></code> analogue to the previous function, only that val will be set to a
@@ -645,7 +648,7 @@ my_open and my_release in the driver. An example of a user-space call:</p>
 <div class="section" id="read-and-write">
 <h2>Read and write<a class="headerlink" href="#read-and-write" title="Permalink to this headline">¶</a></h2>
 <p>The read and write operations are reaching the device driver as a
-result of a userpsace program calling the read of write system calls:</p>
+result of a userspace program calling the read or write system calls:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* handle error */</span>
 <span class="p">}</span>
@@ -756,7 +759,7 @@ called <code class="docutils literal"><span class="pre">unlocked_ioctl</span></c
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">cmd</span></code> is the command sent from user-space. If a value is being sent to the
+<p><code class="docutils literal"><span class="pre">cmd</span></code> is the command sent from user-space. If a value is being sent from the
 user-space call, it can be accessed directly. If a buffer is fetched, the arg
 value will be a pointer to it, and must be accessed through the <code class="docutils literal"><span class="pre">copy_to_user</span></code>
 or <code class="docutils literal"><span class="pre">copy_from_user</span></code>.</p>
@@ -782,10 +785,10 @@ to generate ioctl codes. The macrodefinition parameters are as follows:</p>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span>
          <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span><span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
-     <span class="n">my_ioctl_data</span> <span class="n">mid</span><span class="p">;</span>
+    <span class="n">my_ioctl_data</span> <span class="n">mid</span><span class="p">;</span>
 
-     <span class="k">switch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
-     <span class="k">case</span> <span class="nl">MY_IOCTL_IN</span><span class="p">:</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">MY_IOCTL_IN</span><span class="p">:</span>
         <span class="k">if</span><span class="p">(</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mid</span><span class="p">,</span> <span class="p">(</span><span class="n">my_ioctl_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">arg</span><span class="p">,</span>
                            <span class="k">sizeof</span><span class="p">(</span><span class="n">my_ioctl_data</span><span class="p">))</span> <span class="p">)</span>
             <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
@@ -973,7 +976,7 @@ contains only the device types (major) but not the actual devices (i.e. minors).
 <p>Entries in /dev are not created by loading the module. These can be created
 in two ways:</p>
 <ul class="last simple">
-<li>manually, using the <code class="docutils literal"><span class="pre">mknod</span></code> command as we will do in the following exercises.</li>
+<li>manually, using the <code class="docutils literal"><span class="pre">mknod</span></code> command as we did above.</li>
 <li>automatically using udev daemon</li>
 </ul>
 </div>
@@ -1180,8 +1183,7 @@ sections of the lab.</p>
 <li><code class="docutils literal"><span class="pre">MY_IOCTL_UP</span></code> to remove the process from a queue.</li>
 </ul>
 </li>
-<li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a
-<code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> flag.</li>
+<li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a flag.</li>
 <li>Do not forget to initialize the wait queue and flag.</li>
 <li>Remove exclusive access condition from previous exercise</li>
 <li>For testing, pass the required command line arguments to the
@@ -1253,11 +1255,19 @@ to <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code> and
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1268,7 +1278,6 @@ to <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code> and
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="File system drivers (Part 1)" href="filesystems_part1.html" />
@@ -62,7 +63,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -89,6 +90,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -170,6 +172,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -208,7 +211,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Block Device Drivers</li>
     
@@ -545,7 +548,7 @@ of the disk.</p>
 </div>
 <div class="section" id="request-queues">
 <h2>Request queues<a class="headerlink" href="#request-queues" title="Permalink to this headline">¶</a></h2>
-<p>Drivers for block devices use queues to store the block requests I/O that will
+<p>Drivers for block devices use queues to store the block I/O requests that will
 be processed. A request queue is represented by the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request_queue</span></code> structure. The request queue is made up of a
 double-linked list of requests and their associated control information. The
@@ -679,11 +682,10 @@ is a set of buffers associated to the request; this field is accessed by
 macrodefinition <code class="xref c c-macro docutils literal"><span class="pre">rq_for_each_segment</span></code> if there are multiple
 buffers, or by <code class="xref c c-macro docutils literal"><span class="pre">bio_data</span></code> macrodefinition in case there is only
 one associated buffer;</li>
-<li><code class="xref c c-member docutils literal"><span class="pre">bio_data</span></code>: the address of the buffer associated to the request</li>
-<li>about the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure and its associated operations
-will be discussed in the <span class="xref std std-ref">bio_structure</span> section;</li>
 </ul>
 </div></blockquote>
+<p>We will discuss more about the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure and its
+associated operations in the <span class="xref std std-ref">bio_structure</span> section.</p>
 <div class="section" id="create-a-request">
 <h3>Create a request<a class="headerlink" href="#create-a-request" title="Permalink to this headline">¶</a></h3>
 <p>Read /write requests are created by code layers superior to the kernel I/O
@@ -908,7 +910,6 @@ the <code class="xref c c-macro docutils literal"><span class="pre">kunmap_atomi
 
 <span class="k">static</span> <span class="kt">int</span> <span class="nf">my_xfer_bio</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_block_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">bio_vec</span> <span class="n">bvec</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">bvec_iter</span> <span class="n">i</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">bio_data_dir</span><span class="p">(</span><span class="n">bio</span><span class="p">);</span>
@@ -1180,8 +1181,8 @@ section.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">You can find useful information in the
-[block device driver example](<a class="reference external" href="https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c">https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c</a>)
-from [Linux Device Driver](<a class="reference external" href="http://lwn.net/Kernel/LDD3/">http://lwn.net/Kernel/LDD3/</a>).</p>
+<a class="reference external" href="https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c">block device driver example</a>
+from <a class="reference external" href="http://lwn.net/Kernel/LDD3/">Linux Device Driver</a>.</p>
 </div>
 <p>For testing, use the test file <code class="file docutils literal"><span class="pre">user/ram-disk-test.c</span></code>.
 The test program is compiled automatically at <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code>, copied to the
@@ -1359,11 +1360,19 @@ data (flush).</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1374,7 +1383,6 @@ data (flush).</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

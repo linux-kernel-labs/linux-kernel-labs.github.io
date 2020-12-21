@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Sisteme de operare 2" href="lectures/so2.cs.pub.ro.html" /> 
@@ -61,7 +62,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> The Linux Kernel
+            <a href="#" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -88,6 +89,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -129,6 +131,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -167,7 +170,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
       <li>Linux Kernel Teaching</li>
     
@@ -259,7 +262,7 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#cpu-scalability">CPU Scalability</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/intro.html#overview-the-of-linux-kernel">Overview the of Linux kernel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/intro.html#overview-of-the-linux-kernel">Overview of the Linux kernel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#linux-development-model">Linux development model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#maintainer-hierarchy">Maintainer hierarchy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#linux-source-code-layout">Linux source code layout</a></li>
@@ -426,7 +429,7 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#printk">2. Printk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#error">3. Error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#sub-modules">4. Sub-modules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id3">5. Kernel oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id1">5. Kernel oops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#module-parameters">6. Module parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#proc-info">7. Proc info</a></li>
 </ul>
@@ -435,7 +438,7 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#kdb">1. KDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#ps-module">2. PS Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#memory-info">3. Memory Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id5">4. Dynamic Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id3">4. Dynamic Debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#dynamic-debugging-during-initialization">5. Dynamic Debugging During Initialization</a></li>
 </ul>
 </li>
@@ -662,7 +665,7 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#minfs">minfs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#registering-and-unregister-the-minfs-file-system">1. Registering and unregister the minfs file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#registering-and-unregistering-the-minfs-file-system">1. Registering and unregistering the minfs file system</a></li>
 <li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#completing-minfs-superblock">2. Completing minfs superblock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
@@ -807,10 +810,15 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#drivers">Drivers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#hotplug">Hotplug</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#plug-and-play">Plug and Play</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#plug-and-play">Plug and Play</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#pnp-bus">PNP bus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#pnp-operations">PNP operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#add-driver">Add driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#adding-a-driver">Adding a driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#removing-a-driver">Removing a driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#adding-a-new-device">Adding a new device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#removing-a-device">Removing a device</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#exercises">Exercises</a><ul>
@@ -870,11 +878,19 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -885,7 +901,6 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

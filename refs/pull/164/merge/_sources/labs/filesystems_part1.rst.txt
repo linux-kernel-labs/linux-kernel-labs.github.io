@@ -35,7 +35,7 @@ There will be a file system that will be the root, the rest being mounted in its
 The general file system model
 =============================
 
-The general file system model, to which any implemented file system needs to be reduced, consists of several well-defined entities: :c:type:`superbloc`, :c:type:`inode`, :c:type:`file`, and :c:type:`dentry`.
+The general file system model, to which any implemented file system needs to be reduced, consists of several well-defined entities: :c:type:`superblock`, :c:type:`inode`, :c:type:`file`, and :c:type:`dentry`.
 These entities are file system metadata (they contain information about data or other metadata).
 
 Model entities interact using some VFS or kernel subsystems: dentry cache, inode cache, buffer cache.
@@ -92,7 +92,7 @@ Each inode is generally identified by a number. On Linux, the ``-i`` argument of
 file
 ----
 
-File is the component of the file system model that is closest the user.
+File is the component of the file system model that is closest to the user.
 The structure exists only as a VFS entity in memory and has no physical correspondent on disk.
 
 While the inode abstracts a file on the disk, the file structure abstracts an open file.
@@ -283,7 +283,7 @@ The superblock can be viewed as an abstract object to which its own data is adde
 Superblock operations
 ---------------------
 
-The superbloc operations are described by the :c:type:`struct super_operations` structure:
+The superblock operations are described by the :c:type:`struct super_operations` structure:
 
 .. code-block:: c
 
@@ -361,7 +361,7 @@ An example of implementation is the :c:func:`ramfs_fill_super` function which is
 
 
 The kernel provides generic function to implement operations with file system structures.
-The :c:func:`generic_drop_inode` and :c:func:`simple_statfs` functions used in the above code are such functions and can be used to implement the drivers if their functionality is sufficient.
+The :c:func:`generic_delete_inode` and :c:func:`simple_statfs` functions used in the above code are such functions and can be used to implement the drivers if their functionality is sufficient.
 
 The :c:func:`ramfs_fill_super` function in the above code fills some fields in the superblock, then reads the root inode and allocates the root dentry.
 Reading the root inode is done in the :c:func:`ramfs_get_inode` function, and consists of allocating a new inode using :c:func:`new_inode` and initializing it. In order to free the inode, :c:func:`iput` is used, and :c:func:`d_make_root` is used to allocate the root dentry.
@@ -369,7 +369,7 @@ Reading the root inode is done in the :c:func:`ramfs_get_inode` function, and co
 An example implementation for a disk file system is the :c:func:`minix_fill_super` function in the minix file system.
 The functionality for the disk file system is similar to that of the virtual file system, with the exception of using the buffer cache.
 Also, the minix file system keeps private data using the :c:type:`struct minix_sb_info` structure.
-A large part of this function deals with the initialization of these private data (not included in the code snippet above for clarity).
+A large part of this function deals with the initialization of these private data.
 The private data is allocated using the :c:func:`kzalloc` function and stored in the ``s_fs_info`` field of the superblock structure.
 
 VFS functions typically get as arguments the superblock, an inode and/or a dentry that contain a pointer to the superblock so that these private data can be easily accessed.
@@ -380,7 +380,7 @@ Buffer cache
 ============
 
 Buffer cache is a kernel subsystem that handles caching (both read and write) blocks from block devices.
-The base entity used by cache buffer is the :c:type:`struct buffer_head` structure.
+The base entity used by buffer cache is the :c:type:`struct buffer_head` structure.
 The most important fields in this structure are:
 
   * ``b_data``, pointer to a memory area where the data was read from or where the data must be written to
@@ -566,7 +566,7 @@ We check myfs file system statistics using the following command:
 
 .. code-block:: console
 
-  stat -f / mnt / myfs
+  stat -f /mnt/myfs
 
 We want to see what the mount point ``/mnt/myfs`` contains and if we can create files.
 For this we run the commands:
@@ -621,8 +621,8 @@ Follow the diagram below to clarify the role of structures within the ``minfs`` 
 
 .. image:: minfs.png
 
-1. Registering and unregister the minfs file system
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Registering and unregistering the minfs file system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::
 
@@ -632,10 +632,10 @@ Follow the diagram below to clarify the role of structures within the ``minfs`` 
 
     dd if=/dev/zero of=mydisk.img bs=1M count=100
 
-  and add the ``-drive file=qemu/mydisk.img,if=virtio,format=raw`` argument to the ``qemu`` command in ``qemu/Makefile`` (in the ``QEMU_OPTS`` variable).
+  and add the ``-drive file=mydisk.img,if=virtio,format=raw`` argument to the ``qemu`` command in ``qemu/Makefile`` (in the ``QEMU_OPTS`` variable).
   The new argument for the ``qemu`` command must be added after the one for the existing disk (``YOCTO_IMAGE``).
 
-To register and register the file system, you will need to fill the ``minfs_fs_type`` and ``minfs_mount`` functions in ``minfs.c``. Follow the directions marked with ``TODO 1``.
+To register and unregister the file system, you will need to fill the ``minfs_fs_type`` and ``minfs_mount`` functions in ``minfs.c``. Follow the directions marked with ``TODO 1``.
 
 .. note::
 
@@ -652,11 +652,11 @@ Load the kernel module and then check the presence of the ``minfs`` file system 
 
 To test the mounting of the ``minfs`` file system we will need to format the disk with its structure. Formatting requires the ``mkfs.minfs`` formatting tool from the ``minfs/user`` directory. The utility is automatically compiled when running ``make build`` and copied to the virtual machine at ``make copy``.
 
-After compiling, copying, and starting the virtual machine, format the ``/dev/vdb`` using the formatting utility:
+After compiling, copying, and starting the virtual machine, format the ``/dev/vdd`` using the formatting utility:
 
 .. code-block:: console
 
-  # ./mkfs.minfs /dev/vdb
+  # ./mkfs.minfs /dev/vdd
 
 Load the kernel module:
 
@@ -674,7 +674,7 @@ and mount the filesystem
 
 .. code-block:: console
 
-  # mount -t minfs /dev/vdX /mnt/minfs/
+  # mount -t minfs /dev/vdd /mnt/minfs/
 
 The operation fails because the root inode is not initialized.
 
@@ -701,7 +701,7 @@ Follow the directions marked with ``TODO 2``. You can also follow the implementa
 To check the functionality, we need a function for reading the root inode.
 For the time being, use the ``myfs_get_inode`` function from ``myfs`` file system exercises.
 Copy the function into the source code and call it the same as you did for myfs.
-The second argument when calling the ``myfs_get_inode`` function is the inode creation permissions, similar to the virtual file system exercise (myfs).
+The third argument when calling the ``myfs_get_inode`` function is the inode creation permissions, similar to the virtual file system exercise (myfs).
 
 Validate the implementation by executing the commands from the previous exercise.
 
@@ -747,12 +747,12 @@ In the ``minfs_fill_super`` function, replace the ``myfs_get_inode`` call with t
 .. note::
   To implement the ``minfs_iget`` function, follow the implementation of `V1_minix_iget <https://elixir.bootlin.com/linux/v4.15/source/fs/minix/inode.c#L460>`_.
   To read a block, use the :c:func:`sb_bread` function.
-  Cast the read data (the ``b_data`` field of the :c:type:`struct structure_head` structure) to the minfs inode from the disk (:c:type:`struct minfs_inode`).
+  Cast the read data (the ``b_data`` field of the :c:type:`struct buffer_head` structure) to the minfs inode from the disk (:c:type:`struct minfs_inode`).
 
   The ``i_uid``, ``i_gid``, ``i_mode``, ``i_size`` must be filled in the VFS inode with the values in the minfs inode structure read from disk.
   To initialize the ``i_uid`` and ``i_gid fields``, use the functions :c:func:`i_uid_write` , and :c:func:`i_gid_write`.
 
-  Initialize the ``i_atime`` , ``i_atime``, and ``i_mtime`` fields of the VFS inode to the value returned by the :c:func:`current_time` function.
+  Initialize the ``i_atime`` , ``i_ctime``, and ``i_mtime`` fields of the VFS inode to the value returned by the :c:func:`current_time` function.
 
   You will need to initialize the operations for the inode with type directory. To do this, follow the steps:
 

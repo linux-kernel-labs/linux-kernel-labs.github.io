@@ -529,11 +529,11 @@ manually disabled as well (by core kernel code).</p>
 <h2>Mutexes</h2>
 
 <ul class="simple">
-<li>They don’t “waste” CPU cycles; system throughput is better then
-spin locks if context switch overhead is lower then medium
+<li>They don’t “waste” CPU cycles; system throughput is better than
+spin locks if context switch overhead is lower than medium
 spinning time</li>
 <li>They can’t be used in interrupt context</li>
-<li>They have a higher latency then spin locks</li>
+<li>They have a higher latency than spin locks</li>
 </ul>
 
 
@@ -666,7 +666,7 @@ spinning time</li>
 <h2>Per CPU data</h2>
 
 <ul class="simple">
-<li>No need to synchronization to access the data</li>
+<li>No need to synchronize to access the data</li>
 <li>No contention, no performance impact</li>
 <li>Well suited for distributed processing where aggregation is only
 seldom necessary (e.g. statistics counters)</li>

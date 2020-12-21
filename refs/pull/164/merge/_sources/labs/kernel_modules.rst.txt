@@ -115,7 +115,7 @@ as instructed in this file.
 
           .. code-block:: bash
 
-              KDIR = /home/student/so2/linux
+              KDIR = /home/student/src/linux
               [...]
 
 A :file:`Kbuild` file contains one or more directives for compiling a kernel
@@ -723,11 +723,11 @@ use of the predefined constants :code:`__FILE__`, :code:`__LINE__` and
 
 .. note::
     :code:`__FILE__` and :code:`__LINE__` are part of the ANSI C specifications:
-    :code`__func__` is part of specification C99; :code:`__FUNCTION__` is a GNU
-    :codeC extension and is not portable; However, since we write code for the
-    :codeLinux kernel, we can use it without any problems.
+    :code:`__func__` is part of specification C99; :code:`__FUNCTION__` is a GNU
+    :code:`C` extension and is not portable; However, since we write code for the
+    :code:`Linux` kernel, we can use it without any problems.
 
-The following macrodefinition can be used in this case:
+The following macro definition can be used in this case:
 
 .. code-block:: c
 
@@ -823,15 +823,15 @@ Dyndbg Options
 
   .. code-block:: bash
 
-     Modules sunrpc
+     module sunrpc
 
 * ``format`` - only messages whose display format contains the specified string.
 
-   .. code-block:: bash
+  .. code-block:: bash
 
-      format "nfsd: SETATTR"
+     format "nfsd: SETATTR"
 
-* line - the line or lines for which we want to enable debug calls.
+* ``line`` - the line or lines for which we want to enable debug calls.
 
   .. code-block:: bash
 
@@ -841,24 +841,24 @@ Dyndbg Options
      $ echo 'file svcsock.c line -1605 +p' > /sys/kernel/debug/dynamic_debug/control
 
 In addition to the above options, a series of flags can be added, removed, or set
-with operators ``+`, ``-`` or ``=``:
+with operators ``+``, ``-`` or ``=``:
 
    * ``p`` activates the pr_debug() .
    * ``f`` includes the name of the function in the printed message.
-   * ``I`` includes the line number in the printed message.
-   * ``M`` includes the module name in the printed message.
-   * ``T`` includes the thread id if it is not called from interrupt context
+   * ``l`` includes the line number in the printed message.
+   * ``m`` includes the module name in the printed message.
+   * ``t`` includes the thread id if it is not called from interrupt context
    * ``_`` no flag is set.
 
 KDB: Kernel debugger
 --------------------
 
 The kernel debugger has proven to be very useful to facilitate the development and
-debugging process. One of its main advantages it the possibility to perform live debugging.
+debugging process. One of its main advantages is the possibility to perform live debugging.
 This allows us to monitor, in real time, the accesses to memory or even modify the memory
 while debugging.
 The debugger has been integrated in the mainline kernel starting with version 2.6.26-rci.
-KDB is not a *source debugger", but for a complete analysis it can be used in parallel with
+KDB is not a *source debugger*, but for a complete analysis it can be used in parallel with
 gdb and symbol files -- see :ref:`the GDB debugging section <gdb_intro>`
 
 To use KDB, you have the following options:
@@ -974,7 +974,7 @@ copy the module to the VM, by running the following commands in
   $ make build
   $ make copy
 
-The these commands will build and copy all the modules in the current
+These commands will build and copy all the modules in the current
 lab skeleton.
 
 .. warning::
@@ -1035,8 +1035,8 @@ the module.
 Inspect the C source files ``mod1.c`` and ``mod2.c`` in :file:`4-multi-mod/`.
 Module 2 contains only the definition of a function used by module 1.
 
-Change the :file:`Kbuild` file to create the ``multi_mod.ko`` module from
-from the two C source files.
+Change the :file:`Kbuild` file to create the ``multi_mod.ko`` module from the
+two C source files.
 
 .. hint:: Read the `Compiling kernel modules`_ section of the lab.
 
@@ -1132,7 +1132,7 @@ Extra Exercises
 1. KDB
 ------
 
-Go to the **8-kdb** directory. Activate KDB the over serial port and enter KDB
+Go to the **8-kdb** directory. Activate KDB over the serial port and enter KDB
 mode using :command:`SysRq`. Connect to the pseudo-terminal linked to virtiocon0
 using :command:`minicom`, configure KDB to use the hvc0 serial port:
 

@@ -773,7 +773,7 @@ where:
 \
 
 
-  * ``net_device`` is the device (network interface) on which the capture is
+  * ``dev`` is the device (network interface) on which the capture is
     intended;
 
 
@@ -815,13 +815,14 @@ where:
   			       struct sk_buff *skb,
   			       const struct nf_hook_state *state);
 
-For the :c:func:`nf_hookfn` capture function, the ``priv`` field is the private
-information with which the :c:type:`struct nf_hook_ops` was initialized. ``skb``
-is the pointer to the captured network packet. Based on ``skb`` information,
-packet filtering decisions are made. The function's ``state`` parameter is the
-status information related to the packet capture, including the input interface,
-the output interface, the priority, the hook number. Priority and hook number
-are useful for allowing the same function to be called by several hooks.
+For the :c:func:`nf_hookfn` capture function, the ``priv`` parameter is the
+private information with which the :c:type:`struct nf_hook_ops` was
+initialized. ``skb`` is the pointer to the captured network packet. Based on
+``skb`` information, packet filtering decisions are made. The function's
+``state`` parameter is the status information related to the packet capture,
+including the input interface, the output interface, the priority, the hook
+number. Priority and hook number are useful for allowing the same function to
+be called by several hooks.
 
 A capture handler can return one of the constants ``NF_*``:
 
@@ -1151,10 +1152,11 @@ Read the `Operations on the socket structure`_ and `The struct proto_ops
 structure`_ sections.
 
 For the kernel space ``accept`` equivalent, see the system call handler for
-:c:func:`sys_accept4`. Follow the :c:func:`lnet_sock_accept` implementation, and
-how the ``sock->ops->accept`` call is used. Use ``0`` as the value for the
-second to last argument (``flags``), and ``true`` for the last argument
-(``kern``).
+:c:func:`sys_accept4`. Follow the `lnet_sock_accept
+<https://elixir.bootlin.com/linux/v4.17/source/drivers/staging/lustre/lnet/lnet/lib-socket.c#L511>`_
+implementation, and how the ``sock->ops->accept`` call is used. Use ``0`` as
+the value for the second to last argument (``flags``), and ``true`` for the
+last argument (``kern``).
 
 .. note::
 

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Memory mapping" href="memory_mapping.html" />
@@ -62,7 +63,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -89,6 +90,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -159,6 +161,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -197,7 +200,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Networking</li>
     
@@ -956,7 +959,7 @@ package and the possible areas for a hook can be found <a class="reference exter
 <p></p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">net_device</span></code> is the device (network interface) on which the capture is
+<li><code class="docutils literal"><span class="pre">dev</span></code> is the device (network interface) on which the capture is
 intended;</li>
 <li><code class="docutils literal"><span class="pre">hooknum</span></code> is the type of hook used. When a packet is captured, the
 processing mode is defined by the <code class="docutils literal"><span class="pre">hooknum</span></code> and <code class="docutils literal"><span class="pre">hook</span></code> fields. For IP,
@@ -997,13 +1000,14 @@ handed to the handler. The capture handler prototype is defined by the
                              <span class="k">const</span> <span class="k">struct</span> <span class="n">nf_hook_state</span> <span class="o">*</span><span class="n">state</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>For the <code class="xref c c-func docutils literal"><span class="pre">nf_hookfn()</span></code> capture function, the <code class="docutils literal"><span class="pre">priv</span></code> field is the private
-information with which the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">nf_hook_ops</span></code> was initialized. <code class="docutils literal"><span class="pre">skb</span></code>
-is the pointer to the captured network packet. Based on <code class="docutils literal"><span class="pre">skb</span></code> information,
-packet filtering decisions are made. The function’s <code class="docutils literal"><span class="pre">state</span></code> parameter is the
-status information related to the packet capture, including the input interface,
-the output interface, the priority, the hook number. Priority and hook number
-are useful for allowing the same function to be called by several hooks.</p>
+<p>For the <code class="xref c c-func docutils literal"><span class="pre">nf_hookfn()</span></code> capture function, the <code class="docutils literal"><span class="pre">priv</span></code> parameter is the
+private information with which the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">nf_hook_ops</span></code> was
+initialized. <code class="docutils literal"><span class="pre">skb</span></code> is the pointer to the captured network packet. Based on
+<code class="docutils literal"><span class="pre">skb</span></code> information, packet filtering decisions are made. The function’s
+<code class="docutils literal"><span class="pre">state</span></code> parameter is the status information related to the packet capture,
+including the input interface, the output interface, the priority, the hook
+number. Priority and hook number are useful for allowing the same function to
+be called by several hooks.</p>
 <p>A capture handler can return one of the constants <code class="docutils literal"><span class="pre">NF_*</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Responses from hook functions. */</span>
 <span class="cp">#define NF_DROP 0</span>
@@ -1325,10 +1329,10 @@ with <code class="docutils literal"><span class="pre">TODO</span> <span class="p
 <p>Read the <a class="reference internal" href="#operations-on-the-socket-structure">Operations on the socket structure</a> and <a class="reference internal" href="#the-struct-proto-ops-structure">The struct proto_ops
 structure</a> sections.</p>
 <p>For the kernel space <code class="docutils literal"><span class="pre">accept</span></code> equivalent, see the system call handler for
-<code class="xref c c-func docutils literal"><span class="pre">sys_accept4()</span></code>. Follow the <code class="xref c c-func docutils literal"><span class="pre">lnet_sock_accept()</span></code> implementation, and
-how the <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;accept</span></code> call is used. Use <code class="docutils literal"><span class="pre">0</span></code> as the value for the
-second to last argument (<code class="docutils literal"><span class="pre">flags</span></code>), and <code class="docutils literal"><span class="pre">true</span></code> for the last argument
-(<code class="docutils literal"><span class="pre">kern</span></code>).</p>
+<code class="xref c c-func docutils literal"><span class="pre">sys_accept4()</span></code>. Follow the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.17/source/drivers/staging/lustre/lnet/lnet/lib-socket.c#L511">lnet_sock_accept</a>
+implementation, and how the <code class="docutils literal"><span class="pre">sock-&gt;ops-&gt;accept</span></code> call is used. Use <code class="docutils literal"><span class="pre">0</span></code> as
+the value for the second to last argument (<code class="docutils literal"><span class="pre">flags</span></code>), and <code class="docutils literal"><span class="pre">true</span></code> for the
+last argument (<code class="docutils literal"><span class="pre">kern</span></code>).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Look for the system call handlers in the <code class="docutils literal"><span class="pre">net/socket.c</span></code> file in the Linux
@@ -1437,11 +1441,19 @@ the <code class="docutils literal"><span class="pre">kernelsocket</span></code> 
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1452,7 +1464,6 @@ the <code class="docutils literal"><span class="pre">kernelsocket</span></code> 
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

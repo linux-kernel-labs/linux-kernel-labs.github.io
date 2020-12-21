@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Networking" href="networking.html" />
@@ -62,7 +63,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -89,6 +90,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -180,6 +182,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -218,7 +221,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>File system drivers (Part 2)</li>
     
@@ -403,7 +406,7 @@ When opening a file, the VFS initializes the <code class="docutils literal"><spa
 The type of the inode determines the operations that it needs to implement.</p>
 <div class="section" id="regular-files-inode-operations">
 <span id="fileoperations"></span><h3>Regular files inode operations<a class="headerlink" href="#regular-files-inode-operations" title="Permalink to this headline">¶</a></h3>
-<p>In the <code class="docutils literal"><span class="pre">minix</span></code> file system, the <code class="docutils literal"><span class="pre">minix_file_inode_operations</span></code> structure is defined for the operations on an inode and for the file operations the <code class="docutils literal"><span class="pre">minix_file_operations</span> <span class="pre">structure</span></code> is defined:</p>
+<p>In the <code class="docutils literal"><span class="pre">minix</span></code> file system, the <code class="docutils literal"><span class="pre">minix_file_inode_operations</span></code> structure is defined for the operations on an inode and for the file operations the <code class="docutils literal"><span class="pre">minix_file_operations</span></code> structure is defined:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="n">minix_file_operations</span> <span class="o">=</span> <span class="p">{</span>
          <span class="p">.</span><span class="n">llseek</span>         <span class="o">=</span> <span class="n">generic_file_llseek</span><span class="p">,</span>
          <span class="p">.</span><span class="n">read_iter</span>      <span class="o">=</span> <span class="n">generic_file_read_iter</span><span class="p">,</span>
@@ -885,7 +888,7 @@ We stopped after mounting the file system and now we will continue with the oper
 At the end of these exercises, we will be able to create, modify and delete regular directories and files.</p>
 <p>We will mostly use the <code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">dentry</span></code> VFS structures.
 The <code class="docutils literal"><span class="pre">inode</span></code> structure defines a file (of any type: regular, directory, link), while the <code class="docutils literal"><span class="pre">dentry</span></code> structure defines a name, which is an entry in a directory.</p>
-<p>For this we will access the <code class="docutils literal"><span class="pre">myfs/kernel</span></code> directory in the lab skeleton.
+<p>For this we will access the <code class="docutils literal"><span class="pre">myfs</span></code> directory in the lab skeleton.
 The previously generated skeleton contains the solution for the previous lab; we will start from this. As in the previous lab, we will use the <code class="docutils literal"><span class="pre">ramfs</span></code> file system as a starting point.</p>
 <div class="section" id="directory-operations">
 <h4>1. Directory operations<a class="headerlink" href="#directory-operations" title="Permalink to this headline">¶</a></h4>
@@ -973,7 +976,8 @@ We use commands like the ones below:</p>
 </div>
 <p>This happens because we have not implemented the operations for working with files; we will do so further.</p>
 <p>To unload the kernel module, use the command</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">rmmod myfs</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">umount /mnt/myfs</span>
+<span class="go">rmmod myfs</span>
 </pre></div>
 </div>
 <p>To test the functionality provided by the kernel module, we can use the dedicated script <code class="docutils literal"><span class="pre">test-myfs-1.sh</span></code>.
@@ -1027,7 +1031,7 @@ In addition to those steps, we will now be able to read, write and modify a file
 </div>
 <div class="section" id="minfs">
 <h3>minfs<a class="headerlink" href="#minfs" title="Permalink to this headline">¶</a></h3>
-<p>For the exercises below, we will use the minfs file system whose development we started in the previous lab.
+<p>For the exercises below, we will use the minfs file system whose development started in the previous lab.
 This is a file system with disk support.
 We stopped after mounting the file system and now we will continue with the operations on regular files and directories.
 At the end of these exercises we will be able to create and delete entries in the file system.</p>
@@ -1096,7 +1100,7 @@ To do this, we compile the kernel module (<code class="docutils literal"><span c
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>The test scripts are copied to the virtual machine only if they are executable:</p>
-<div class="last highlight-console"><div class="highlight"><pre><span></span><span class="gp">student@eg106:~/so2/linux/tools/labs$</span> chmod +x skels/filesystems/minfs/user/test-minfs*.sh
+<div class="last highlight-console"><div class="highlight"><pre><span></span><span class="gp">student@eg106:~/src/linux/tools/labs$</span> chmod +x skels/filesystems/minfs/user/test-minfs*.sh
 </pre></div>
 </div>
 </div>
@@ -1206,7 +1210,7 @@ For this, you will iterate over the directory data block and you will find the f
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>In order to work with the directory, get the inode of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> corresponding to the parent directory (the <strong>dir</strong> inode).
-Do not use the variable <code class="docutils literal"><span class="pre">inode</span></code> to get <code class="docutils literal"><span class="pre">struct_minfs_inode_info</span></code>; that inode belongs to the file, not to the parent directory inside which you want to add the link/dentry.
+Do not use the variable <code class="docutils literal"><span class="pre">inode</span></code> to get <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code>; that inode belongs to the file, not to the parent directory inside which you want to add the link/dentry.
 To get the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> structure, use <code class="xref c c-func docutils literal"><span class="pre">container_of()</span></code>.</p>
 <p>The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful for finding the directory data block (the one indicated by the <code class="docutils literal"><span class="pre">dentry-&gt;d_parent-&gt;d_inode</span></code>, which is the <code class="docutils literal"><span class="pre">dir</span></code> variable).
 From this structure, get the <code class="docutils literal"><span class="pre">data_block</span></code> field, representing index of the data block on the disk.
@@ -1217,7 +1221,7 @@ The block contains at most <code class="docutils literal"><span class="pre">MINF
 <p>When you have found a free place, fill in the corresponding entry:</p>
 <blockquote>
 <div><ul class="simple">
-<li>the <code class="docutils literal"><span class="pre">ino</span></code> field in <code class="docutils literal"><span class="pre">de-&gt;ino</span></code></li>
+<li>the <code class="docutils literal"><span class="pre">inode-&gt;i_ino</span></code> field in <code class="docutils literal"><span class="pre">de-&gt;ino</span></code></li>
 <li>the <code class="docutils literal"><span class="pre">dentry-&gt;d_name.name</span></code> field in <code class="docutils literal"><span class="pre">de-&gt;name</span></code></li>
 </ul>
 </div></blockquote>
@@ -1266,11 +1270,19 @@ To be complete, the implementations needs function to delete files, create and d
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1281,7 +1293,6 @@ To be complete, the implementations needs function to delete files, create and d
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

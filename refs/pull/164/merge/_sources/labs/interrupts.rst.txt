@@ -72,7 +72,7 @@ the one running (B).
 Using only a spinlock can lead to a deadlock. The classic example of
 deadlock in this case is:
 
-1. We run a process process on the X processor, and we acquire the lock
+1. We run a process on the X processor, and we acquire the lock
 2. Before releasing the lock, an interrupt is generated on the X processor
 3. The interrupt handling routine will try to acquire the lock and it
    will go into an infinite loop
@@ -715,8 +715,9 @@ ports we need are I8042_STATUS_REG and I8042_DATA_REG.
 
 Follow the sections maked with **TODO 1** in the skeleton. Request the I/O
 ports in :c:func:`kbd_init` and make sure to check for errors and to properly
-clean-up in case of errors. Also, add code to release the I/O ports in
-:c:func:`kbd_exit`.
+clean-up in case of errors. When requesting, set the reserving caller's ID
+string (``name``) with ``MODULE_NAME`` macro. Also, add code to release the I/O
+ports in :c:func:`kbd_exit`.
 
 .. note:: You can review the `Request access to I/O ports`_ section before
    proceeding.
@@ -765,7 +766,7 @@ It looks like the I/O ports are registered by the kernel during the
 boot and we won't be able to remove the associated module. Instead
 lets trick the kernel and register ports 0x61 and 0x65.
 
-Use the function :c:func:`request_region`(inside the :c:func:`kbd_init`
+Use the function :c:func:`request_region` (inside the :c:func:`kbd_init`
 function) to allocate the ports and the function :c:func:`release_region`
 (inside the :c:func:`kbd_exit` function) to release the allocated memory.
 
@@ -799,7 +800,8 @@ section before proceeding.
 
 Follow the sections maked with **TODO 2** in the skeleton.
 
-First, define an empty interrupt handling routine.
+First, define an empty interrupt handling routine named
+c:func:`kbd_interrupt_handler`.
 
 .. note:: Since we already have a driver that uses this interrupt we
 	  should report the interrupt as not handled (i.e. return
@@ -837,7 +839,7 @@ and our driver.
 Print a message inside the routine to make sure it is called. Compile
 and reload the module into the kernel. Check that the interrupt handling
 routine is called when you press the keyboard on the virtual machine,
-using :command:dmesg. Also note that when you use the serial port no
+using :command:`dmesg`. Also note that when you use the serial port no
 keyboard interrupt is generated.
 
 .. attention:: To get access to the keyboard on the virtual machine

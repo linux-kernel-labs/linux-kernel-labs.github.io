@@ -344,7 +344,7 @@ of the disk.
 Request queues
 ==============
 
-Drivers for block devices use queues to store the block requests I/O that will
+Drivers for block devices use queues to store the block I/O requests that will
 be processed. A request queue is represented by the
 :c:type:`struct request_queue` structure. The request queue is made up of a
 double-linked list of requests and their associated control information. The
@@ -485,9 +485,9 @@ The fields of :c:type:`struct request` structure include:
      macrodefinition :c:macro:`rq_for_each_segment` if there are multiple
      buffers, or by :c:macro:`bio_data` macrodefinition in case there is only
      one associated buffer;
-   * :c:member:`bio_data`: the address of the buffer associated to the request
-   * about the :c:type:`struct bio` structure and its associated operations
-     will be discussed in the :ref:`bio_structure` section;
+
+We will discuss more about the :c:type:`struct bio` structure and its
+associated operations in the :ref:`bio_structure` section.
 
 Create a request
 ----------------
@@ -743,7 +743,6 @@ A typical example of use is:
 
    static int my_xfer_bio(struct my_block_dev *dev, struct bio *bio)
    {
-       int i;
        struct bio_vec bvec;
        struct bvec_iter i;
        int dir = bio_data_dir(bio);
@@ -982,8 +981,9 @@ information, use the fields of the :c:type:`struct request` structure.
           section.
 
 .. hint:: You can find useful information in the
-          [block device driver example](https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c)
-          from [Linux Device Driver](http://lwn.net/Kernel/LDD3/).
+          `block device driver example
+          <https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c>`_
+          from `Linux Device Driver <http://lwn.net/Kernel/LDD3/>`_.
 
 For testing, use the test file :file:`user/ram-disk-test.c`.
 The test program is compiled automatically at ``make build``, copied to the

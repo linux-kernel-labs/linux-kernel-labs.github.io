@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Virtual Machine Setup" href="vm.html" /> 
@@ -61,7 +62,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -88,6 +89,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -139,6 +141,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -177,7 +180,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Contributing to linux-kernel-labs</li>
     
@@ -256,8 +259,8 @@ First, install <code class="docutils literal"><span class="pre">docker</span></c
 <li><p class="first">If you haven’t done it already, clone the
 <a class="reference external" href="https://github.com/linux-kernel-labs/linux">linux-kernel-labs repo</a>
 repository locally:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ mkdir -p ~/so2
-$ git clone git@github.com:linux-kernel-labs/linux.git ~/so2/linux
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ mkdir -p ~/src
+$ git clone git@github.com:linux-kernel-labs/linux.git ~/src/linux
 </pre></div>
 </div>
 </li>
@@ -284,8 +287,8 @@ in and click <code class="docutils literal"><span class="pre">Fork</span></code>
 <li>Go to the master branch and make sure you have no local changes:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git checkout master
-student@eg106:~/so2/linux$ git status
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git checkout master
+student@eg106:~/src/linux$ git status
 On branch master
 Your branch is up-to-date with <span class="s1">&#39;origin/master&#39;</span>.
 nothing to commit, working directory clean
@@ -296,13 +299,13 @@ nothing to commit, working directory clean
 <li>Make sure the local master branch is up-to-date with linux-kernel-labs:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git pull origin master
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git pull origin master
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>You can also push the latest master to your forked repo:</p>
-<div class="last highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git push my_fork master
+<div class="last highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork master
 </pre></div>
 </div>
 </div>
@@ -311,7 +314,7 @@ nothing to commit, working directory clean
 <li>Create a new branch for your change:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git checkout -b &lt;your_branch_name&gt;
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git checkout -b &lt;your_branch_name&gt;
 </pre></div>
 </div>
 </div></blockquote>
@@ -320,9 +323,9 @@ nothing to commit, working directory clean
 <code class="docutils literal"><span class="pre">Documentation/teaching/index.rst</span></code>:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ vim Documentation/teaching/index.rst
-student@eg106:~/so2/linux$ git add Documentation/teaching/index.rst
-student@eg106:~/so2/linux$ git commit -m <span class="s2">&quot;&lt;commit message&gt;&quot;</span>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ vim Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git add Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git commit -m <span class="s2">&quot;&lt;commit message&gt;&quot;</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -342,7 +345,7 @@ and the location of the changed component.</p>
 <li>Push the local branch to your forked repository:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git push my_fork &lt;your_branch_name&gt;
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork &lt;your_branch_name&gt;
 </pre></div>
 </div>
 </div></blockquote>
@@ -371,8 +374,8 @@ Your goal is to do a new push on the same branch. For this, follow the next step
 <code class="docutils literal"><span class="pre">master</span></code> branch.</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git fetch origin master
-student@eg106:~/so2/linux$ git rebase FETCH_HEAD
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git fetch origin master
+student@eg106:~/src/linux$ git rebase FETCH_HEAD
 </pre></div>
 </div>
 <div class="admonition note">
@@ -392,8 +395,8 @@ After fixing the conflicts, add them using <code class="docutils literal"><span 
 we will amend the changes to the initial commit.</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git add Documentation/teaching/index.rst
-student@eg106:~/so2/linux$ git commit --amend
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git add Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git commit --amend
 </pre></div>
 </div>
 </div></blockquote>
@@ -401,7 +404,7 @@ student@eg106:~/so2/linux$ git commit --amend
 <li>Force-push the updated commit:</li>
 </ol>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux$ git push my_fork &lt;your_branch_name&gt; -f
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork &lt;your_branch_name&gt; -f
 </pre></div>
 </div>
 <p>After this step, the Pull Request is updated. It is now up to the
@@ -430,11 +433,19 @@ contributions in the main project.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -445,7 +456,6 @@ contributions in the main project.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

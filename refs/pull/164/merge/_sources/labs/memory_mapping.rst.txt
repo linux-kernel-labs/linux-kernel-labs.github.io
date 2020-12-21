@@ -96,7 +96,7 @@ There are many functions that interact with this structure:
 * :c:func:`page_to_pfn` return the page frame number associated with a
   :c:type:`struct page`
 * :c:func:`page_address` returns the virtual address of a
-  :c:type:`struc page`; this functions can be called only for pages from
+  :c:type:`struct page`; this functions can be called only for pages from
   lowmem
 * :c:func:`kmap` creates a mapping in kernel for an arbitrary physical
   page (can be from highmem) and returns a virtual address that can be
@@ -208,7 +208,7 @@ into the virtual space represented by :c:type:`vm_area_struct`:
 * *addr* - the virtual address space from where remapping begins; page
   tables for the virtual address space between addr and addr + size
   will be formed as needed
-* *pfn* the page frame number to which the virtual address should be
+* *pfn* - the page frame number to which the virtual address should be
   mapped
 * *size* - the size (in bytes) of the memory to be mapped
 * *prot* - protection flags for this mapping
@@ -258,7 +258,7 @@ and finally for :c:func:`alloc_pages`:
    unsigned long pfn = page_to_pfn(page);
 
 .. attention:: Note that memory allocated with :c:func:`vmalloc` is not
-               physically contiguous so if we want to map a range alocated
+               physically contiguous so if we want to map a range allocated
                with :c:func:`vmalloc`, we have to map each page individually
                and compute the physical address for each page.
 
@@ -278,7 +278,7 @@ Enabling is done using :c:func:`SetPageReserved` while reseting it
        if (!mem)
 	   return mem;
 
-       for(i = 0; i < npages * PAGE_SIZE; i += PAGE_SIZE) {
+       for(i = 0; i < npages * PAGE_SIZE; i += PAGE_SIZE)
 	   SetPageReserved(virt_to_page(((unsigned long)mem) + i));
 
        return mem;
@@ -288,7 +288,7 @@ Enabling is done using :c:func:`SetPageReserved` while reseting it
    {
        int i;
 
-       for(i = 0; i < npages * PAGE_SIZE; i += PAGE_SIZE) {
+       for(i = 0; i < npages * PAGE_SIZE; i += PAGE_SIZE)
 	   ClearPageReserved(virt_to_page(((unsigned long)mem) + i));
 
        kfree(mem);
@@ -353,8 +353,13 @@ Implement the :c:func:`mmap` driver function.
 	  To convert a physical address to its PFN, shift the address
 	  with PAGE_SHIFT bits to the right.
 
-For testing, use :file:`test/mmap-test`. If everything goes well, the test
-will show "matched" messages.
+For testing, load the kernel module and run:
+
+.. code-block:: shell
+
+  root@qemux86:~# skels/memory_mapping/test/mmap-test 1
+
+If everything goes well, the test will show "matched" messages.
 
 2. Mapping non-contiguous physical memory to userspace
 ------------------------------------------------------
@@ -364,7 +369,7 @@ Implement a device driver that maps non-contiguous physical memory
 
 Review the `Device driver memory mapping`_ section, generate the
 skeleton for the task named **vmmap** and fill in the areas marked
-with **TODO 2**.
+with **TODO 1**.
 
 Allocate a memory area of NPAGES with :c:func:`vmalloc`.
 
@@ -393,13 +398,18 @@ Implement the mmap driver function.
 
                Loop through all virtual pages and for each:
                * determine the physical address
-               * map it with :c:func:`remap_fpn_range`
+               * map it with :c:func:`remap_pfn_range`
 
-               Make sure the that you determine the physical address
+               Make sure that you determine the physical address
                each time and that you use a range of one page for mapping.
 
-For testing, use *test/mmap-test*. If everything goes well the test
-will show "matched" messages.
+For testing, load the kernel module and run:
+
+.. code-block:: shell
+
+  root@qemux86:~# skels/memory_mapping/test/mmap-test 1
+
+If everything goes well, the test will show "matched" messages.
 
 3. Read / write operations in mapped memory
 -------------------------------------------
@@ -409,17 +419,17 @@ your device. This is a didactic exercise to see that the same space
 can also be used with the :c:func:`mmap` call and with :c:func:`read`
 and :c:func:`write` calls.
 
-Fill in areas marked with **TODO 3**.
+Fill in areas marked with **TODO 2**.
 
 .. note:: The offset parameter sent to the read / write operation can
           be ignored as all reads / writes from the test program will
           be done with 0 offsets.
 
-For testing run :file:`test/mmap-test` with 3 as parameter:
+For testing, load the kernel module and run:
 
 .. code-block:: shell
 
-   root@qemux86:~# skels/memory_mapping/test/mmap-test 3
+  root@qemux86:~# skels/memory_mapping/test/mmap-test 2
 
 
 4. Display memory mapped in procfs
@@ -428,7 +438,7 @@ For testing run :file:`test/mmap-test` with 3 as parameter:
 Using one of the previous modules, create a procfs file in which you
 display the total memory mapped by the calling process.
 
-Fill in the areas marked with **TODO 4**.
+Fill in the areas marked with **TODO 3**.
 
 Create a new entry in procfs (:c:macro:`PROC_ENTRY_NAME`, defined in
 :file:`mmap-test.h`) that will show the total memory mapped by the process
@@ -481,11 +491,11 @@ In :c:func:`my_seq_open` register the display function
 
 .. note:: :c:func:`single_open` can use :c:macro:`NULL` as its third argument.
 
-For testing run :file:`kmmap/mmap-test` with 4 as parameter:
+For testing, load the kernel module and run:
 
 .. code-block:: shell
 
-   root@qemux86:~# skels/memory_mapping/kmmap/mmap-test 4
+  root@qemux86:~# skels/memory_mapping/test/mmap-test 3
 
 .. note:: The test waits for a while (it has an internal sleep
           instruction). As long as the test waits, use the

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,20 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +46,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Character device drivers" href="device_drivers.html" />
@@ -62,7 +63,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
           
 
           
@@ -89,6 +90,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -164,6 +166,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -202,7 +205,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Kernel API</li>
     
@@ -283,7 +286,7 @@ is where the device driver needs to access a buffer from the user-space. In
 this case, the device driver must use special features and not directly access
 the buffer. This is necessary to prevent access to invalid memory areas.</p>
 <p>Another difference from the user-space scheduling, relative to memory, is due to
-the stack, a stack whose size is fixed and limited. A stack of 4K it is used in
+the stack, a stack whose size is fixed and limited. A stack of 4K is used in
 Linux, and a stack of 12K is used in Windows. For this reason, the
 allocation of large structures on stack or the use of recursive calls should
 be avoided.</p>
@@ -574,10 +577,10 @@ operations associated with a spinlock are <code class="xref c c-func docutils li
 <p>In Linux, you can use reader-writer spinlocks, useful for readers-writers
 problems.
 These types of locks are identified by <code class="xref c c-type docutils literal"><span class="pre">rwlock_t</span></code>, and the functions
-that can work on a reader-writer spinlock are:
-* <code class="xref c c-func docutils literal"><span class="pre">rwlock_init()</span></code>
-* <code class="xref c c-func docutils literal"><span class="pre">read_lock()</span></code>
-* <code class="xref c c-func docutils literal"><span class="pre">write_lock()</span></code>
+that can work on a reader-writer spinlock are
+<code class="xref c c-func docutils literal"><span class="pre">rwlock_init()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">read_lock()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">write_lock()</span></code>.
 An example of use:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/spinlock.h&gt;</span><span class="cp"></span>
 
@@ -675,7 +678,7 @@ Such an usage is shown schematically in the code below:</p>
      <span class="kt">int</span> <span class="n">initial_flag</span><span class="p">;</span>
 
      <span class="cm">/*</span>
-<span class="cm">      * Check if flag is UNLOCKED; if not, lock it and do it atomically.</span>
+<span class="cm">      * Check if flag is UNLOCKED; if so, lock it and do it atomically.</span>
 <span class="cm">      *</span>
 <span class="cm">      * This is the atomic equivalent of</span>
 <span class="cm">      *      if (flag == UNLOCKED)</span>
@@ -1144,11 +1147,19 @@ What do you notice?</li>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright The kernel development community
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1159,7 +1170,6 @@ What do you notice?</li>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
