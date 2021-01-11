@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Symmetric Multi-Processing &mdash; The Linux Kernel  documentation</title>
   
@@ -18,7 +18,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -63,7 +66,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> The Linux Kernel
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
           
 
           
@@ -182,6 +185,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -193,7 +198,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/lectures/smp.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -683,7 +688,7 @@ spinning time</li>
 <li>They have a higher latency than spin locks</li>
 </ul>
 <p>Conceptually, the <code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> operation is relatively simple:
-if the mutex is not acquired we an take the fast path via an atomic
+if the mutex is not acquired we can take the fast path via an atomic
 exchange operation:</p>
 <div class="admonition-c-func-mutex-lock-fast-path highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">__sched</span> <span class="nf">mutex_lock</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
 <span class="p">{</span>
@@ -737,7 +742,7 @@ owner is currently running on a different CPU as chances are the owner
 will release the lock soon. It also checks for signals and handles
 mutex debugging for locking dependency engine debug feature.</p>
 <p>The <code class="xref c c-func docutils literal"><span class="pre">mutex_unlock()</span></code> operation is symmetric: if there are no
-waiters on the mutex then we an take the fast path via an atomic exchange
+waiters on the mutex then we can take the fast path via an atomic exchange
 operation:</p>
 <div class="admonition-c-func-mutex-unlock-fast-path highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">__sched</span> <span class="nf">mutex_unlock</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
 <span class="p">{</span>
@@ -924,37 +929,29 @@ element to the list:</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="debugging.html" class="btn btn-neutral float-right" title="Debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="interrupts.html" class="btn btn-neutral float-left" title="Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="debugging.html" class="btn btn-neutral float-right" title="Debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="interrupts.html" class="btn btn-neutral float-left" title="Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
