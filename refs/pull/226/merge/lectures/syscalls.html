@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -222,7 +222,7 @@
 </div>
 <div class="section" id="linux-system-calls-implementation">
 <h2>Linux system calls implementation<a class="headerlink" href="#linux-system-calls-implementation" title="Permalink to this headline">¶</a></h2>
-<p>At a high level system calls are “services” offered by the kernel to
+<p>At a high level system calls are &quot;services&quot; offered by the kernel to
 user applications and they resemble library APIs in that they are
 described as a function call with a name, parameters and return value.</p>
 <p class="admonition-system-calls-as-kernel-services">&nbsp;</p>
@@ -345,7 +345,7 @@ by later reading the file. If it passes a kernel-space pointer to a
 read system call then it can corrupt kernel memory.</p>
 <span class="admonition-pointers-to-kernel-space"></span><p>Likewise, if a pointer passed by the application is invalid
 (e.g. unmapped, read-only for cases where it is used for writing), it
-could “crash” the kernel. There two approaches that could be used:</p>
+could &quot;crash&quot; the kernel. There two approaches that could be used:</p>
 <ul class="admonition-invalid-pointers-handling-approaches simple">
 <li>Check the pointer against the user address space before using it,
 or</li>
@@ -369,7 +369,7 @@ invalid</li>
 <li>Kernel bug (kernel accesses invalid pointer): same as above</li>
 </ul>
 </div></blockquote>
-<p>But in the last two cases we don’t have enough information to
+<p>But in the last two cases we don't have enough information to
 determine the cause of the fault.</p>
 <p>In order to solve this issue Linux uses special APIs (e.g
 <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>) to accesses user space that are specially
@@ -437,7 +437,7 @@ is either static or modified by the kernel in a separate read-write
 map of the VDSO page. Examples of system calls that can be implemented
 as vsyscalls are: getpid or gettimeofday.</p>
 <ul class="admonition-virtual-system-calls-vsyscalls simple">
-<li>“System calls” that run directly from user space, part of the VDSO</li>
+<li>&quot;System calls&quot; that run directly from user space, part of the VDSO</li>
 <li>Static data (e.g. getpid())</li>
 <li>Dynamic data update by the kernel a in RW map of the VDSO
 (e.g. gettimeofday(), time(), )</li>
@@ -458,7 +458,7 @@ pointers they return a non zero value.</p>
 <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">kernel_buffer</span><span class="p">,</span> <span class="n">user_ptr</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Let’s examine the simplest API, get_user, as implemented for x86:</p>
+<p>Let's examine the simplest API, get_user, as implemented for x86:</p>
 <div class="admonition-get-user-implementation highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define get_user(x, ptr)                                          \</span>
 <span class="cp">({                                                                \</span>
 <span class="cp">  int __ret_gu;                                                   \</span>
@@ -515,7 +515,7 @@ _ASM_EXTABLE(1b,bad_get_user)
 </div>
 <p>The first two statements check the pointer (which is stored in EDX)
 with the addr_limit field of the current task (process) descriptor to
-make sure that we don’t have a pointer to kernel space.</p>
+make sure that we don't have a pointer to kernel space.</p>
 <p>Then, SMAP is disabled, to allow access to user from kernel, and the
 access to user space is done with the instruction at the 1: label. EAX
 is then zeroed to mark success, SMAP is enabled, and the call returns.</p>

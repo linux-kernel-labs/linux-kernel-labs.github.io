@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -270,7 +270,7 @@ If for character devices system calls go directly to device drivers, in case of
 block devices, the drivers do not work directly with system calls. In
 the case of block devices, communication between the user-space and the block
 device driver is mediated by the file management subsystem and the block device
-subsystem. The role of these subsystems is to prepare the device driver’s
+subsystem. The role of these subsystems is to prepare the device driver's
 necessary resources (buffers), to keep the recently read data in the cache
 buffer, and to order the read and write operations for performance reasons.</p>
 </div>
@@ -315,7 +315,7 @@ the command will be:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mybdev b 240 0</span>
 </pre></div>
 </div>
-<p>Next, we’ll refer to character devices as drivers.</p>
+<p>Next, we'll refer to character devices as drivers.</p>
 </div>
 <div class="section" id="data-structures-for-a-character-device">
 <h2>Data structures for a character device<a class="headerlink" href="#data-structures-for-a-character-device" title="Permalink to this headline">¶</a></h2>
@@ -374,7 +374,7 @@ control).</li>
 <p>An <code class="docutils literal"><span class="pre">inode</span></code> represents a file from the point of view of the file system. Attributes
 of an inode are the size, rights, times associated with the file. An inode uniquely
 identifies a file in a file system.</p>
-<p>The <code class="docutils literal"><span class="pre">file</span></code> structure is still a file, but closer to the user’s point of view.
+<p>The <code class="docutils literal"><span class="pre">file</span></code> structure is still a file, but closer to the user's point of view.
 From the attributes of the file structure we list: the inode, the file name,
 the file opening attributes, the file position. All open files at a given time
 have associated a <code class="docutils literal"><span class="pre">file</span></code> structure.</p>
@@ -760,7 +760,7 @@ write more or less than the required size.</p>
 <p>In addition to read and write operations, a driver needs the ability to perform
 certain physical device control tasks. These operations are accomplished by
 implementing a <code class="docutils literal"><span class="pre">ioctl</span></code> function. Initially, the ioctl system call used Big Kernel
-Lock. That’s why the call was gradually replaced with its unlocked version
+Lock. That's why the call was gradually replaced with its unlocked version
 called <code class="docutils literal"><span class="pre">unlocked_ioctl</span></code>. You can read more on LWN:
 <a class="reference external" href="http://lwn.net/Articles/119652/">http://lwn.net/Articles/119652/</a></p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
@@ -1027,14 +1027,14 @@ We still get an error because <code class="docutils literal"><span class="pre">r
 </div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The prototype of a device driver’s operations is in the <code class="docutils literal"><span class="pre">file_operations</span></code>
+<p class="last">The prototype of a device driver's operations is in the <code class="docutils literal"><span class="pre">file_operations</span></code>
 structure. Read <a class="reference internal" href="#open-and-release">Open and release</a> section.</p>
 </div>
 </div>
 <div class="section" id="access-restriction">
 <h3>4. Access restriction<a class="headerlink" href="#access-restriction" title="Permalink to this headline">¶</a></h3>
 <p>Restrict access to the device with atomic variables, so that a single process
-can open the device at a time. The rest will receive the “device busy” error
+can open the device at a time. The rest will receive the &quot;device busy&quot; error
 (<code class="docutils literal"><span class="pre">-EBUSY</span></code>). Restricting access will be done in the open function displayed by
 the driver. Follow comments marked with <strong>TODO 3</strong> and implement them.</p>
 <blockquote>
@@ -1044,7 +1044,7 @@ the driver. Follow comments marked with <strong>TODO 3</strong> and implement th
 <li>Use the variable in the open function to restrict access to the device. We
 recommend using <code class="xref c c-func docutils literal"><span class="pre">atomic_cmpxchg()</span></code>.</li>
 <li>Reset the variable in the release function to retrieve access to the device.</li>
-<li>To test your deployment, you’ll need to simulate a long-term use of your
+<li>To test your deployment, you'll need to simulate a long-term use of your
 device. To simulate a sleep, call the scheduler at the end of the device opening:</li>
 </ol>
 </div></blockquote>
@@ -1117,7 +1117,7 @@ large enough. You do not need to check the validity of the write function size
 argument.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>The prototype of a device driver’s operations is in the file_operations
+<p>The prototype of a device driver's operations is in the file_operations
 structure.
 Test using commands:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;arpeggio&quot;</span>&gt; /dev/so2_cdev
@@ -1199,7 +1199,7 @@ user-space program.</li>
 </div></blockquote>
 <p>When the process is added to the queue, it will remain blocked in execution; To
 run the queue command open a new console in the virtual machine with Alt+F2 ;
-You can return to the previous console with Alt+F1 . If you’re connected via
+You can return to the previous console with Alt+F1 . If you're connected via
 SSH to the virtual machine, open a new console.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>

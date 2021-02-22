@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -423,7 +423,7 @@ in sysfs.</p>
 </pre></div>
 </div>
 <p>It can be noticed that a bus has a name, lists of default attributes, a number
-of specific functions, and the driver’s private data.
+of specific functions, and the driver's private data.
 The <code class="docutils literal"><span class="pre">uevent</span></code> function (formerly <code class="docutils literal"><span class="pre">hotplug</span></code>) is used with hotplug devices.</p>
 <p>Bus operations are the registration, the implementation of the operations
 described in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bus_type</span></code> structure and the iteration and
@@ -700,7 +700,7 @@ each device, in <code class="docutils literal"><span class="pre">/sys/class</spa
 </div>
 <p>Among the structure fields we find the name of the driver (appears in <code class="docutils literal"><span class="pre">sysfs</span></code>),
 the bus with which the driver works, and functions called at various times in a
-device’s operation.</p>
+device's operation.</p>
 <p>As before, we have the functions <code class="xref c c-func docutils literal"><span class="pre">driver_register()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">driver_unregister()</span></code> to register/unregister a driver.</p>
 <p>To work with attributes, we have the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">driver_attribute</span></code> structure,
@@ -1029,7 +1029,7 @@ structure of type <code class="xref c c-type docutils literal"><span class="pre"
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Unlike legacy drivers, plug and play drivers don’t register devices at
+<p>Unlike legacy drivers, plug and play drivers don't register devices at
 initialization in the init function (<code class="docutils literal"><span class="pre">my_init</span></code> in the example above) using
 <code class="xref c c-func docutils literal"><span class="pre">register_device()</span></code>.</p>
 <p>As described above, each bus has a <cite>match</cite> function which is called when a new
@@ -1083,7 +1083,7 @@ structure using the <code class="xref c c-func docutils literal"><span class="pr
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Unlike legacy drivers, plug and play drivers don’t unregister devices in the
+<p>Unlike legacy drivers, plug and play drivers don't unregister devices in the
 module unload function (<code class="docutils literal"><span class="pre">my_exit</span></code>). When a driver is removed, all the
 references to it will be removed for all the devices it supports, and entries
 from <code class="docutils literal"><span class="pre">sysfs</span></code> will also be removed.</p>
@@ -1126,12 +1126,12 @@ event can be treated by <code class="docutils literal"><span class="pre">udev</s
 bus is iterated and the <code class="docutils literal"><span class="pre">match</span></code> function is called for each of them.
 The <code class="docutils literal"><span class="pre">match</span></code> function tries to find a driver for the new device. After a
 suitable driver is found for the device, the <code class="docutils literal"><span class="pre">probe</span></code> function of the driver
-is called. If the function ends successfully, the device is added to the driver’s
+is called. If the function ends successfully, the device is added to the driver's
 list of devices and new entries are created in <code class="docutils literal"><span class="pre">sysfs</span></code> based on the device name.</p>
 </div>
 <div class="section" id="removing-a-device">
 <h3>Removing a device<a class="headerlink" href="#removing-a-device" title="Permalink to this headline">¶</a></h3>
-<p>As we saw above, the plug and play drivers don’t unregister devices when the
+<p>As we saw above, the plug and play drivers don't unregister devices when the
 driver is unloaded. This operation is done in the <code class="docutils literal"><span class="pre">remove</span></code> function, which
 is called when a device is removed from the system.
 In case of a device attached to the <code class="docutils literal"><span class="pre">PNP</span></code> bus, the unregister will be done
@@ -1303,10 +1303,10 @@ $ <span class="nb">echo</span> <span class="s2">&quot;name&quot;</span> &gt; /sy
 <h3>4. Register the bex misc driver<a class="headerlink" href="#register-the-bex-misc-driver" title="Permalink to this headline">¶</a></h3>
 <p>Modify <strong>bex-misc.c</strong> so that it registers the driver with the bex
 bus. Insert the <code class="docutils literal"><span class="pre">bmx_misc.ko</span></code> module and create a new bex device from
-sysfs with the name “test”, type “misc”, version 2. Follow the <strong>TODO
+sysfs with the name &quot;test&quot;, type &quot;misc&quot;, version 2. Follow the <strong>TODO
 4</strong> markings.</p>
 <p>Observe that the driver is visible in <code class="docutils literal"><span class="pre">/sys/bus/bex/drivers</span></code>.</p>
-<p>Why isn’t the probe function called?</p>
+<p>Why isn't the probe function called?</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Notice that the bus match function in <strong>bex.c</strong> is not
@@ -1325,9 +1325,9 @@ defined misc device in <code class="docutils literal"><span class="pre">bex_misc
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-func docutils literal"><span class="pre">misc_register()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">misc_deregister()</span></code>.</p>
 </div>
-<p>Create a new device with the name “test”, type “misc” and version 2
+<p>Create a new device with the name &quot;test&quot;, type &quot;misc&quot; and version 2
 and observe that the probe fails. Create a new device with the name
-“test2”, type “misc” and version 1 and observe that the probe is
+&quot;test2&quot;, type &quot;misc&quot; and version 1 and observe that the probe is
 successful.</p>
 <p>Inspect <code class="docutils literal"><span class="pre">/sys/bus/bex/devices/test2</span></code> and observe that we have a new
 entry. Identify the major and minor for the misc device, create a
@@ -1344,9 +1344,9 @@ of the misc device</p>
 <p>Use the <code class="docutils literal"><span class="pre">udevadm</span> <span class="pre">monitor</span></code> command and observe what happens when:</p>
 <ul class="simple">
 <li>the <code class="docutils literal"><span class="pre">bex.ko</span></code> and <code class="docutils literal"><span class="pre">bex_misc.ko</span></code> modules are inserted</li>
-<li>a new device with the type “type” is created</li>
-<li>a new device with the type “misc” and version 2 is created</li>
-<li>a new device with the type “misc” and version 1 is created</li>
+<li>a new device with the type &quot;type&quot; is created</li>
+<li>a new device with the type &quot;misc&quot; and version 2 is created</li>
+<li>a new device with the type &quot;misc&quot; and version 1 is created</li>
 <li>all of the above are removed</li>
 </ul>
 </div>

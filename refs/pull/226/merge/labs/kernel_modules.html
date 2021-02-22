@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -348,7 +348,7 @@ module.  The easiest example of such a directive is <code class="docutils litera
 <span class="pre">module.o</span></code>. Following this directive, a kernel module (<code class="code docutils literal"><span class="pre">ko</span></code> - kernel
 object) will be created, starting from the <code class="docutils literal"><span class="pre">module.o</span></code> file. <code class="docutils literal"><span class="pre">module.o</span></code> will
 be created starting from <code class="docutils literal"><span class="pre">module.c</span></code> or <code class="docutils literal"><span class="pre">module.S</span></code>. All of these files can
-be found in the <code class="file docutils literal"><span class="pre">Kbuild</span></code>’s directory.</p>
+be found in the <code class="file docutils literal"><span class="pre">Kbuild</span></code>'s directory.</p>
 <p>An example of a <code class="file docutils literal"><span class="pre">Kbuild</span></code> file that uses several sub-modules is shown
 below:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">EXTRA_CFLAGS</span> <span class="o">=</span> -Wall -g
@@ -559,7 +559,7 @@ In our case this is an invalid access to memory.</p>
 <p>Next line</p>
 <blockquote>
 <div><code class="docutils literal"><span class="pre">Oops:</span> <span class="pre">0002</span> <span class="pre">[#</span> <span class="pre">1]</span> <span class="pre">PREEMPT</span> <span class="pre">DEBUG_PAGEALLOC</span></code></div></blockquote>
-<p>Tells us that it’s the first oops (#1). This is important in the context that
+<p>Tells us that it's the first oops (#1). This is important in the context that
 an oops can lead to other oopses. Usually only the first oops is relevant.
 Furthermore, the oops code (<code class="docutils literal"><span class="pre">0002</span></code>) provides information about the error type
 (see <code class="file docutils literal"><span class="pre">arch/x86/include/asm/traps.h</span></code>):</p>
@@ -620,7 +620,7 @@ using the <strong class="command">objdump</strong> utility. Useful options to us
 to disassemble the code and <strong class="command">-S</strong> for interleaving C code in assembly
 language code.  For efficient decoding, however, we need the address where the
 kernel module was loaded. This can be found in <code class="file docutils literal"><span class="pre">/proc/modules</span></code>.</p>
-<p>Here’s an example of using <strong class="command">objdump</strong> on the above module to identify
+<p>Here's an example of using <strong class="command">objdump</strong> on the above module to identify
 the instruction that generated the oops:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>faust:~/lab-01/modul-oops# cat /proc/modules
 oops <span class="m">1280</span> <span class="m">1</span> - Loading 0xc89d4000
@@ -803,7 +803,7 @@ module, there are a lot of unknowns in the equation: multiple contexts (we have
 multiple processes and threads running at a time), interruptions, virtual
 memory, etc.</p>
 <p>You can use <code class="code docutils literal"><span class="pre">printk</span></code> to display kernel messages to user space. It is
-similar to <code class="code docutils literal"><span class="pre">printf</span></code>’s functionality; the only difference is that the
+similar to <code class="code docutils literal"><span class="pre">printf</span></code>'s functionality; the only difference is that the
 transmitted message can be prefixed with a string of <code class="code docutils literal"><span class="pre">&quot;&lt;n&gt;&quot;</span></code>, where
 <code class="code docutils literal"><span class="pre">n</span></code> indicates the error level (loglevel) and has values between <code class="docutils literal"><span class="pre">0</span></code> and
 <code class="docutils literal"><span class="pre">7</span></code>. Instead of <code class="code docutils literal"><span class="pre">&quot;&lt;n&gt;&quot;</span></code>, the levels can also be coded by symbolic
@@ -851,7 +851,7 @@ all messages coming from the kernel will go to <code class="file docutils litera
 <p>A simpler version for debugging is using the <code class="file docutils literal"><span class="pre">/var/log/debug</span></code> file.  It
 is populated only with the <code class="code docutils literal"><span class="pre">printk</span></code> messages from the kernel with the
 <code class="code docutils literal"><span class="pre">KERN_DEBUG</span></code> log level.</p>
-<p>Given that a production kernel (similar to the one we’re probably running with)
+<p>Given that a production kernel (similar to the one we're probably running with)
 contains only release code, our module is among the few that send messages
 prefixed with KERN_DEBUG . In this way, we can easily navigate through the
 <code class="file docutils literal"><span class="pre">/var/log/debug</span></code> information by finding the messages corresponding to a
@@ -898,7 +898,7 @@ of the function in which the current instruction is found.</li>
                <span class="n">__FUNCTION__</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then, at each point where we want to see if it is “reached” in execution,
+<p>Then, at each point where we want to see if it is &quot;reached&quot; in execution,
 insert PRINT_DEBUG; This is a simple and quick way, and can yield by carefully
 analyzing the output.</p>
 <p>The <strong class="command">dmesg</strong> command is used to view the messages printed with
@@ -1005,7 +1005,7 @@ This allows us to monitor, in real time, the accesses to memory or even modify t
 while debugging.
 The debugger has been integrated in the mainline kernel starting with version 2.6.26-rci.
 KDB is not a <em>source debugger</em>, but for a complete analysis it can be used in parallel with
-gdb and symbol files – see <a class="reference internal" href="../so2/lab1-intro.html#gdb-intro"><span class="std std-ref">the GDB debugging section</span></a></p>
+gdb and symbol files -- see <a class="reference internal" href="../so2/lab1-intro.html#gdb-intro"><span class="std std-ref">the GDB debugging section</span></a></p>
 <p>To use KDB, you have the following options:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1245,7 +1245,7 @@ the instructions pointer (<code class="docutils literal"><span class="pre">EIP</
 <p class="last">Use the <code class="file docutils literal"><span class="pre">proc/modules</span></code> information to get the load address of
 the kernel module.  Use, on the physical machine, objdump
 and/or addr2line . Objdump needs debugging support for
-compilation!  Read the lab’s <a class="reference internal" href="#objdump">objdump</a> and <a class="reference internal" href="#addr2line">addr2line</a>
+compilation!  Read the lab's <a class="reference internal" href="#objdump">objdump</a> and <a class="reference internal" href="#addr2line">addr2line</a>
 sections.</p>
 </div>
 <p>Try to unload the kernel module. Notice that the operation does not
@@ -1283,7 +1283,7 @@ module.</p>
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.  Use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> or <code class="docutils literal"><span class="pre">cscope</span></code> to find the
 definition of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</li>
 <li>To find the structure field that contains the name of the
-executable, look for the “executable” comment.</li>
+executable, look for the &quot;executable&quot; comment.</li>
 <li>The pointer to the structure of the current process
 running at a given time in the kernel is given by the
 <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> variable (of the type
@@ -1292,7 +1292,7 @@ running at a given time in the kernel is given by the
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">To use <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> you’ll need to include the header
+<p class="last">To use <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> you'll need to include the header
 in which the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> is defined, i.e
 <code class="docutils literal"><span class="pre">linux/sched.h</span></code>.</p>
 </div>
@@ -1370,7 +1370,7 @@ address.</p>
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code>. A
 memory area is indicated by a structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span>
 <span class="pre">vm_area_struct</span></code>.</li>
-<li>Don’t forget to include the headers where the necessary structures are
+<li>Don't forget to include the headers where the necessary structures are
 defined.</li>
 </ul>
 </div>
@@ -1386,7 +1386,7 @@ notice the new content of the <code class="file docutils literal"><span class="p
 <div class="highlight-bash"><div class="highlight"><pre><span></span>grep dyndbg /debug/dynamic_debug/control
 </pre></div>
 </div>
-<p>Configure <strong class="command">dyndbg</strong> so that only messages marked as “Important” in
+<p>Configure <strong class="command">dyndbg</strong> so that only messages marked as &quot;Important&quot; in
 <code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code> function are displayed when the module is unloaded.
 The exercise will only filter out the <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls; <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
 calls being always displayed.</p>

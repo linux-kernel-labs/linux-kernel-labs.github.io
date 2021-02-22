@@ -25,14 +25,6 @@ Lab objectives
     :start-after: [SECTION-DOCUMENTATION-BEGIN]
     :end-before: [SECTION-DOCUMENTATION-END]
 
-.. include:: ../labs/introduction.rst
-    :start-after: [SECTION-CODE-NAVIGATION-BEGIN]
-    :end-before: [SECTION-CODE-NAVIGATION-END]
-
-.. include:: ../labs/introduction.rst
-    :start-after: [SECTION-DEBUGGING-BEGIN]
-    :end-before: [SECTION-DEBUGGING-END]
-
 .. include:: ../labs/kernel_modules.rst
     :start-after: [SECTION-OVERVIEW-BEGIN]
     :end-before: [SECTION-OVERVIEW-END]
@@ -52,6 +44,12 @@ Lab objectives
 .. include:: ../labs/kernel_modules.rst
     :start-after: [SECTION-DEBUG-MODULES-BEGIN]
     :end-before: [SECTION-DEBUG-MODULES-END]
+
+.. note::
+
+    If you want to learn how to easily browse through the Linux source code
+    and how to debug kernel code, read the `Good to know <#good_to_know>`__
+    section.
 
 Exercises
 =========
@@ -97,3 +95,18 @@ Exercises
     :start-after: [EXERCISE7-BEGIN]
     :end-before: [EXERCISE7-END]
 
+.. _good_to_know:
+
+Good to know
+============
+
+The following sections contain useful information for getitng used to the Linux
+kernel code and debugging techniques.
+
+.. include:: ../labs/introduction.rst
+    :start-after: [SECTION-CODE-NAVIGATION-BEGIN]
+    :end-before: [SECTION-CODE-NAVIGATION-END]
+
+.. include:: ../labs/introduction.rst
+    :start-after: [SECTION-DEBUGGING-BEGIN]
+    :end-before: [SECTION-DEBUGGING-END]

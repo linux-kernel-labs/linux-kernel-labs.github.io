@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -246,7 +246,7 @@ information into the kernel space and vice versa. This can be done
 through a device driver and the user space device interface
 (<code class="file docutils literal"><span class="pre">/dev</span></code>).</p>
 <p>This feature can be used by implementing the <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> operation
-in the device driver’s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and using the
+in the device driver's <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and using the
 <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> system call in user space.</p>
 <p>The basic unit for virtual memory management is a page, which size is
 usually 4K, but it can be up to 64K on some platforms. Whenever we
@@ -358,10 +358,10 @@ is a pointer to the <code class="xref c c-type docutils literal"><span class="pr
 <div class="section" id="device-driver-memory-mapping">
 <h2>Device driver memory mapping<a class="headerlink" href="#device-driver-memory-mapping" title="Permalink to this headline">¶</a></h2>
 <p>Memory mapping is one of the most interesting features of a Unix
-system. From a driver’s point of view, the memory-mapping facility
+system. From a driver's point of view, the memory-mapping facility
 allows direct memory access to a user space device.</p>
 <p>To assign a <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> operation to a driver, the <code class="xref c c-member docutils literal"><span class="pre">mmap</span></code>
-field of the device driver’s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> must be
+field of the device driver's <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> must be
 implemented. If that is the case, the user space process can then use
 the <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> system call on a file descriptor associated with
 the device.</p>
@@ -575,7 +575,7 @@ with PAGE_SHIFT bits to the right.</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">1</span>
 </pre></div>
 </div>
-<p>If everything goes well, the test will show “matched” messages.</p>
+<p>If everything goes well, the test will show &quot;matched&quot; messages.</p>
 </div>
 <div class="section" id="mapping-non-contiguous-physical-memory-to-userspace">
 <h3>2. Mapping non-contiguous physical memory to userspace<a class="headerlink" href="#mapping-non-contiguous-physical-memory-to-userspace" title="Permalink to this headline">¶</a></h3>
@@ -622,7 +622,7 @@ each time and that you use a range of one page for mapping.</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">1</span>
 </pre></div>
 </div>
-<p>If everything goes well, the test will show “matched” messages.</p>
+<p>If everything goes well, the test will show &quot;matched&quot; messages.</p>
 </div>
 <div class="section" id="read-write-operations-in-mapped-memory">
 <h3>3. Read / write operations in mapped memory<a class="headerlink" href="#read-write-operations-in-mapped-memory" title="Permalink to this headline">¶</a></h3>
@@ -664,7 +664,7 @@ using <code class="xref c c-func docutils literal"><span class="pre">remove_proc
 <span class="pre">seq_file</span></code> interface can be found here in this <a class="reference external" href="http://tldp.org/LDP/lkmpg/2.6/html/x861.html">example</a> .</p>
 <p class="last">For this exercise, just a simple use of the interface
 described <a class="reference external" href="http://lwn.net/Articles/22355/">here</a> is
-sufficient. Check the “extra-simple” API described there.</p>
+sufficient. Check the &quot;extra-simple&quot; API described there.</p>
 </div>
 <p>In the <code class="xref c c-func docutils literal"><span class="pre">my_seq_show()</span></code> function you will need to:</p>
 <ul>
