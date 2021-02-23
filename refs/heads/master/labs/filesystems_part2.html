@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -814,7 +816,7 @@ For this we often need to use bit operations. Such operations are:</p>
 <div class="section" id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Robert Love – Linux Kernel Development, Second Edition – Chapter
+<li>Robert Love -- Linux Kernel Development, Second Edition -- Chapter
 12. The Virtual Filesystem</li>
 <li>Understanding the Linux Kernel, 3rd edition - Chapter 12. The Virtual
 Filesystem</li>
@@ -822,7 +824,7 @@ Filesystem</li>
 <li><a class="reference external" href="http://www.cyberciti.biz/tips/understanding-unixlinux-file-system-part-i.html">Understanding Unix/Linux Filesystem</a></li>
 <li><a class="reference external" href="http://lwn.net/Articles/57369/">Creating Linux virtual filesystems</a></li>
 <li><a class="reference external" href="http://www.tldp.org/LDP/tlk/fs/filesystem.html">The Linux Documentation Project - VFS</a></li>
-<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The “Virtual File System” in Linux</a></li>
+<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The &quot;Virtual File System&quot; in Linux</a></li>
 <li><a class="reference external" href="http://inglorion.net/documents/tutorials/tutorfs/">A Linux Filesystem Tutorial</a></li>
 <li><a class="reference external" href="http://www.win.tue.nl/~aeb/linux/lk/lk-8.html">The Linux Virtual File System</a></li>
 <li><a class="reference external" href="http://lxr.free-electrons.com/source/Documentation/filesystems/vfs.txt">Documentation/filesystems/vfs.txt</a></li>
@@ -991,7 +993,7 @@ If the implementation is correct, no error messages will be displayed.</p>
 </div>
 <div class="section" id="file-operations">
 <h4>2. File operations<a class="headerlink" href="#file-operations" title="Permalink to this headline">¶</a></h4>
-<p>We want to implement the operations for working with files, which are used for accessing a file’s content: read, write, truncate, etc.
+<p>We want to implement the operations for working with files, which are used for accessing a file's content: read, write, truncate, etc.
 For this you will specify the operations described in the structures <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode_operations</span></code>, <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">address_space_operations</span></code>.</p>
 <p>Follow the locations marked with <code class="docutils literal"><span class="pre">TODO</span></code> 6 which will guide you through the steps you need to take.</p>
 <p>Start by defining <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> and <code class="docutils literal"><span class="pre">myfs_file_operations</span></code>.</p>
@@ -1076,7 +1078,7 @@ The function is rather complicated, but it gives you an insight into the steps y
 You will use them in the <code class="docutils literal"><span class="pre">minfs_readdir</span></code> implementation.</p>
 </div>
 <p>Obtain the inode and the structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> associated with the directory.
-The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful to find out the directory’s data block.
+The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful to find out the directory's data block.
 From this structure you get the <code class="docutils literal"><span class="pre">data_block</span></code> field, representing the data block index on the disk.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
@@ -1094,7 +1096,7 @@ Use casting to <code class="docutils literal"><span class="pre">struct</span> <s
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>For each index, get the corresponding entry of the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code> by using pointer arithmetics on the <code class="docutils literal"><span class="pre">bh-&gt;b_data</span></code> field.
-Ignore dentries that have an <code class="docutils literal"><span class="pre">ino</span></code> field equal to 0. Such a dentry is a free slot in the director’s dentry list.</p>
+Ignore dentries that have an <code class="docutils literal"><span class="pre">ino</span></code> field equal to 0. Such a dentry is a free slot in the director's dentry list.</p>
 <p>For each valid entry, there is an existing call <code class="xref c c-func docutils literal"><span class="pre">dir_emit()</span></code> with the appropriate parameters. This is the call that sends the dentries to the caller (and then to user space).</p>
 <p class="last">Check the call examples in <code class="xref c c-func docutils literal"><span class="pre">qnx6_readdir()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">minix_readdir()</span></code>.</p>
 </div>
@@ -1142,7 +1144,7 @@ We will actually implement the <code class="docutils literal"><span class="pre">
 <p class="last">As a starting point, read the functions <code class="xref c c-func docutils literal"><span class="pre">qnx6_find_entry()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">minix_find_entry()</span></code>.</p>
 </div>
 <p>In the <code class="docutils literal"><span class="pre">minfs_find_entry</span></code> function, iterate over the directory where the dentry is: <code class="docutils literal"><span class="pre">dentry-&gt;d_parent-&gt;d_inode</span></code>.
-Iterating means going through the entries in the directory’s data block (of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code>) and locate, if it exists, the requested entry.</p>
+Iterating means going through the entries in the directory's data block (of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code>) and locate, if it exists, the requested entry.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>From the structure of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> corresponding to the directory, find out the data block index and read it (<code class="docutils literal"><span class="pre">sb_read</span></code>).

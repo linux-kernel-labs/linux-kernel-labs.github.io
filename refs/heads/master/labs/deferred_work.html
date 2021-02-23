@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -259,7 +261,7 @@ from an interrupt handler (top-half).</p>
 execution of future actions after a certain amount of time has passed.</p>
 <p>Kernel threads are not themselves deferred work, but can be used to
 complement the deferred work mechanisms. In general, kernel threads
-are used as “workers” to process events whose execution contains
+are used as &quot;workers&quot; to process events whose execution contains
 blocking calls.</p>
 <p>There are three typical operations that are used with all types of
 deferred work:</p>
@@ -473,8 +475,8 @@ code running in softirq context (B) we need to use special locking
 primitives. We must use spinlock operations augmented with
 deactivation of bottom-half handlers on the current processor in (A),
 and in (B) only basic spinlock operations. Using spinlocks makes sure
-that we don’t have races between multiple CPUs while deactivating the
-softirqs makes sure that we don’t deadlock in the softirq is scheduled
+that we don't have races between multiple CPUs while deactivating the
+softirqs makes sure that we don't deadlock in the softirq is scheduled
 on the same CPU where we already acquired a spinlock.</p>
 <p>We can use the <code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code> to disable and enable softirqs handlers (and
@@ -612,7 +614,7 @@ processors (<code class="xref c c-func docutils literal"><span class="pre">sched
 </pre></div>
 </div>
 <p>As you can see, the <em>my_work_handler</em> function receives the task as
-the parameter. To be able to access the module’s private data, you can
+the parameter. To be able to access the module's private data, you can
 use <code class="xref c c-func docutils literal"><span class="pre">container_of()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">work_struct</span> <span class="n">my_work</span><span class="p">;</span>
@@ -743,10 +745,10 @@ scheduling in userspace, there are, however, some limitations to be
 taken into account. We will list below the actions that can or can not
 be made from a kernel thread:</p>
 <ul class="simple">
-<li>can’t access the user address space (even with copy_from_user,
+<li>can't access the user address space (even with copy_from_user,
 copy_to_user) because a kernel thread does not have a user address
 space</li>
-<li>can’t implement busy wait code that runs for a long time; if the
+<li>can't implement busy wait code that runs for a long time; if the
 kernel is compiled without the preemptive option, that code will run
 without being preempted by other kernel threads or user processes
 thus hogging the system</li>
@@ -893,13 +895,13 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 </div>
 <div class="section" id="timer">
 <h3>1.Timer<a class="headerlink" href="#timer" title="Permalink to this headline">¶</a></h3>
-<p>We’re looking at creating a simple kernel module that displays a
-message at <em>TIMER_TIMEOUT</em> seconds after the module’s kernel load.</p>
+<p>We're looking at creating a simple kernel module that displays a
+message at <em>TIMER_TIMEOUT</em> seconds after the module's kernel load.</p>
 <p>Generate the skeleton for the task named <strong>1-2-timer</strong> and follow the
 sections marked with <strong>TODO 1</strong> to complete the task.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p>Use <cite>pr_info(…)</cite>. Messages will be displayed on the
+<p>Use <cite>pr_info(...)</cite>. Messages will be displayed on the
 console and can also be viewed using dmesg. When scheduling
 the timer we need to use the absolute time of the system (in
 the future) in number of ticks. The current time of the
@@ -944,7 +946,7 @@ process identifier (PID) and the process executable image name.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">You can find the current process identifier using the <em>pid</em>
 and <em>comm</em> fields of the current process. For details,
-review <a class="reference internal" href="kernel_modules.html#proc-info"><span class="std std-ref">7. Proc info</span></a>.</p>
+review <span class="xref std std-ref">proc-info</span>.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1065,7 +1067,7 @@ processes and then arm the timer after setting its type.</p>
 associated <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> and allocates a
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mon_proc</span></code> item you can add to your
 list. Note that the function also increases the reference
-counter of the task, so that its memory won’t be free when
+counter of the task, so that its memory won't be free when
 the task terminates.</p>
 </div>
 <div class="admonition attention">
@@ -1085,7 +1087,7 @@ the test program.</p>
 <p>In the timer handler iterate over the list of monitored processes and
 check if they have terminated. If so, print the process name and pid
 then remove the process from the list, decrement the task usage
-counter so that it’s memory can be free and finally free the
+counter so that it's memory can be free and finally free the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mon_proc</span></code> structure.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>

@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -558,7 +560,7 @@ be processed. A request queue is represented by the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request_queue</span></code> structure. The request queue is made up of a
 double-linked list of requests and their associated control information. The
 requests are added to the queue by higher-level kernel code (for example, file
-systems). As long as the request queue is not empty, the queue’s associated
+systems). As long as the request queue is not empty, the queue's associated
 driver will have to retrieve the first request from the queue and pass it to the
 associated block device. Each item in the request queue is a request represented
 by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure.</p>
@@ -904,7 +906,7 @@ a multiple of the device sector size.</p>
 </div>
 <div class="section" id="how-to-use-the-content-of-a-struct-bio-structure">
 <span id="bio-content"></span><h3>How to use the content of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure<a class="headerlink" href="#how-to-use-the-content-of-a-struct-bio-structure" title="Permalink to this headline">¶</a></h3>
-<p>To use the content of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, the structure’s
+<p>To use the content of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, the structure's
 support pages must be mapped to the kernel address space from where they can be
 accessed. For mapping /unmapping, use the <code class="xref c c-macro docutils literal"><span class="pre">kmap_atomic</span></code> and
 the <code class="xref c c-macro docutils literal"><span class="pre">kunmap_atomic</span></code> macros.</p>
@@ -1123,7 +1125,7 @@ the <code class="file docutils literal"><span class="pre">ram-disk.c</span></cod
 <p class="last">Review the <a class="reference internal" href="#register-a-disk">Register a disk</a> and <a class="reference internal" href="#process-a-request">Process a request</a> sections.</p>
 </div>
 <p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to process the request queue
-without actually processing your request: display the “request received” message
+without actually processing your request: display the &quot;request received&quot; message
 and the following information: start sector, total size, data size from the
 current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, direction. To validate a request type,
 use the <code class="xref c c-func docutils literal"><span class="pre">blk_rq_is_passthrough()</span></code> (the function returns 0 in the case in
@@ -1137,7 +1139,7 @@ section.</p>
 request.</p>
 <p>Insert the module into the kernel and inspect the messages printed
 by the module. When a device is added, a request is sent to the device. Check
-the presence of <code class="file docutils literal"><span class="pre">/dev/myblock</span></code> and if it doesn’t exist, create the device
+the presence of <code class="file docutils literal"><span class="pre">/dev/myblock</span></code> and if it doesn't exist, create the device
 using the command:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>mknod /dev/myblock b <span class="m">240</span> <span class="m">0</span>
 </pre></div>
@@ -1147,7 +1149,7 @@ using the command:</p>
 </pre></div>
 </div>
 <p>Notice that a write request is preceded by a read request. The request
-is done to read the block from the disk and “update” its content with the
+is done to read the block from the disk and &quot;update&quot; its content with the
 data provided by the user, without overwriting the rest. After reading and
 updating, writing takes place.</p>
 </div>
@@ -1262,9 +1264,9 @@ sure it is executable:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>./test-relay-disk
 </pre></div>
 </div>
-<p>The script writes “abc” at the beginning of the disk indicated by
+<p>The script writes &quot;abc&quot; at the beginning of the disk indicated by
 <code class="xref c c-macro docutils literal"><span class="pre">PHYSICAL_DISK_NAME</span></code>. After running, the module will display 61 62 63
-(the corresponding hexadecimal values of letters “a”, “b” and “c”).</p>
+(the corresponding hexadecimal values of letters &quot;a&quot;, &quot;b&quot; and &quot;c&quot;).</p>
 </div>
 <div class="section" id="write-data-to-the-disk">
 <h3>5. Write data to the disk<a class="headerlink" href="#write-data-to-the-disk" title="Permalink to this headline">¶</a></h3>

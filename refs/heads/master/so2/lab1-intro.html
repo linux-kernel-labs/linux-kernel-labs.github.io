@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Kernel modules &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lab 01 - Introduction &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Kernel API" href="kernel_api.html" />
-    <link rel="prev" title="Introduction" href="introduction.html" /> 
+    <link rel="next" title="Introduction" href="../lectures/intro.html" />
+    <link rel="prev" title="Sisteme de operare 2" href="../lectures/so2.cs.pub.ro.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,8 +101,56 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 01 - Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#about-this-laboratory">About this laboratory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-modules-overview">Kernel Modules Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#an-example-of-a-kernel-module">An example of a kernel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiling-kernel-modules">Compiling kernel modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-module-debugging">Kernel Module Debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#objdump">objdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addr2line">addr2line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#minicom">minicom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#netconsole">netconsole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#printk-debugging">Printk debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kdb-kernel-debugger">KDB: Kernel debugger</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#remarks">Remarks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#booting-the-virtual-machine">Booting the virtual machine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-module">1. Kernel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#printk">2. Printk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#error">3. Error</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sub-modules">4. Sub-modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">5. Kernel oops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-parameters">6. Module parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">7. Proc info</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#good-to-know">Good to know</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#source-code-navigation">Source code navigation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cscope">cscope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lxr-cross-reference">LXR Cross-Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sourceweb">SourceWeb</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-debugging">Kernel Debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gdb-linux">gdb (Linux)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getting-a-stack-trace">Getting a stack trace</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -113,59 +161,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Kernel modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#kernel-modules-overview">Kernel Modules Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#an-example-of-a-kernel-module">An example of a kernel module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling-kernel-modules">Compiling kernel modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#kernel-module-debugging">Kernel Module Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#objdump">objdump</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#addr2line">addr2line</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#minicom">minicom</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#netconsole">netconsole</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#printk-debugging">Printk debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dyndbg-options">Dyndbg Options</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#kdb-kernel-debugger">KDB: Kernel debugger</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#kernel-module">1. Kernel module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#printk">2. Printk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error">3. Error</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sub-modules">4. Sub-modules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1">5. Kernel oops</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-parameters">6. Module parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">7. Proc info</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#extra-exercises">Extra Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#kdb">1. KDB</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ps-module">2. PS Module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#memory-info">3. Memory Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">4. Dynamic Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dynamic-debugging-during-initialization">5. Dynamic Debugging During Initialization</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
-<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -219,13 +228,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Kernel modules</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
+        
+      <li>SO2 Lab 01 - Introduction</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/kernel_modules.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lab1-intro.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -238,16 +249,78 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="kernel-modules">
-<h1>Kernel modules<a class="headerlink" href="#kernel-modules" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="so2-lab-01-introduction">
+<h1>SO2 Lab 01 - Introduction<a class="headerlink" href="#so2-lab-01-introduction" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li>presenting the rules and objectives of the Operating Systems 2 lab</li>
+<li>introducing the lab documentation</li>
+<li>introducing the Linux kernel and related resources</li>
 <li>creating simple modules</li>
 <li>describing the process of kernel module compilation</li>
 <li>presenting how a module can be used with a kernel</li>
 <li>simple kernel debugging methods</li>
 </ul>
+</div>
+<div class="section" id="about-this-laboratory">
+<h2>About this laboratory<a class="headerlink" href="#about-this-laboratory" title="Permalink to this headline">¶</a></h2>
+<p>The Operating Systems 2 lab is a kernel programming and driver development lab.
+The objectives of the laboratory are:</p>
+<ul class="simple">
+<li>deepening the notions presented in the course</li>
+<li>presentation of kernel programming interfaces (kernel API)</li>
+<li>gaining documenting, development and debugging skills on a freestanding
+environment</li>
+<li>acquiring knowledge and skills for drivers development</li>
+</ul>
+<p>A laboratory will present a set of concepts, applications and commands
+specific to a given problem. The lab will start with a presentation
+(each lab will have a set of slides) (15 minutes) and the remaining
+time will be allocated to the lab exercises (80 minutes).</p>
+<p>For best laboratory performance, we recommend that you read the related slides.
+To fully understand a laboratory, we recommend going through the lab support. For
+in-depth study, use the supporting documentation.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Linux<ul>
+<li><a class="reference external" href="http://www.amazon.com/Linux-Kernel-Development-Robert-Love/dp/0672329468/">Linux Kernel Development, 3rd
+Edition</a></li>
+<li><a class="reference external" href="http://free-electrons.com/doc/books/ldd3.pdf">Linux Device Drivers, 3rd
+Edition</a></li>
+<li><a class="reference external" href="http://www.amazon.com/Essential-Device-Drivers-Sreekrishnan-Venkateswaran/dp/0132396556">Essential Linux Device
+Drivers</a></li>
+</ul>
+</li>
+<li>General<ul>
+<li><a class="reference external" href="http://cursuri.cs.pub.ro/cgi-bin/mailman/listinfo/pso">mailing list</a>
+(<a class="reference external" href="http://blog.gmane.org/gmane.education.region.romania.operating-systems-design">searching the mailing list</a>)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>Kernel development is a difficult process, compared to user space
+programming. The API is different and the complexity of the subsystems
+in kernel requires additional preparation. The associated documentation
+is heterogeneous, sometimes requiring the inspection of multiple sources
+to have a more complete understanding of a certain aspect.</p>
+<p>The main advantages of the Linux kernel are the access to sources and
+the open development system. Because of this, the Internet offers a
+larger number of documentation for the kernel.</p>
+<p>A few links related to the Linux kernel are shown bellow:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://kernelnewbies.org">KernelNewbies</a></li>
+<li><a class="reference external" href="http://kernelnewbies.org/KernelHacking">KernelNewbies - Kernel Hacking</a></li>
+<li><a class="reference external" href="http://www.tldp.org/HOWTO/KernelAnalysis-HOWTO.html">Kernel Analysis - HOWTO</a></li>
+<li><a class="reference external" href="http://web.archive.org/web/20090228191439/http://www.linuxhq.com/lkprogram.html">Linux Kernel Programming</a></li>
+<li><a class="reference external" href="http://en.wikibooks.org/wiki/Linux_kernel">Linux kernel - Wikibooks</a></li>
+</ul>
+<p>The links are not comprehensive. Using  <a class="reference external" href="http://www.google.com">The Internet</a> and
+<a class="reference external" href="http://lxr.free-electrons.com/">kernel source code</a> is essential.</p>
 </div>
 <div class="section" id="kernel-modules-overview">
 <h2>Kernel Modules Overview<a class="headerlink" href="#kernel-modules-overview" title="Permalink to this headline">¶</a></h2>
@@ -1005,7 +1078,7 @@ This allows us to monitor, in real time, the accesses to memory or even modify t
 while debugging.
 The debugger has been integrated in the mainline kernel starting with version 2.6.26-rci.
 KDB is not a <em>source debugger</em>, but for a complete analysis it can be used in parallel with
-gdb and symbol files -- see <a class="reference internal" href="../so2/lab1-intro.html#gdb-intro"><span class="std std-ref">the GDB debugging section</span></a></p>
+gdb and symbol files -- see <a class="reference internal" href="#gdb-intro"><span class="std std-ref">the GDB debugging section</span></a></p>
 <p>To use KDB, you have the following options:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1050,10 +1123,43 @@ kdb&gt; bph mVar dataw
 kdb&gt; go
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to learn how to easily browse through the Linux source code
+and how to debug kernel code, read the <a class="reference external" href="#good_to_know">Good to know</a>
+section.</p>
+</div>
 </div>
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="remarks">
+<h3>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>Usually, the steps used to develop a kernel module are the
+following:<ul>
+<li>editing the module source code (on the physical machine);</li>
+<li>module compilation (on the physical machine);</li>
+<li>generation of the minimal image for the virtual machine;
+this image contains the kernel, your module, busybox and
+eventually test programs;</li>
+<li>starting the virtual machine using QEMU;</li>
+<li>running the tests in the virtual machine.</li>
+</ul>
+</li>
+<li>When using cscope, use <code class="file docutils literal"><span class="pre">~/src/linux</span></code>.
+If there is no <code class="file docutils literal"><span class="pre">cscope.out</span></code> file, you can generate it using
+the command <strong class="command">make ARCH=x86 cscope</strong>.</li>
+<li>You can find more details about the virtual machine at
+<a class="reference internal" href="../info/vm.html#vm-link"><span class="std std-ref">Virtual Machine Setup</span></a>.</li>
+</ul>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">Before solving an exercice, <strong>carefully</strong> read all its bullets.</p>
+</div>
 <div class="admonition important" id="exercises-summary">
 <p class="first admonition-title">Important</p>
 <p>To solve exercises, you need to perform these steps:</p>
@@ -1100,56 +1206,46 @@ If you want to keep them, run <code class="docutils literal"><span class="pre">g
 To discard the changes, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">reset</span> <span class="pre">--hard</span> <span class="pre">master</span></code>.</p>
 <p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
 </div>
-<div class="section" id="intro">
-<h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
-<p>Using <strong class="command">cscope</strong> or <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> find the definitions of the following symbols
-in the Linux kernel source code:</p>
+</div>
+<div class="section" id="booting-the-virtual-machine">
+<h3>Booting the virtual machine<a class="headerlink" href="#booting-the-virtual-machine" title="Permalink to this headline">¶</a></h3>
+<p>A summary of the virtual machine infrastructure:</p>
 <ul class="simple">
-<li><code class="xref c c-func docutils literal"><span class="pre">module_init()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">module_exit()</span></code><ul>
-<li>what do the two macros do? What is <code class="docutils literal"><span class="pre">init_module</span></code> and <code class="docutils literal"><span class="pre">cleanup_module</span></code>?</li>
+<li><code class="file docutils literal"><span class="pre">~/src/linux</span></code> - Linux kernel sources, needed to
+compile modules. The directory contains the file <code class="file docutils literal"><span class="pre">cscope.out</span></code>,
+used for navigation in the source tree.</li>
+<li><code class="file docutils literal"><span class="pre">~/src/linux/tools/labs/qemu</span></code>- scripts and auxiliary
+files used to generate and run the QEMU VM.</li>
 </ul>
-</li>
-<li><code class="xref c c-data docutils literal"><span class="pre">ignore_loglevel</span></code><ul>
-<li>What is this variable used for?</li>
-</ul>
-</li>
-</ul>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p>If you have problems using <strong class="command">cscope</strong>, it is possible that the database
-is not generated.  To generate it, use the following command in the kernel
-directory:</p>
-<div class="last highlight-bash"><div class="highlight"><pre><span></span>make <span class="nv">ARCH</span><span class="o">=</span>x86 cscope
+<p>To start the VM, run <strong class="command">make boot</strong> in the directory <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs</span></code>:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~$ <span class="nb">cd</span> ~/src/linux/tools/labs
+student@eg106:~/src/linux/tools/labs$ make boot
 </pre></div>
 </div>
+<p>By default, you will not get a prompt or any graphical interface, but you can connect to
+a console exposed by the virtual machine using <strong class="command">minicom</strong> or <strong class="command">screen</strong>.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~/src/linux/tools/labs$ minicom -D serial.pts
+
+&lt;press enter&gt;
+
+qemux86 login:
+Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</span> <span class="m">2</span>.3 qemux86 /dev/hvc0
+</pre></div>
 </div>
+<p>Alternatively, you can start the virtual machine with graphical interface support, using
+the <strong class="command">QEMU_DISPLAY=sdl make boot</strong>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>When searching for a structure using <strong class="command">cscope</strong>, use only the
-structure name (without <code class="code docutils literal"><span class="pre">struct</span></code>).  So, to search for the
-structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">module</span></code>, you will use the command</p>
-<blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>vim -t module
-</pre></div>
-</div>
-</div></blockquote>
-<p>or, in <strong class="command">vim</strong>, the command</p>
-<blockquote class="last">
-<div><div class="highlight-bash"><div class="highlight"><pre><span></span>:cs f g module
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">For more info on using <strong class="command">cscope</strong>, read the
-<a class="reference internal" href="../so2/lab1-intro.html#cscope-intro"><span class="std std-ref">cscope section</span></a> in the previous lab.</p>
+<p class="last">To access the virtual machine, at the login prompt, enter the
+username <code class="code docutils literal"><span class="pre">root</span></code>; there is no need to enter a password.
+The virtual machine will start with the permissions of the
+root account.</p>
 </div>
 </div>
 <div class="section" id="kernel-module">
 <h3>1. Kernel module<a class="headerlink" href="#kernel-module" title="Permalink to this headline">¶</a></h3>
 <p>To work with the kernel modules, we will follow the steps described
-<a class="reference internal" href="../so2/lab1-intro.html#exercises-summary"><span class="std std-ref">above</span></a>.</p>
+<a class="reference internal" href="#exercises-summary"><span class="std std-ref">above</span></a>.</p>
 <p>Generate the skeleton for the task named <strong>1-2-test-mod</strong> then build and
 copy the module to the VM, by running the following commands in
 <code class="file docutils literal"><span class="pre">tools/labs</span></code>.</p>
@@ -1304,132 +1400,312 @@ when the module is unloaded a process is created from the executable
 <code class="file docutils literal"><span class="pre">/sbin/rmmod</span></code>.</p>
 </div>
 </div>
-<div class="section" id="extra-exercises">
-<h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="kdb">
-<h3>1. KDB<a class="headerlink" href="#kdb" title="Permalink to this headline">¶</a></h3>
-<p>Go to the <strong>8-kdb</strong> directory. Activate KDB over the serial port and enter KDB
-mode using <strong class="command">SysRq</strong>. Connect to the pseudo-terminal linked to virtiocon0
-using <strong class="command">minicom</strong>, configure KDB to use the hvc0 serial port:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> hvc0 &gt; /sys/module/kgdboc/parameters/kgdboc
+<div class="section" id="good-to-know">
+<span id="id3"></span><h2>Good to know<a class="headerlink" href="#good-to-know" title="Permalink to this headline">¶</a></h2>
+<p>The following sections contain useful information for getitng used to the Linux
+kernel code and debugging techniques.</p>
+</div>
+<div class="section" id="source-code-navigation">
+<h2>Source code navigation<a class="headerlink" href="#source-code-navigation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cscope">
+<span id="cscope-intro"></span><h3>cscope<a class="headerlink" href="#cscope" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://cscope.sourceforge.net/">Cscope</a> is a tool for
+efficient navigation of C sources. To use it, a cscope database must
+be generated from the existing sources. In a Linux tree, the command
+<strong class="command">make ARCH=x86 cscope</strong> is sufficient. Specification of the
+architecture through the ARCH variable is optional but recommended;
+otherwise, some architecture dependent functions will appear multiple
+times in the database.</p>
+<p>You can build the cscope database with the command <strong class="command">make
+ARCH=x86 COMPILED_SOURCE=1 cscope</strong>. This way, the cscope database will
+only contain symbols that have already been used in the compile
+process before, thus resulting in better performance when searching
+for symbols.</p>
+<p>Cscope can also be used as stand-alone, but it is more useful when
+combined with an editor. To use cscope with <strong class="command">vim</strong>, it is necessary to
+install both packages and add the following lines to the file
+<code class="file docutils literal"><span class="pre">.vimrc</span></code> (the machine in the lab already has the settings):</p>
+<div class="highlight-vim"><div class="highlight"><pre><span></span><span class="k">if</span> has<span class="p">(</span><span class="s2">&quot;cscope&quot;</span><span class="p">)</span>
+<span class="c">        &quot; Look for a &#39;cscope.out&#39; file starting from the current directory,</span>
+<span class="c">        &quot; going up to the root directory.</span>
+        <span class="k">let</span> s:dirs <span class="p">=</span> split<span class="p">(</span>getcwd<span class="p">(),</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="k">while</span> s:dirs <span class="p">!=</span> []
+                <span class="k">let</span> s:<span class="nb">path</span> <span class="p">=</span> <span class="s2">&quot;/&quot;</span> . <span class="k">join</span><span class="p">(</span>s:dirs<span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>filereadable<span class="p">(</span>s:<span class="nb">path</span> . <span class="s2">&quot;/cscope.out&quot;</span><span class="p">))</span>
+                        execute <span class="s2">&quot;cs add &quot;</span> . s:<span class="nb">path</span> . <span class="s2">&quot;/cscope.out &quot;</span> . s:<span class="nb">path</span> . <span class="s2">&quot; -v&quot;</span>
+                        <span class="k">break</span>
+                <span class="k">endif</span>
+                <span class="k">let</span> s:dirs <span class="p">=</span> s:dirs[:<span class="m">-2</span>]
+        <span class="k">endwhile</span>
+
+        <span class="k">set</span> <span class="nb">csto</span><span class="p">=</span><span class="m">0</span>  <span class="c">&quot; Use cscope first, then ctags</span>
+        <span class="k">set</span> <span class="nb">cst</span>     <span class="c">&quot; Only search cscope</span>
+        <span class="k">set</span> <span class="nb">csverb</span>  <span class="c">&quot; Make cs verbose</span>
+
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`s :<span class="k">cs</span> find s `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cword&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">g</span> :<span class="k">cs</span> find <span class="k">g</span> `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cword&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">c</span> :<span class="k">cs</span> find <span class="k">c</span> `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cword&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">t</span> :<span class="k">cs</span> find <span class="k">t</span> `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cword&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">e</span> :<span class="k">cs</span> find <span class="k">e</span> `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cword&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">f</span> :<span class="k">cs</span> find <span class="k">f</span> `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cfile&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">i</span> :<span class="k">cs</span> find <span class="k">i</span> ^`<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cfile&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>`$`<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap `<span class="p">&lt;</span>C<span class="p">-</span>\<span class="p">&gt;</span>`<span class="k">d</span> :<span class="k">cs</span> find <span class="k">d</span> `<span class="p">&lt;</span>C<span class="p">-</span>R<span class="p">&gt;</span>`<span class="p">=</span>expand<span class="p">(</span><span class="s2">&quot;`&lt;cword&gt;`&quot;</span><span class="p">)</span>`<span class="p">&lt;</span>CR<span class="p">&gt;</span>``<span class="p">&lt;</span>CR<span class="p">&gt;</span>`
+        nmap <span class="p">&lt;</span>F6<span class="p">&gt;</span> :cnext <span class="p">&lt;</span>CR<span class="p">&gt;</span>
+        nmap <span class="p">&lt;</span>F5<span class="p">&gt;</span> :cprev <span class="p">&lt;</span>CR<span class="p">&gt;</span>
+
+<span class="c">        &quot; Open a quickfix window for the following queries.</span>
+        <span class="k">set</span> <span class="nb">cscopequickfix</span><span class="p">=</span>s<span class="p">-,</span><span class="k">c</span><span class="p">-,</span><span class="k">d</span><span class="p">-,</span><span class="k">i</span><span class="p">-,</span><span class="k">t</span><span class="p">-,</span><span class="k">e</span><span class="p">-,</span><span class="k">g</span><span class="p">-</span>
+<span class="k">endif</span>
 </pre></div>
 </div>
-<p>and enable it using SysRq (<strong class="command">Ctrl + O g</strong>).
-Review the current system status (<strong class="command">help</strong> to see the available KDB
-commands). Continue the kernel execution using the <strong class="command">go</strong> command.</p>
-<p>Load the <code class="file docutils literal"><span class="pre">hello_kdb</span></code> module.
-The module will simulate a bug when writing to the <code class="file docutils literal"><span class="pre">/proc/hello_kdb_bug</span></code>
-file. To simulate a bug, use the below command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/hello_kdb_bug
+<p>The script searches for a file called <code class="file docutils literal"><span class="pre">cscope.out</span></code> in the current directory, or
+in parent directories. If <strong class="command">vim</strong> finds this file, you can use the shortcut <code class="code docutils literal"><span class="pre">Ctrl</span> <span class="pre">+]</span></code>
+or <code class="code docutils literal"><span class="pre">Ctrl+\</span> <span class="pre">g</span></code> (the combination control-\ followed by g) to jump directly to
+the definition of the word under the cursor (function, variable, structure, etc.).
+Similarly, you can use <code class="code docutils literal"><span class="pre">Ctrl+\</span> <span class="pre">s</span></code> to go where the word under the cursor is used.</p>
+<p>You can take a cscope-enabled <code class="file docutils literal"><span class="pre">.vimrc</span></code> file (also contains other goodies) from
+<a class="reference external" href="https://github.com/ddvlad/cfg/blob/master/_vimrc">https://github.com/ddvlad/cfg/blob/master/_vimrc</a>.
+The following guidelines are based on this file, but also show basic <strong class="command">vim</strong> commands
+that have the same effect.</p>
+<p>If there are more than one results (usually there are) you can move between them
+using <code class="code docutils literal"><span class="pre">F6</span></code> and <code class="code docutils literal"><span class="pre">F5</span></code> (<code class="code docutils literal"><span class="pre">:ccnext</span></code>  and <code class="code docutils literal"><span class="pre">:cprev</span></code>).
+You can also open a new panel showing the results using <code class="code docutils literal"><span class="pre">:copen</span></code>. To close
+the panel, use the <code class="code docutils literal"><span class="pre">:cclose</span></code> command.</p>
+<p>To return to the previous location, use <code class="code docutils literal"><span class="pre">Ctrl+o</span></code> (o, not zero).
+The command can be used multiple times and works even if cscope changed the
+file you are currently editing.</p>
+<p>To go to a symbol definition directly when <strong class="command">vim</strong> starts, use <code class="code docutils literal"><span class="pre">vim</span> <span class="pre">-t</span> <span class="pre">&lt;symbol_name&gt;</span></code>
+(for example <code class="code docutils literal"><span class="pre">vim</span> <span class="pre">-t</span> <span class="pre">task_struct</span></code>). Otherwise, if you started <strong class="command">vim</strong> and want
+to search for a symbol by name, use <code class="code docutils literal"><span class="pre">cs</span> <span class="pre">find</span> <span class="pre">g</span> <span class="pre">&lt;symbol_name&gt;</span></code> (for example
+<code class="code docutils literal"><span class="pre">cs</span> <span class="pre">find</span> <span class="pre">g</span> <span class="pre">task_struct</span></code>).</p>
+<p>If you found more than one results and opened a panel showing all the matches
+(using <code class="code docutils literal"><span class="pre">:copen</span></code>) and you want to find a symbol of type structure,
+it is recommended to search in the results panel (using <code class="code docutils literal"><span class="pre">/</span></code> -- slash)
+the character <code class="code docutils literal"><span class="pre">{</span></code> (opening brace).</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>You can get a summary of all the <strong class="command">cscope</strong> commands using <strong class="command">:cs help</strong>.</p>
+<p class="last">For more info, use the <strong class="command">vim</strong> built-in help command: <strong class="command">:h cscope</strong> or <strong class="command">:h copen</strong>.</p>
+</div>
+<p>If you use <strong class="command">emacs</strong>, install the <code class="code docutils literal"><span class="pre">xcscope-el</span></code> package and
+add the following lines in <code class="file docutils literal"><span class="pre">~/.emacs</span></code>.</p>
+<div class="highlight-vim"><div class="highlight"><pre><span></span><span class="p">(</span>require ‘xcscope<span class="p">)</span>
+<span class="p">(</span><span class="k">cscope</span><span class="p">-</span>setup<span class="p">)</span>
 </pre></div>
 </div>
-<p>After running the above command, at every oops/panic the kernel stops the
-execution and enters debug mode.</p>
-<p>Analyze the stacktrace and determine the code that generated the bug.
-How can we find out from KDB the address where the module was loaded?</p>
-<p>In parallel, use GDB in a new window to view the code based on KDB information.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Load the symbol file. Use <strong class="command">info line</strong>.</p>
+<p>These commands will activate cscope for the C and C++ modes automatically.
+<code class="code docutils literal"><span class="pre">C-s</span> <span class="pre">s</span></code> is the key bindings prefix and <code class="code docutils literal"><span class="pre">C-s</span> <span class="pre">s</span> <span class="pre">s</span></code> is used to
+search for a symbol (if you call it when the cursor is over a word,
+it will use that). For more details, check <cite>https://github.com/dkogan/xcscope.el</cite></p>
+<div class="section" id="kscope">
+<h4>Kscope<a class="headerlink" href="#kscope" title="Permalink to this headline">¶</a></h4>
+<p>For a simpler interface, <a class="reference external" href="http://sourceforge.net/projects/kscope/">Kscope</a>
+is a cscope frontend which uses QT. It is lightweight, very fast and very
+easy to use. It allows searching using regular expressions, call graphs, etc.
+Kscope is no longer mantained.</p>
+<p>There is also a <a class="reference external" href="https///opendesktop.org/content/show.php/Kscope4?content=156987">port</a>
+of version 1.6 for Qt4 and KDE 4 which keeps the integration of the text
+editor Kate and is easier to use than the last version on SourceForge.</p>
 </div>
-<p>When writing to <code class="file docutils literal"><span class="pre">/proc/hello_kdb_break</span></code>, the module will increment the
-<code class="xref c c-data docutils literal"><span class="pre">kdb_write_address</span></code> variable. Enter KDB and set a breakpoint for each
-write access of the <code class="xref c c-data docutils literal"><span class="pre">kdb_write_address</span></code> variable.
-Return to kernel to trigger a write using:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/hello_kdb_break
+</div>
+<div class="section" id="lxr-cross-reference">
+<h3>LXR Cross-Reference<a class="headerlink" href="#lxr-cross-reference" title="Permalink to this headline">¶</a></h3>
+<p>LXR (LXR Cross-Reference) is a tool that allows indexing and
+referencing the symbols in the source code of a program using
+a web interface. The web interface shows links to
+locations in files where a symbol is defined or used. Development website
+for LXR is <a class="reference external" href="http://sourceforge.net/projects/lxr">http://sourceforge.net/projects/lxr</a>. Similar tools
+are <a class="reference external" href="http://oracle.github.io/opengrok/">OpenGrok</a> and
+<a class="reference external" href="http://en.wikipedia.org/wiki/Gonzui">Gonzui</a>.</p>
+<p>Although LXR was originally intended for the Linux kernel sources, it is
+also used in the sources of <a class="reference external" href="http://lxr.mozilla.org/">Mozilla</a>,
+<a class="reference external" href="http://apache.wirebrain.de/lxr/">Apache HTTP Server</a> and
+<a class="reference external" href="http://lxr.linux.no/freebsd/source">FreeBSD</a>.</p>
+<p>There are a number of sites that use LXR for cross-referencing the
+the sources of the Linux kernel, the main site being <a class="reference external" href="http://lxr.linux.no/linux/">the original site of
+development</a> which does not work anymore. You can
+use <a class="reference external" href="https://elixir.bootlin.com/">https://elixir.bootlin.com/</a>.</p>
+<p>LXR allows searching for an identifier (symbol), after a free text
+or after a file name. The main feature and, at the same
+time, the main advantage provided is the ease of finding the declaration
+of any global identifier. This way, it facilitates quick access to function
+declarations, variables, macro definitions and the code can be easily
+navigated. Also, the fact that it can detect what code areas are affected
+when a variable or function is changed is a real advantage in the development
+and debugging phase.</p>
+</div>
+<div class="section" id="sourceweb">
+<h3>SourceWeb<a class="headerlink" href="#sourceweb" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://rprichard.github.io/sourceweb/">SourceWeb</a> is a source code indexer
+for C and C++. It uses the
+<a class="reference external" href="http://clang.llvm.org/docs/IntroductionToTheClangAST.html">framework</a>
+provided by the Clang compiler to index the code.</p>
+<p>The main difference between cscope and SourceWeb is the fact that SourceWeb
+is, in a way, a compiler pass. SourceWeb doesn't index all the code, but
+only the code that was efectively compiled by the compiler. This way, some
+problems are eliminated, such as ambiguities about which variant of a function
+defined in multiple places is used. This also means that the indexing takes
+more time, because the compiled files must pass one more time through
+the indexer to generate the references.</p>
+<p>Usage example:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make oldconfig
+sw-btrace make -j4
+sw-btrace-to-compile-db
+sw-clang-indexer --index-project
+sourceweb index
+</pre></div>
+</div>
+<p><code class="file docutils literal"><span class="pre">sw-btrace</span></code> is a script that adds the <code class="file docutils literal"><span class="pre">libsw-btrace.so</span></code>
+library to <code class="code docutils literal"><span class="pre">LD_PRELOAD</span></code>. This way, the library is loaded by
+every process started by <code class="code docutils literal"><span class="pre">make</span></code> (basically, the compiler),
+registers the commands used to start the processes and generates
+a filed called <code class="file docutils literal"><span class="pre">btrace.log</span></code>. This file is then used by
+<code class="code docutils literal"><span class="pre">sw-btrace-to-compile-db</span></code> which converts it to a format defined
+by clang: <a class="reference external" href="http://clang.llvm.org/docs/JSONCompilationDatabase.html">JSON Compilation Database</a>.
+This JSON Compilation Database resulted from the above steps is then
+used by the indexer, which makes one more pass through the compiled
+source files and generates the index used by the GUI.</p>
+<p>Word of advice: don't index the sources you are working with, but use
+a copy, because SourceWeb doesn't have, at this moment, the capability
+to regenerate the index for a single file and you will have to regenerate
+the complete index.</p>
+</div>
+</div>
+<div class="section" id="kernel-debugging">
+<h2>Kernel Debugging<a class="headerlink" href="#kernel-debugging" title="Permalink to this headline">¶</a></h2>
+<p>Debugging a kernel is a much more difficult process than the debugging
+of a program, because there is no support from the operating system.
+This is why this process is usually done using two computers, connected
+on serial interfaces.</p>
+<div class="section" id="gdb-linux">
+<span id="gdb-intro"></span><h3>gdb (Linux)<a class="headerlink" href="#gdb-linux" title="Permalink to this headline">¶</a></h3>
+<p>A simpler debug method on Linux, but with many disadvantages,
+is local debugging, using <a class="reference external" href="http://www.gnu.org/software/gdb/">gdb</a>,
+the uncompressed kernel image (<code class="file docutils literal"><span class="pre">vmlinux</span></code>) and <code class="file docutils literal"><span class="pre">/proc/kcore</span></code>
+(the real-time kernel image). This method is usually used to inspect
+the kernel and detect certain inconsistencies while it runs. The
+method is useful especially if the kernel was compiled using the
+<code class="code docutils literal"><span class="pre">-g</span></code> option, which keeps debug information. Some well-known
+debug techniques can't be used by this method, such as breakpoints
+of data modification.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Because <code class="file docutils literal"><span class="pre">/proc</span></code> is a virtual filesystem, <code class="file docutils literal"><span class="pre">/proc/kcore</span></code>
+does not physically exist on the disk. It is generated on-the-fly
+by the kernel when a program tries to access <code class="file docutils literal"><span class="pre">proc/kcore</span></code>.</p>
+<p>It is used for debugging purposes.</p>
+<p>From <strong class="command">man proc</strong>, we have:</p>
+<div class="last highlight-none"><div class="highlight"><pre><span></span>/proc/kcore
+This file represents the physical memory of the system and is stored in the ELF core file format.  With this pseudo-file, and
+an unstripped kernel (/usr/src/linux/vmlinux) binary, GDB can be used to examine the current state of any kernel data struc‐
+tures.
 </pre></div>
 </div>
 </div>
-<div class="section" id="ps-module">
-<h3>2. PS Module<a class="headerlink" href="#ps-module" title="Permalink to this headline">¶</a></h3>
-<p>Update the created kernel module at <span class="xref std std-ref">proc-info</span> in order to display
-information about all the processes in the system, when inserting the kernel
-module, not just about the current process. Afterwards, compare the obtained
-result with the output of the <strong class="command">ps</strong> command.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<ul class="last simple">
-<li>Processes in the system are structured in a circular list.</li>
-<li><code class="xref c c-macro docutils literal"><span class="pre">for_each</span> <span class="pre">_...</span></code> macros (such as <code class="xref c c-macro docutils literal"><span class="pre">for_each_process</span></code>) are
-useful when you want to navigate the items in a list.</li>
-<li>To understand how to use a feature or a macro, use <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> or Vim and
-<strong class="command">cscope</strong> and search for usage scenarios.</li>
+<p>The uncompressed kernel image offers information about the data structures
+and symbols it contains.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106$ <span class="nb">cd</span> ~/src/linux
+student@eg106$ file vmlinux
+vmlinux: ELF <span class="m">32</span>-bit LSB executable, Intel <span class="m">80386</span>, ...
+student@eg106$ nm vmlinux <span class="p">|</span> grep sys_call_table
+c02e535c R sys_call_table
+student@eg106$ cat System.map <span class="p">|</span> grep sys_call_table
+c02e535c R sys_call_table
+</pre></div>
+</div>
+<p>The <strong class="command">nm</strong> utility is used to show the symbols in an object or
+executable file. In our case, <code class="file docutils literal"><span class="pre">vmlinux</span></code> is an ELF file. Alternately,
+we can use the file <code class="file docutils literal"><span class="pre">System.map</span></code> to view information about the
+symbols in kernel.</p>
+<p>Then we use <strong class="command">gdb</strong> to inspect the symbols using the uncompressed
+kernel image. A simple <strong class="command">gdb</strong> session is the following:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106$ <span class="nb">cd</span> ~/src/linux
+stduent@eg106$ gdb --quiet vmlinux
+Using host libthread_db library <span class="s2">&quot;/lib/tls/libthread_db.so.1&quot;</span>.
+<span class="o">(</span>gdb<span class="o">)</span> x/x 0xc02e535c
+0xc02e535c <span class="sb">`</span>&lt;sys_call_table&gt;<span class="sb">`</span>:    0xc011bc58
+<span class="o">(</span>gdb<span class="o">)</span> x/16 0xc02e535c
+0xc02e535c <span class="sb">`</span>&lt;sys_call_table&gt;<span class="sb">`</span>:    0xc011bc58      0xc011482a      0xc01013d3     0xc014363d
+0xc02e536c <span class="sb">`</span>&lt;sys_call_table+16&gt;<span class="sb">`</span>: 0xc014369f      0xc0142d4e      0xc0142de5     0xc011548b
+0xc02e537c <span class="sb">`</span>&lt;sys_call_table+32&gt;<span class="sb">`</span>: 0xc0142d7d      0xc01507a1      0xc015042c     0xc0101431
+0xc02e538c <span class="sb">`</span>&lt;sys_call_table+48&gt;<span class="sb">`</span>: 0xc014249e      0xc0115c6c      0xc014fee7     0xc0142725
+<span class="o">(</span>gdb<span class="o">)</span> x/x sys_call_table
+0xc011bc58 <span class="sb">`</span>&lt;sys_restart_syscall&gt;<span class="sb">`</span>:       0xffe000ba
+<span class="o">(</span>gdb<span class="o">)</span> x/x <span class="p">&amp;</span>sys_call_table
+0xc02e535c <span class="sb">`</span>&lt;sys_call_table&gt;<span class="sb">`</span>:    0xc011bc58
+<span class="o">(</span>gdb<span class="o">)</span> x/16 <span class="p">&amp;</span>sys_call_table
+0xc02e535c <span class="sb">`</span>&lt;sys_call_table&gt;<span class="sb">`</span>:    0xc011bc58      0xc011482a      0xc01013d3     0xc014363d
+0xc02e536c <span class="sb">`</span>&lt;sys_call_table+16&gt;<span class="sb">`</span>: 0xc014369f      0xc0142d4e      0xc0142de5     0xc011548b
+0xc02e537c <span class="sb">`</span>&lt;sys_call_table+32&gt;<span class="sb">`</span>: 0xc0142d7d      0xc01507a1      0xc015042c     0xc0101431
+0xc02e538c <span class="sb">`</span>&lt;sys_call_table+48&gt;<span class="sb">`</span>: 0xc014249e      0xc0115c6c      0xc014fee7     0xc0142725
+<span class="o">(</span>gdb<span class="o">)</span> x/x sys_fork
+0xc01013d3 <span class="sb">`</span>&lt;sys_fork&gt;<span class="sb">`</span>:  0x3824548b
+<span class="o">(</span>gdb<span class="o">)</span> disass sys_fork
+Dump of assembler code <span class="k">for</span> <span class="k">function</span> sys_fork:
+0xc01013d3 <span class="sb">`</span>&lt;sys_fork+0&gt;<span class="sb">`</span>:        mov    0x38<span class="o">(</span>%esp<span class="o">)</span>,%edx
+0xc01013d7 <span class="sb">`</span>&lt;sys_fork+4&gt;<span class="sb">`</span>:        mov    <span class="nv">$0</span>x11,%eax
+0xc01013dc <span class="sb">`</span>&lt;sys_fork+9&gt;<span class="sb">`</span>:        push   <span class="nv">$0</span>x0
+0xc01013de <span class="sb">`</span>&lt;sys_fork+11&gt;<span class="sb">`</span>:       push   <span class="nv">$0</span>x0
+0xc01013e0 <span class="sb">`</span>&lt;sys_fork+13&gt;<span class="sb">`</span>:       push   <span class="nv">$0</span>x0
+0xc01013e2 <span class="sb">`</span>&lt;sys_fork+15&gt;<span class="sb">`</span>:       lea    0x10<span class="o">(</span>%esp<span class="o">)</span>,%ecx
+0xc01013e6 <span class="sb">`</span>&lt;sys_fork+19&gt;<span class="sb">`</span>:       call   0xc0111aab <span class="sb">`</span>&lt;do_fork&gt;<span class="sb">`</span>
+0xc01013eb <span class="sb">`</span>&lt;sys_fork+24&gt;<span class="sb">`</span>:       add    <span class="nv">$0</span>xc,%esp
+0xc01013ee <span class="sb">`</span>&lt;sys_fork+27&gt;<span class="sb">`</span>:       ret
+End of assembler dump.
+</pre></div>
+</div>
+<p>It can be noticed that the uncompressed kernel image was used as an argument
+for <strong class="command">gdb</strong>. The image can be found in the root of the kernel sources
+after compilation.</p>
+<p>A few commands used for debugging using <strong class="command">gdb</strong> are:</p>
+<ul class="simple">
+<li><strong class="command">x</strong> (examine) - Used to show the contents of the memory area
+whose address is specified as an argument to the command (this address
+can be the value of a physical address, a symbol or the address of a
+symbol). It can take as arguments (preceded by <code class="code docutils literal"><span class="pre">/</span></code>): the format
+to display the data in (<code class="code docutils literal"><span class="pre">x</span></code> for hexadecimal, <code class="code docutils literal"><span class="pre">d</span></code> for
+decimal, etc.), how many memory units to display and the size of a
+memory unit.</li>
+<li><strong class="command">disassemble</strong> - Used to disassemble a function.</li>
+<li><strong class="command">p</strong> (print) - Used to evaluate and show the value of an
+expression. The format to show the data in can be specified as
+an argument (<code class="code docutils literal"><span class="pre">/x</span></code> for hexadecimal, <code class="code docutils literal"><span class="pre">/d</span></code> for decimal, etc.).</li>
+</ul>
+<p>The analysis of the kernel image is a method of static analysis. If we
+want to perform dynamic analysis (analyzing how the kernel runs, not
+only its static image) we can use <code class="file docutils literal"><span class="pre">/proc/kcore</span></code>; this is a dynamic
+image (in memory) of the kernel.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106$ gdb ~/src/linux/vmlinux /proc/kcore
+Core was generated by `root=/dev/hda3 ro&#39;.
+#0  0x00000000 in ?? ()
+(gdb) p sys_call_table
+$1 = -1072579496
+(gdb) p /x sys_call_table
+$2 = 0xc011bc58
+(gdb) p /x &amp;sys_call_table
+$3 = 0xc02e535c
+(gdb) x/16 &amp;sys_call_table
+0xc02e535c `&lt;sys_call_table&gt;`:    0xc011bc58      0xc011482a      0xc01013d3     0xc014363d
+0xc02e536c `&lt;sys_call_table+16&gt;`: 0xc014369f      0xc0142d4e      0xc0142de5     0xc011548b
+0xc02e537c `&lt;sys_call_table+32&gt;`: 0xc0142d7d      0xc01507a1      0xc015042c     0xc0101431
+0xc02e538c `&lt;sys_call_table+48&gt;`: 0xc014249e      0xc0115c6c      0xc014fee7     0xc0142725
+</pre></div>
+</div>
+<p>Using the dynamic image of the kernel is useful for detecting <a class="reference external" href="http://en.wikipedia.org/wiki/Rootkit">rootkits</a>.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://linuxdriver.co.il/ldd3/linuxdrive3-CHP-4-SECT-6.html">Linux Device Drivers 3rd Edition - Debuggers and Related Tools</a></li>
+<li><a class="reference external" href="http://www.securityfocus.com/infocus/1811">Detecting Rootkits and Kernel-level Compromises in Linux</a></li>
+<li><a class="reference external" href="http://user-mode-linux.sf.net/">User-Mode Linux</a></li>
 </ul>
 </div>
-</div>
-<div class="section" id="memory-info">
-<h3>3. Memory Info<a class="headerlink" href="#memory-info" title="Permalink to this headline">¶</a></h3>
-<p>Create a kernel module that displays the virtual memory areas of the current
-process; for each memory area it will display the start address and the end
-address.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<ul class="last simple">
-<li>Start from an existing kernel module.</li>
-<li>Investigate the structures <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>,
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code>. A
-memory area is indicated by a structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span>
-<span class="pre">vm_area_struct</span></code>.</li>
-<li>Don't forget to include the headers where the necessary structures are
-defined.</li>
-</ul>
-</div>
-</div>
-<div class="section" id="id3">
-<h3>4. Dynamic Debugging<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>Go to the <strong>9-dyndbg</strong> directory and compile the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module.</p>
-<p>Familiarize yourself with the <code class="code docutils literal"><span class="pre">debugfs</span></code> file system mounted in
-<code class="file docutils literal"><span class="pre">/debug</span></code> and analyze the contents of the file
-<code class="file docutils literal"><span class="pre">/debug/dynamic_debug/control</span></code>. Insert the <code class="code docutils literal"><span class="pre">dyndbg.ko</span></code> module and
-notice the new content of the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file.</p>
-<p>What appears extra in the respective file? Run the following command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>grep dyndbg /debug/dynamic_debug/control
-</pre></div>
-</div>
-<p>Configure <strong class="command">dyndbg</strong> so that only messages marked as &quot;Important&quot; in
-<code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code> function are displayed when the module is unloaded.
-The exercise will only filter out the <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls; <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code>
-calls being always displayed.</p>
-<p>Specify two ways to filter.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Read the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and look at the <strong class="command">dyndbg</strong>
-options (for example, <strong class="command">line</strong>, <strong class="command">format</strong>).</p>
-</div>
-<p>Perform the filtering and revise the <code class="file docutils literal"><span class="pre">dynamic_debug/control</span></code> file. What
-has changed? How do you know which calls are activated?</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Check the <strong class="command">dyndbg</strong> flags. Unload the kernel module and observe the
-log messages.</p>
-</div>
-</div>
-<div class="section" id="dynamic-debugging-during-initialization">
-<h3>5. Dynamic Debugging During Initialization<a class="headerlink" href="#dynamic-debugging-during-initialization" title="Permalink to this headline">¶</a></h3>
-<p>As you have noticed, <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls can only be activated /filtered
-after module insertion. In some situations, it might be helpful to view the
-messages from the initialization of the module. This can be done by using a
-default (fake) parameter called <strong class="command">dyndbg</strong> that can be passed as an
-argument to initialize the module. With this parameter you can add /delete
-<strong class="command">dyndbg</strong> flags.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Read the last part of the <a class="reference internal" href="#dynamic-debugging">Dynamic debugging</a> section and see the available
-flags (e.g.: <strong class="command">+/- p</strong>).</p>
-</div>
-<p>Read the <a class="reference external" href="https://01.org/linuxgraphics/gfx-docs/drm/admin-guide/dynamic-debug-howto.html#debug-messages-at-module-initialization-time">Debug Messages section at Module Initialization Time</a>
-and insert the module so that the messages in <code class="xref c c-func docutils literal"><span class="pre">my_debug_func()</span></code> (called
-<code class="xref c c-func docutils literal"><span class="pre">dyndbg_init()</span></code>) are also displayed during initialization.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">In the VM from the lab, you will need to use <strong class="command">insmod</strong> instead of
-<strong class="command">modprobe</strong>.</p>
-</div>
-<p>Without unloading the module, deactivate <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> calls.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">You can delete the set flags. Unload the kernel module.</p>
-</div>
+<div class="section" id="getting-a-stack-trace">
+<h3>Getting a stack trace<a class="headerlink" href="#getting-a-stack-trace" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes, you will want information about the trace the execution
+reaches a certain point. You can determine this information using
+<strong class="command">cscope</strong> or LXR, but some function are called from many
+execution paths, which makes this method difficult.</p>
+<p>In these situations, it is useful to get a stack trace, which can be
+simply done using the function <code class="code docutils literal"><span class="pre">dump_stack()</span></code>.</p>
 </div>
 </div>
 </div>
@@ -1440,8 +1716,8 @@ and insert the module so that the messages in <code class="xref c c-func docutil
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="kernel_api.html" class="btn btn-neutral float-right" title="Kernel API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lectures/intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../lectures/so2.cs.pub.ro.html" class="btn btn-neutral float-left" title="Sisteme de operare 2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

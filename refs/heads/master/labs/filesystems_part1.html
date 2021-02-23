@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -254,7 +256,7 @@
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li>acquiring knowledge about the Virtual Filesystem (VFS) in Linux and understanding concepts regarding ‘inode’, ‘dentry’, ‘file’, superblock and data block.</li>
+<li>acquiring knowledge about the Virtual Filesystem (VFS) in Linux and understanding concepts regarding 'inode', 'dentry', 'file', superblock and data block.</li>
 <li>understanding the process of mounting a file system inside VFS.</li>
 <li>knowledge regarding various file system types and understanding differences between file systems with physical support (on disk) and the ones without physical support.</li>
 </ul>
@@ -553,7 +555,7 @@ The superblock can be viewed as an abstract object to which its own data is adde
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">write_inode</span></code>, <code class="docutils literal"><span class="pre">alloc_inode</span></code>, <code class="docutils literal"><span class="pre">destroy_inode</span></code> write, allocate, respectively release resources associated with an inode and are described in the next lab</li>
-<li><code class="docutils literal"><span class="pre">put_super</span></code> is called when the superblock is released at <code class="docutils literal"><span class="pre">umount</span></code>; within this function, any resources (generally memory) from the file system’s private data must be released;</li>
+<li><code class="docutils literal"><span class="pre">put_super</span></code> is called when the superblock is released at <code class="docutils literal"><span class="pre">umount</span></code>; within this function, any resources (generally memory) from the file system's private data must be released;</li>
 <li><code class="docutils literal"><span class="pre">remount_fs</span></code> is called when the kernel detects a remount attempt (mount flag <code class="docutils literal"><span class="pre">MS_REMOUNTM</span></code>); most of the time here must be detected if a switch from read-only to read-write or vice versa is attempted; this can be done simply because both the old flags (in <code class="docutils literal"><span class="pre">sb-&gt;s_flags</span></code>) and the new flags (the <code class="docutils literal"><span class="pre">flags</span></code> argument) can be accessed; <code class="docutils literal"><span class="pre">data</span></code> is a pointer to the data sent by <code class="xref c c-func docutils literal"><span class="pre">mount()</span></code> that represent file system specific options;</li>
 <li><code class="docutils literal"><span class="pre">statfs</span></code> is called when a <code class="docutils literal"><span class="pre">statfs</span></code> system call is done (try <code class="docutils literal"><span class="pre">stat</span> <span class="pre">–f</span></code> or <code class="docutils literal"><span class="pre">df</span></code>); this call must fill the fields of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kstatfs</span></code> structure, as it is done, for example, in the <code class="xref c c-func docutils literal"><span class="pre">ext4_statfs()</span></code> function.</li>
 </ul>
@@ -665,7 +667,7 @@ The most important fields in this structure are:</p>
 <div class="section" id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Robert Love – Linux Kernel Development, Second Edition – Chapter
+<li>Robert Love -- Linux Kernel Development, Second Edition -- Chapter
 12. The Virtual Filesystem</li>
 <li>Understanding the Linux Kernel, 3rd edition - Chapter 12. The Virtual
 Filesystem</li>
@@ -673,7 +675,7 @@ Filesystem</li>
 <li><a class="reference external" href="http://www.cyberciti.biz/tips/understanding-unixlinux-file-system-part-i.html">Understanding Unix/Linux Filesystem</a></li>
 <li><a class="reference external" href="http://lwn.net/Articles/57369/">Creating Linux virtual filesystems</a></li>
 <li><a class="reference external" href="http://www.tldp.org/LDP/tlk/fs/filesystem.html">The Linux Documentation Project - VFS</a></li>
-<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The “Virtual File System” in Linux</a></li>
+<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The &quot;Virtual File System&quot; in Linux</a></li>
 <li><a class="reference external" href="http://inglorion.net/documents/tutorials/tutorfs/">A Linux Filesystem Tutorial</a></li>
 <li><a class="reference external" href="http://www.win.tue.nl/~aeb/linux/lk/lk-8.html">The Linux Virtual File System</a></li>
 <li><a class="reference external" href="http://lxr.free-electrons.com/source/Documentation/filesystems/vfs.txt">Documentation/filesystems/vfs.txt</a></li>
@@ -758,7 +760,7 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 </div>
 <div class="section" id="completing-myfs-superblock">
 <h4>2. Completing myfs superblock<a class="headerlink" href="#completing-myfs-superblock" title="Permalink to this headline">¶</a></h4>
-<p>To be able to mount the file system, we need to fill its superblock’s fields, that is, a generic VFS structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>.
+<p>To be able to mount the file system, we need to fill its superblock's fields, that is, a generic VFS structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>.
 We will fill out the structure within the <code class="xref c c-func docutils literal"><span class="pre">myfs_fill_super()</span></code> function; the superblock is represented by the variable <code class="docutils literal"><span class="pre">sb</span></code> passed as an argument to the function.
 Follow the hints marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>.</p>
 <div class="admonition note">

@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
@@ -243,7 +245,7 @@ interchangeable for the purpose of this lecture.</p>
 <p>Race conditions can occur when the following two conditions happen
 simultaneously:</p>
 <ul class="admonition-race-conditions simple">
-<li>there are at least two execution contexts that run in “parallel”:<ul>
+<li>there are at least two execution contexts that run in &quot;parallel&quot;:<ul>
 <li>truly run in parallel (e.g. two system calls running on
 different processors)</li>
 <li>one of the contexts can arbitrary preempt the other (e.g. an
@@ -283,7 +285,7 @@ critical section that can generate a race condition. The critical
 section is the part of the code that reads and writes shared memory
 from multiple parallel contexts.</p>
 <p>In the example above, the minimal critical section is starting with
-the counter decrement and ending with checking the counter’s value.</p>
+the counter decrement and ending with checking the counter's value.</p>
 <p>Once the critical section has been identified race conditions can be
 avoided by using one of the following approaches:</p>
 <ul class="admonition-avoiding-race-conditions simple">
@@ -369,11 +371,11 @@ new value but only succeeds if the exclusive monitor has not detected
 other exclusive operations. So, to implement atomic operations the
 programmer must retry the operation (both LDREX and STREX) until the
 exclusive monitor signals a success.</p>
-<p>Although they are often interpreted as “light” or “efficient”
-synchronization mechanisms (because they “don’t require spinning or
-context switches”, or because they “are implemented in hardware so
-they must be more efficient”, or because they “are just instructions
-so they must have similar efficiency as other instructions”), as seen
+<p>Although they are often interpreted as &quot;light&quot; or &quot;efficient&quot;
+synchronization mechanisms (because they &quot;don't require spinning or
+context switches&quot;, or because they &quot;are implemented in hardware so
+they must be more efficient&quot;, or because they &quot;are just instructions
+so they must have similar efficiency as other instructions&quot;), as seen
 from the implementation details, atomic operations are actually
 expensive.</p>
 </div>
@@ -438,10 +440,10 @@ memory address to the carry flag and then sets it:</p>
 </div>
 <p>As it can be seen, the spin lock uses an atomic instruction to make
 sure that only one core can enter the critical section. If there are
-multiple cores trying to enter they will continuously “spin” until the
+multiple cores trying to enter they will continuously &quot;spin&quot; until the
 lock is released.</p>
 <p>While the spin lock avoids race conditions, it can have a significant
-impact on the system’s performance due to “lock contention”:</p>
+impact on the system's performance due to &quot;lock contention&quot;:</p>
 <ul class="admonition-lock-contention simple">
 <li>There is lock contention when at least one core spins trying to
 enter the critical section lock</li>
@@ -488,7 +490,7 @@ cores goes beyond 32-64.</p>
 to thousands of cores) and are usually used in NUMA systems.</p>
 <p>A simple cache coherency protocol that is commonly used in practice is
 MESI (named after the acronym of the cache line states names:
-<strong>Modified</strong>, <strong>Exclusive</strong>, <strong>Shared</strong> and <strong>Invalid</strong>). It’s main
+<strong>Modified</strong>, <strong>Exclusive</strong>, <strong>Shared</strong> and <strong>Invalid</strong>). It's main
 characteristics are:</p>
 <ul class="admonition-mesi-cache-coherence-protocol simple">
 <li>Caching policy: write back</li>
@@ -601,7 +603,7 @@ the x86 architecture.</p>
 <h2>Process and Interrupt Context Synchronization<a class="headerlink" href="#process-and-interrupt-context-synchronization" title="Permalink to this headline">¶</a></h2>
 <p>Accessing shared data from both process and interrupt context is a
 relatively common scenario. On single core systems we can do this by
-disabling interrupts, but that won’t work on multi-core systems,
+disabling interrupts, but that won't work on multi-core systems,
 as we can have the process running on one CPU core and the interrupt
 context running on a different CPU core.</p>
 <p>Using a spin lock, which was designed for multi-processor systems,
@@ -681,10 +683,10 @@ until the critical section is vacated.</p>
 <p>Since mutexes and spin locks usage intersect, it is useful to compare
 the two:</p>
 <ul class="admonition-mutexes simple">
-<li>They don’t “waste” CPU cycles; system throughput is better than
+<li>They don't &quot;waste&quot; CPU cycles; system throughput is better than
 spin locks if context switch overhead is lower than medium
 spinning time</li>
-<li>They can’t be used in interrupt context</li>
+<li>They can't be used in interrupt context</li>
 <li>They have a higher latency than spin locks</li>
 </ul>
 <p>Conceptually, the <code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> operation is relatively simple:
@@ -810,7 +812,7 @@ seldom necessary (e.g. statistics counters)</li>
 <div class="section" id="memory-ordering-and-barriers">
 <h2>Memory Ordering and Barriers<a class="headerlink" href="#memory-ordering-and-barriers" title="Permalink to this headline">¶</a></h2>
 <p>Modern processors and compilers employ out-of-order execution to
-improve performance. For example, processors can execute “future”
+improve performance. For example, processors can execute &quot;future&quot;
 instructions while waiting for current instruction data to be fetched
 from memory.</p>
 <p>Here is an example of out of order compiler generated code:</p>
@@ -841,7 +843,7 @@ from memory.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">When executing instructions out of order the processor makes
-sure that data dependency is observed, i.e. it won’t execute
+sure that data dependency is observed, i.e. it won't execute
 instructions whose input depend on the output of a previous
 instruction that has not been executed.</p>
 </div>
@@ -880,10 +882,10 @@ can be used.</p>
 <p>RCU splits removal updates to the data structures in two phases:</p>
 <ul class="admonition-removal-and-reclamation simple">
 <li><strong>Removal</strong>: removes references to elements. Some old readers may
-still see the old reference so we can’t free the element.</li>
+still see the old reference so we can't free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
 all existing readers finish traversal (quiescent cycle). New
-readers won’t affect the quiescent cycle.</li>
+readers won't affect the quiescent cycle.</li>
 </ul>
 <p>As an example, lets take a look on how to delete an element from a
 list using RCU:</p>

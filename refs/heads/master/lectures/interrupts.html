@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Interrupts</a><ul>
@@ -298,9 +300,9 @@ of the instruction after the instuction that caused the trap. (e.g debug trap).<
 <img alt="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" class="admonition-hardware-pic" src="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" />
 <p>A device supporting interrupts has an output pin used for signalling an Interrupt ReQuest. IRQ
 pins are connected to a device named Programmable Interrupt Controller (PIC) which is connected
-to CPU’s INTR pin.</p>
+to CPU's INTR pin.</p>
 <p>A PIC usually has a set of ports used to exchange information with the CPU. When a device
-connected to one of the PIC’s IRQ lines needs CPU attention the following flow happens:</p>
+connected to one of the PIC's IRQ lines needs CPU attention the following flow happens:</p>
 <blockquote>
 <div><ul class="simple">
 <li>device raises an interrupt on the corresponding IRQn pin</li>
@@ -310,7 +312,7 @@ connected to one of the PIC’s IRQ lines needs CPU attention the following flow
 <li>CPU handles the interrupt</li>
 </ul>
 </div></blockquote>
-<p>Will see later how the CPU handles the interrupt. Important to notice is that by design PIC won’t raise
+<p>Will see later how the CPU handles the interrupt. Important to notice is that by design PIC won't raise
 another interrupt until the CPU acknowledged the current interrupt.</p>
 <p>Each IRQ line can be individually disabled. This allows simplifying design by making sure that
 interrupt handlers are always executed serially.</p>
@@ -321,7 +323,7 @@ interrupt handlers are always executed serially.</p>
 <p>With multicore systems, each core has a local APIC used to process interrupts
 from locally connected devices like timers or thermals sensors.</p>
 <p>I/O APIC is used to distribute IRQ from external devices to CPU cores.</p>
-<p>After discussing the hardware, now let’s see how the processor handles an interrupt.</p>
+<p>After discussing the hardware, now let's see how the processor handles an interrupt.</p>
 </div>
 <div class="section" id="interrupt-control">
 <h3>Interrupt Control<a class="headerlink" href="#interrupt-control" title="Permalink to this headline">¶</a></h3>
@@ -397,7 +399,7 @@ the interupt handlers resides</li>
 <p>In order to find the interrupt handler address we first need to find the start
 address of the code segment where interrupt handler resides. For this we
 use the segment selector to index into GDT/LDT where we can find the corresponding
-segment descriptor. This will provide the start address kept in the ‘base’ field.
+segment descriptor. This will provide the start address kept in the 'base' field.
 Using base address and the offset we can now go at the start of the interrupt handler.</p>
 <img alt="../_images/ditaa-9b2dd926bf730364e2ca37aeea66fea341a741bf.png" class="admonition-interrupt-handler-address" src="../_images/ditaa-9b2dd926bf730364e2ca37aeea66fea341a741bf.png" />
 </div>
@@ -464,8 +466,8 @@ actions will also be performed (e.g. acknowledge the interrupt at the interrupt
 controller level). Local processor interrupts are disabled for the duration of
 this phase and continue to be disabled in the next phase.</p>
 <p>In the second phase all of the device drivers handler associated with this
-interrupt will be executed <a class="footnote-reference" href="#f1" id="id1">[1]</a>. At the end of this phase the interrupt controller’s
-“end of interrupt” method is called to allow the interrupt controller to
+interrupt will be executed <a class="footnote-reference" href="#f1" id="id1">[1]</a>. At the end of this phase the interrupt controller's
+&quot;end of interrupt&quot; method is called to allow the interrupt controller to
 reassert this interrupt. The local processor interrupts are enabled at this
 point.</p>
 <table class="docutils footnote" frame="void" id="f1" rules="none">
@@ -474,12 +476,12 @@ point.</p>
 <tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Note that it is possible that one interrupt is associated with multiple
 devices and in this case it is said that the interrupt is
 shared. Usually, when using shared interrupts it is the responsibility
-of the device driver to determine if the interrupt is target to it’s
+of the device driver to determine if the interrupt is target to it's
 device or not.</td></tr>
 </tbody>
 </table>
 <p>Finally, in the last phase of interrupt handling interrupt context deferrable
-actions will be run. These are also sometimes known as “bottom half” of the
+actions will be run. These are also sometimes known as &quot;bottom half&quot; of the
 interrupt (the upper half being the part of the interrupt handling that runs
 with interrupts disabled). At this point interrupts are enabled on the local
 processor.</p>
@@ -489,7 +491,7 @@ processor.</p>
 <p>Nesting interrupts is permitted on many architectures. Some architectures define
 interrupt levels that allow preemption of an interrupt only if the pending
 interrupt has a greater priority then the current (settable) level (e.g see
-ARM’s priority mask).</p>
+ARM's priority mask).</p>
 <p>In order to support as many architectures as possible, Linux has a more
 restrictive interrupt nesting implementation:</p>
 <ul class="admonition-irq-nesting-in-linux simple">
@@ -505,7 +507,7 @@ one level of interrupt nesting is allowed</li>
 <h3>Interrupt context<a class="headerlink" href="#interrupt-context" title="Permalink to this headline">¶</a></h3>
 <p>While an interrupt is handled (from the time the CPU jumps to the interrupt
 handler until the interrupt handler returns - e.g.  IRET is issued) it is said
-that code runs in “interrupt context”.</p>
+that code runs in &quot;interrupt context&quot;.</p>
 <p>Code that runs in interrupt context has the following properties:</p>
 <blockquote class="admonition-interrupt-context">
 <div><ul class="simple">

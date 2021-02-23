@@ -78,7 +78,7 @@
 <h2>Race conditions</h2>
 
 <ul class="simple">
-<li>there are at least two execution contexts that run in “parallel”:<ul>
+<li>there are at least two execution contexts that run in &quot;parallel&quot;:<ul>
 <li>truly run in parallel (e.g. two system calls running on
 different processors)</li>
 <li>one of the contexts can arbitrary preempt the other (e.g. an
@@ -529,10 +529,10 @@ manually disabled as well (by core kernel code).</p>
 <h2>Mutexes</h2>
 
 <ul class="simple">
-<li>They don’t “waste” CPU cycles; system throughput is better than
+<li>They don't &quot;waste&quot; CPU cycles; system throughput is better than
 spin locks if context switch overhead is lower than medium
 spinning time</li>
-<li>They can’t be used in interrupt context</li>
+<li>They can't be used in interrupt context</li>
 <li>They have a higher latency than spin locks</li>
 </ul>
 
@@ -749,10 +749,10 @@ between writers</li>
 
 <ul class="simple">
 <li><strong>Removal</strong>: removes references to elements. Some old readers may
-still see the old reference so we can’t free the element.</li>
+still see the old reference so we can't free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
 all existing readers finish traversal (quiescent cycle). New
-readers won’t affect the quiescent cycle.</li>
+readers won't affect the quiescent cycle.</li>
 </ul>
 
 

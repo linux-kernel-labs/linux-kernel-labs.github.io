@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
@@ -272,9 +274,9 @@ but with limited reliability.</p>
 <span class="n">module_exit</span><span class="p">(</span><span class="n">so2_oops_exit</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Notice that ‘’do_oops’’ function tries to write at an invalid memory address. Because the kernel
+<p>Notice that ''do_oops'' function tries to write at an invalid memory address. Because the kernel
 cannot find a suitable physical page were to write, it kills the insmod task in the context of
-which ‘’do_oops’’ runs. Then it prints the following oops message:</p>
+which ''do_oops'' runs. Then it prints the following oops message:</p>
 <blockquote>
 <div><div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/debugging/oops# insmod oops.ko
 BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000042</span>
@@ -375,7 +377,7 @@ an address in an executable it uses the debugging information to figure out
 which file name and line number are associated with it.</p>
 <p>Modules are loaded at dynamic addresses but are compiled starting with 0 as
 a base address. So, in order to find the line number for a given dynamic address
-we need to know module’s load address.</p>
+we need to know module's load address.</p>
 <div class="admonition-addr2line highlight-bash"><div class="highlight"><pre><span></span>$ addr2line -e oops.o  0x08
 $ skels/debugging/oops/oops.c:5
 $ <span class="c1"># 0x08 is the offset of the offending instruction inside the oops.ko module</span>
@@ -421,7 +423,7 @@ c8816008:       a3 <span class="m">42</span> <span class="m">00</span> <span cla
 <div class="section" id="kernel-panic">
 <h3>Kernel panic<a class="headerlink" href="#kernel-panic" title="Permalink to this headline">¶</a></h3>
 <p>A kernel panic is a special type of oops where the kernel cannot continue execution. For example
-if the function do_oops from above was called in the interrupt context, the kernel wouldn’t know how to kill
+if the function do_oops from above was called in the interrupt context, the kernel wouldn't know how to kill
 and it will decide that it is better to crash the kernel and stop execution.</p>
 <p>Here is a sample code that will generate a kernel panic:</p>
 <div class="admonition-kernel-panic highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">timer_list</span> <span class="n">panic_timer</span><span class="p">;</span>
@@ -658,7 +660,7 @@ architectures)</li>
 <p>KASan is a dynamic memory error detector designed to find use-after-free
 and out-of-bounds bugs.</p>
 <p>The main idea of KASAN is to use shadow memory to record whether each byte
-of memory is safe to access or not, and use compiler’s instrumentation to
+of memory is safe to access or not, and use compiler's instrumentation to
 check the shadow memory on each memory access.</p>
 <p>Address sanitizer uses 1 byte of shadow memory to track 8 bytes of kernel
 address space. It uses 0-7 to encode the number of consecutive bytes at

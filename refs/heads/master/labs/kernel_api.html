@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -101,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -265,12 +267,12 @@ several types of memory:</p>
 <div><ul class="simple">
 <li>Physical memory</li>
 <li>Virtual memory from the kernel address space</li>
-<li>Virtual memory from a process’s address space</li>
+<li>Virtual memory from a process's address space</li>
 <li>Resident memory - we know for sure that the accessed pages are present in
 physical memory</li>
 </ul>
 </div></blockquote>
-<p>Virtual memory in a process’s address space can not be considered resident due
+<p>Virtual memory in a process's address space can not be considered resident due
 to the virtual memory mechanisms implemented by the operating system: pages may
 be swapped or simply may not be present in physical memory as a result of the
 demand paging mechanism. The memory in the kernel address space can be resident
@@ -932,7 +934,7 @@ macro.</li>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Search for the relevant field from <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>
-structure. Look after “parent”.</p>
+structure. Look after &quot;parent&quot;.</p>
 </div>
 <ul class="simple">
 <li>PID of the next process from the list of processes, relative to the
@@ -1030,10 +1032,10 @@ contents of the <code class="file docutils literal"><span class="pre">list-full.
 following:</p>
 <blockquote>
 <div><ul>
-<li><p class="first">A <code class="xref c c-member docutils literal"><span class="pre">count</span></code> field showing how many times a process has been “added”
+<li><p class="first">A <code class="xref c c-member docutils literal"><span class="pre">count</span></code> field showing how many times a process has been &quot;added&quot;
 to the list.</p>
 </li>
-<li><p class="first">If a process is “added” several times, no new entry is created in
+<li><p class="first">If a process is &quot;added&quot; several times, no new entry is created in
 the list, but:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1100,7 +1102,7 @@ list.</li>
 <div class="section" id="test-module-calling-in-our-list-module">
 <h3>7. Test module calling in our list module<a class="headerlink" href="#test-module-calling-in-our-list-module" title="Permalink to this headline">¶</a></h3>
 <p>Generate the skeleton for the task named <strong>7-list-test</strong> and browse
-the contents of the <code class="file docutils literal"><span class="pre">list-test.c</span></code> file. We’ll use it as a test
+the contents of the <code class="file docutils literal"><span class="pre">list-test.c</span></code> file. We'll use it as a test
 module. It will call functions exported by the <strong>6-list-sync</strong>
 task. The exported functions are the ones marked with <strong>extern</strong> in
 <code class="file docutils literal"><span class="pre">list-test.c</span></code> file.</p>
