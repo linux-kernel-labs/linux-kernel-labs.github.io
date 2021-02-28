@@ -1,0 +1,13 @@
+      phase 1
++----------------+
+|    critical    |               phase 2
++----------------+         +-----------------+
+|                |         |    immediate    |               phase 3
+| - IRQ disabled |         +-----------------+          +----------------+
+| - ACK IRQ      +-----+   |                 |          |   deferred     |
+|                |     +---> - IRQ disabled  |          +----------------+
++----------------+         | - device handler|          |                |
+                           | - EOI IRQ       +-----+    | - IRQ enabled  |
+                           +-----------------+     +----> - execute later|
+                                                        |                |
+                                                        +----------------+
