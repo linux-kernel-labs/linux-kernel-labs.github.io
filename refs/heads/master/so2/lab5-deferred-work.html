@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Deferred work &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lab 05 - Deferred work &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Block Device Drivers" href="block_device_drivers.html" />
-    <link rel="prev" title="I/O access and Interrupts" href="interrupts.html" /> 
+    <link rel="next" title="SO2 Lab 06 - Memory Mapping" href="lab6-memory-mapping.html" />
+    <link rel="prev" title="SO2 Lab 04 - I/O access and Interrupts" href="lab4-interrupts.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,8 +101,47 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 05 - Deferred work</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#background-information">Background information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#softirqs">Softirqs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tasklets">Tasklets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timers">Timers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locking">Locking</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#workqueues">Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-threads">Kernel threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timer">1.Timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#periodic-timer">2. Periodic timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timer-control-using-ioctl">3. Timer control using ioctl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#blocking-operations">4. Blocking operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">5. Workqueues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-thread">6. Kernel thread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#buffer-shared-between-timer-and-process">7. Buffer shared between timer and process</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -113,44 +152,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Deferred work</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#background-information">Background information</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#softirqs">Softirqs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#tasklets">Tasklets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#timers">Timers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#locking">Locking</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#workqueues">Workqueues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#kernel-threads">Kernel threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#timer">1.Timer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#periodic-timer">2. Periodic timer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#timer-control-using-ioctl">3. Timer control using ioctl</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#blocking-operations">4. Blocking operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">5. Workqueues</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#kernel-thread">6. Kernel thread</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#buffer-shared-between-timer-and-process">7. Buffer shared between timer and process</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -204,13 +219,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Deferred work</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
+        
+      <li>SO2 Lab 05 - Deferred work</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/deferred_work.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lab5-deferred-work.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -223,8 +240,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="deferred-work">
-<h1>Deferred work<a class="headerlink" href="#deferred-work" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="so2-lab-05-deferred-work">
+<h1>SO2 Lab 05 - Deferred work<a class="headerlink" href="#so2-lab-05-deferred-work" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -934,7 +951,7 @@ not run periodically.
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review <a class="reference internal" href="../so2/lab3-device-drivers.html#ioctl"><span class="std std-ref">ioctl</span></a> for a way to access the ioctl argument.</p>
+<p class="last">Review <a class="reference internal" href="lab3-device-drivers.html#ioctl"><span class="std std-ref">ioctl</span></a> for a way to access the ioctl argument.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1047,7 +1064,7 @@ with unloading</li>
 <p class="first admonition-title">Hint</p>
 <p>For synchronization use two wait queues and two flags.</p>
 <p>Review <span class="xref std std-ref">waiting-queues</span> on how to use waiting queue.</p>
-<p class="last">Use atomic variables for flags. Review <a class="reference internal" href="../so2/lab2-kernel-api.html#atomic-variables"><span class="std std-ref">Atomic variables</span></a>.</p>
+<p class="last">Use atomic variables for flags. Review <a class="reference internal" href="lab2-kernel-api.html#atomic-variables"><span class="std std-ref">Atomic variables</span></a>.</p>
 </div>
 </div>
 <div class="section" id="buffer-shared-between-timer-and-process">
@@ -1120,8 +1137,8 @@ we may need to remove an item from the list.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="block_device_drivers.html" class="btn btn-neutral float-right" title="Block Device Drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="interrupts.html" class="btn btn-neutral float-left" title="I/O access and Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab6-memory-mapping.html" class="btn btn-neutral float-right" title="SO2 Lab 06 - Memory Mapping" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lab4-interrupts.html" class="btn btn-neutral float-left" title="SO2 Lab 04 - I/O access and Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

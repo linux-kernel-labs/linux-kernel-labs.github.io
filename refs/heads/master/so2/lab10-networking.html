@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Networking &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lab 10 - Networking &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Memory mapping" href="memory_mapping.html" />
-    <link rel="prev" title="File system drivers (Part 2)" href="filesystems_part2.html" /> 
+    <link rel="next" title="SO2 Lab 11 - Kernel Development on ARM" href="lab11-arm-kernel-development.html" />
+    <link rel="prev" title="SO2 Lab 09 - File system drivers (Part 2)" href="lab9-filesystems-part2.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,8 +101,48 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 10 - Networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#networking-in-user-space">Networking in user space</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-networking">Linux networking</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-struct-socket-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-struct-sock-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-struct-sk-buff-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#conversions">Conversions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#netfilter">netfilter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#netcat">netcat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#displaying-packets-in-kernel-space">1. Displaying packets in kernel space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#filtering-by-destination-address">2. Filtering by destination address</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#listening-on-a-tcp-socket">3. Listening on a TCP socket</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#accepting-connections-in-kernel-space">4. Accepting connections in kernel space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#udp-socket-sender">5. UDP socket sender</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -113,49 +153,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
-<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Networking</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#networking-in-user-space">Networking in user space</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#linux-networking">Linux networking</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-struct-socket-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#operations-on-the-socket-structure">Operations on the socket structure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#the-struct-socket-fields">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> fields</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#the-struct-sock-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-struct-sk-buff-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#conversions">Conversions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#netfilter">netfilter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#netcat">netcat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#displaying-packets-in-kernel-space">1. Displaying packets in kernel space</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#filtering-by-destination-address">2. Filtering by destination address</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#listening-on-a-tcp-socket">3. Listening on a TCP socket</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#accepting-connections-in-kernel-space">4. Accepting connections in kernel space</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#udp-socket-sender">5. UDP socket sender</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -209,13 +220,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Networking</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
+        
+      <li>SO2 Lab 10 - Networking</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/networking.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lab10-networking.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -228,8 +241,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="networking">
-<h1>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="so2-lab-10-networking">
+<h1>SO2 Lab 10 - Networking<a class="headerlink" href="#so2-lab-10-networking" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -1229,7 +1242,7 @@ construction <code class="docutils literal"><span class="pre">&amp;iph-&gt;saddr
 <code class="docutils literal"><span class="pre">iph-&gt;saddr</span></code>.</p>
 </div>
 <p>The source TCP port is, in the TCP header, in the <a class="reference external" href="http://en.wikipedia.org/wiki/Endianness#Endianness_in_networking">network byte-order</a> format.
-Read through the <a class="reference internal" href="../so2/lab10-networking.html#conversions"><span class="std std-ref">Conversions</span></a> section. Use <code class="xref c c-func docutils literal"><span class="pre">ntohs()</span></code> to convert.</p>
+Read through the <a class="reference internal" href="#conversions"><span class="std std-ref">Conversions</span></a> section. Use <code class="xref c c-func docutils literal"><span class="pre">ntohs()</span></code> to convert.</p>
 <p>For testing, use the <code class="file docutils literal"><span class="pre">1-2-netfilter/user/test-1.sh</span></code> file. The test creates
 a connection to the localhost, a connection that will be intercepted and
 displayed by the kernel module. The script is copied on the virtual machine by
@@ -1252,7 +1265,7 @@ by means of a <code class="docutils literal"><span class="pre">MY_IOCTL_FILTER_A
 containing the specified destination address. To solve this task, fill in the
 areas marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code> and follow the specifications below.</p>
 <p>To implement the ioctl routine, you must fill out the <code class="docutils literal"><span class="pre">my_ioctl</span></code> function.
-Review the section in <a class="reference internal" href="../so2/lab3-device-drivers.html#ioctl"><span class="std std-ref">ioctl</span></a>. The address sent from user space is in
+Review the section in <a class="reference internal" href="lab3-device-drivers.html#ioctl"><span class="std std-ref">ioctl</span></a>. The address sent from user space is in
 <a class="reference external" href="http://en.wikipedia.org/wiki/Endianness#Endianness_in_networking">network byte-order</a>, so there will be <strong>NO need</strong> for conversion.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1434,8 +1447,8 @@ the <code class="docutils literal"><span class="pre">kernelsocket</span></code> 
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="memory_mapping.html" class="btn btn-neutral float-right" title="Memory mapping" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="filesystems_part2.html" class="btn btn-neutral float-left" title="File system drivers (Part 2)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab11-arm-kernel-development.html" class="btn btn-neutral float-right" title="SO2 Lab 11 - Kernel Development on ARM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lab9-filesystems-part2.html" class="btn btn-neutral float-left" title="SO2 Lab 09 - File system drivers (Part 2)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

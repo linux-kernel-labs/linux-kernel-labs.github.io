@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>File system drivers (Part 1) &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lab 08 - File system drivers (Part 1) &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="File system drivers (Part 2)" href="filesystems_part2.html" />
-    <link rel="prev" title="Block Device Drivers" href="block_device_drivers.html" /> 
+    <link rel="next" title="SO2 Lab 09 - File system drivers (Part 2)" href="lab9-filesystems-part2.html" />
+    <link rel="prev" title="SO2 Lab 07 - Block Device Drivers" href="lab7-block-device-drivers.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,8 +101,52 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 08 - File system drivers (Part 1)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#virtual-filesystem-vfs">Virtual Filesystem (VFS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-general-file-system-model">The general file system model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#superblock">superblock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inode">inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#file">file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dentry">dentry</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#register-and-unregister-filesystems">Register and unregister filesystems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#functions-mount-kill-sb">Functions mount, kill_sb</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#superblock-in-vfs">Superblock in VFS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-struct-super-block-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#superblock-operations">Superblock operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-fill-super-function">The <code class="docutils literal"><span class="pre">fill_super()</span></code> function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#buffer-cache">Buffer cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions-and-useful-macros">Functions and useful macros</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#myfs">myfs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#minfs">minfs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -113,71 +157,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
-<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">File system drivers (Part 1)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#virtual-filesystem-vfs">Virtual Filesystem (VFS)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#the-general-file-system-model">The general file system model</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#superblock">superblock</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#localization">Localization:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#inode">inode</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Localization:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#file">file</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Localization:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#dentry">dentry</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#register-and-unregister-filesystems">Register and unregister filesystems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#functions-mount-kill-sb">Functions mount, kill_sb</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#superblock-in-vfs">Superblock in VFS</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-struct-super-block-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#superblock-operations">Superblock operations</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#the-fill-super-function">The <code class="docutils literal"><span class="pre">fill_super()</span></code> function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#buffer-cache">Buffer cache</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#functions-and-useful-macros">Functions and useful macros</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#myfs">myfs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#register-and-unregister-the-myfs-file-system">1. Register and unregister the myfs file system</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#completing-myfs-superblock">2. Completing myfs superblock</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#initialize-myfs-root-inode">3. Initialize myfs root inode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#test-myfs-mount-and-unmount">4. Test myfs mount and unmount</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#minfs">minfs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#registering-and-unregistering-the-minfs-file-system">1. Registering and unregistering the minfs file system</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#completing-minfs-superblock">2. Completing minfs superblock</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#testing-of-minfs-mount-and-unmount">5. Testing of minfs mount and unmount</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -231,13 +224,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>File system drivers (Part 1)</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
+        
+      <li>SO2 Lab 08 - File system drivers (Part 1)</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/filesystems_part1.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lab8-filesystems-part1.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -250,8 +245,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="file-system-drivers-part-1">
-<h1>File system drivers (Part 1)<a class="headerlink" href="#file-system-drivers-part-1" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="so2-lab-08-file-system-drivers-part-1">
+<h1>SO2 Lab 08 - File system drivers (Part 1)<a class="headerlink" href="#so2-lab-08-file-system-drivers-part-1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -737,10 +732,10 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 <div class="section" id="register-and-unregister-the-myfs-file-system">
 <h4>1. Register and unregister the myfs file system<a class="headerlink" href="#register-and-unregister-the-myfs-file-system" title="Permalink to this headline">¶</a></h4>
 <p>The first step in working with the file system is to register and unregister it. We want to do this for the file system described in <code class="docutils literal"><span class="pre">myfs.c</span></code>. Check the file contents and follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>.</p>
-<p>The steps you need to take are described in the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>. Use the <code class="docutils literal"><span class="pre">&quot;myfs&quot;</span></code> string for the file system name.</p>
+<p>The steps you need to take are described in the section <a class="reference internal" href="#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>. Use the <code class="docutils literal"><span class="pre">&quot;myfs&quot;</span></code> string for the file system name.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Within the file system structure, use the <code class="docutils literal"><span class="pre">myfs_mount</span></code> function present in the code skeleton to fill the superblock (done when mounting). In <code class="docutils literal"><span class="pre">myfs_mount</span></code> call the function specific to a file system without disk support. As an argument for the specific mount function, use the function of type <code class="docutils literal"><span class="pre">fill_super</span></code> defined in the code skeleton. You can review the <a class="reference internal" href="../so2/lab8-filesystems-part1.html#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> section.</p>
+<p>Within the file system structure, use the <code class="docutils literal"><span class="pre">myfs_mount</span></code> function present in the code skeleton to fill the superblock (done when mounting). In <code class="docutils literal"><span class="pre">myfs_mount</span></code> call the function specific to a file system without disk support. As an argument for the specific mount function, use the function of type <code class="docutils literal"><span class="pre">fill_super</span></code> defined in the code skeleton. You can review the <a class="reference internal" href="#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> section.</p>
 <p class="last">To destroy the superblock (done at unmounting) use <code class="docutils literal"><span class="pre">kill_litter_super</span></code>, also a function specific to a file system without disk support. The function is already implemented, you need to fill it in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_system_type</span></code> structure.</p>
 </div>
 <p>After completing the sections marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code> , compile the module, copy it to the QEMU virtual machine, and start the virtual machine. Load the kernel module and then check the presence of the <code class="docutils literal"><span class="pre">myfs</span></code> file system within the <code class="docutils literal"><span class="pre">/proc/filesystems</span></code> file.</p>
@@ -765,11 +760,11 @@ We will fill out the structure within the <code class="xref c c-func docutils li
 Follow the hints marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To fill the <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, you can start from the example in the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#fillsupersection"><span class="std std-ref">The fill_super() function</span></a>.</p>
+<p>To fill the <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, you can start from the example in the section <a class="reference internal" href="#fillsupersection"><span class="std std-ref">The fill_super() function</span></a>.</p>
 <p class="last">For the superblock structure fields, use the macros defined within the code skeleton wherever possible.</p>
 </div>
 <p>The <code class="docutils literal"><span class="pre">s_op</span></code> field in the superblock structure must be initialized to the superblock operations structures (type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code>). You need to define such a structure.</p>
-<p>For information on defining the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure and filling the superblock, see the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#superblocksection"><span class="std std-ref">Superblock operations</span></a>.</p>
+<p>For information on defining the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure and filling the superblock, see the section <a class="reference internal" href="#superblocksection"><span class="std std-ref">Superblock operations</span></a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Initialize the <code class="docutils literal"><span class="pre">drop_inode</span></code> and <code class="docutils literal"><span class="pre">statfs</span></code> fields of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure.</p>
@@ -861,7 +856,7 @@ We will use a disk in the virtual machine that we will format and mount with the
 Just like <code class="docutils literal"><span class="pre">myfs</span></code> we will not implement the operations for working with inodes. We will just limit to working with the superblock and, therefore, mounting.
 The rest of the operations will be implemented in the next lab.</p>
 <p>Follow the diagram below to clarify the role of structures within the <code class="docutils literal"><span class="pre">minfs</span></code> file system.</p>
-<img alt="../_images/minfs.png" src="../_images/minfs.png" />
+<img alt="../_images/minfs1.png" src="../_images/minfs1.png" />
 <div class="section" id="registering-and-unregistering-the-minfs-file-system">
 <h4>1. Registering and unregistering the minfs file system<a class="headerlink" href="#registering-and-unregistering-the-minfs-file-system" title="Permalink to this headline">¶</a></h4>
 <div class="admonition note">
@@ -877,9 +872,9 @@ The new argument for the <code class="docutils literal"><span class="pre">qemu</
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>In the file system structure, for mount, use the <code class="docutils literal"><span class="pre">minfs_mount</span></code> function from in the code skeleton.
-In this function, call the function to mount a file system with disk support (See the <a class="reference internal" href="../so2/lab8-filesystems-part1.html#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> section. Use <code class="xref c c-func docutils literal"><span class="pre">mount_bdev()</span></code>).
+In this function, call the function to mount a file system with disk support (See the <a class="reference internal" href="#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> section. Use <code class="xref c c-func docutils literal"><span class="pre">mount_bdev()</span></code>).
 Choose the most suitable function for destroying the superblock (done at unmount); keep in mind that it is a file system with disk support. Use the <code class="xref c c-func docutils literal"><span class="pre">kill_block_super()</span></code> function.</p>
-<p>Initialize the <code class="docutils literal"><span class="pre">fs_flags</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">minfs_fs_type</span></code> structure with the appropriate value for a file system with disk support. See the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>.</p>
+<p>Initialize the <code class="docutils literal"><span class="pre">fs_flags</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">minfs_fs_type</span></code> structure with the appropriate value for a file system with disk support. See the section <a class="reference internal" href="#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>.</p>
 <p class="last">The function for filling the superblock is <code class="docutils literal"><span class="pre">minfs_fill_super</span></code>.</p>
 </div>
 <p>After completing the sections marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>, compile the module, copy it into the QEMU virtual machine, and start the virtual machine.
@@ -911,7 +906,7 @@ Follow the directions marked with <code class="docutils literal"><span class="pr
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Some structures are found in the header file <code class="docutils literal"><span class="pre">minfs.h</span></code>.</p>
-<p>For information on working with buffers, go to the <a class="reference internal" href="../so2/lab8-filesystems-part1.html#buffercachesection"><span class="std std-ref">Buffer cache</span></a> section.</p>
+<p>For information on working with buffers, go to the <a class="reference internal" href="#buffercachesection"><span class="std std-ref">Buffer cache</span></a> section.</p>
 <p>Read the first block on the disk (block with index 0).
 To read the block, use the <code class="xref c c-func docutils literal"><span class="pre">sb_bread()</span></code> function.
 Cast the read data (the <code class="docutils literal"><span class="pre">b_data</span></code> field in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">buffer_head</span></code> structure) to the structure storing the <code class="docutils literal"><span class="pre">minfs</span></code> superblock information on the disk: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">minfs_super_block</span></code>, defined in the source code file.</p>
@@ -1006,8 +1001,8 @@ We verify that the file system was mounted by investigating the <code class="doc
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="filesystems_part2.html" class="btn btn-neutral float-right" title="File system drivers (Part 2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="block_device_drivers.html" class="btn btn-neutral float-left" title="Block Device Drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab9-filesystems-part2.html" class="btn btn-neutral float-right" title="SO2 Lab 09 - File system drivers (Part 2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lab7-block-device-drivers.html" class="btn btn-neutral float-left" title="SO2 Lab 07 - Block Device Drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

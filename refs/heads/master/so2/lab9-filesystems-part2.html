@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>File system drivers (Part 2) &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lab 09 - File system drivers (Part 2) &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Networking" href="networking.html" />
-    <link rel="prev" title="File system drivers (Part 1)" href="filesystems_part1.html" /> 
+    <link rel="next" title="SO2 Lab 10 - Networking" href="lab10-networking.html" />
+    <link rel="prev" title="SO2 Lab 08 - File system drivers (Part 1)" href="lab8-filesystems-part1.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,8 +101,59 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 09 - File system drivers (Part 2)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inode">Inode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-inode-structure">The inode structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inode-operations">Inode operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-file-structure">The file structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#regular-files-inodes">Regular files inodes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#regular-files-inode-operations">Regular files inode operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#address-space-operations">Address space operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dentry-structure">Dentry structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dentry-operations">Dentry operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-inodes-operations">Directory inodes operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-an-inode">Creating an inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-directory">Creating a directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-link">Creating a link</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-symbolic-link">Creating a symbolic link</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deleting-a-link">Deleting a link</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deleting-a-directory">Deleting a directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#searching-for-an-inode-in-a-directory">Searching for an inode in a directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iterating-through-entries-in-a-directory">Iterating through entries in a directory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#bitmap-operations">Bitmap operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#myfs">myfs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#minfs">minfs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -113,70 +164,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
-<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">File system drivers (Part 2)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#inode">Inode</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-inode-structure">The inode structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#inode-operations">Inode operations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#getting-an-inode">Getting an inode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#superoperations">Superoperations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">inode_operations</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#the-file-structure">The file structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#regular-files-inodes">Regular files inodes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#regular-files-inode-operations">Regular files inode operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#address-space-operations">Address space operations</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#dentry-structure">Dentry structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dentry-operations">Dentry operations</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#directory-inodes-operations">Directory inodes operations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#creating-an-inode">Creating an inode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-a-directory">Creating a directory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-a-link">Creating a link</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-a-symbolic-link">Creating a symbolic link</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#deleting-a-link">Deleting a link</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#deleting-a-directory">Deleting a directory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#searching-for-an-inode-in-a-directory">Searching for an inode in a directory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#iterating-through-entries-in-a-directory">Iterating through entries in a directory</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#bitmap-operations">Bitmap operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#myfs">myfs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#directory-operations">1. Directory operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#file-operations">2. File operations</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#minfs">minfs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#iterate-operation">1. Iterate operation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#lookup-operation">2. Lookup operation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#create-operation">3. Create operation</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -230,13 +231,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>File system drivers (Part 2)</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
+        
+      <li>SO2 Lab 09 - File system drivers (Part 2)</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/filesystems_part2.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lab9-filesystems-part2.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -249,8 +252,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="file-system-drivers-part-2">
-<h1>File system drivers (Part 2)<a class="headerlink" href="#file-system-drivers-part-2" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="so2-lab-09-file-system-drivers-part-2">
+<h1>SO2 Lab 09 - File system drivers (Part 2)<a class="headerlink" href="#so2-lab-09-file-system-drivers-part-2" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -394,7 +397,7 @@ The <code class="xref c c-func docutils literal"><span class="pre">alloc_inode()
 <p>The inode operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode_operations</span></code> structure.</p>
 <p>Inodes are of several types: file, directory, special file (pipe, fifo), block device, character device, link etc.
 For this reason, the operations that an inode needs to implement are different for each type of inode.
-Below are detailed operations for a <a class="reference internal" href="../so2/lab9-filesystems-part2.html#fileinodes"><span class="std std-ref">file type inode</span></a> and a <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">directory inode</span></a>.</p>
+Below are detailed operations for a <a class="reference internal" href="#fileinodes"><span class="std std-ref">file type inode</span></a> and a <a class="reference internal" href="#directoryinodes"><span class="std std-ref">directory inode</span></a>.</p>
 <p>The operations of an inode are initialized and accessed using the <code class="docutils literal"><span class="pre">i_op</span></code> field of the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code>.</p>
 </div>
 </div>
@@ -919,7 +922,7 @@ The operations of creating a file or deleting a file are also directory operatio
 To begin, just define the structure <code class="docutils literal"><span class="pre">myfs_dir_inode_operations</span></code>; you will define the structures <code class="docutils literal"><span class="pre">myfs_file_operations</span></code>, <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> , and <code class="docutils literal"><span class="pre">myfs_aops</span></code> in the next exercise.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">As a model, you are following the <code class="docutils literal"><span class="pre">ramfs_dir_inode_operations</span></code> structure.</p>
 </div>
 <p>Implement the <code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code> and <code class="docutils literal"><span class="pre">create</span></code> operations inside <code class="docutils literal"><span class="pre">myfs_mkdir</span></code>, <code class="docutils literal"><span class="pre">myfs_mknod</span></code> and <code class="docutils literal"><span class="pre">myfs_create</span></code>.
@@ -999,7 +1002,7 @@ For this you will specify the operations described in the structures <code class
 <p>Start by defining <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> and <code class="docutils literal"><span class="pre">myfs_file_operations</span></code>.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#fileoperations"><span class="std std-ref">Regular files inode operations</span></a>.</p>
+<p>Read the section <a class="reference internal" href="#fileoperations"><span class="std std-ref">Regular files inode operations</span></a>.</p>
 <p>Use the generic function provided by VFS.</p>
 <p class="last">An example of implementation is the <code class="docutils literal"><span class="pre">ramfs</span></code> file system.
 Follow the implementation of <code class="docutils literal"><span class="pre">ramfs_file_inode_operations</span></code> and <code class="docutils literal"><span class="pre">ramfs_file_operations</span></code>.</p>
@@ -1014,7 +1017,7 @@ Follow the implementation of <code class="docutils literal"><span class="pre">ra
 <p>Continue with defining the structure <code class="docutils literal"><span class="pre">myfs_aops</span></code>.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#addressspaceoperations"><span class="std std-ref">Address space operations</span></a>.</p>
+<p>Read the section <a class="reference internal" href="#addressspaceoperations"><span class="std std-ref">Address space operations</span></a>.</p>
 <p>Use the generic functions provided by VFS.</p>
 <p>An implementation example is the <code class="docutils literal"><span class="pre">ramfs</span></code> file system: the <code class="docutils literal"><span class="pre">ramfs_aops</span></code> structure.</p>
 <p class="last">You do not need to define the function of type <code class="docutils literal"><span class="pre">set_page_dirty</span></code>.</p>
@@ -1053,7 +1056,7 @@ As in the previous lab, we will use the <code class="docutils literal"><span cla
 </pre></div>
 </div>
 <p>After formatting, the disk has a structure like the one in the diagram below:</p>
-<img alt="../_images/minfs_arch.png" src="../_images/minfs_arch.png" />
+<img alt="../_images/minfs_arch1.png" src="../_images/minfs_arch1.png" />
 <p>As shown in the diagram, <code class="docutils literal"><span class="pre">minfs</span></code> is a minimalist file system.
 <code class="docutils literal"><span class="pre">minfs</span></code> contains a maximum of 32 inodes, each inode having a single data block (the file size is limited to block size).
 The super block contains a 32-bit map (<code class="docutils literal"><span class="pre">imap</span></code>), each bit indicating the use of an inode.</p>
@@ -1071,7 +1074,7 @@ The <code class="docutils literal"><span class="pre">iterate</span></code> opera
 <p>Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">5</span></code> which will guide you through the steps you need to take.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p>As a starting point, follow the <code class="xref c c-func docutils literal"><span class="pre">minix_readdir()</span></code> function.
 The function is rather complicated, but it gives you an insight into the steps you have to do.</p>
 <p class="last">Follow, in <code class="docutils literal"><span class="pre">minfs.c</span></code> and <code class="docutils literal"><span class="pre">minfs.h</span></code>, the definitions of structures <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code>, <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode</span></code> and <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code>.
@@ -1140,7 +1143,7 @@ We will actually implement the <code class="docutils literal"><span class="pre">
 <p>Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">6</span></code> which will tell you the steps you need to take.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">As a starting point, read the functions <code class="xref c c-func docutils literal"><span class="pre">qnx6_find_entry()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">minix_find_entry()</span></code>.</p>
 </div>
 <p>In the <code class="docutils literal"><span class="pre">minfs_find_entry</span></code> function, iterate over the directory where the dentry is: <code class="docutils literal"><span class="pre">dentry-&gt;d_parent-&gt;d_inode</span></code>.
@@ -1193,7 +1196,7 @@ In fact, we will implement the <code class="docutils literal"><span class="pre">
 <p>Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">7</span></code> which will guide you through the steps you need to take.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">Inspect the code in the <code class="docutils literal"><span class="pre">minfs_create</span></code> and the skeleton of functions <code class="docutils literal"><span class="pre">minfs_new_inode</span></code> and <code class="docutils literal"><span class="pre">minfs_add_link</span></code>.</p>
 </div>
 <p>Implement the function <code class="docutils literal"><span class="pre">minfs_new_inode</span></code>. Inside this function you will create (using <code class="xref c c-func docutils literal"><span class="pre">new_inode()</span></code>) and initialize an inode. The initialization is done using the data from disk.</p>
@@ -1202,7 +1205,7 @@ In fact, we will implement the <code class="docutils literal"><span class="pre">
 <p>Use the <code class="xref c c-func docutils literal"><span class="pre">minix_new_inode()</span></code> function as a model.
 Find the first free inode in imap (<code class="docutils literal"><span class="pre">sbi-&gt;imap</span></code>).
 Use bitwise operations (<code class="docutils literal"><span class="pre">find_first_zero_bit</span></code> and <code class="docutils literal"><span class="pre">set_bit</span></code>).
-Read the <a class="reference internal" href="../so2/lab9-filesystems-part2.html#bitmapoperations"><span class="std std-ref">Bitmap operations</span></a> section.</p>
+Read the <a class="reference internal" href="#bitmapoperations"><span class="std std-ref">Bitmap operations</span></a> section.</p>
 <p>The buffer for the superblock (<code class="docutils literal"><span class="pre">sbi-&gt;sbh</span></code>) must be marked as dirty .</p>
 <p class="last">You must initialize the usual fields as it is done for the <code class="docutils literal"><span class="pre">myfs</span></code> file system.
 Initialize the <code class="docutils literal"><span class="pre">i_mode</span></code> field to <code class="docutils literal"><span class="pre">0</span></code> in the call to <code class="docutils literal"><span class="pre">inode_init_owner</span></code>. It will be initialized in the caller later.</p>
@@ -1263,8 +1266,8 @@ To be complete, the implementations needs function to delete files, create and d
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="networking.html" class="btn btn-neutral float-right" title="Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="filesystems_part1.html" class="btn btn-neutral float-left" title="File system drivers (Part 1)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab10-networking.html" class="btn btn-neutral float-right" title="SO2 Lab 10 - Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lab8-filesystems-part1.html" class="btn btn-neutral float-left" title="SO2 Lab 08 - File system drivers (Part 1)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

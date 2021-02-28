@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Block Device Drivers &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lab 07 - Block Device Drivers &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="File system drivers (Part 1)" href="filesystems_part1.html" />
-    <link rel="prev" title="Deferred work" href="deferred_work.html" /> 
+    <link rel="next" title="SO2 Lab 08 - File system drivers (Part 1)" href="lab8-filesystems-part1.html" />
+    <link rel="prev" title="SO2 Lab 06 - Memory Mapping" href="lab6-memory-mapping.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,8 +101,63 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 07 - Block Device Drivers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-a-block-i-o-device">Register a block I/O device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-a-disk">Register a disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#request-queues">Request queues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-request">Create a request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#finish-a-request">Finish a request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#process-a-request">Process a request</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submit-a-struct-bio-structure">Submit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#block-device">1. Block device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#disk-registration">2. Disk registration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ram-disk">3. RAM disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#read-data-from-the-disk">4. Read data from the disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#write-data-to-the-disk">5. Write data to the disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#processing-requests-from-the-request-queue-at-struct-bio-level">6. Processing requests from the request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -113,60 +168,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Block Device Drivers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#register-a-block-i-o-device">Register a block I/O device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#register-a-disk">Register a disk</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#request-queues">Request queues</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#create-a-request">Create a request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#finish-a-request">Finish a request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#process-a-request">Process a request</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#submit-a-struct-bio-structure">Submit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#block-device">1. Block device</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#disk-registration">2. Disk registration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ram-disk">3. RAM disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#read-data-from-the-disk">4. Read data from the disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#write-data-to-the-disk">5. Write data to the disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#processing-requests-from-the-request-queue-at-struct-bio-level">6. Processing requests from the request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -220,13 +235,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Block Device Drivers</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
+        
+      <li>SO2 Lab 07 - Block Device Drivers</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/block_device_drivers.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lab7-block-device-drivers.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -239,8 +256,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="block-device-drivers">
-<h1>Block Device Drivers<a class="headerlink" href="#block-device-drivers" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="so2-lab-07-block-device-drivers">
+<h1>SO2 Lab 07 - Block Device Drivers<a class="headerlink" href="#so2-lab-07-block-device-drivers" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -1250,7 +1267,7 @@ variable.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Review the sections <a class="reference internal" href="../so2/lab7-block-device-drivers.html#bio-content"><span class="std std-ref">How to use the content of a struct bio structure</span></a> and <a class="reference internal" href="../so2/lab7-block-device-drivers.html#bio-completion"><span class="std std-ref">Wait for the completion of a struct bio structure</span></a>.</p>
+<p class="last">Review the sections <a class="reference internal" href="#bio-content"><span class="std std-ref">How to use the content of a struct bio structure</span></a> and <a class="reference internal" href="#bio-completion"><span class="std std-ref">Wait for the completion of a struct bio structure</span></a>.</p>
 </div>
 <p>For testing, use the <code class="file docutils literal"><span class="pre">test-relay-disk</span></code> script, which is copied on the
 virtual machine when running <strong class="command">make copy</strong>. If it is not copied, make
@@ -1314,7 +1331,7 @@ structures of each <code class="xref c c-type docutils literal"><span class="pre
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Review the indications and the code snippets from the
-<a class="reference internal" href="../so2/lab7-block-device-drivers.html#bio-content"><span class="std std-ref">How to use the content of a struct bio structure</span></a> section.</p>
+<a class="reference internal" href="#bio-content"><span class="std std-ref">How to use the content of a struct bio structure</span></a> section.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1353,8 +1370,8 @@ data (flush).</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="filesystems_part1.html" class="btn btn-neutral float-right" title="File system drivers (Part 1)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="deferred_work.html" class="btn btn-neutral float-left" title="Deferred work" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab8-filesystems-part1.html" class="btn btn-neutral float-right" title="SO2 Lab 08 - File system drivers (Part 1)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lab6-memory-mapping.html" class="btn btn-neutral float-left" title="SO2 Lab 06 - Memory Mapping" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
