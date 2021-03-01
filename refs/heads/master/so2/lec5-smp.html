@@ -301,7 +301,7 @@ a release operation of a resource counter:</p>
 the last user releases it but the above implementation has a race
 condition that can cause freeing the resource twice:</p>
 <p class="admonition-race-condition-scenario">&nbsp;</p>
-<img alt="../_images/ditaa-e6956bef8745cfb04847e6fa5ab88949d79512e1.png" src="../_images/ditaa-e6956bef8745cfb04847e6fa5ab88949d79512e1.png" />
+<img alt="../_images/ditaa-35f7597b35b83bb0025ac2a5f158c9eae23050c8.png" src="../_images/ditaa-35f7597b35b83bb0025ac2a5f158c9eae23050c8.png" />
 <p>In most cases the <cite>release_resource()</cite> function will only free the
 resource once. However, in the scenario above, if thread A is
 preempted right after decrementing <cite>counter</cite> and thread B calls
@@ -385,13 +385,13 @@ the load and store operations are interleaved across CPUs, like in the
 example below where incrementing a value from two processors will
 produce an unexpected result:</p>
 <p class="admonition-atomic-operations-may-not-be-atomic-on-smp-systems">&nbsp;</p>
-<img alt="../_images/ditaa-4a6cc07b903b874d12feadc8b9e806ed2a32ab83.png" src="../_images/ditaa-4a6cc07b903b874d12feadc8b9e806ed2a32ab83.png" />
+<img alt="../_images/ditaa-ddd14be50300088958e86912bc5f396797634a3a.png" src="../_images/ditaa-ddd14be50300088958e86912bc5f396797634a3a.png" />
 <p>In order to provide atomic operations on SMP systems different
 architectures use different techniques. For example, on x86 a LOCK
 prefix is used to lock the system bus while executing the prefixed
 operation:</p>
 <p class="admonition-fixing-atomic-operations-for-smp-systems-x86">&nbsp;</p>
-<img alt="../_images/ditaa-1b138a4059fd204e76e0d712152c107607e1d5e6.png" src="../_images/ditaa-1b138a4059fd204e76e0d712152c107607e1d5e6.png" />
+<img alt="../_images/ditaa-c11fccb956cdf115910f9f72e1dc14cd7ed549ff.png" src="../_images/ditaa-c11fccb956cdf115910f9f72e1dc14cd7ed549ff.png" />
 <p>On ARM the LDREX and STREX instructions are used together to guarantee
 atomic access: LDREX loads a value and signals the exclusive monitor
 that an atomic operation is in progress. The STREX attempts to store a
@@ -495,12 +495,12 @@ only consider the L1 caches and main memory.</p>
 variables A and B that fall into different cache lines and where
 caches and the main memory are synchronized:</p>
 <p class="admonition-synchronized-caches-and-memory">&nbsp;</p>
-<img alt="../_images/ditaa-2d1d2e2906c8d16b11c6cf98eb9edb49415fcf65.png" src="../_images/ditaa-2d1d2e2906c8d16b11c6cf98eb9edb49415fcf65.png" />
+<img alt="../_images/ditaa-4d63c157487ff8291f2a6e93fe680ec38c1a3212.png" src="../_images/ditaa-4d63c157487ff8291f2a6e93fe680ec38c1a3212.png" />
 <p>In the absence of a synchronization mechanism between the caches and
 main memory, when CPU 0 executes <cite>A = A + B</cite> and CPU 1 executes <cite>B =
 A + B</cite> we will have the following memory view:</p>
 <p class="admonition-unsynchronized-caches-and-memory">&nbsp;</p>
-<img alt="../_images/ditaa-eab4e258444450af6a44018110db111cdaec2016.png" src="../_images/ditaa-eab4e258444450af6a44018110db111cdaec2016.png" />
+<img alt="../_images/ditaa-7ee0f9bb5f5af586e043afd47cfbad0adcc34888.png" src="../_images/ditaa-7ee0f9bb5f5af586e043afd47cfbad0adcc34888.png" />
 <p>In order to avoid the situation above multi-processor systems use
 cache coherency protocols. There are two main types of cache coherency
 protocols:</p>
@@ -556,7 +556,7 @@ where the first has acquired the spin lock and it is running the
 critical section while the other two are spinning waiting to enter the
 critical section:</p>
 <p class="admonition-cache-thrashing-due-to-spin-lock-contention">&nbsp;</p>
-<img alt="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" src="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" />
+<img alt="../_images/ditaa-b26d802c286bda6c559b4dcfa8a7fb27f840463e.png" src="../_images/ditaa-b26d802c286bda6c559b4dcfa8a7fb27f840463e.png" />
 <p>As it can be seen from the figure above due to the writes issued by
 the cores spinning on the lock we see frequent cache line invalidate
 operations which means that basically the two waiting cores will flush
@@ -612,7 +612,7 @@ implementation uses a queued spin lock where the CPU cores spin on
 different locks (hopefully distributed in different cache lines) to
 avoid cache invalidation operations:</p>
 <p class="admonition-queued-spin-locks">&nbsp;</p>
-<img alt="../_images/ditaa-57e08bc7491de137a8d2f7c2dfc22e76cbfc0949.png" src="../_images/ditaa-57e08bc7491de137a8d2f7c2dfc22e76cbfc0949.png" />
+<img alt="../_images/ditaa-58545831034f050660727be99cede213bc4a53c7.png" src="../_images/ditaa-58545831034f050660727be99cede213bc4a53c7.png" />
 <p>Conceptually, when a new CPU core tries to acquire the lock and it
 fails it will add its private lock to the list of waiting CPU
 cores. When the lock owner exits the critical section it unlocks the
@@ -918,7 +918,7 @@ readers won't affect the quiescent cycle.</li>
 <p>As an example, lets take a look on how to delete an element from a
 list using RCU:</p>
 <p class="admonition-rcu-list-delete">&nbsp;</p>
-<img alt="../_images/ditaa-353c3d23d47a5252f128d20968eeaacd725737a6.png" src="../_images/ditaa-353c3d23d47a5252f128d20968eeaacd725737a6.png" />
+<img alt="../_images/ditaa-5193a924360bebc83d2f81188cd0b0093ec01e6a.png" src="../_images/ditaa-5193a924360bebc83d2f81188cd0b0093ec01e6a.png" />
 <p>In the first step it can be seen that while readers traverse the list
 all elements are referenced. In step two a writer removes
 element B. Reclamation is postponed since there are still readers that

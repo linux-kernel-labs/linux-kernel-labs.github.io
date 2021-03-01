@@ -297,7 +297,7 @@ of the instruction after the instuction that caused the trap. (e.g debug trap).<
 <h2>Hardware Concepts<a class="headerlink" href="#hardware-concepts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="programmable-interrupt-controller">
 <h3>Programmable Interrupt Controller<a class="headerlink" href="#programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
-<img alt="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" class="admonition-hardware-pic" src="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" />
+<img alt="../_images/ditaa-5db1739b80a83b12505e4ff749b5e69fccd01f1b.png" class="admonition-hardware-pic" src="../_images/ditaa-5db1739b80a83b12505e4ff749b5e69fccd01f1b.png" />
 <p>A device supporting interrupts has an output pin used for signalling an Interrupt ReQuest. IRQ
 pins are connected to a device named Programmable Interrupt Controller (PIC) which is connected
 to CPU's INTR pin.</p>
@@ -319,7 +319,7 @@ interrupt handlers are always executed serially.</p>
 </div>
 <div class="section" id="advanced-programmable-interrupt-controller">
 <h3>Advanced Programmable Interrupt Controller<a class="headerlink" href="#advanced-programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
-<img alt="../_images/ditaa-f0124fcd03ddd32134f414c160e247355ab306bc.png" class="admonition-hardware-apic" src="../_images/ditaa-f0124fcd03ddd32134f414c160e247355ab306bc.png" />
+<img alt="../_images/ditaa-9d23d02ebdff6eeb6bec8044480f055de9852ecc.png" class="admonition-hardware-apic" src="../_images/ditaa-9d23d02ebdff6eeb6bec8044480f055de9852ecc.png" />
 <p>With multicore systems, each core has a local APIC used to process interrupts
 from locally connected devices like timers or thermals sensors.</p>
 <p>I/O APIC is used to distribute IRQ from external devices to CPU cores.</p>
@@ -371,7 +371,7 @@ instructions as interrupt/exception handler.</p>
 <p>Below we can find Linux IRQ vector layout. The first 32 entries are reserved
 for exceptions, vector 128 is used for sycall interface and the rest are
 used mostly for hardware interrupts handlers.</p>
-<img alt="../_images/ditaa-dc1532523c503b0c569468d4ed1d7aeb11ed0ed0.png" class="admonition-linux-irq-vector-layout" src="../_images/ditaa-dc1532523c503b0c569468d4ed1d7aeb11ed0ed0.png" />
+<img alt="../_images/ditaa-5b3c93f6e612d0cc0e4d4837d92a443627405262.png" class="admonition-linux-irq-vector-layout" src="../_images/ditaa-5b3c93f6e612d0cc0e4d4837d92a443627405262.png" />
 <p>On x86 an IDT entry has 8 bytes and it is named gate. There can be 3 types of gates:</p>
 <blockquote>
 <div><ul class="simple">
@@ -392,7 +392,7 @@ the interupt handlers resides</li>
 <li>DPL, minimum privilege required for using the segments content.</li>
 </ul>
 </div></blockquote>
-<img alt="../_images/ditaa-a9d35ab5597ae26c7755a800c13ff62d6b506ebd.png" class="admonition-interrupt-descriptor-table-entry-gate" src="../_images/ditaa-a9d35ab5597ae26c7755a800c13ff62d6b506ebd.png" />
+<img alt="../_images/ditaa-eff5e0e3b58ce239d5310b22b89c0927be5853bd.png" class="admonition-interrupt-descriptor-table-entry-gate" src="../_images/ditaa-eff5e0e3b58ce239d5310b22b89c0927be5853bd.png" />
 </div>
 <div class="section" id="interrupt-handler-address">
 <h3>Interrupt handler address<a class="headerlink" href="#interrupt-handler-address" title="Permalink to this headline">¶</a></h3>
@@ -401,7 +401,7 @@ address of the code segment where interrupt handler resides. For this we
 use the segment selector to index into GDT/LDT where we can find the corresponding
 segment descriptor. This will provide the start address kept in the 'base' field.
 Using base address and the offset we can now go at the start of the interrupt handler.</p>
-<img alt="../_images/ditaa-9b2dd926bf730364e2ca37aeea66fea341a741bf.png" class="admonition-interrupt-handler-address" src="../_images/ditaa-9b2dd926bf730364e2ca37aeea66fea341a741bf.png" />
+<img alt="../_images/ditaa-b2023fce22479e20bbe08fd76eed87e9a0527688.png" class="admonition-interrupt-handler-address" src="../_images/ditaa-b2023fce22479e20bbe08fd76eed87e9a0527688.png" />
 </div>
 <div class="section" id="stack-of-interrupt-handler">
 <h3>Stack of interrupt handler<a class="headerlink" href="#stack-of-interrupt-handler" title="Permalink to this headline">¶</a></h3>
@@ -412,7 +412,7 @@ information needed for returning to the interrupted code.</p>
 before saving the address of the interrupted instruction. Certain types
 of exceptions also cause an error code to be pushed on the stack to help
 debug the exception.</p>
-<img alt="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" />
+<img alt="../_images/ditaa-85b69602726fa6143fc3ba0ffdb492454864aacf.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-85b69602726fa6143fc3ba0ffdb492454864aacf.png" />
 </div>
 <div class="section" id="handling-an-interrupt-request">
 <h3>Handling an interrupt request<a class="headerlink" href="#handling-an-interrupt-request" title="Permalink to this headline">¶</a></h3>
@@ -485,7 +485,7 @@ actions will be run. These are also sometimes known as &quot;bottom half&quot; o
 interrupt (the upper half being the part of the interrupt handling that runs
 with interrupts disabled). At this point interrupts are enabled on the local
 processor.</p>
-<img alt="../_images/ditaa-eb56c6fa9d7ffb1693268ef2ca9de9d78a9868a7.png" class="admonition-interrupt-handling-in-linux" src="../_images/ditaa-eb56c6fa9d7ffb1693268ef2ca9de9d78a9868a7.png" />
+<img alt="../_images/ditaa-da31e3d17a4d55e5c3dbc0bd5903306418a896ca.png" class="admonition-interrupt-handling-in-linux" src="../_images/ditaa-da31e3d17a4d55e5c3dbc0bd5903306418a896ca.png" />
 <div class="section" id="nested-interrupts-and-exceptions">
 <h3>Nested interrupts and exceptions<a class="headerlink" href="#nested-interrupts-and-exceptions" title="Permalink to this headline">¶</a></h3>
 <p>Nesting interrupts is permitted on many architectures. Some architectures define
@@ -501,7 +501,7 @@ if that occurs it is considered a bug</li>
 one level of interrupt nesting is allowed</li>
 </ul>
 <p>The diagram below shows the possible nesting scenarios:</p>
-<img alt="../_images/ditaa-8bab5b1e954e998c106f4a97d90ab30c70943cb4.png" class="admonition-interrupt-exception-nesting" src="../_images/ditaa-8bab5b1e954e998c106f4a97d90ab30c70943cb4.png" />
+<img alt="../_images/ditaa-cf9d88cddb9129693d8858ceb52726cc5d6cd391.png" class="admonition-interrupt-exception-nesting" src="../_images/ditaa-cf9d88cddb9129693d8858ceb52726cc5d6cd391.png" />
 </div>
 <div class="section" id="interrupt-context">
 <h3>Interrupt context<a class="headerlink" href="#interrupt-context" title="Permalink to this headline">¶</a></h3>
