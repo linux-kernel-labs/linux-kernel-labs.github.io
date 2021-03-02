@@ -50,7 +50,9 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing to linux-kernel-labs" href="contributing.html" />
+    <link rel="prev" title="Virtual Machine Setup" href="vm.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -127,8 +129,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Customizing the Virtual Machine Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#connect-to-the-virtual-machine-via-ssh">Connect to the Virtual Machine via SSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connecting-a-debugger-to-the-virtual-machine-kernel">Connecting a Debugger to the Virtual Machine Kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rebuild-the-kernel-image">Rebuild the Kernel Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-docker-containers">Using Docker containers</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
 
@@ -207,6 +216,9 @@ kernel and kernel modules. For extra features, such as an SSH connection,
 a more complete image is required, such as <code class="docutils literal"><span class="pre">core-image-sato-dev-qemu</span></code>.</p>
 <p>To use the new image, update the <code class="docutils literal"><span class="pre">YOCTO_IMAGE</span></code> variable in
 <code class="docutils literal"><span class="pre">tools/labs/qemu/Makefile</span></code>:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nv">YOCTO_IMAGE</span> <span class="o">=</span> core-image-sato-qemu<span class="k">$(</span>ARCH<span class="k">)</span>.ext4
+</pre></div>
+</div>
 <p>When you start the virtual machine the first time using <code class="docutils literal"><span class="pre">make</span> <span class="pre">boot</span></code> with the
 new image configuration, it will download the image and then boot the virtual
 machine. The image is larger (around 400MB) than the minimal image so expect
@@ -290,6 +302,9 @@ at kernel/sched/idle.c:350
 <p>The kernel image is built the first time the VM is started. To rebuild the
 kernel remove the kernel image file defined by the <code class="docutils literal"><span class="pre">ZIMAGE</span></code> variable in
 <code class="docutils literal"><span class="pre">tools/labs/qemu/Makefile</span></code>:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nv">ZIMAGE</span> <span class="o">=</span> <span class="k">$(</span>KDIR<span class="k">)</span>/arch/<span class="k">$(</span>ARCH<span class="k">)</span>/boot/<span class="k">$(</span>b<span class="k">)</span>zImage
+</pre></div>
+</div>
 <p>Typically the full path of the kernel is <code class="docutils literal"><span class="pre">arch/x86/boot/bzImage</span></code>.</p>
 <p>Once removed the kernel image is rebuild by using:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>~/src/linux/tools/labs$ make zImage
@@ -313,6 +328,11 @@ packages:</p>
 </ul>
 <p>In order to run the container infrastructure run the following command in the
 <code class="docutils literal"><span class="pre">tools/labs/</span></code> directory:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>sergiu@local:~/src/linux/tools/labs$ make docker-kernel
+...
+ubuntu@so2:~$
+</pre></div>
+</div>
 <p>The first time you run the command above, it will take a long time, because you
 will have to build the container environment and install the required
 applications.</p>
@@ -323,6 +343,9 @@ the containerized environment.</p>
 <p>The linux repository is mounted in the <code class="docutils literal"><span class="pre">/linux</span></code> directory. All changes
 you will make here will also be seen on your local instance.</p>
 <p>In order to stop the container use the following command:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>make stop-docker-kernel
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -331,6 +354,10 @@ you will make here will also be seen on your local instance.</p>
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing to linux-kernel-labs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="vm.html" class="btn btn-neutral float-left" title="Virtual Machine Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
