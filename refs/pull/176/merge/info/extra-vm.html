@@ -300,6 +300,30 @@ kernel remove the kernel image file defined by the <code class="docutils literal
 </pre></div>
 </div>
 </div>
+<div class="section" id="using-docker-containers">
+<h2>Using Docker containers<a class="headerlink" href="#using-docker-containers" title="Permalink to this headline">¶</a></h2>
+<p>If your setup doesn't allow the installation of the packages required for the
+laboratory setup, you can build and run a container that has all the setup
+already prepared for the virtual machine environment.</p>
+<p>In order to run the containerized setup, you need to install the following
+packages:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">docker</span></code></li>
+<li><code class="docutils literal"><span class="pre">docker-compose</span></code></li>
+</ul>
+<p>In order to run the container infrastructure run the following command in the
+<code class="docutils literal"><span class="pre">tools/labs/</span></code> directory:</p>
+<p>The first time you run the command above, it will take a long time, because you
+will have to build the container environment and install the required
+applications.</p>
+<p>Every time you run the <code class="docutils literal"><span class="pre">make</span> <span class="pre">docker-kernel</span></code> command, another shell will
+connect to the container. This will allow you to work with multiple tabs.</p>
+<p>All the commands that you would use in the regular environment can be used in
+the containerized environment.</p>
+<p>The linux repository is mounted in the <code class="docutils literal"><span class="pre">/linux</span></code> directory. All changes
+you will make here will also be seen on your local instance.</p>
+<p>In order to stop the container use the following command:</p>
+</div>
 </div>
 
 
