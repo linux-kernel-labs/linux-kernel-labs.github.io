@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>File system drivers (Part 2) &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Networking" href="networking.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -180,6 +187,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -214,18 +222,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>File system drivers (Part 2)</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/labs/filesystems_part2.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -384,7 +394,7 @@ The <code class="xref c c-func docutils literal"><span class="pre">alloc_inode()
 <p>The inode operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode_operations</span></code> structure.</p>
 <p>Inodes are of several types: file, directory, special file (pipe, fifo), block device, character device, link etc.
 For this reason, the operations that an inode needs to implement are different for each type of inode.
-Below are detailed operations for a <a class="reference internal" href="#fileinodes"><span class="std std-ref">file type inode</span></a> and a <a class="reference internal" href="#directoryinodes"><span class="std std-ref">directory inode</span></a>.</p>
+Below are detailed operations for a <a class="reference internal" href="../so2/lab9-filesystems-part2.html#fileinodes"><span class="std std-ref">file type inode</span></a> and a <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">directory inode</span></a>.</p>
 <p>The operations of an inode are initialized and accessed using the <code class="docutils literal"><span class="pre">i_op</span></code> field of the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code>.</p>
 </div>
 </div>
@@ -403,7 +413,7 @@ When opening a file, the VFS initializes the <code class="docutils literal"><spa
 The type of the inode determines the operations that it needs to implement.</p>
 <div class="section" id="regular-files-inode-operations">
 <span id="fileoperations"></span><h3>Regular files inode operations<a class="headerlink" href="#regular-files-inode-operations" title="Permalink to this headline">¶</a></h3>
-<p>In the <code class="docutils literal"><span class="pre">minix</span></code> file system, the <code class="docutils literal"><span class="pre">minix_file_inode_operations</span></code> structure is defined for the operations on an inode and for the file operations the <code class="docutils literal"><span class="pre">minix_file_operations</span> <span class="pre">structure</span></code> is defined:</p>
+<p>In the <code class="docutils literal"><span class="pre">minix</span></code> file system, the <code class="docutils literal"><span class="pre">minix_file_inode_operations</span></code> structure is defined for the operations on an inode and for the file operations the <code class="docutils literal"><span class="pre">minix_file_operations</span></code> structure is defined:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="n">minix_file_operations</span> <span class="o">=</span> <span class="p">{</span>
          <span class="p">.</span><span class="n">llseek</span>         <span class="o">=</span> <span class="n">generic_file_llseek</span><span class="p">,</span>
          <span class="p">.</span><span class="n">read_iter</span>      <span class="o">=</span> <span class="n">generic_file_read_iter</span><span class="p">,</span>
@@ -806,7 +816,7 @@ For this we often need to use bit operations. Such operations are:</p>
 <div class="section" id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Robert Love – Linux Kernel Development, Second Edition – Chapter
+<li>Robert Love -- Linux Kernel Development, Second Edition -- Chapter
 12. The Virtual Filesystem</li>
 <li>Understanding the Linux Kernel, 3rd edition - Chapter 12. The Virtual
 Filesystem</li>
@@ -814,7 +824,7 @@ Filesystem</li>
 <li><a class="reference external" href="http://www.cyberciti.biz/tips/understanding-unixlinux-file-system-part-i.html">Understanding Unix/Linux Filesystem</a></li>
 <li><a class="reference external" href="http://lwn.net/Articles/57369/">Creating Linux virtual filesystems</a></li>
 <li><a class="reference external" href="http://www.tldp.org/LDP/tlk/fs/filesystem.html">The Linux Documentation Project - VFS</a></li>
-<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The “Virtual File System” in Linux</a></li>
+<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The &quot;Virtual File System&quot; in Linux</a></li>
 <li><a class="reference external" href="http://inglorion.net/documents/tutorials/tutorfs/">A Linux Filesystem Tutorial</a></li>
 <li><a class="reference external" href="http://www.win.tue.nl/~aeb/linux/lk/lk-8.html">The Linux Virtual File System</a></li>
 <li><a class="reference external" href="http://lxr.free-electrons.com/source/Documentation/filesystems/vfs.txt">Documentation/filesystems/vfs.txt</a></li>
@@ -885,7 +895,7 @@ We stopped after mounting the file system and now we will continue with the oper
 At the end of these exercises, we will be able to create, modify and delete regular directories and files.</p>
 <p>We will mostly use the <code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">dentry</span></code> VFS structures.
 The <code class="docutils literal"><span class="pre">inode</span></code> structure defines a file (of any type: regular, directory, link), while the <code class="docutils literal"><span class="pre">dentry</span></code> structure defines a name, which is an entry in a directory.</p>
-<p>For this we will access the <code class="docutils literal"><span class="pre">myfs/kernel</span></code> directory in the lab skeleton.
+<p>For this we will access the <code class="docutils literal"><span class="pre">myfs</span></code> directory in the lab skeleton.
 The previously generated skeleton contains the solution for the previous lab; we will start from this. As in the previous lab, we will use the <code class="docutils literal"><span class="pre">ramfs</span></code> file system as a starting point.</p>
 <div class="section" id="directory-operations">
 <h4>1. Directory operations<a class="headerlink" href="#directory-operations" title="Permalink to this headline">¶</a></h4>
@@ -909,7 +919,7 @@ The operations of creating a file or deleting a file are also directory operatio
 To begin, just define the structure <code class="docutils literal"><span class="pre">myfs_dir_inode_operations</span></code>; you will define the structures <code class="docutils literal"><span class="pre">myfs_file_operations</span></code>, <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> , and <code class="docutils literal"><span class="pre">myfs_aops</span></code> in the next exercise.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">As a model, you are following the <code class="docutils literal"><span class="pre">ramfs_dir_inode_operations</span></code> structure.</p>
 </div>
 <p>Implement the <code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">mknod</span></code> and <code class="docutils literal"><span class="pre">create</span></code> operations inside <code class="docutils literal"><span class="pre">myfs_mkdir</span></code>, <code class="docutils literal"><span class="pre">myfs_mknod</span></code> and <code class="docutils literal"><span class="pre">myfs_create</span></code>.
@@ -973,7 +983,8 @@ We use commands like the ones below:</p>
 </div>
 <p>This happens because we have not implemented the operations for working with files; we will do so further.</p>
 <p>To unload the kernel module, use the command</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">rmmod myfs</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">umount /mnt/myfs</span>
+<span class="go">rmmod myfs</span>
 </pre></div>
 </div>
 <p>To test the functionality provided by the kernel module, we can use the dedicated script <code class="docutils literal"><span class="pre">test-myfs-1.sh</span></code>.
@@ -982,13 +993,13 @@ If the implementation is correct, no error messages will be displayed.</p>
 </div>
 <div class="section" id="file-operations">
 <h4>2. File operations<a class="headerlink" href="#file-operations" title="Permalink to this headline">¶</a></h4>
-<p>We want to implement the operations for working with files, which are used for accessing a file’s content: read, write, truncate, etc.
+<p>We want to implement the operations for working with files, which are used for accessing a file's content: read, write, truncate, etc.
 For this you will specify the operations described in the structures <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode_operations</span></code>, <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">address_space_operations</span></code>.</p>
 <p>Follow the locations marked with <code class="docutils literal"><span class="pre">TODO</span></code> 6 which will guide you through the steps you need to take.</p>
 <p>Start by defining <code class="docutils literal"><span class="pre">myfs_file_inode_operations</span></code> and <code class="docutils literal"><span class="pre">myfs_file_operations</span></code>.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="#fileoperations"><span class="std std-ref">Regular files inode operations</span></a>.</p>
+<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#fileoperations"><span class="std std-ref">Regular files inode operations</span></a>.</p>
 <p>Use the generic function provided by VFS.</p>
 <p class="last">An example of implementation is the <code class="docutils literal"><span class="pre">ramfs</span></code> file system.
 Follow the implementation of <code class="docutils literal"><span class="pre">ramfs_file_inode_operations</span></code> and <code class="docutils literal"><span class="pre">ramfs_file_operations</span></code>.</p>
@@ -1003,7 +1014,7 @@ Follow the implementation of <code class="docutils literal"><span class="pre">ra
 <p>Continue with defining the structure <code class="docutils literal"><span class="pre">myfs_aops</span></code>.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="#addressspaceoperations"><span class="std std-ref">Address space operations</span></a>.</p>
+<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#addressspaceoperations"><span class="std std-ref">Address space operations</span></a>.</p>
 <p>Use the generic functions provided by VFS.</p>
 <p>An implementation example is the <code class="docutils literal"><span class="pre">ramfs</span></code> file system: the <code class="docutils literal"><span class="pre">ramfs_aops</span></code> structure.</p>
 <p class="last">You do not need to define the function of type <code class="docutils literal"><span class="pre">set_page_dirty</span></code>.</p>
@@ -1027,7 +1038,7 @@ In addition to those steps, we will now be able to read, write and modify a file
 </div>
 <div class="section" id="minfs">
 <h3>minfs<a class="headerlink" href="#minfs" title="Permalink to this headline">¶</a></h3>
-<p>For the exercises below, we will use the minfs file system whose development we started in the previous lab.
+<p>For the exercises below, we will use the minfs file system whose development started in the previous lab.
 This is a file system with disk support.
 We stopped after mounting the file system and now we will continue with the operations on regular files and directories.
 At the end of these exercises we will be able to create and delete entries in the file system.</p>
@@ -1060,14 +1071,14 @@ The <code class="docutils literal"><span class="pre">iterate</span></code> opera
 <p>Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">5</span></code> which will guide you through the steps you need to take.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p>As a starting point, follow the <code class="xref c c-func docutils literal"><span class="pre">minix_readdir()</span></code> function.
 The function is rather complicated, but it gives you an insight into the steps you have to do.</p>
 <p class="last">Follow, in <code class="docutils literal"><span class="pre">minfs.c</span></code> and <code class="docutils literal"><span class="pre">minfs.h</span></code>, the definitions of structures <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code>, <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode</span></code> and <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code>.
 You will use them in the <code class="docutils literal"><span class="pre">minfs_readdir</span></code> implementation.</p>
 </div>
 <p>Obtain the inode and the structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> associated with the directory.
-The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful to find out the directory’s data block.
+The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful to find out the directory's data block.
 From this structure you get the <code class="docutils literal"><span class="pre">data_block</span></code> field, representing the data block index on the disk.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
@@ -1085,7 +1096,7 @@ Use casting to <code class="docutils literal"><span class="pre">struct</span> <s
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>For each index, get the corresponding entry of the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code> by using pointer arithmetics on the <code class="docutils literal"><span class="pre">bh-&gt;b_data</span></code> field.
-Ignore dentries that have an <code class="docutils literal"><span class="pre">ino</span></code> field equal to 0. Such a dentry is a free slot in the director’s dentry list.</p>
+Ignore dentries that have an <code class="docutils literal"><span class="pre">ino</span></code> field equal to 0. Such a dentry is a free slot in the director's dentry list.</p>
 <p>For each valid entry, there is an existing call <code class="xref c c-func docutils literal"><span class="pre">dir_emit()</span></code> with the appropriate parameters. This is the call that sends the dentries to the caller (and then to user space).</p>
 <p class="last">Check the call examples in <code class="xref c c-func docutils literal"><span class="pre">qnx6_readdir()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">minix_readdir()</span></code>.</p>
 </div>
@@ -1096,7 +1107,7 @@ To do this, we compile the kernel module (<code class="docutils literal"><span c
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>The test scripts are copied to the virtual machine only if they are executable:</p>
-<div class="last highlight-console"><div class="highlight"><pre><span></span><span class="gp">student@eg106:~/so2/linux/tools/labs$</span> chmod +x skels/filesystems/minfs/user/test-minfs*.sh
+<div class="last highlight-console"><div class="highlight"><pre><span></span><span class="gp">student@eg106:~/src/linux/tools/labs$</span> chmod +x skels/filesystems/minfs/user/test-minfs*.sh
 </pre></div>
 </div>
 </div>
@@ -1129,11 +1140,11 @@ We will actually implement the <code class="docutils literal"><span class="pre">
 <p>Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">6</span></code> which will tell you the steps you need to take.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">As a starting point, read the functions <code class="xref c c-func docutils literal"><span class="pre">qnx6_find_entry()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">minix_find_entry()</span></code>.</p>
 </div>
 <p>In the <code class="docutils literal"><span class="pre">minfs_find_entry</span></code> function, iterate over the directory where the dentry is: <code class="docutils literal"><span class="pre">dentry-&gt;d_parent-&gt;d_inode</span></code>.
-Iterating means going through the entries in the directory’s data block (of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code>) and locate, if it exists, the requested entry.</p>
+Iterating means going through the entries in the directory's data block (of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_dir_entry</span></code>) and locate, if it exists, the requested entry.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>From the structure of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> corresponding to the directory, find out the data block index and read it (<code class="docutils literal"><span class="pre">sb_read</span></code>).
@@ -1182,7 +1193,7 @@ In fact, we will implement the <code class="docutils literal"><span class="pre">
 <p>Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">7</span></code> which will guide you through the steps you need to take.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p>Read the section <a class="reference internal" href="#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
+<p>Read the section <a class="reference internal" href="../so2/lab9-filesystems-part2.html#directoryinodes"><span class="std std-ref">Directory inodes operations</span></a></p>
 <p class="last">Inspect the code in the <code class="docutils literal"><span class="pre">minfs_create</span></code> and the skeleton of functions <code class="docutils literal"><span class="pre">minfs_new_inode</span></code> and <code class="docutils literal"><span class="pre">minfs_add_link</span></code>.</p>
 </div>
 <p>Implement the function <code class="docutils literal"><span class="pre">minfs_new_inode</span></code>. Inside this function you will create (using <code class="xref c c-func docutils literal"><span class="pre">new_inode()</span></code>) and initialize an inode. The initialization is done using the data from disk.</p>
@@ -1191,7 +1202,7 @@ In fact, we will implement the <code class="docutils literal"><span class="pre">
 <p>Use the <code class="xref c c-func docutils literal"><span class="pre">minix_new_inode()</span></code> function as a model.
 Find the first free inode in imap (<code class="docutils literal"><span class="pre">sbi-&gt;imap</span></code>).
 Use bitwise operations (<code class="docutils literal"><span class="pre">find_first_zero_bit</span></code> and <code class="docutils literal"><span class="pre">set_bit</span></code>).
-Read the <a class="reference internal" href="#bitmapoperations"><span class="std std-ref">Bitmap operations</span></a> section.</p>
+Read the <a class="reference internal" href="../so2/lab9-filesystems-part2.html#bitmapoperations"><span class="std std-ref">Bitmap operations</span></a> section.</p>
 <p>The buffer for the superblock (<code class="docutils literal"><span class="pre">sbi-&gt;sbh</span></code>) must be marked as dirty .</p>
 <p class="last">You must initialize the usual fields as it is done for the <code class="docutils literal"><span class="pre">myfs</span></code> file system.
 Initialize the <code class="docutils literal"><span class="pre">i_mode</span></code> field to <code class="docutils literal"><span class="pre">0</span></code> in the call to <code class="docutils literal"><span class="pre">inode_init_owner</span></code>. It will be initialized in the caller later.</p>
@@ -1206,7 +1217,7 @@ For this, you will iterate over the directory data block and you will find the f
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p>In order to work with the directory, get the inode of type <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> corresponding to the parent directory (the <strong>dir</strong> inode).
-Do not use the variable <code class="docutils literal"><span class="pre">inode</span></code> to get <code class="docutils literal"><span class="pre">struct_minfs_inode_info</span></code>; that inode belongs to the file, not to the parent directory inside which you want to add the link/dentry.
+Do not use the variable <code class="docutils literal"><span class="pre">inode</span></code> to get <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code>; that inode belongs to the file, not to the parent directory inside which you want to add the link/dentry.
 To get the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> structure, use <code class="xref c c-func docutils literal"><span class="pre">container_of()</span></code>.</p>
 <p>The structure <code class="docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode_info</span></code> is useful for finding the directory data block (the one indicated by the <code class="docutils literal"><span class="pre">dentry-&gt;d_parent-&gt;d_inode</span></code>, which is the <code class="docutils literal"><span class="pre">dir</span></code> variable).
 From this structure, get the <code class="docutils literal"><span class="pre">data_block</span></code> field, representing index of the data block on the disk.
@@ -1217,7 +1228,7 @@ The block contains at most <code class="docutils literal"><span class="pre">MINF
 <p>When you have found a free place, fill in the corresponding entry:</p>
 <blockquote>
 <div><ul class="simple">
-<li>the <code class="docutils literal"><span class="pre">ino</span></code> field in <code class="docutils literal"><span class="pre">de-&gt;ino</span></code></li>
+<li>the <code class="docutils literal"><span class="pre">inode-&gt;i_ino</span></code> field in <code class="docutils literal"><span class="pre">de-&gt;ino</span></code></li>
 <li>the <code class="docutils literal"><span class="pre">dentry-&gt;d_name.name</span></code> field in <code class="docutils literal"><span class="pre">de-&gt;name</span></code></li>
 </ul>
 </div></blockquote>
@@ -1251,29 +1262,29 @@ To be complete, the implementations needs function to delete files, create and d
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="networking.html" class="btn btn-neutral float-right" title="Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="filesystems_part1.html" class="btn btn-neutral float-left" title="File system drivers (Part 1)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="networking.html" class="btn btn-neutral float-right" title="Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="filesystems_part1.html" class="btn btn-neutral float-left" title="File system drivers (Part 1)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -1281,7 +1292,6 @@ To be complete, the implementations needs function to delete files, create and d
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

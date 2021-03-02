@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Deferred work &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Block Device Drivers" href="block_device_drivers.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -154,6 +161,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -188,18 +196,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Deferred work</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/labs/deferred_work.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -231,7 +241,7 @@ spin_unlock_bh, workqueue, struct work_struct, kernel thread, events/x</p>
 <h2>Background information<a class="headerlink" href="#background-information" title="Permalink to this headline">¶</a></h2>
 <p>Deferred work is a class of kernel facilities that allows one to
 schedule code to be executed at a later timer. This scheduled code can
-run either in the context process or in interruption context depending
+run either in the process context or in interruption context depending
 on the type of deferred work. Deferred work is used to complement the
 interrupt handler functionality since interrupts have important
 requirements and limitations:</p>
@@ -251,7 +261,7 @@ from an interrupt handler (top-half).</p>
 execution of future actions after a certain amount of time has passed.</p>
 <p>Kernel threads are not themselves deferred work, but can be used to
 complement the deferred work mechanisms. In general, kernel threads
-are used as “workers” to process events whose execution contains
+are used as &quot;workers&quot; to process events whose execution contains
 blocking calls.</p>
 <p>There are three typical operations that are used with all types of
 deferred work:</p>
@@ -276,7 +286,7 @@ the deferred work.</p>
 </div>
 <p>The main types of deferred work are kernel threads and softirqs. Work
 queues are implemented on top of kernel threads and tasklets and
-timers on top of softirqs. Bottom-half handlers was the first
+timers on top of softirqs. Bottom-half handlers were the first
 implementation of deferred work in Linux, but in the meantime it was
 replaced by softirqs. That is why some of the functions presented
 contain <em>bh</em> in their name.</p>
@@ -386,7 +396,7 @@ can not be used in the handler function.</p>
 are defined by <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">timer_list</span></code>. They run in interrupt
 context and are implemented on top of softirqs.</p>
 <p>To be used, a timer must first be initialized by calling <code class="xref c c-func docutils literal"><span class="pre">timer_setup()</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux / sched.h&gt;</span><span class="cp"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">timer_setup</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span> <span class="n">timer</span><span class="p">,</span>
                  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="p">),</span>
@@ -403,7 +413,7 @@ with the treatment function.</p>
 </div>
 <p>Where <em>expires</em> is the time (in the future) to run the handler
 function. The function can be used to schedule or reschedule a timer.</p>
-<p>The time unit timers is <em>jiffie</em>. The absolute value of a jiffie
+<p>The time unit is <em>jiffie</em>. The absolute value of a jiffie
 is dependent on the platform and it can be found using the
 <code class="xref c c-type docutils literal"><span class="pre">HZ</span></code> macro that defines the number of jiffies for 1 second. To
 convert between jiffies (<em>jiffies_value</em>) and seconds (<em>seconds_value</em>),
@@ -465,8 +475,8 @@ code running in softirq context (B) we need to use special locking
 primitives. We must use spinlock operations augmented with
 deactivation of bottom-half handlers on the current processor in (A),
 and in (B) only basic spinlock operations. Using spinlocks makes sure
-that we don’t have races between multiple CPUs while deactivating the
-softirqs makes sure that we don’t deadlock in the softirq is scheduled
+that we don't have races between multiple CPUs while deactivating the
+softirqs makes sure that we don't deadlock in the softirq is scheduled
 on the same CPU where we already acquired a spinlock.</p>
 <p>We can use the <code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code> and
 <code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code> to disable and enable softirqs handlers (and
@@ -604,7 +614,7 @@ processors (<code class="xref c c-func docutils literal"><span class="pre">sched
 </pre></div>
 </div>
 <p>As you can see, the <em>my_work_handler</em> function receives the task as
-the parameter. To be able to access the module’s private data, you can
+the parameter. To be able to access the module's private data, you can
 use <code class="xref c c-func docutils literal"><span class="pre">container_of()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">work_struct</span> <span class="n">my_work</span><span class="p">;</span>
@@ -621,7 +631,7 @@ use <code class="xref c c-func docutils literal"><span class="pre">container_of(
 </pre></div>
 </div>
 <p>Scheduling work items with the functions above will run the handler in
-the context of a thread kernel called <em>events/x</em>, where x is the
+the context of a kernel thread called <em>events/x</em>, where x is the
 processor number. The kernel will initialize a kernel thread (or a
 pool of workers) for each processor present in the system:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ ps -e
@@ -660,7 +670,7 @@ thread.</p>
 </div>
 <p><code class="xref c c-func docutils literal"><span class="pre">queue_delayed_work()</span></code> can be used to plan a work for execution
 with a given delay. The time unit for the delay is jiffies.</p>
-<p>To wait for all work item to finish call <code class="xref c c-func docutils literal"><span class="pre">flush_workqueue()</span></code>:</p>
+<p>To wait for all work items to finish call <code class="xref c c-func docutils literal"><span class="pre">flush_workqueue()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">flush_workqueue</span><span class="p">(</span><span class="k">struct</span> <span class="n">worksqueue_struct</span> <span class="o">*</span> <span class="n">queue</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -687,16 +697,16 @@ declares and initializes a work item and adds it to the queue:</p>
 </pre></div>
 </div>
 <p>The work items planned with these functions will run in the context of
-a new thread kernel called <em>my_workqueue</em>, the name passed to
+a new kernel thread called <em>my_workqueue</em>, the name passed to
 <code class="xref c c-func docutils literal"><span class="pre">create_singlethread_workqueue()</span></code>.</p>
 </div>
 <div class="section" id="kernel-threads">
 <h2>Kernel threads<a class="headerlink" href="#kernel-threads" title="Permalink to this headline">¶</a></h2>
 <p>Kernel threads have emerged from the need to run kernel code in
 process context. Kernel threads are the basis of the workqueue
-mechanism. Essentially, a thread kernel is a thread that only runs in
+mechanism. Essentially, a kernel thread is a thread that only runs in
 kernel mode and has no user address space or other user attributes.</p>
-<p>To create a thread kernel, use <code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code>:</p>
+<p>To create a kernel thread, use <code class="xref c c-func docutils literal"><span class="pre">kthread_create()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/kthread.h&gt;</span><span class="cp"></span>
 
 <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">kthread_create</span><span class="p">(</span><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">threadfn</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">),</span>
@@ -714,7 +724,7 @@ according to the standard printf syntax.</li>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">kthread_create</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="s">&quot;%skthread%d&quot;</span><span class="p">,</span> <span class="s">&quot;my&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Will create a thread kernel with the name mykthread0.</p>
+<p>Will create a kernel thread with the name mykthread0.</p>
 <p>The kernel thread created with this function will be stopped (in the
 <em>TASK_INTERRUPTIBLE</em> state). To start the kernel thread, call the
 <code class="xref c c-func docutils literal"><span class="pre">wake_up_process()</span></code>:</p>
@@ -733,12 +743,12 @@ kernel thread:</p>
 the kernel thread are more relaxed and scheduling is closer to
 scheduling in userspace, there are, however, some limitations to be
 taken into account. We will list below the actions that can or can not
-be made from a thread kernel:</p>
+be made from a kernel thread:</p>
 <ul class="simple">
-<li>can’t access the user address space (even with copy_from_user,
-copy_to_user) because a thread kernel does not have a user address
+<li>can't access the user address space (even with copy_from_user,
+copy_to_user) because a kernel thread does not have a user address
 space</li>
-<li>can’t implement busy wait code that runs for a long time; if the
+<li>can't implement busy wait code that runs for a long time; if the
 kernel is compiled without the preemptive option, that code will run
 without being preempted by other kernel threads or user processes
 thus hogging the system</li>
@@ -746,8 +756,8 @@ thus hogging the system</li>
 <li>can use spinlocks, but if the hold time of the lock is significant,
 it is recommended to use mutexes</li>
 </ul>
-<p>The termination of a thread kernel is done voluntarily, within the
-function running in the thread kernel, by calling <code class="xref c c-func docutils literal"><span class="pre">do_exit()</span></code>:</p>
+<p>The termination of a kernel thread is done voluntarily, within the
+function running in the kernel thread, by calling <code class="xref c c-func docutils literal"><span class="pre">do_exit()</span></code>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">fastcall</span> <span class="n">NORET_TYPE</span> <span class="kt">void</span> <span class="nf">do_exit</span><span class="p">(</span><span class="kt">long</span> <span class="n">code</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -777,7 +787,7 @@ common mistakes:</p>
     <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">list_first_entry</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_list</span><span class="p">,</span> <span class="k">struct</span> <span class="n">event</span><span class="o">*</span><span class="p">,</span> <span class="n">lh</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
+        <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
     <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">events_lock</span><span class="p">);</span>
 
     <span class="k">return</span> <span class="n">e</span>
@@ -885,13 +895,13 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 </div>
 <div class="section" id="timer">
 <h3>1.Timer<a class="headerlink" href="#timer" title="Permalink to this headline">¶</a></h3>
-<p>We’re looking at creating a simple kernel module that displays a
-message at <em>TIMER_TIMEOUT</em> seconds after the module’s kernel load.</p>
+<p>We're looking at creating a simple kernel module that displays a
+message at <em>TIMER_TIMEOUT</em> seconds after the module's kernel load.</p>
 <p>Generate the skeleton for the task named <strong>1-2-timer</strong> and follow the
 sections marked with <strong>TODO 1</strong> to complete the task.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p>Use <cite>pr_info(…)</cite>. Messages will be displayed on the
+<p>Use <cite>pr_info(...)</cite>. Messages will be displayed on the
 console and can also be viewed using dmesg. When scheduling
 the timer we need to use the absolute time of the system (in
 the future) in number of ticks. The current time of the
@@ -924,7 +934,7 @@ not run periodically.
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Review <a class="reference internal" href="device_drivers.html#ioctl"><span class="std std-ref">ioctl</span></a> for a way to access the ioctl argument.</p>
+<p class="last">Review <a class="reference internal" href="../so2/lab3-device-drivers.html#ioctl"><span class="std std-ref">ioctl</span></a> for a way to access the ioctl argument.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -936,14 +946,14 @@ process identifier (PID) and the process executable image name.</p>
 <p class="first admonition-title">Hint</p>
 <p class="last">You can find the current process identifier using the <em>pid</em>
 and <em>comm</em> fields of the current process. For details,
-review <a class="reference internal" href="kernel_modules.html#proc-info"><span class="std std-ref">7. Proc info</span></a>.</p>
+review <span class="xref std std-ref">proc-info</span>.</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">To use the device driver from userspace you must create the
 device character file <em>/dev/deferred</em> using the mknod
 utility. Alternatively, you can run the
-<em>3-4-5-deferred/kernel/ makenode</em> script that performs this
+<em>3-4-5-deferred/kernel/makenode</em> script that performs this
 operation.</p>
 </div>
 <p>Enable and disable the timer by calling user-space ioctl
@@ -1028,16 +1038,16 @@ then start it running with <code class="xref c c-func docutils literal"><span cl
 <p class="first admonition-title">Attention</p>
 <p>Synchronize the thread termination with module unloading:</p>
 <ul class="last simple">
-<li>The thread should finish when the module in unloaded</li>
+<li>The thread should finish when the module is unloaded</li>
 <li>Wait for the kernel thread to exit before continuing
-with with unloading</li>
+with unloading</li>
 </ul>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p>For synchronization use two wait queues and two flags.</p>
 <p>Review <span class="xref std std-ref">waiting-queues</span> on how to use waiting queue.</p>
-<p class="last">Use atomic variables for flags. Review <a class="reference internal" href="kernel_api.html#atomic-variables"><span class="std std-ref">Atomic variables</span></a>.</p>
+<p class="last">Use atomic variables for flags. Review <a class="reference internal" href="../so2/lab2-kernel-api.html#atomic-variables"><span class="std std-ref">Atomic variables</span></a>.</p>
 </div>
 </div>
 <div class="section" id="buffer-shared-between-timer-and-process">
@@ -1045,19 +1055,19 @@ with with unloading</li>
 <p>The purpose of this task is to exercise the synchronization between a
 deferrable action (a timer) and process context. Setup a periodic
 timer that monitors a list of processes. If one of the processes
-terminate a message is printed. Processes can be dinamically added to
+terminate a message is printed. Processes can be dynamically added to
 the list. Use the <em>3-4-5-deferred/kernel/</em> skeleton as a base and
 follow the <strong>TODO 4</strong> markings to complete the task.</p>
 <p>When the <em>MY_IOCTL_TIMER_MON</em> command is received check that the given
-process exists and if so added to the monitored list of
-processed and then arm the timer after setting its type.</p>
+process exists and if so add to the monitored list of
+processes and then arm the timer after setting its type.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Use <code class="xref c c-func docutils literal"><span class="pre">get_proc()</span></code> which checks the pid, finds the
 associated <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code> and allocates a
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mon_proc</span></code> item you can add to your
 list. Note that the function also increases the reference
-counter of the task, so that its memory won’t be free when
+counter of the task, so that its memory won't be free when
 the task terminates.</p>
 </div>
 <div class="admonition attention">
@@ -1077,7 +1087,7 @@ the test program.</p>
 <p>In the timer handler iterate over the list of monitored processes and
 check if they have terminated. If so, print the process name and pid
 then remove the process from the list, decrement the task usage
-counter so that it’s memory can be free and finally free the
+counter so that it's memory can be free and finally free the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mon_proc</span></code> structure.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -1109,29 +1119,29 @@ we may need to remove an item from the list.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="block_device_drivers.html" class="btn btn-neutral float-right" title="Block Device Drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="interrupts.html" class="btn btn-neutral float-left" title="I/O access and Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="block_device_drivers.html" class="btn btn-neutral float-right" title="Block Device Drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="interrupts.html" class="btn btn-neutral float-left" title="I/O access and Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -1139,7 +1149,6 @@ we may need to remove an item from the list.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

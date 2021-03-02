@@ -344,7 +344,7 @@ of the disk.
 Request queues
 ==============
 
-Drivers for block devices use queues to store the block requests I/O that will
+Drivers for block devices use queues to store the block I/O requests that will
 be processed. A request queue is represented by the
 :c:type:`struct request_queue` structure. The request queue is made up of a
 double-linked list of requests and their associated control information. The
@@ -485,9 +485,9 @@ The fields of :c:type:`struct request` structure include:
      macrodefinition :c:macro:`rq_for_each_segment` if there are multiple
      buffers, or by :c:macro:`bio_data` macrodefinition in case there is only
      one associated buffer;
-   * :c:member:`bio_data`: the address of the buffer associated to the request
-   * about the :c:type:`struct bio` structure and its associated operations
-     will be discussed in the :ref:`bio_structure` section;
+
+We will discuss more about the :c:type:`struct bio` structure and its
+associated operations in the :ref:`bio_structure` section.
 
 Create a request
 ----------------
@@ -701,8 +701,7 @@ called when the processing of the structure is finished. The
 :c:member:`bi_private` field is used to store useful data that can be accessed
 in the function pointed by :c:member:`bi_end_io`.
 
-The :c:member:`bi_opf` field specifies the type of operation. Use the
-:c:member:`bio_set_op_attrs` to initialize the type of operation.
+The :c:member:`bi_opf` field specifies the type of operation.
 
 .. code-block:: c
 
@@ -710,7 +709,7 @@ The :c:member:`bi_opf` field specifies the type of operation. Use the
    //...
    bio->bi_disk = bdev->bd_disk;
    bio->bi_iter.bi_sector = sector;
-   bio_set_op_attrs(bio, REQ_OP_READ, 0);
+   bio->bi_opf = REQ_OP_READ;
    bio_add_page(bio, page, size, offset);
    //...
 
@@ -744,7 +743,6 @@ A typical example of use is:
 
    static int my_xfer_bio(struct my_block_dev *dev, struct bio *bio)
    {
-       int i;
        struct bio_vec bvec;
        struct bvec_iter i;
        int dir = bio_data_dir(bio);
@@ -866,7 +864,7 @@ Further reading
 Exercises
 =========
 
-.. include:: exercises-summary.hrst
+.. include:: ../labs/exercises-summary.hrst
 .. |LAB_NAME| replace:: block_device_drivers
 
 0. Intro
@@ -983,8 +981,9 @@ information, use the fields of the :c:type:`struct request` structure.
           section.
 
 .. hint:: You can find useful information in the
-          [block device driver example](https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c)
-          from [Linux Device Driver](http://lwn.net/Kernel/LDD3/).
+          `block device driver example
+          <https://github.com/martinezjavier/ldd3/blob/master/sbull/sbull.c>`_
+          from `Linux Device Driver <http://lwn.net/Kernel/LDD3/>`_.
 
 For testing, use the test file :file:`user/ram-disk-test.c`.
 The test program is compiled automatically at ``make build``, copied to the
@@ -1036,8 +1035,8 @@ first sector of the disk. To wait, call the :c:func:`submit_bio_wait` function.
           This value must be used to initialize the field
           :c:member:`bi_iter.bi_sector` of the :c:type:`struct bio`.
 
-          For the read operation, use the macros :c:macro:`REQ_OP_READ` and
-          :c:macro:`bio_set_op_attrs`.
+          For the read operation, use the :c:macro:`REQ_OP_READ` macro to
+          initialize the :c:member:`bi_opf` field of the :c:type:`struct bio`.
 
 After finishing the operation, display the first 3 bytes of data read by
 :c:type:`struct bio` structure. Use the format ``"% 02x"`` for :c:func:`printk`
@@ -1090,8 +1089,8 @@ the buffer associated to the :c:type:`struct bio` structure with the message
 :c:type:`struct bio` structure.
 
 .. hint:: You need to update the type of the operation associated to the
-          :c:type:`struct bio` structure using the
-          :c:macro:`bio_set_op_attrs` macrodefinition.
+          :c:type:`struct bio` structure by setting the :c:member:`bi_opf` field
+          accordingly.
 
 For testing, run the :file:`test-relay-disk` script using the command:
 

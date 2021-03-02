@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>I/O access and Interrupts &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Deferred work" href="deferred_work.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -173,6 +180,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -207,18 +215,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>I/O access and Interrupts</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/labs/interrupts.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -259,7 +269,7 @@ registers to provide a uniform programming interface. Thus, most
 devices will have the following types of registers:</p>
 <ul class="simple">
 <li><strong>Control</strong> registers that receive device commands</li>
-<li><strong>Status</strong> registers, which contain information about the device’s
+<li><strong>Status</strong> registers, which contain information about the device's
 internal status</li>
 <li><strong>Input</strong> registers from which data is taken from the device</li>
 <li><strong>Output</strong> registers in which the data is written to transmit it to the
@@ -297,7 +307,7 @@ the one running (B).</p>
 <p>Using only a spinlock can lead to a deadlock. The classic example of
 deadlock in this case is:</p>
 <ol class="arabic simple">
-<li>We run a process process on the X processor, and we acquire the lock</li>
+<li>We run a process on the X processor, and we acquire the lock</li>
 <li>Before releasing the lock, an interrupt is generated on the X processor</li>
 <li>The interrupt handling routine will try to acquire the lock and it
 will go into an infinite loop</li>
@@ -454,7 +464,7 @@ kernel about the desired behaviour (<em>flags</em>), the name of the device
 using this interrupt (<em>dev_name</em>), and a pointer that can be
 configured by the user at any value, and that has no global
 significance (<em>dev_id</em>). Most of the time, <em>dev_id</em> will be
-pointer to the device driver’s private data. When the interrupt is
+pointer to the device driver's private data. When the interrupt is
 released, using the <code class="xref c c-func docutils literal"><span class="pre">free_irq()</span></code> function, the developer must
 send the same pointer value (<em>dev_id</em>) along with the same interrupt
 number (<em>irq_no</em>). The device name (<em>dev_name</em>) is used to display
@@ -464,19 +474,19 @@ successful or a negative error code indicating the reason for the
 failure. A typical value is <em>-EBUSY</em> which means that the interrupt
 was already requested by another device driver.</p>
 <p>The <em>handler</em> function is executed in interrupt context which means
-that we can’t call blocking APIs such as <code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> or
+that we can't call blocking APIs such as <code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> or
 <code class="xref c c-func docutils literal"><span class="pre">msleep()</span></code>. We must also avoid doing a lot of work in the
 interrupt handler and instead use deferred work if needed. The actions
 performed in the interrupt handler include reading the device
 registers to get the status of the device and acknowledge the
 interrupt, operations that most of the time can be performed with
 non-blocking calls.</p>
-<p>There are situations where although a device uses interrupts we can’t
-read the device’s registers in a non-blocking mode (for example a
+<p>There are situations where although a device uses interrupts we can't
+read the device's registers in a non-blocking mode (for example a
 sensor connected to an I2C or SPI bus whose driver does not guarantee
 that bus read / write operations are non-blocking ). In this
 situation, in the interruption, we must plan a work-in-process action
-(work queue, kernel thread) to access the device’s registers. Because
+(work queue, kernel thread) to access the device's registers. Because
 such a situation is relatively common, the kernel provides the
 <code class="xref c c-func docutils literal"><span class="pre">request_threaded_irq()</span></code> function to write interrupt handling
 routines running in two phases: a process-phase and an interrupt
@@ -507,7 +517,7 @@ handling routine to see if the interrupt was or was not generated by
 the device (for example, in the case of the 8250 serial port, this
 status register is IIR - Interrupt Information Register). When
 requesting a shared interrupt, the dev_id argument must be unique
-and it must not be NULL.  Usually it is set to module’s private
+and it must not be NULL.  Usually it is set to module's private
 data.</li>
 <li><em>IRQF_ONESHOT</em> interrupt will be reactivated after running the process
 context routine; Without this flag, the interrupt will be
@@ -608,7 +618,7 @@ processing function.</p>
 </div>
 <p>Typically, the first thing executed in the interrupt handler is to
 determine whether the interrupt was generated by the device that the
-driver ordered. This usually reads information from the device’s
+driver ordered. This usually reads information from the device's
 registers to indicate whether the device has generated an
 interrupt. The second thing is to reset the interrupt pending bit on
 the physical device as most devices will no longer generate
@@ -619,7 +629,7 @@ serial port bit 0 in the IIR register must be cleared).</p>
 <h3>Locking<a class="headerlink" href="#locking" title="Permalink to this headline">¶</a></h3>
 <p>Because the interrupt handlers run in interrupt context the actions
 that can be performed are limited: unable to access user space memory,
-can’t call blocking functions. Also synchronization using spinlocks is
+can't call blocking functions. Also synchronization using spinlocks is
 tricky and can lead to deadlocks if the spinlock used is already
 acquired by a process that has been interrupted by the running
 handler.</p>
@@ -890,7 +900,7 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 </div>
 <div class="section" id="keyboard-driver">
 <h3>Keyboard driver<a class="headerlink" href="#keyboard-driver" title="Permalink to this headline">¶</a></h3>
-<p>The next exercise’s objective is to create a driver that uses the
+<p>The next exercise's objective is to create a driver that uses the
 keyboard IRQ, inspect the incoming key codes and stores them in a
 buffer. The buffer will be accessible from userspace via character
 device driver.</p>
@@ -906,8 +916,9 @@ the source code and inspect <code class="xref c c-func docutils literal"><span c
 ports we need are I8042_STATUS_REG and I8042_DATA_REG.</p>
 <p>Follow the sections maked with <strong>TODO 1</strong> in the skeleton. Request the I/O
 ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code> and make sure to check for errors and to properly
-clean-up in case of errors. Also, add code to release the I/O ports in
-<code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
+clean-up in case of errors. When requesting, set the reserving caller's ID
+string (<code class="docutils literal"><span class="pre">name</span></code>) with <code class="docutils literal"><span class="pre">MODULE_NAME</span></code> macro. Also, add code to release the I/O
+ports in <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can review the <a class="reference internal" href="#request-access-to-i-o-ports">Request access to I/O ports</a> section before
@@ -944,9 +955,9 @@ find -name <span class="se">\*</span>.c <span class="p">|</span> xargs grep <spa
 </pre></div>
 </div>
 <p>It looks like the I/O ports are registered by the kernel during the
-boot and we won’t be able to remove the associated module. Instead
+boot and we won't be able to remove the associated module. Instead
 lets trick the kernel and register ports 0x61 and 0x65.</p>
-<p>Use the function <code class="xref c c-func docutils literal"><span class="pre">request_region`(inside</span> <span class="pre">the</span> <span class="pre">:c:func:`kbd_init()</span></code>
+<p>Use the function <code class="xref c c-func docutils literal"><span class="pre">request_region()</span></code> (inside the <code class="xref c c-func docutils literal"><span class="pre">kbd_init()</span></code>
 function) to allocate the ports and the function <code class="xref c c-func docutils literal"><span class="pre">release_region()</span></code>
 (inside the <code class="xref c c-func docutils literal"><span class="pre">kbd_exit()</span></code> function) to release the allocated memory.</p>
 <p>This time we can load the module and <em>/proc/ioports</em> shows that the
@@ -973,7 +984,8 @@ root@qemux86:~#
 the keyboard interrupt. You can review the <a class="reference internal" href="#requesting-an-interrupt">Requesting an interrupt</a>
 section before proceeding.</p>
 <p>Follow the sections maked with <strong>TODO 2</strong> in the skeleton.</p>
-<p>First, define an empty interrupt handling routine.</p>
+<p>First, define an empty interrupt handling routine named
+c:func:<cite>kbd_interrupt_handler</cite>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Since we already have a driver that uses this interrupt we
@@ -1013,12 +1025,12 @@ be found in the <a class="reference internal" href="#interrupt-statistics">Inter
 <p>Print a message inside the routine to make sure it is called. Compile
 and reload the module into the kernel. Check that the interrupt handling
 routine is called when you press the keyboard on the virtual machine,
-using :command:dmesg. Also note that when you use the serial port no
+using <strong class="command">dmesg</strong>. Also note that when you use the serial port no
 keyboard interrupt is generated.</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">To get access to the keyboard on the virtual machine
-boot with “QEMU_DISPLAY=sdl make boot”.</p>
+boot with &quot;QEMU_DISPLAY=gtk make boot&quot;.</p>
 </div>
 </div>
 <div class="section" id="store-ascii-keys-to-buffer">
@@ -1056,7 +1068,7 @@ Revisit the <a class="reference internal" href="#accessing-i-o-ports">Accessing 
 <p>Where scancode is the value of the read register using the
 <code class="xref c c-func docutils literal"><span class="pre">i8042_read_data()</span></code> function.</p>
 <p>Notice that the scancode (reading of the read register) is not an ASCII
-character of the pressed key. We’ll have to understand the scancode.</p>
+character of the pressed key. We'll have to understand the scancode.</p>
 </div>
 <div class="section" id="interpreting-the-scancode">
 <h4>Interpreting the scancode<a class="headerlink" href="#interpreting-the-scancode" title="Permalink to this headline">¶</a></h4>
@@ -1181,16 +1193,16 @@ end of the device buffer. If the buffer is full, the character will be
 discarded.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p>The device buffer is the field <code class="xref c c-type docutils literal"><span class="pre">buf</span></code> in the device’s
+<p>The device buffer is the field <code class="xref c c-type docutils literal"><span class="pre">buf</span></code> in the device's
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>. To get the device data from the interrupt handler
 use the following construct:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">kbd</span> <span class="o">*</span><span class="p">)</span> <span class="n">dev_id</span><span class="p">;</span>
 </pre></div>
 </div>
-<p class="last">The buffer’s dimension is located in <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>’s field,
+<p class="last">The buffer's dimension is located in <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kbd</span></code>'s field,
 <code class="xref c c-type docutils literal"><span class="pre">count</span></code>. The <code class="xref c c-type docutils literal"><span class="pre">put_idx</span></code> and <code class="xref c c-type docutils literal"><span class="pre">get_idx</span></code> fields
 specify the next writing and reading index. Take a look at the
-<code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code> function’s implementation to observe how the data is
+<code class="xref c c-func docutils literal"><span class="pre">put_char()</span></code> function's implementation to observe how the data is
 added to the circular buffer.</p>
 </div>
 <div class="admonition attention">
@@ -1207,7 +1219,7 @@ to protect the buffer in the interrupt handler.</p>
 </div>
 <div class="section" id="reading-the-buffer">
 <h3>4. Reading the buffer<a class="headerlink" href="#reading-the-buffer" title="Permalink to this headline">¶</a></h3>
-<p>In order to have access to the keylogger’s data, we have to send it to
+<p>In order to have access to the keylogger's data, we have to send it to
 the user space. We will do this using the <em>/dev/kbd</em> character device. When
 reading from this device, we will get the data from the buffer in the kernel
 space, where we collected the keys pressed.</p>
@@ -1273,7 +1285,7 @@ Test it using the command:</p>
 </pre></div>
 </div>
 <p>Press some keys, then run the command <strong class="command">echo &quot;clear&quot; &gt; /dev/kbd</strong>.
-Check the buffer’s content again. It should be reset.</p>
+Check the buffer's content again. It should be reset.</p>
 </div>
 </div>
 <div class="section" id="extra-exercises">
@@ -1296,29 +1308,29 @@ For example, the file <a class="reference external" href="https://elixir.bootlin
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="deferred_work.html" class="btn btn-neutral float-right" title="Deferred work" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="device_drivers.html" class="btn btn-neutral float-left" title="Character device drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="deferred_work.html" class="btn btn-neutral float-right" title="Deferred work" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="device_drivers.html" class="btn btn-neutral float-left" title="Character device drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -1326,7 +1338,6 @@ For example, the file <a class="reference external" href="https://elixir.bootlin
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,6 +1,6 @@
-===================================
-Extending the Virtual Machine Setup
-===================================
+=====================================
+Customizing the Virtual Machine Setup
+=====================================
 
 Connect to the Virtual Machine via SSH
 --------------------------------------
@@ -27,7 +27,7 @@ the ``eth0`` interface an then you can connect to the virtual machine via SSH:
 
 .. code-block:: shell
 
-   $ mincom -D serial.pts
+   $ minicom -D serial.pts
    Poky (Yocto Project Reference Distro) 2.3 qemux86 /dev/hvc0
 
    qemux86 login: root

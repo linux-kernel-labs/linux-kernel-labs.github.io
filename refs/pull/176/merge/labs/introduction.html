@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Introduction &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Kernel modules" href="kernel_modules.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -112,7 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#keywords">Keywords</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#about-this-laboratory">About this laboratory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#source-code-navigation">Source code navigation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#cscope">cscope</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#kscope">Kscope</a></li>
@@ -122,17 +129,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#sourceweb">SourceWeb</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#kernel-debugging">Kernel Debugging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gdb-linux">gdb (Linux)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#getting-a-stack-trace">Getting a stack trace</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#remarks">Remarks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#booting-the-virtual-machine">1. Booting the virtual machine</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#adding-and-using-a-virtual-disk">2. Adding and using a virtual disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#gdb-and-qemu">3. GDB and QEMU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#booting-the-virtual-machine">Booting the virtual machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-and-using-a-virtual-disk">Adding and using a virtual disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gdb-and-qemu">GDB and QEMU</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gdb-spelunking">4. GDB spelunking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cscope-spelunking">5. Cscope spelunking</a></li>
 </ul>
@@ -160,6 +167,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -194,18 +202,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Introduction</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/labs/introduction.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -257,8 +267,8 @@ time will be allocated to the lab exercises (80 minutes).</p>
 To fully understand a laboratory, we recommend going through the lab support. For
 in-depth study, use the supporting documentation.</p>
 </div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Linux<ul>
 <li><a class="reference external" href="http://www.amazon.com/Linux-Kernel-Development-Robert-Love/dp/0672329468/">Linux Kernel Development, 3rd
@@ -351,7 +361,7 @@ to search for a symbol by name, use <code class="code docutils literal"><span cl
 <code class="code docutils literal"><span class="pre">cs</span> <span class="pre">find</span> <span class="pre">g</span> <span class="pre">task_struct</span></code>).</p>
 <p>If you found more than one results and opened a panel showing all the matches
 (using <code class="code docutils literal"><span class="pre">:copen</span></code>) and you want to find a symbol of type structure,
-it is recommended to search in the results panel (using <code class="code docutils literal"><span class="pre">/</span></code> – slash)
+it is recommended to search in the results panel (using <code class="code docutils literal"><span class="pre">/</span></code> -- slash)
 the character <code class="code docutils literal"><span class="pre">{</span></code> (opening brace).</p>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
@@ -412,7 +422,7 @@ for C and C++. It uses the
 <a class="reference external" href="http://clang.llvm.org/docs/IntroductionToTheClangAST.html">framework</a>
 provided by the Clang compiler to index the code.</p>
 <p>The main difference between cscope and SourceWeb is the fact that SourceWeb
-is, in a way, a compiler pass. SourceWeb doesn’t index all the code, but
+is, in a way, a compiler pass. SourceWeb doesn't index all the code, but
 only the code that was efectively compiled by the compiler. This way, some
 problems are eliminated, such as ambiguities about which variant of a function
 defined in multiple places is used. This also means that the indexing takes
@@ -436,14 +446,14 @@ by clang: <a class="reference external" href="http://clang.llvm.org/docs/JSONCom
 This JSON Compilation Database resulted from the above steps is then
 used by the indexer, which makes one more pass through the compiled
 source files and generates the index used by the GUI.</p>
-<p>Word of advice: don’t index the sources you are working with, but use
-a copy, because SourceWeb doesn’t have, at this moment, the capability
+<p>Word of advice: don't index the sources you are working with, but use
+a copy, because SourceWeb doesn't have, at this moment, the capability
 to regenerate the index for a single file and you will have to regenerate
 the complete index.</p>
 </div>
 </div>
-<div class="section" id="debugging">
-<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kernel-debugging">
+<h2>Kernel Debugging<a class="headerlink" href="#kernel-debugging" title="Permalink to this headline">¶</a></h2>
 <p>Debugging a kernel is a much more difficult process than the debugging
 of a program, because there is no support from the operating system.
 This is why this process is usually done using two computers, connected
@@ -457,7 +467,7 @@ the uncompressed kernel image (<code class="file docutils literal"><span class="
 the kernel and detect certain inconsistencies while it runs. The
 method is useful especially if the kernel was compiled using the
 <code class="code docutils literal"><span class="pre">-g</span></code> option, which keeps debug information. Some well-known
-debug techniques can’t be used by this method, such as breakpoints
+debug techniques can't be used by this method, such as breakpoints
 of data modification.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -579,8 +589,8 @@ execution paths, which makes this method difficult.</p>
 simply done using the function <code class="code docutils literal"><span class="pre">dump_stack()</span></code>.</p>
 </div>
 </div>
-<div class="section" id="id1">
-<h2>Documentation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <p>Kernel development is a difficult process, compared to user space
 programming. The API is different and the complexity of the subsystems
 in kernel requires additional preparation. The associated documentation
@@ -588,7 +598,7 @@ is heterogeneous, sometimes requiring the inspection of multiple sources
 to have a more complete understanding of a certain aspect.</p>
 <p>The main advantages of the Linux kernel are the access to sources and
 the open development system. Because of this, the Internet offers a
-larger number of documentation for kernel.</p>
+larger number of documentation for the kernel.</p>
 <p>A few links related to the Linux kernel are shown bellow:</p>
 <ul class="simple">
 <li><a class="reference external" href="http://kernelnewbies.org">KernelNewbies</a></li>
@@ -631,7 +641,7 @@ the command <strong class="command">make ARCH=x86 cscope</strong>.</li>
 </div>
 </div>
 <div class="section" id="booting-the-virtual-machine">
-<h3>1. Booting the virtual machine<a class="headerlink" href="#booting-the-virtual-machine" title="Permalink to this headline">¶</a></h3>
+<h3>Booting the virtual machine<a class="headerlink" href="#booting-the-virtual-machine" title="Permalink to this headline">¶</a></h3>
 <p>A summary of the virtual machine infrastructure:</p>
 <ul class="simple">
 <li><code class="file docutils literal"><span class="pre">~/src/linux</span></code> - Linux kernel sources, needed to
@@ -647,7 +657,7 @@ student@eg106:~/src/linux/tools/labs$ make boot
 </div>
 <p>By default, you will not get a prompt or any graphical interface, but you can connect to
 a console exposed by the virtual machine using <strong class="command">minicom</strong> or <strong class="command">screen</strong>.</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~/so2/linux/tools/labs$ minicom -D serial.pts
+<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~/src/linux/tools/labs$ minicom -D serial.pts
 
 &lt;press enter&gt;
 
@@ -656,7 +666,7 @@ Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</sp
 </pre></div>
 </div>
 <p>Alternatively, you can start the virtual machine with graphical interface support, using
-the <strong class="command">QEMU_DISPLAY=sdl make boot</strong>.</p>
+the <strong class="command">QEMU_DISPLAY=gtk make boot</strong>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">To access the virtual machine, at the login prompt, enter the
@@ -666,14 +676,14 @@ root account.</p>
 </div>
 </div>
 <div class="section" id="adding-and-using-a-virtual-disk">
-<h3>2. Adding and using a virtual disk<a class="headerlink" href="#adding-and-using-a-virtual-disk" title="Permalink to this headline">¶</a></h3>
+<h3>Adding and using a virtual disk<a class="headerlink" href="#adding-and-using-a-virtual-disk" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If you don’t have the file <code class="file docutils literal"><span class="pre">mydisk.img</span></code>, you can download
+<p class="last">If you don't have the file <code class="file docutils literal"><span class="pre">mydisk.img</span></code>, you can download
 it from the address <a class="reference external" href="http://elf.cs.pub.ro/so2/res/laboratoare/mydisk.img">http://elf.cs.pub.ro/so2/res/laboratoare/mydisk.img</a>.
 The file must be placed in <code class="file docutils literal"><span class="pre">tools/labs</span></code>.</p>
 </div>
-<p>In the <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs/qemu</span></code> directory, you have a new virtual
+<p>In the <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs</span></code> directory, you have a new virtual
 machine disk, in the file <code class="file docutils literal"><span class="pre">mydisk.img</span></code>. We want to add the disk
 to the virtual machine and use it within the virtual machine.</p>
 <p>Edit <code class="file docutils literal"><span class="pre">qemu/Makefile</span></code> and add <code class="code docutils literal"><span class="pre">-drive</span> <span class="pre">file=mydisk.img,if=virtio,format=raw</span></code>
@@ -746,7 +756,7 @@ identical to the one used by vmchecker.</p>
 </div>
 </div>
 <div class="section" id="gdb-and-qemu">
-<h3>3. GDB and QEMU<a class="headerlink" href="#gdb-and-qemu" title="Permalink to this headline">¶</a></h3>
+<h3>GDB and QEMU<a class="headerlink" href="#gdb-and-qemu" title="Permalink to this headline">¶</a></h3>
 <p>We can investigate and troubleshoot the QEMU virtual machine in real time.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -835,7 +845,7 @@ you would use in the <strong class="command">gdb</strong> console the command:</
 </div>
 <div class="section" id="cscope-spelunking">
 <h3>5. Cscope spelunking<a class="headerlink" href="#cscope-spelunking" title="Permalink to this headline">¶</a></h3>
-<p>Use LXR or cscope in the <code class="file docutils literal"><span class="pre">~/so2/linux/</span></code> directory to discover
+<p>Use LXR or cscope in the <code class="file docutils literal"><span class="pre">~/src/linux/</span></code> directory to discover
 the location of certain structures or functions.</p>
 <p>Cscope index files are already generated. Use <strong class="command">vim</strong> and other related commands
 to scroll through the source code. For example, use the command:</p>
@@ -934,29 +944,29 @@ use the <strong class="command">Ctrl+i</strong> keyboard shortcut.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="kernel_modules.html" class="btn btn-neutral float-right" title="Kernel modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="infrastructure.html" class="btn btn-neutral float-left" title="Infrastructure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="kernel_modules.html" class="btn btn-neutral float-right" title="Kernel modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="infrastructure.html" class="btn btn-neutral float-left" title="Infrastructure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -964,7 +974,6 @@ use the <strong class="command">Ctrl+i</strong> keyboard shortcut.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

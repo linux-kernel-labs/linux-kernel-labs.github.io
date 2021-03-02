@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Symmetric Multi-Processing &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Debugging" href="debugging.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
@@ -145,6 +152,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -179,18 +187,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Symmetric Multi-Processing</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/lectures/smp.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -235,7 +245,7 @@ interchangeable for the purpose of this lecture.</p>
 <p>Race conditions can occur when the following two conditions happen
 simultaneously:</p>
 <ul class="admonition-race-conditions simple">
-<li>there are at least two execution contexts that run in “parallel”:<ul>
+<li>there are at least two execution contexts that run in &quot;parallel&quot;:<ul>
 <li>truly run in parallel (e.g. two system calls running on
 different processors)</li>
 <li>one of the contexts can arbitrary preempt the other (e.g. an
@@ -263,7 +273,7 @@ a release operation of a resource counter:</p>
 the last user releases it but the above implementation has a race
 condition that can cause freeing the resource twice:</p>
 <p class="admonition-race-condition-scenario">&nbsp;</p>
-<img alt="../_images/ditaa-e6956bef8745cfb04847e6fa5ab88949d79512e1.png" src="../_images/ditaa-e6956bef8745cfb04847e6fa5ab88949d79512e1.png" />
+<img alt="../_images/ditaa-35f7597b35b83bb0025ac2a5f158c9eae23050c8.png" src="../_images/ditaa-35f7597b35b83bb0025ac2a5f158c9eae23050c8.png" />
 <p>In most cases the <cite>release_resource()</cite> function will only free the
 resource once. However, in the scenario above, if thread A is
 preempted right after decrementing <cite>counter</cite> and thread B calls
@@ -275,7 +285,7 @@ critical section that can generate a race condition. The critical
 section is the part of the code that reads and writes shared memory
 from multiple parallel contexts.</p>
 <p>In the example above, the minimal critical section is starting with
-the counter decrement and ending with checking the counter’s value.</p>
+the counter decrement and ending with checking the counter's value.</p>
 <p>Once the critical section has been identified race conditions can be
 avoided by using one of the following approaches:</p>
 <ul class="admonition-avoiding-race-conditions simple">
@@ -347,13 +357,13 @@ the load and store operations are interleaved across CPUs, like in the
 example below where incrementing a value from two processors will
 produce an unexpected result:</p>
 <p class="admonition-atomic-operations-may-not-be-atomic-on-smp-systems">&nbsp;</p>
-<img alt="../_images/ditaa-4a6cc07b903b874d12feadc8b9e806ed2a32ab83.png" src="../_images/ditaa-4a6cc07b903b874d12feadc8b9e806ed2a32ab83.png" />
+<img alt="../_images/ditaa-ddd14be50300088958e86912bc5f396797634a3a.png" src="../_images/ditaa-ddd14be50300088958e86912bc5f396797634a3a.png" />
 <p>In order to provide atomic operations on SMP systems different
 architectures use different techniques. For example, on x86 a LOCK
 prefix is used to lock the system bus while executing the prefixed
 operation:</p>
 <p class="admonition-fixing-atomic-operations-for-smp-systems-x86">&nbsp;</p>
-<img alt="../_images/ditaa-1b138a4059fd204e76e0d712152c107607e1d5e6.png" src="../_images/ditaa-1b138a4059fd204e76e0d712152c107607e1d5e6.png" />
+<img alt="../_images/ditaa-c11fccb956cdf115910f9f72e1dc14cd7ed549ff.png" src="../_images/ditaa-c11fccb956cdf115910f9f72e1dc14cd7ed549ff.png" />
 <p>On ARM the LDREX and STREX instructions are used together to guarantee
 atomic access: LDREX loads a value and signals the exclusive monitor
 that an atomic operation is in progress. The STREX attempts to store a
@@ -361,11 +371,11 @@ new value but only succeeds if the exclusive monitor has not detected
 other exclusive operations. So, to implement atomic operations the
 programmer must retry the operation (both LDREX and STREX) until the
 exclusive monitor signals a success.</p>
-<p>Although they are often interpreted as “light” or “efficient”
-synchronization mechanisms (because they “don’t require spinning or
-context switches”, or because they “are implemented in hardware so
-they must be more efficient”, or because they “are just instructions
-so they must have similar efficiency as other instructions”), as seen
+<p>Although they are often interpreted as &quot;light&quot; or &quot;efficient&quot;
+synchronization mechanisms (because they &quot;don't require spinning or
+context switches&quot;, or because they &quot;are implemented in hardware so
+they must be more efficient&quot;, or because they &quot;are just instructions
+so they must have similar efficiency as other instructions&quot;), as seen
 from the implementation details, atomic operations are actually
 expensive.</p>
 </div>
@@ -430,10 +440,10 @@ memory address to the carry flag and then sets it:</p>
 </div>
 <p>As it can be seen, the spin lock uses an atomic instruction to make
 sure that only one core can enter the critical section. If there are
-multiple cores trying to enter they will continuously “spin” until the
+multiple cores trying to enter they will continuously &quot;spin&quot; until the
 lock is released.</p>
 <p>While the spin lock avoids race conditions, it can have a significant
-impact on the system’s performance due to “lock contention”:</p>
+impact on the system's performance due to &quot;lock contention&quot;:</p>
 <ul class="admonition-lock-contention simple">
 <li>There is lock contention when at least one core spins trying to
 enter the critical section lock</li>
@@ -457,12 +467,12 @@ only consider the L1 caches and main memory.</p>
 variables A and B that fall into different cache lines and where
 caches and the main memory are synchronized:</p>
 <p class="admonition-synchronized-caches-and-memory">&nbsp;</p>
-<img alt="../_images/ditaa-2d1d2e2906c8d16b11c6cf98eb9edb49415fcf65.png" src="../_images/ditaa-2d1d2e2906c8d16b11c6cf98eb9edb49415fcf65.png" />
+<img alt="../_images/ditaa-4d63c157487ff8291f2a6e93fe680ec38c1a3212.png" src="../_images/ditaa-4d63c157487ff8291f2a6e93fe680ec38c1a3212.png" />
 <p>In the absence of a synchronization mechanism between the caches and
 main memory, when CPU 0 executes <cite>A = A + B</cite> and CPU 1 executes <cite>B =
 A + B</cite> we will have the following memory view:</p>
 <p class="admonition-unsynchronized-caches-and-memory">&nbsp;</p>
-<img alt="../_images/ditaa-eab4e258444450af6a44018110db111cdaec2016.png" src="../_images/ditaa-eab4e258444450af6a44018110db111cdaec2016.png" />
+<img alt="../_images/ditaa-7ee0f9bb5f5af586e043afd47cfbad0adcc34888.png" src="../_images/ditaa-7ee0f9bb5f5af586e043afd47cfbad0adcc34888.png" />
 <p>In order to avoid the situation above multi-processor systems use
 cache coherency protocols. There are two main types of cache coherency
 protocols:</p>
@@ -480,7 +490,7 @@ cores goes beyond 32-64.</p>
 to thousands of cores) and are usually used in NUMA systems.</p>
 <p>A simple cache coherency protocol that is commonly used in practice is
 MESI (named after the acronym of the cache line states names:
-<strong>Modified</strong>, <strong>Exclusive</strong>, <strong>Shared</strong> and <strong>Invalid</strong>). It’s main
+<strong>Modified</strong>, <strong>Exclusive</strong>, <strong>Shared</strong> and <strong>Invalid</strong>). It's main
 characteristics are:</p>
 <ul class="admonition-mesi-cache-coherence-protocol simple">
 <li>Caching policy: write back</li>
@@ -507,7 +517,7 @@ flushed to memory</li>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The most important characteristic of the MESI protocol is
-that is a write-invalidate cache protocol. When writing to a
+that it is a write-invalidate cache protocol. When writing to a
 shared location all other caches are invalidated.</p>
 </div>
 <p>This has important performance impact in certain access patterns, and
@@ -518,7 +528,7 @@ where the first has acquired the spin lock and it is running the
 critical section while the other two are spinning waiting to enter the
 critical section:</p>
 <p class="admonition-cache-thrashing-due-to-spin-lock-contention">&nbsp;</p>
-<img alt="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" src="../_images/ditaa-c3c13262ee1580e4d56631c757654cdcff4d6c6b.png" />
+<img alt="../_images/ditaa-b26d802c286bda6c559b4dcfa8a7fb27f840463e.png" src="../_images/ditaa-b26d802c286bda6c559b4dcfa8a7fb27f840463e.png" />
 <p>As it can be seen from the figure above due to the writes issued by
 the cores spinning on the lock we see frequent cache line invalidate
 operations which means that basically the two waiting cores will flush
@@ -574,7 +584,7 @@ implementation uses a queued spin lock where the CPU cores spin on
 different locks (hopefully distributed in different cache lines) to
 avoid cache invalidation operations:</p>
 <p class="admonition-queued-spin-locks">&nbsp;</p>
-<img alt="../_images/ditaa-57e08bc7491de137a8d2f7c2dfc22e76cbfc0949.png" src="../_images/ditaa-57e08bc7491de137a8d2f7c2dfc22e76cbfc0949.png" />
+<img alt="../_images/ditaa-58545831034f050660727be99cede213bc4a53c7.png" src="../_images/ditaa-58545831034f050660727be99cede213bc4a53c7.png" />
 <p>Conceptually, when a new CPU core tries to acquire the lock and it
 fails it will add its private lock to the list of waiting CPU
 cores. When the lock owner exits the critical section it unlocks the
@@ -593,12 +603,12 @@ the x86 architecture.</p>
 <h2>Process and Interrupt Context Synchronization<a class="headerlink" href="#process-and-interrupt-context-synchronization" title="Permalink to this headline">¶</a></h2>
 <p>Accessing shared data from both process and interrupt context is a
 relatively common scenario. On single core systems we can do this by
-disabling interrupts, but that won’t work on multi-core systems,
+disabling interrupts, but that won't work on multi-core systems,
 as we can have the process running on one CPU core and the interrupt
 context running on a different CPU core.</p>
 <p>Using a spin lock, which was designed for multi-processor systems,
-seems like the right solution, but doing so will can cause common
-deadlock condition, as detailed by the following scenario:</p>
+seems like the right solution, but doing so can cause common
+deadlock conditions, as detailed by the following scenario:</p>
 <ul class="admonition-process-and-interrupt-handler-synchronization-deadlock simple">
 <li>In the process context we take the spin lock</li>
 <li>An interrupt occurs and it is scheduled on the same CPU core</li>
@@ -673,14 +683,14 @@ until the critical section is vacated.</p>
 <p>Since mutexes and spin locks usage intersect, it is useful to compare
 the two:</p>
 <ul class="admonition-mutexes simple">
-<li>They don’t “waste” CPU cycles; system throughput is better then
-spin locks if context switch overhead is lower then medium
+<li>They don't &quot;waste&quot; CPU cycles; system throughput is better than
+spin locks if context switch overhead is lower than medium
 spinning time</li>
-<li>They can’t be used in interrupt context</li>
-<li>They have a higher latency then spin locks</li>
+<li>They can't be used in interrupt context</li>
+<li>They have a higher latency than spin locks</li>
 </ul>
 <p>Conceptually, the <code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> operation is relatively simple:
-if the mutex is not acquired we an take the fast path via an atomic
+if the mutex is not acquired we can take the fast path via an atomic
 exchange operation:</p>
 <div class="admonition-c-func-mutex-lock-fast-path highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">__sched</span> <span class="nf">mutex_lock</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
 <span class="p">{</span>
@@ -734,7 +744,7 @@ owner is currently running on a different CPU as chances are the owner
 will release the lock soon. It also checks for signals and handles
 mutex debugging for locking dependency engine debug feature.</p>
 <p>The <code class="xref c c-func docutils literal"><span class="pre">mutex_unlock()</span></code> operation is symmetric: if there are no
-waiters on the mutex then we an take the fast path via an atomic exchange
+waiters on the mutex then we can take the fast path via an atomic exchange
 operation:</p>
 <div class="admonition-c-func-mutex-unlock-fast-path highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">__sched</span> <span class="nf">mutex_unlock</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
 <span class="p">{</span>
@@ -790,10 +800,10 @@ list and wake it up:</p>
 <h2>Per CPU data<a class="headerlink" href="#per-cpu-data" title="Permalink to this headline">¶</a></h2>
 <p>Per CPU data avoids race conditions by avoiding to use shared
 data. Instead, an array sized to the maximum possible CPU cores is
-used and each core will used its own array entry to read and write
+used and each core will use its own array entry to read and write
 data. This approach certainly has advantages:</p>
 <ul class="admonition-per-cpu-data simple">
-<li>No need to synchronization to access the data</li>
+<li>No need to synchronize to access the data</li>
 <li>No contention, no performance impact</li>
 <li>Well suited for distributed processing where aggregation is only
 seldom necessary (e.g. statistics counters)</li>
@@ -802,7 +812,7 @@ seldom necessary (e.g. statistics counters)</li>
 <div class="section" id="memory-ordering-and-barriers">
 <h2>Memory Ordering and Barriers<a class="headerlink" href="#memory-ordering-and-barriers" title="Permalink to this headline">¶</a></h2>
 <p>Modern processors and compilers employ out-of-order execution to
-improve performance. For example, processors can execute “future”
+improve performance. For example, processors can execute &quot;future&quot;
 instructions while waiting for current instruction data to be fetched
 from memory.</p>
 <p>Here is an example of out of order compiler generated code:</p>
@@ -833,7 +843,7 @@ from memory.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">When executing instructions out of order the processor makes
-sure that data dependency is observed, i.e. it won’t execute
+sure that data dependency is observed, i.e. it won't execute
 instructions whose input depend on the output of a previous
 instruction that has not been executed.</p>
 </div>
@@ -872,15 +882,15 @@ can be used.</p>
 <p>RCU splits removal updates to the data structures in two phases:</p>
 <ul class="admonition-removal-and-reclamation simple">
 <li><strong>Removal</strong>: removes references to elements. Some old readers may
-still see the old reference so we can’t free the element.</li>
+still see the old reference so we can't free the element.</li>
 <li><strong>Elimination</strong>: free the element. This action is postponed until
 all existing readers finish traversal (quiescent cycle). New
-readers won’t affect the quiescent cycle.</li>
+readers won't affect the quiescent cycle.</li>
 </ul>
 <p>As an example, lets take a look on how to delete an element from a
 list using RCU:</p>
 <p class="admonition-rcu-list-delete">&nbsp;</p>
-<img alt="../_images/ditaa-353c3d23d47a5252f128d20968eeaacd725737a6.png" src="../_images/ditaa-353c3d23d47a5252f128d20968eeaacd725737a6.png" />
+<img alt="../_images/ditaa-5193a924360bebc83d2f81188cd0b0093ec01e6a.png" src="../_images/ditaa-5193a924360bebc83d2f81188cd0b0093ec01e6a.png" />
 <p>In the first step it can be seen that while readers traverse the list
 all elements are referenced. In step two a writer removes
 element B. Reclamation is postponed since there are still readers that
@@ -921,29 +931,29 @@ element to the list:</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="debugging.html" class="btn btn-neutral float-right" title="Debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="interrupts.html" class="btn btn-neutral float-left" title="Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="debugging.html" class="btn btn-neutral float-right" title="Debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="interrupts.html" class="btn btn-neutral float-left" title="Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -951,7 +961,6 @@ element to the list:</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

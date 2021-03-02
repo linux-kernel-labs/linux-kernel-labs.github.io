@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Interrupts &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Symmetric Multi-Processing" href="smp.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Interrupts</a><ul>
@@ -161,6 +168,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -195,18 +203,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Interrupts</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/lectures/interrupts.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -287,12 +297,12 @@ of the instruction after the instuction that caused the trap. (e.g debug trap).<
 <h2>Hardware Concepts<a class="headerlink" href="#hardware-concepts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="programmable-interrupt-controller">
 <h3>Programmable Interrupt Controller<a class="headerlink" href="#programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
-<img alt="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" class="admonition-hardware-pic" src="../_images/ditaa-f2e7fcf366f75599766f77babb74ffebbc7f79e3.png" />
+<img alt="../_images/ditaa-5db1739b80a83b12505e4ff749b5e69fccd01f1b.png" class="admonition-hardware-pic" src="../_images/ditaa-5db1739b80a83b12505e4ff749b5e69fccd01f1b.png" />
 <p>A device supporting interrupts has an output pin used for signalling an Interrupt ReQuest. IRQ
 pins are connected to a device named Programmable Interrupt Controller (PIC) which is connected
-to CPU’s INTR pin.</p>
+to CPU's INTR pin.</p>
 <p>A PIC usually has a set of ports used to exchange information with the CPU. When a device
-connected to one of the PIC’s IRQ lines needs CPU attention the following flow happens:</p>
+connected to one of the PIC's IRQ lines needs CPU attention the following flow happens:</p>
 <blockquote>
 <div><ul class="simple">
 <li>device raises an interrupt on the corresponding IRQn pin</li>
@@ -302,18 +312,18 @@ connected to one of the PIC’s IRQ lines needs CPU attention the following flow
 <li>CPU handles the interrupt</li>
 </ul>
 </div></blockquote>
-<p>Will see later how the CPU handles the interrupt. Important to notice is that by design PIC won’t raise
+<p>Will see later how the CPU handles the interrupt. Important to notice is that by design PIC won't raise
 another interrupt until the CPU acknowledged the current interrupt.</p>
 <p>Each IRQ line can be individually disabled. This allows simplifying design by making sure that
 interrupt handlers are always executed serially.</p>
 </div>
 <div class="section" id="advanced-programmable-interrupt-controller">
 <h3>Advanced Programmable Interrupt Controller<a class="headerlink" href="#advanced-programmable-interrupt-controller" title="Permalink to this headline">¶</a></h3>
-<img alt="../_images/ditaa-f0124fcd03ddd32134f414c160e247355ab306bc.png" class="admonition-hardware-apic" src="../_images/ditaa-f0124fcd03ddd32134f414c160e247355ab306bc.png" />
+<img alt="../_images/ditaa-9d23d02ebdff6eeb6bec8044480f055de9852ecc.png" class="admonition-hardware-apic" src="../_images/ditaa-9d23d02ebdff6eeb6bec8044480f055de9852ecc.png" />
 <p>With multicore systems, each core has a local APIC used to process interrupts
 from locally connected devices like timers or thermals sensors.</p>
 <p>I/O APIC is used to distribute IRQ from external devices to CPU cores.</p>
-<p>After discussing the hardware, now let’s see how the processor handles an interrupt.</p>
+<p>After discussing the hardware, now let's see how the processor handles an interrupt.</p>
 </div>
 <div class="section" id="interrupt-control">
 <h3>Interrupt Control<a class="headerlink" href="#interrupt-control" title="Permalink to this headline">¶</a></h3>
@@ -361,7 +371,7 @@ instructions as interrupt/exception handler.</p>
 <p>Below we can find Linux IRQ vector layout. The first 32 entries are reserved
 for exceptions, vector 128 is used for sycall interface and the rest are
 used mostly for hardware interrupts handlers.</p>
-<img alt="../_images/ditaa-dc1532523c503b0c569468d4ed1d7aeb11ed0ed0.png" class="admonition-linux-irq-vector-layout" src="../_images/ditaa-dc1532523c503b0c569468d4ed1d7aeb11ed0ed0.png" />
+<img alt="../_images/ditaa-5b3c93f6e612d0cc0e4d4837d92a443627405262.png" class="admonition-linux-irq-vector-layout" src="../_images/ditaa-5b3c93f6e612d0cc0e4d4837d92a443627405262.png" />
 <p>On x86 an IDT entry has 8 bytes and it is named gate. There can be 3 types of gates:</p>
 <blockquote>
 <div><ul class="simple">
@@ -382,16 +392,16 @@ the interupt handlers resides</li>
 <li>DPL, minimum privilege required for using the segments content.</li>
 </ul>
 </div></blockquote>
-<img alt="../_images/ditaa-a9d35ab5597ae26c7755a800c13ff62d6b506ebd.png" class="admonition-interrupt-descriptor-table-entry-gate" src="../_images/ditaa-a9d35ab5597ae26c7755a800c13ff62d6b506ebd.png" />
+<img alt="../_images/ditaa-eff5e0e3b58ce239d5310b22b89c0927be5853bd.png" class="admonition-interrupt-descriptor-table-entry-gate" src="../_images/ditaa-eff5e0e3b58ce239d5310b22b89c0927be5853bd.png" />
 </div>
 <div class="section" id="interrupt-handler-address">
 <h3>Interrupt handler address<a class="headerlink" href="#interrupt-handler-address" title="Permalink to this headline">¶</a></h3>
 <p>In order to find the interrupt handler address we first need to find the start
 address of the code segment where interrupt handler resides. For this we
 use the segment selector to index into GDT/LDT where we can find the corresponding
-segment descriptor. This will provide the start address kept in the ‘base’ field.
+segment descriptor. This will provide the start address kept in the 'base' field.
 Using base address and the offset we can now go at the start of the interrupt handler.</p>
-<img alt="../_images/ditaa-9b2dd926bf730364e2ca37aeea66fea341a741bf.png" class="admonition-interrupt-handler-address" src="../_images/ditaa-9b2dd926bf730364e2ca37aeea66fea341a741bf.png" />
+<img alt="../_images/ditaa-b2023fce22479e20bbe08fd76eed87e9a0527688.png" class="admonition-interrupt-handler-address" src="../_images/ditaa-b2023fce22479e20bbe08fd76eed87e9a0527688.png" />
 </div>
 <div class="section" id="stack-of-interrupt-handler">
 <h3>Stack of interrupt handler<a class="headerlink" href="#stack-of-interrupt-handler" title="Permalink to this headline">¶</a></h3>
@@ -402,7 +412,7 @@ information needed for returning to the interrupted code.</p>
 before saving the address of the interrupted instruction. Certain types
 of exceptions also cause an error code to be pushed on the stack to help
 debug the exception.</p>
-<img alt="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-1e5c09a5a3c85a247e3e154c2ab664ba5ebc134c.png" />
+<img alt="../_images/ditaa-85b69602726fa6143fc3ba0ffdb492454864aacf.png" class="admonition-interrupt-handler-stack" src="../_images/ditaa-85b69602726fa6143fc3ba0ffdb492454864aacf.png" />
 </div>
 <div class="section" id="handling-an-interrupt-request">
 <h3>Handling an interrupt request<a class="headerlink" href="#handling-an-interrupt-request" title="Permalink to this headline">¶</a></h3>
@@ -456,8 +466,8 @@ actions will also be performed (e.g. acknowledge the interrupt at the interrupt
 controller level). Local processor interrupts are disabled for the duration of
 this phase and continue to be disabled in the next phase.</p>
 <p>In the second phase all of the device drivers handler associated with this
-interrupt will be executed <a class="footnote-reference" href="#f1" id="id1">[1]</a>. At the end of this phase the interrupt controller’s
-“end of interrupt” method is called to allow the interrupt controller to
+interrupt will be executed <a class="footnote-reference" href="#f1" id="id1">[1]</a>. At the end of this phase the interrupt controller's
+&quot;end of interrupt&quot; method is called to allow the interrupt controller to
 reassert this interrupt. The local processor interrupts are enabled at this
 point.</p>
 <table class="docutils footnote" frame="void" id="f1" rules="none">
@@ -466,22 +476,22 @@ point.</p>
 <tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Note that it is possible that one interrupt is associated with multiple
 devices and in this case it is said that the interrupt is
 shared. Usually, when using shared interrupts it is the responsibility
-of the device driver to determine if the interrupt is target to it’s
+of the device driver to determine if the interrupt is target to it's
 device or not.</td></tr>
 </tbody>
 </table>
 <p>Finally, in the last phase of interrupt handling interrupt context deferrable
-actions will be run. These are also sometimes known as “bottom half” of the
+actions will be run. These are also sometimes known as &quot;bottom half&quot; of the
 interrupt (the upper half being the part of the interrupt handling that runs
 with interrupts disabled). At this point interrupts are enabled on the local
 processor.</p>
-<img alt="../_images/ditaa-eb56c6fa9d7ffb1693268ef2ca9de9d78a9868a7.png" class="admonition-interrupt-handling-in-linux" src="../_images/ditaa-eb56c6fa9d7ffb1693268ef2ca9de9d78a9868a7.png" />
+<img alt="../_images/ditaa-da31e3d17a4d55e5c3dbc0bd5903306418a896ca.png" class="admonition-interrupt-handling-in-linux" src="../_images/ditaa-da31e3d17a4d55e5c3dbc0bd5903306418a896ca.png" />
 <div class="section" id="nested-interrupts-and-exceptions">
 <h3>Nested interrupts and exceptions<a class="headerlink" href="#nested-interrupts-and-exceptions" title="Permalink to this headline">¶</a></h3>
-<p>Nesting interrupts is permitted on many architectures. Some architecture define
+<p>Nesting interrupts is permitted on many architectures. Some architectures define
 interrupt levels that allow preemption of an interrupt only if the pending
 interrupt has a greater priority then the current (settable) level (e.g see
-ARM’s priority mask).</p>
+ARM's priority mask).</p>
 <p>In order to support as many architectures as possible, Linux has a more
 restrictive interrupt nesting implementation:</p>
 <ul class="admonition-irq-nesting-in-linux simple">
@@ -491,13 +501,13 @@ if that occurs it is considered a bug</li>
 one level of interrupt nesting is allowed</li>
 </ul>
 <p>The diagram below shows the possible nesting scenarios:</p>
-<img alt="../_images/ditaa-8bab5b1e954e998c106f4a97d90ab30c70943cb4.png" class="admonition-interrupt-exception-nesting" src="../_images/ditaa-8bab5b1e954e998c106f4a97d90ab30c70943cb4.png" />
+<img alt="../_images/ditaa-cf9d88cddb9129693d8858ceb52726cc5d6cd391.png" class="admonition-interrupt-exception-nesting" src="../_images/ditaa-cf9d88cddb9129693d8858ceb52726cc5d6cd391.png" />
 </div>
 <div class="section" id="interrupt-context">
 <h3>Interrupt context<a class="headerlink" href="#interrupt-context" title="Permalink to this headline">¶</a></h3>
 <p>While an interrupt is handled (from the time the CPU jumps to the interrupt
 handler until the interrupt handler returns - e.g.  IRET is issued) it is said
-that code runs in “interrupt context”.</p>
+that code runs in &quot;interrupt context&quot;.</p>
 <p>Code that runs in interrupt context has the following properties:</p>
 <blockquote class="admonition-interrupt-context">
 <div><ul class="simple">
@@ -531,7 +541,7 @@ interface and the network card buffer is full).</p>
 </li>
 <li>tasklet<ul>
 <li>runs in interrupt context</li>
-<li>can be dinamically allocated</li>
+<li>can be dynamically allocated</li>
 <li>same handler runs are serialized</li>
 </ul>
 </li>
@@ -641,29 +651,29 @@ deferred work running in interrupt context.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="smp.html" class="btn btn-neutral float-right" title="Symmetric Multi-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="syscalls.html" class="btn btn-neutral float-left" title="System Calls" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="smp.html" class="btn btn-neutral float-right" title="Symmetric Multi-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="syscalls.html" class="btn btn-neutral float-left" title="System Calls" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -671,7 +681,6 @@ deferred work running in interrupt context.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

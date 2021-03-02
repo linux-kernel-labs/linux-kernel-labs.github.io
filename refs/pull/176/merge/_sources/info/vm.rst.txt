@@ -79,7 +79,7 @@ with verbose output provided:
 
 .. code-block:: shell
 
-   .../linux/tools/labs$ QEMU_DISPLAY=sdl make boot
+   .../linux/tools/labs$ QEMU_DISPLAY=gtk make boot
 
           This will show the VGA output and will also give
           access to the standard keyboard.

@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>System Calls &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interrupts" href="interrupts.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">System Calls</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
@@ -140,6 +147,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -174,18 +182,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>System Calls</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/lectures/syscalls.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -212,11 +222,11 @@
 </div>
 <div class="section" id="linux-system-calls-implementation">
 <h2>Linux system calls implementation<a class="headerlink" href="#linux-system-calls-implementation" title="Permalink to this headline">¶</a></h2>
-<p>At a high level system calls are “services” offered by the kernel to
+<p>At a high level system calls are &quot;services&quot; offered by the kernel to
 user applications and they resemble library APIs in that they are
 described as a function call with a name, parameters and return value.</p>
 <p class="admonition-system-calls-as-kernel-services">&nbsp;</p>
-<img alt="../_images/ditaa-48e96bb39e921ced06e8c3fe0d79112d7dd0c62b.png" src="../_images/ditaa-48e96bb39e921ced06e8c3fe0d79112d7dd0c62b.png" />
+<img alt="../_images/ditaa-e76e44cad2e92f2134ab77f6a09605b29524d039.png" src="../_images/ditaa-e76e44cad2e92f2134ab77f6a09605b29524d039.png" />
 <p>However, on a closer look, we can see that system calls are actually
 not function calls, but specific assembly instructions (architecture
 and kernel specific) that do the following:</p>
@@ -249,7 +259,7 @@ system call dispatcher.</p>
 switched from ther user stack to the kernel stack. This is
 explained in more details in the interrupts lecture.</p>
 </div>
-<img alt="../_images/ditaa-ff42ece4d0e8f54447df36efcbbfb8dd51a1362b.png" class="admonition-example-of-linux-system-call-setup-and-handling" src="../_images/ditaa-ff42ece4d0e8f54447df36efcbbfb8dd51a1362b.png" />
+<img alt="../_images/ditaa-eeb919cd078d0ba5021028fa628bb47d7d6866e2.png" class="admonition-example-of-linux-system-call-setup-and-handling" src="../_images/ditaa-eeb919cd078d0ba5021028fa628bb47d7d6866e2.png" />
 <p>The purpose of the system call dispatcher is to verify the system call
 number and run the kernel function associated with the system call.</p>
 <div class="admonition-linux-system-call-dispatcher highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Handles int $0x80 */</span>
@@ -334,8 +344,8 @@ pointer to a write system call then it can get access to kernel data
 by later reading the file. If it passes a kernel-space pointer to a
 read system call then it can corrupt kernel memory.</p>
 <span class="admonition-pointers-to-kernel-space"></span><p>Likewise, if a pointer passed by the application is invalid
-(e.g. unmaped, read-only for cases where its need to be written), it
-could “crash” the kernel. There two approaches that could be used:</p>
+(e.g. unmapped, read-only for cases where it is used for writing), it
+could &quot;crash&quot; the kernel. There two approaches that could be used:</p>
 <ul class="admonition-invalid-pointers-handling-approaches simple">
 <li>Check the pointer against the user address space before using it,
 or</li>
@@ -359,7 +369,7 @@ invalid</li>
 <li>Kernel bug (kernel accesses invalid pointer): same as above</li>
 </ul>
 </div></blockquote>
-<p>But in the last two cases we don’t have enough information to
+<p>But in the last two cases we don't have enough information to
 determine the cause of the fault.</p>
 <p>In order to solve this issue Linux uses special APIs (e.g
 <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>) to accesses user space that are specially
@@ -427,7 +437,7 @@ is either static or modified by the kernel in a separate read-write
 map of the VDSO page. Examples of system calls that can be implemented
 as vsyscalls are: getpid or gettimeofday.</p>
 <ul class="admonition-virtual-system-calls-vsyscalls simple">
-<li>“System calls” that run directly from user space, part of the VDSO</li>
+<li>&quot;System calls&quot; that run directly from user space, part of the VDSO</li>
 <li>Static data (e.g. getpid())</li>
 <li>Dynamic data update by the kernel a in RW map of the VDSO
 (e.g. gettimeofday(), time(), )</li>
@@ -448,7 +458,7 @@ pointers they return a non zero value.</p>
 <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">kernel_buffer</span><span class="p">,</span> <span class="n">user_ptr</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Let’s examine the simplest API, get_user, as implemented for x86:</p>
+<p>Let's examine the simplest API, get_user, as implemented for x86:</p>
 <div class="admonition-get-user-implementation highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define get_user(x, ptr)                                          \</span>
 <span class="cp">({                                                                \</span>
 <span class="cp">  int __ret_gu;                                                   \</span>
@@ -505,7 +515,7 @@ _ASM_EXTABLE(1b,bad_get_user)
 </div>
 <p>The first two statements check the pointer (which is stored in EDX)
 with the addr_limit field of the current task (process) descriptor to
-make sure that we don’t have a pointer to kernel space.</p>
+make sure that we don't have a pointer to kernel space.</p>
 <p>Then, SMAP is disabled, to allow access to user from kernel, and the
 access to user space is done with the instruction at the 1: label. EAX
 is then zeroed to mark success, SMAP is enabled, and the call returns.</p>
@@ -577,29 +587,29 @@ table entry, is bad_get_user which return -EFAULT to the caller.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="interrupts.html" class="btn btn-neutral float-right" title="Interrupts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="interrupts.html" class="btn btn-neutral float-right" title="Interrupts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -607,7 +617,6 @@ table entry, is bad_get_user which return -EFAULT to the caller.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

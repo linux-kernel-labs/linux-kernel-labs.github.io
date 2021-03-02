@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>File system drivers (Part 1) &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="File system drivers (Part 2)" href="filesystems_part2.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -156,7 +163,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#minfs">minfs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#registering-and-unregister-the-minfs-file-system">1. Registering and unregister the minfs file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#registering-and-unregistering-the-minfs-file-system">1. Registering and unregistering the minfs file system</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#completing-minfs-superblock">2. Completing minfs superblock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
@@ -181,6 +188,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -215,18 +223,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>File system drivers (Part 1)</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/labs/filesystems_part1.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -246,7 +256,7 @@
 <h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li>acquiring knowledge about the Virtual Filesystem (VFS) in Linux and understanding concepts regarding ‘inode’, ‘dentry’, ‘file’, superblock and data block.</li>
+<li>acquiring knowledge about the Virtual Filesystem (VFS) in Linux and understanding concepts regarding 'inode', 'dentry', 'file', superblock and data block.</li>
 <li>understanding the process of mounting a file system inside VFS.</li>
 <li>knowledge regarding various file system types and understanding differences between file systems with physical support (on disk) and the ones without physical support.</li>
 </ul>
@@ -276,7 +286,7 @@ There will be a file system that will be the root, the rest being mounted in its
 </div>
 <div class="section" id="the-general-file-system-model">
 <h2>The general file system model<a class="headerlink" href="#the-general-file-system-model" title="Permalink to this headline">¶</a></h2>
-<p>The general file system model, to which any implemented file system needs to be reduced, consists of several well-defined entities: <code class="xref c c-type docutils literal"><span class="pre">superbloc</span></code>, <code class="xref c c-type docutils literal"><span class="pre">inode</span></code>, <code class="xref c c-type docutils literal"><span class="pre">file</span></code>, and <code class="xref c c-type docutils literal"><span class="pre">dentry</span></code>.
+<p>The general file system model, to which any implemented file system needs to be reduced, consists of several well-defined entities: <code class="xref c c-type docutils literal"><span class="pre">superblock</span></code>, <code class="xref c c-type docutils literal"><span class="pre">inode</span></code>, <code class="xref c c-type docutils literal"><span class="pre">file</span></code>, and <code class="xref c c-type docutils literal"><span class="pre">dentry</span></code>.
 These entities are file system metadata (they contain information about data or other metadata).</p>
 <p>Model entities interact using some VFS or kernel subsystems: dentry cache, inode cache, buffer cache.
 Each entity is treated as an object: it has a associated data structure and a pointer to a table of methods. The induction of particular behavior for each component is done by replacing the associated methods.</p>
@@ -334,7 +344,7 @@ As a VFS entity, an inode is represented by the structure <code class="xref c c-
 </div>
 <div class="section" id="file">
 <h3>file<a class="headerlink" href="#file" title="Permalink to this headline">¶</a></h3>
-<p>File is the component of the file system model that is closest the user.
+<p>File is the component of the file system model that is closest to the user.
 The structure exists only as a VFS entity in memory and has no physical correspondent on disk.</p>
 <p>While the inode abstracts a file on the disk, the file structure abstracts an open file.
 From the point of view of the process, the file entity abstracts the file. From the point of view of the file system implementation, however, the inode is the entity that abstracts the file.</p>
@@ -527,7 +537,7 @@ The superblock can be viewed as an abstract object to which its own data is adde
 </div>
 <div class="section" id="superblock-operations">
 <span id="superblocksection"></span><h3>Superblock operations<a class="headerlink" href="#superblock-operations" title="Permalink to this headline">¶</a></h3>
-<p>The superbloc operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure:</p>
+<p>The superblock operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">super_operations</span> <span class="p">{</span>
        <span class="c1">//...</span>
        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write_inode</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span><span class="n">wbc</span><span class="p">);</span>
@@ -545,7 +555,7 @@ The superblock can be viewed as an abstract object to which its own data is adde
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">write_inode</span></code>, <code class="docutils literal"><span class="pre">alloc_inode</span></code>, <code class="docutils literal"><span class="pre">destroy_inode</span></code> write, allocate, respectively release resources associated with an inode and are described in the next lab</li>
-<li><code class="docutils literal"><span class="pre">put_super</span></code> is called when the superblock is released at <code class="docutils literal"><span class="pre">umount</span></code>; within this function, any resources (generally memory) from the file system’s private data must be released;</li>
+<li><code class="docutils literal"><span class="pre">put_super</span></code> is called when the superblock is released at <code class="docutils literal"><span class="pre">umount</span></code>; within this function, any resources (generally memory) from the file system's private data must be released;</li>
 <li><code class="docutils literal"><span class="pre">remount_fs</span></code> is called when the kernel detects a remount attempt (mount flag <code class="docutils literal"><span class="pre">MS_REMOUNTM</span></code>); most of the time here must be detected if a switch from read-only to read-write or vice versa is attempted; this can be done simply because both the old flags (in <code class="docutils literal"><span class="pre">sb-&gt;s_flags</span></code>) and the new flags (the <code class="docutils literal"><span class="pre">flags</span></code> argument) can be accessed; <code class="docutils literal"><span class="pre">data</span></code> is a pointer to the data sent by <code class="xref c c-func docutils literal"><span class="pre">mount()</span></code> that represent file system specific options;</li>
 <li><code class="docutils literal"><span class="pre">statfs</span></code> is called when a <code class="docutils literal"><span class="pre">statfs</span></code> system call is done (try <code class="docutils literal"><span class="pre">stat</span> <span class="pre">–f</span></code> or <code class="docutils literal"><span class="pre">df</span></code>); this call must fill the fields of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">kstatfs</span></code> structure, as it is done, for example, in the <code class="xref c c-func docutils literal"><span class="pre">ext4_statfs()</span></code> function.</li>
 </ul>
@@ -600,20 +610,20 @@ The superblock can be viewed as an abstract object to which its own data is adde
 </pre></div>
 </div>
 <p>The kernel provides generic function to implement operations with file system structures.
-The <code class="xref c c-func docutils literal"><span class="pre">generic_drop_inode()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">simple_statfs()</span></code> functions used in the above code are such functions and can be used to implement the drivers if their functionality is sufficient.</p>
+The <code class="xref c c-func docutils literal"><span class="pre">generic_delete_inode()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">simple_statfs()</span></code> functions used in the above code are such functions and can be used to implement the drivers if their functionality is sufficient.</p>
 <p>The <code class="xref c c-func docutils literal"><span class="pre">ramfs_fill_super()</span></code> function in the above code fills some fields in the superblock, then reads the root inode and allocates the root dentry.
 Reading the root inode is done in the <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code> function, and consists of allocating a new inode using <code class="xref c c-func docutils literal"><span class="pre">new_inode()</span></code> and initializing it. In order to free the inode, <code class="xref c c-func docutils literal"><span class="pre">iput()</span></code> is used, and <code class="xref c c-func docutils literal"><span class="pre">d_make_root()</span></code> is used to allocate the root dentry.</p>
 <p>An example implementation for a disk file system is the <code class="xref c c-func docutils literal"><span class="pre">minix_fill_super()</span></code> function in the minix file system.
 The functionality for the disk file system is similar to that of the virtual file system, with the exception of using the buffer cache.
 Also, the minix file system keeps private data using the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">minix_sb_info</span></code> structure.
-A large part of this function deals with the initialization of these private data (not included in the code snippet above for clarity).
+A large part of this function deals with the initialization of these private data.
 The private data is allocated using the <code class="xref c c-func docutils literal"><span class="pre">kzalloc()</span></code> function and stored in the <code class="docutils literal"><span class="pre">s_fs_info</span></code> field of the superblock structure.</p>
 <p>VFS functions typically get as arguments the superblock, an inode and/or a dentry that contain a pointer to the superblock so that these private data can be easily accessed.</p>
 </div>
 <div class="section" id="buffer-cache">
 <span id="buffercachesection"></span><h2>Buffer cache<a class="headerlink" href="#buffer-cache" title="Permalink to this headline">¶</a></h2>
 <p>Buffer cache is a kernel subsystem that handles caching (both read and write) blocks from block devices.
-The base entity used by cache buffer is the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">buffer_head</span></code> structure.
+The base entity used by buffer cache is the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">buffer_head</span></code> structure.
 The most important fields in this structure are:</p>
 <blockquote>
 <div><ul class="simple">
@@ -657,7 +667,7 @@ The most important fields in this structure are:</p>
 <div class="section" id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Robert Love – Linux Kernel Development, Second Edition – Chapter
+<li>Robert Love -- Linux Kernel Development, Second Edition -- Chapter
 12. The Virtual Filesystem</li>
 <li>Understanding the Linux Kernel, 3rd edition - Chapter 12. The Virtual
 Filesystem</li>
@@ -665,7 +675,7 @@ Filesystem</li>
 <li><a class="reference external" href="http://www.cyberciti.biz/tips/understanding-unixlinux-file-system-part-i.html">Understanding Unix/Linux Filesystem</a></li>
 <li><a class="reference external" href="http://lwn.net/Articles/57369/">Creating Linux virtual filesystems</a></li>
 <li><a class="reference external" href="http://www.tldp.org/LDP/tlk/fs/filesystem.html">The Linux Documentation Project - VFS</a></li>
-<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The “Virtual File System” in Linux</a></li>
+<li><a class="reference external" href="http://www.linux.it/~rubini/docs/vfs/vfs.html">The &quot;Virtual File System&quot; in Linux</a></li>
 <li><a class="reference external" href="http://inglorion.net/documents/tutorials/tutorfs/">A Linux Filesystem Tutorial</a></li>
 <li><a class="reference external" href="http://www.win.tue.nl/~aeb/linux/lk/lk-8.html">The Linux Virtual File System</a></li>
 <li><a class="reference external" href="http://lxr.free-electrons.com/source/Documentation/filesystems/vfs.txt">Documentation/filesystems/vfs.txt</a></li>
@@ -727,10 +737,10 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 <div class="section" id="register-and-unregister-the-myfs-file-system">
 <h4>1. Register and unregister the myfs file system<a class="headerlink" href="#register-and-unregister-the-myfs-file-system" title="Permalink to this headline">¶</a></h4>
 <p>The first step in working with the file system is to register and unregister it. We want to do this for the file system described in <code class="docutils literal"><span class="pre">myfs.c</span></code>. Check the file contents and follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>.</p>
-<p>The steps you need to take are described in the section <a class="reference internal" href="#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>. Use the <code class="docutils literal"><span class="pre">&quot;myfs&quot;</span></code> string for the file system name.</p>
+<p>The steps you need to take are described in the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>. Use the <code class="docutils literal"><span class="pre">&quot;myfs&quot;</span></code> string for the file system name.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Within the file system structure, use the <code class="docutils literal"><span class="pre">myfs_mount</span></code> function present in the code skeleton to fill the superblock (done when mounting). In <code class="docutils literal"><span class="pre">myfs_mount</span></code> call the function specific to a file system without disk support (TODO). As an argument for the specific mount function, use the function of type <code class="docutils literal"><span class="pre">fill_super</span></code> defined in the code skeleton.</p>
+<p>Within the file system structure, use the <code class="docutils literal"><span class="pre">myfs_mount</span></code> function present in the code skeleton to fill the superblock (done when mounting). In <code class="docutils literal"><span class="pre">myfs_mount</span></code> call the function specific to a file system without disk support. As an argument for the specific mount function, use the function of type <code class="docutils literal"><span class="pre">fill_super</span></code> defined in the code skeleton. You can review the <a class="reference internal" href="../so2/lab8-filesystems-part1.html#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> section.</p>
 <p class="last">To destroy the superblock (done at unmounting) use <code class="docutils literal"><span class="pre">kill_litter_super</span></code>, also a function specific to a file system without disk support. The function is already implemented, you need to fill it in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_system_type</span></code> structure.</p>
 </div>
 <p>After completing the sections marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code> , compile the module, copy it to the QEMU virtual machine, and start the virtual machine. Load the kernel module and then check the presence of the <code class="docutils literal"><span class="pre">myfs</span></code> file system within the <code class="docutils literal"><span class="pre">/proc/filesystems</span></code> file.</p>
@@ -750,16 +760,16 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 </div>
 <div class="section" id="completing-myfs-superblock">
 <h4>2. Completing myfs superblock<a class="headerlink" href="#completing-myfs-superblock" title="Permalink to this headline">¶</a></h4>
-<p>To be able to mount the file system, we need to fill its superblock’s fields, that is, a generic VFS structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>.
+<p>To be able to mount the file system, we need to fill its superblock's fields, that is, a generic VFS structure of type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>.
 We will fill out the structure within the <code class="xref c c-func docutils literal"><span class="pre">myfs_fill_super()</span></code> function; the superblock is represented by the variable <code class="docutils literal"><span class="pre">sb</span></code> passed as an argument to the function.
 Follow the hints marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To fill the <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, you can start from the example in the section <a class="reference internal" href="#fillsupersection"><span class="std std-ref">The fill_super() function</span></a>.</p>
+<p>To fill the <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, you can start from the example in the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#fillsupersection"><span class="std std-ref">The fill_super() function</span></a>.</p>
 <p class="last">For the superblock structure fields, use the macros defined within the code skeleton wherever possible.</p>
 </div>
 <p>The <code class="docutils literal"><span class="pre">s_op</span></code> field in the superblock structure must be initialized to the superblock operations structures (type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code>). You need to define such a structure.</p>
-<p>For information on defining the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure and filling the superblock, see the section <a class="reference internal" href="#superblocksection"><span class="std std-ref">Superblock operations</span></a>.</p>
+<p>For information on defining the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure and filling the superblock, see the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#superblocksection"><span class="std std-ref">Superblock operations</span></a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Initialize the <code class="docutils literal"><span class="pre">drop_inode</span></code> and <code class="docutils literal"><span class="pre">statfs</span></code> fields of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_operations</span></code> structure.</p>
@@ -774,7 +784,7 @@ Initialization is done when the file system is mounted.
 The <code class="docutils literal"><span class="pre">myfs_fill_super</span></code> function, called at mount, is the one that calls the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function that creates and initializes an inode.
 Typically, this function is used to create and initialize all inodes; In this exercise, however, we will only create the root inode.</p>
 <p>The <code class="xref c c-type docutils literal"><span class="pre">inode</span></code> is allocated inside the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function (local variable <code class="docutils literal"><span class="pre">inode</span></code>, allocated using the <code class="xref c c-func docutils literal"><span class="pre">new_inode()</span></code> function call).</p>
-<p>To successfully complete mounting the file system, you will need to fill the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function. Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">3</span></code>. A starting point is the <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code> function.</p>
+<p>To successfully complete mounting the file system, you will need to fill the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function. Follow directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">3</span></code>. A starting point is the <a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/fs/ramfs/inode.c#L63">ramfs_get_inode</a> function.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>To initialize <code class="docutils literal"><span class="pre">uid</span></code>, <code class="docutils literal"><span class="pre">gid</span></code> and <code class="docutils literal"><span class="pre">mode</span></code> , you can use the <code class="xref c c-func docutils literal"><span class="pre">inode_init_owner()</span></code> function as it is used in <code class="xref c c-func docutils literal"><span class="pre">ramfs_get_inode()</span></code>.
@@ -809,7 +819,7 @@ We verify that the file system was mounted by inspecting the <code class="docuti
 <p class="last">where <code class="docutils literal"><span class="pre">/path/to/directory/</span></code> is the path to the directory whose inode number we want to display.</p>
 </div>
 <p>We check myfs file system statistics using the following command:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">stat -f / mnt / myfs</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">stat -f /mnt/myfs</span>
 </pre></div>
 </div>
 <p>We want to see what the mount point <code class="docutils literal"><span class="pre">/mnt/myfs</span></code> contains and if we can create files.
@@ -852,31 +862,31 @@ Just like <code class="docutils literal"><span class="pre">myfs</span></code> we
 The rest of the operations will be implemented in the next lab.</p>
 <p>Follow the diagram below to clarify the role of structures within the <code class="docutils literal"><span class="pre">minfs</span></code> file system.</p>
 <img alt="../_images/minfs.png" src="../_images/minfs.png" />
-<div class="section" id="registering-and-unregister-the-minfs-file-system">
-<h4>1. Registering and unregister the minfs file system<a class="headerlink" href="#registering-and-unregister-the-minfs-file-system" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="registering-and-unregistering-the-minfs-file-system">
+<h4>1. Registering and unregistering the minfs file system<a class="headerlink" href="#registering-and-unregistering-the-minfs-file-system" title="Permalink to this headline">¶</a></h4>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Before solving the exercise, we need to add a disk to the virtual machine. To do this, generate a file that we will use as the disk image using the following command:</p>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">dd if=/dev/zero of=mydisk.img bs=1M count=100</span>
 </pre></div>
 </div>
-<p class="last">and add the <code class="docutils literal"><span class="pre">-drive</span> <span class="pre">file=qemu/mydisk.img,if=virtio,format=raw</span></code> argument to the <code class="docutils literal"><span class="pre">qemu</span></code> command in <code class="docutils literal"><span class="pre">qemu/Makefile</span></code> (in the <code class="docutils literal"><span class="pre">QEMU_OPTS</span></code> variable).
+<p class="last">and add the <code class="docutils literal"><span class="pre">-drive</span> <span class="pre">file=mydisk.img,if=virtio,format=raw</span></code> argument to the <code class="docutils literal"><span class="pre">qemu</span></code> command in <code class="docutils literal"><span class="pre">qemu/Makefile</span></code> (in the <code class="docutils literal"><span class="pre">QEMU_OPTS</span></code> variable).
 The new argument for the <code class="docutils literal"><span class="pre">qemu</span></code> command must be added after the one for the existing disk (<code class="docutils literal"><span class="pre">YOCTO_IMAGE</span></code>).</p>
 </div>
-<p>To register and register the file system, you will need to fill the <code class="docutils literal"><span class="pre">minfs_fs_type</span></code> and <code class="docutils literal"><span class="pre">minfs_mount</span></code> functions in <code class="docutils literal"><span class="pre">minfs.c</span></code>. Follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>.</p>
+<p>To register and unregister the file system, you will need to fill the <code class="docutils literal"><span class="pre">minfs_fs_type</span></code> and <code class="docutils literal"><span class="pre">minfs_mount</span></code> functions in <code class="docutils literal"><span class="pre">minfs.c</span></code>. Follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>In the file system structure, for mount, use the <code class="docutils literal"><span class="pre">minfs_mount</span></code> function from in the code skeleton.
-In this function, call the function to mount a file system with disk support (see <a class="reference internal" href="#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> use <code class="xref c c-func docutils literal"><span class="pre">mount_bdev()</span></code>).
+In this function, call the function to mount a file system with disk support (See the <a class="reference internal" href="../so2/lab8-filesystems-part1.html#functionsmountkillsbsection"><span class="std std-ref">Functions mount, kill_sb</span></a> section. Use <code class="xref c c-func docutils literal"><span class="pre">mount_bdev()</span></code>).
 Choose the most suitable function for destroying the superblock (done at unmount); keep in mind that it is a file system with disk support. Use the <code class="xref c c-func docutils literal"><span class="pre">kill_block_super()</span></code> function.</p>
-<p>Initialize the <code class="docutils literal"><span class="pre">fs_flags</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">minfs_fs_type</span></code> structure with the appropriate value for a file system with disk support. See the section <a class="reference internal" href="#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>.</p>
+<p>Initialize the <code class="docutils literal"><span class="pre">fs_flags</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">minfs_fs_type</span></code> structure with the appropriate value for a file system with disk support. See the section <a class="reference internal" href="../so2/lab8-filesystems-part1.html#registerunregistersection"><span class="std std-ref">Register and unregister filesystems</span></a>.</p>
 <p class="last">The function for filling the superblock is <code class="docutils literal"><span class="pre">minfs_fill_super</span></code>.</p>
 </div>
 <p>After completing the sections marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code>, compile the module, copy it into the QEMU virtual machine, and start the virtual machine.
 Load the kernel module and then check the presence of the <code class="docutils literal"><span class="pre">minfs</span></code> file system within the <code class="docutils literal"><span class="pre">/proc/filesystems</span></code> file.</p>
 <p>To test the mounting of the <code class="docutils literal"><span class="pre">minfs</span></code> file system we will need to format the disk with its structure. Formatting requires the <code class="docutils literal"><span class="pre">mkfs.minfs</span></code> formatting tool from the <code class="docutils literal"><span class="pre">minfs/user</span></code> directory. The utility is automatically compiled when running <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code> and copied to the virtual machine at <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code>.</p>
-<p>After compiling, copying, and starting the virtual machine, format the <code class="docutils literal"><span class="pre">/dev/vdb</span></code> using the formatting utility:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> ./mkfs.minfs /dev/vdb
+<p>After compiling, copying, and starting the virtual machine, format the <code class="docutils literal"><span class="pre">/dev/vdd</span></code> using the formatting utility:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> ./mkfs.minfs /dev/vdd
 </pre></div>
 </div>
 <p>Load the kernel module:</p>
@@ -888,7 +898,7 @@ Load the kernel module and then check the presence of the <code class="docutils 
 </pre></div>
 </div>
 <p>and mount the filesystem</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> mount -t minfs /dev/vdX /mnt/minfs/
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> mount -t minfs /dev/vdd /mnt/minfs/
 </pre></div>
 </div>
 <p>The operation fails because the root inode is not initialized.</p>
@@ -897,11 +907,11 @@ Load the kernel module and then check the presence of the <code class="docutils 
 <h4>2. Completing minfs superblock<a class="headerlink" href="#completing-minfs-superblock" title="Permalink to this headline">¶</a></h4>
 <p>To be able to mount the file system, you will need to fill the superblock (i.e a structure with type <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code>) within the <code class="docutils literal"><span class="pre">minfs_fill_super</span></code> function; it is the <code class="docutils literal"><span class="pre">s</span></code> argument of the function.
 The structure of operations on the superblock is already defined: <code class="docutils literal"><span class="pre">minfs_ops</span></code>.
-Follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>. You can also follow the implementation of the <code class="docutils literal"><span class="pre">minix_fill_super</span></code> function.</p>
+Follow the directions marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code>. You can also follow the implementation of the <a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/fs/minix/inode.c#L153">minix_fill_super</a> function.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Some structures are found in the header file <code class="docutils literal"><span class="pre">minfs.h</span></code>.</p>
-<p>For information on working with buffers, go to the <a class="reference internal" href="#buffercachesection"><span class="std std-ref">Buffer cache</span></a> section.</p>
+<p>For information on working with buffers, go to the <a class="reference internal" href="../so2/lab8-filesystems-part1.html#buffercachesection"><span class="std std-ref">Buffer cache</span></a> section.</p>
 <p>Read the first block on the disk (block with index 0).
 To read the block, use the <code class="xref c c-func docutils literal"><span class="pre">sb_bread()</span></code> function.
 Cast the read data (the <code class="docutils literal"><span class="pre">b_data</span></code> field in the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">buffer_head</span></code> structure) to the structure storing the <code class="docutils literal"><span class="pre">minfs</span></code> superblock information on the disk: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">minfs_super_block</span></code>, defined in the source code file.</p>
@@ -911,7 +921,7 @@ Those additional information (found in <code class="xref c c-type docutils liter
 <p>To check the functionality, we need a function for reading the root inode.
 For the time being, use the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function from <code class="docutils literal"><span class="pre">myfs</span></code> file system exercises.
 Copy the function into the source code and call it the same as you did for myfs.
-The second argument when calling the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function is the inode creation permissions, similar to the virtual file system exercise (myfs).</p>
+The third argument when calling the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> function is the inode creation permissions, similar to the virtual file system exercise (myfs).</p>
 <p>Validate the implementation by executing the commands from the previous exercise.</p>
 </div>
 <div class="section" id="creating-and-destroying-minfs-inodes">
@@ -944,12 +954,12 @@ Make <code class="docutils literal"><span class="pre">minfs_iget</span></code> r
 <p>In the <code class="docutils literal"><span class="pre">minfs_fill_super</span></code> function, replace the <code class="docutils literal"><span class="pre">myfs_get_inode</span></code> call with the <code class="docutils literal"><span class="pre">minfs_iget</span></code> function call.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To implement the <code class="docutils literal"><span class="pre">minfs_iget</span></code> function, follow the implementation of <code class="xref c c-func docutils literal"><span class="pre">V1_minix_iget()</span></code>.
+<p>To implement the <code class="docutils literal"><span class="pre">minfs_iget</span></code> function, follow the implementation of <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/fs/minix/inode.c#L460">V1_minix_iget</a>.
 To read a block, use the <code class="xref c c-func docutils literal"><span class="pre">sb_bread()</span></code> function.
-Cast the read data (the <code class="docutils literal"><span class="pre">b_data</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">structure_head</span></code> structure) to the minfs inode from the disk (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode</span></code>).</p>
+Cast the read data (the <code class="docutils literal"><span class="pre">b_data</span></code> field of the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">buffer_head</span></code> structure) to the minfs inode from the disk (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">minfs_inode</span></code>).</p>
 <p>The <code class="docutils literal"><span class="pre">i_uid</span></code>, <code class="docutils literal"><span class="pre">i_gid</span></code>, <code class="docutils literal"><span class="pre">i_mode</span></code>, <code class="docutils literal"><span class="pre">i_size</span></code> must be filled in the VFS inode with the values in the minfs inode structure read from disk.
 To initialize the <code class="docutils literal"><span class="pre">i_uid</span></code> and <code class="docutils literal"><span class="pre">i_gid</span> <span class="pre">fields</span></code>, use the functions <code class="xref c c-func docutils literal"><span class="pre">i_uid_write()</span></code> , and <code class="xref c c-func docutils literal"><span class="pre">i_gid_write()</span></code>.</p>
-<p>Initialize the <code class="docutils literal"><span class="pre">i_atime</span></code> , <code class="docutils literal"><span class="pre">i_atime</span></code>, and <code class="docutils literal"><span class="pre">i_mtime</span></code> fields of the VFS inode to the value returned by the <code class="xref c c-func docutils literal"><span class="pre">current_time()</span></code> function.</p>
+<p>Initialize the <code class="docutils literal"><span class="pre">i_atime</span></code> , <code class="docutils literal"><span class="pre">i_ctime</span></code>, and <code class="docutils literal"><span class="pre">i_mtime</span></code> fields of the VFS inode to the value returned by the <code class="xref c c-func docutils literal"><span class="pre">current_time()</span></code> function.</p>
 <p>You will need to initialize the operations for the inode with type directory. To do this, follow the steps:</p>
 <blockquote class="last">
 <div><ol class="arabic simple">
@@ -995,29 +1005,29 @@ We verify that the file system was mounted by investigating the <code class="doc
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="filesystems_part2.html" class="btn btn-neutral float-right" title="File system drivers (Part 2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="block_device_drivers.html" class="btn btn-neutral float-left" title="Block Device Drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="filesystems_part2.html" class="btn btn-neutral float-right" title="File system drivers (Part 2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="block_device_drivers.html" class="btn btn-neutral float-left" title="Block Device Drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -1025,7 +1035,6 @@ We verify that the file system was mounted by investigating the <code class="doc
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

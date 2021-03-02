@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Debugging &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Infrastructure" href="../labs/infrastructure.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
@@ -156,6 +163,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -190,18 +198,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Debugging</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/lectures/debugging.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -264,9 +274,9 @@ but with limited reliability.</p>
 <span class="n">module_exit</span><span class="p">(</span><span class="n">so2_oops_exit</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Notice that ‘’do_oops’’ function tries to write at an invalid memory address. Because the kernel
+<p>Notice that ''do_oops'' function tries to write at an invalid memory address. Because the kernel
 cannot find a suitable physical page were to write, it kills the insmod task in the context of
-which ‘’do_oops’’ runs. Then it prints the following oops message:</p>
+which ''do_oops'' runs. Then it prints the following oops message:</p>
 <blockquote>
 <div><div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/debugging/oops# insmod oops.ko
 BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000042</span>
@@ -367,7 +377,7 @@ an address in an executable it uses the debugging information to figure out
 which file name and line number are associated with it.</p>
 <p>Modules are loaded at dynamic addresses but are compiled starting with 0 as
 a base address. So, in order to find the line number for a given dynamic address
-we need to know module’s load address.</p>
+we need to know module's load address.</p>
 <div class="admonition-addr2line highlight-bash"><div class="highlight"><pre><span></span>$ addr2line -e oops.o  0x08
 $ skels/debugging/oops/oops.c:5
 $ <span class="c1"># 0x08 is the offset of the offending instruction inside the oops.ko module</span>
@@ -413,7 +423,7 @@ c8816008:       a3 <span class="m">42</span> <span class="m">00</span> <span cla
 <div class="section" id="kernel-panic">
 <h3>Kernel panic<a class="headerlink" href="#kernel-panic" title="Permalink to this headline">¶</a></h3>
 <p>A kernel panic is a special type of oops where the kernel cannot continue execution. For example
-if the function do_oops from above was called in the interrupt context, the kernel wouldn’t know how to kill
+if the function do_oops from above was called in the interrupt context, the kernel wouldn't know how to kill
 and it will decide that it is better to crash the kernel and stop execution.</p>
 <p>Here is a sample code that will generate a kernel panic:</p>
 <div class="admonition-kernel-panic highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">timer_list</span> <span class="n">panic_timer</span><span class="p">;</span>
@@ -536,7 +546,7 @@ buffer is allocated that the buffer was not modified.</p>
 <li>CONFIG_DEBUG_SLAB</li>
 <li>poisoned based memory debuggers</li>
 </ul>
-<img alt="../_images/ditaa-f037403435f9d3e403fc7f2b6b3bdf80c9e3d0c1.png" src="../_images/ditaa-f037403435f9d3e403fc7f2b6b3bdf80c9e3d0c1.png" />
+<img alt="../_images/ditaa-5e6f93e563d6e94c14fe3d483f988e0579b05b38.png" src="../_images/ditaa-5e6f93e563d6e94c14fe3d483f988e0579b05b38.png" />
 <p>Example of an use before initialize bug:</p>
 <div class="admonition-use-before-initialize-bugs highlight-none"><div class="highlight"><pre><span></span>BUG: unable to handle kernel paging request at 5a5a5a5a
 IP: [&lt;c1225063&gt;] __list_del_entry+0x37/0x71
@@ -650,7 +660,7 @@ architectures)</li>
 <p>KASan is a dynamic memory error detector designed to find use-after-free
 and out-of-bounds bugs.</p>
 <p>The main idea of KASAN is to use shadow memory to record whether each byte
-of memory is safe to access or not, and use compiler’s instrumentation to
+of memory is safe to access or not, and use compiler's instrumentation to
 check the shadow memory on each memory access.</p>
 <p>Address sanitizer uses 1 byte of shadow memory to track 8 bytes of kernel
 address space. It uses 0-7 to encode the number of consecutive bytes at
@@ -939,29 +949,29 @@ timerfn+0x25/0x60 [locking2]
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../labs/infrastructure.html" class="btn btn-neutral float-right" title="Infrastructure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="smp.html" class="btn btn-neutral float-left" title="Symmetric Multi-Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="../labs/infrastructure.html" class="btn btn-neutral float-right" title="Infrastructure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="smp.html" class="btn btn-neutral float-left" title="Symmetric Multi-Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -969,7 +979,6 @@ timerfn+0x25/0x60 [locking2]
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

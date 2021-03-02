@@ -1,23 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Memory mapping &mdash; The Linux Kernel  documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript">
@@ -39,12 +49,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Linux Device Model" href="device_model.html" />
@@ -72,7 +76,7 @@
             
             
               <div class="version">
-                4.19.0
+                5.10.14
               </div>
             
           
@@ -89,6 +93,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,9 +101,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Lectures</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../lectures/so2.cs.pub.ro.html">Sisteme de operare 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
@@ -149,6 +156,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -183,18 +191,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Memory mapping</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/labs/memory_mapping.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -236,7 +246,7 @@ information into the kernel space and vice versa. This can be done
 through a device driver and the user space device interface
 (<code class="file docutils literal"><span class="pre">/dev</span></code>).</p>
 <p>This feature can be used by implementing the <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> operation
-in the device driver’s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and using the
+in the device driver's <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> and using the
 <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> system call in user space.</p>
 <p>The basic unit for virtual memory management is a page, which size is
 usually 4K, but it can be up to 64K on some platforms. Whenever we
@@ -288,7 +298,7 @@ number</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">page_to_pfn()</span></code> return the page frame number associated with a
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></li>
 <li><code class="xref c c-func docutils literal"><span class="pre">page_address()</span></code> returns the virtual address of a
-<code class="xref c c-type docutils literal"><span class="pre">struc</span> <span class="pre">page</span></code>; this functions can be called only for pages from
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code>; this functions can be called only for pages from
 lowmem</li>
 <li><code class="xref c c-func docutils literal"><span class="pre">kmap()</span></code> creates a mapping in kernel for an arbitrary physical
 page (can be from highmem) and returns a virtual address that can be
@@ -348,10 +358,10 @@ is a pointer to the <code class="xref c c-type docutils literal"><span class="pr
 <div class="section" id="device-driver-memory-mapping">
 <h2>Device driver memory mapping<a class="headerlink" href="#device-driver-memory-mapping" title="Permalink to this headline">¶</a></h2>
 <p>Memory mapping is one of the most interesting features of a Unix
-system. From a driver’s point of view, the memory-mapping facility
+system. From a driver's point of view, the memory-mapping facility
 allows direct memory access to a user space device.</p>
 <p>To assign a <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> operation to a driver, the <code class="xref c c-member docutils literal"><span class="pre">mmap</span></code>
-field of the device driver’s <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> must be
+field of the device driver's <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> must be
 implemented. If that is the case, the user space process can then use
 the <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> system call on a file descriptor associated with
 the device.</p>
@@ -386,7 +396,7 @@ into the virtual space represented by <code class="xref c c-type docutils litera
 <li><em>addr</em> - the virtual address space from where remapping begins; page
 tables for the virtual address space between addr and addr + size
 will be formed as needed</li>
-<li><em>pfn</em> the page frame number to which the virtual address should be
+<li><em>pfn</em> - the page frame number to which the virtual address should be
 mapped</li>
 <li><em>size</em> - the size (in bytes) of the memory to be mapped</li>
 <li><em>prot</em> - protection flags for this mapping</li>
@@ -430,7 +440,7 @@ like:</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Note that memory allocated with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code> is not
-physically contiguous so if we want to map a range alocated
+physically contiguous so if we want to map a range allocated
 with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>, we have to map each page individually
 and compute the physical address for each page.</p>
 </div>
@@ -447,17 +457,17 @@ Enabling is done using <code class="xref c c-func docutils literal"><span class=
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">mem</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
 
-    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span>
         <span class="n">SetPageReserved</span><span class="p">(</span><span class="n">virt_to_page</span><span class="p">(((</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
 
     <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="n">free_mmap_pages</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">mem</span><span class="p">,</span> <span class="kt">int</span> <span class="n">npages</span><span class="p">)</span>
+<span class="kt">void</span> <span class="nf">free_mmap_pages</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">mem</span><span class="p">,</span> <span class="kt">int</span> <span class="n">npages</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 
-    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">npages</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">PAGE_SIZE</span><span class="p">)</span>
         <span class="n">ClearPageReserved</span><span class="p">(</span><span class="n">virt_to_page</span><span class="p">(((</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
 
     <span class="n">kfree</span><span class="p">(</span><span class="n">mem</span><span class="p">);</span>
@@ -561,8 +571,11 @@ use <code class="xref c c-func docutils literal"><span class="pre">virt_to_phys(
 <p class="last">To convert a physical address to its PFN, shift the address
 with PAGE_SHIFT bits to the right.</p>
 </div>
-<p>For testing, use <code class="file docutils literal"><span class="pre">test/mmap-test</span></code>. If everything goes well, the test
-will show “matched” messages.</p>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">1</span>
+</pre></div>
+</div>
+<p>If everything goes well, the test will show &quot;matched&quot; messages.</p>
 </div>
 <div class="section" id="mapping-non-contiguous-physical-memory-to-userspace">
 <h3>2. Mapping non-contiguous physical memory to userspace<a class="headerlink" href="#mapping-non-contiguous-physical-memory-to-userspace" title="Permalink to this headline">¶</a></h3>
@@ -570,7 +583,7 @@ will show “matched” messages.</p>
 (e.g. obtained via <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>) to userspace.</p>
 <p>Review the <a class="reference internal" href="#device-driver-memory-mapping">Device driver memory mapping</a> section, generate the
 skeleton for the task named <strong>vmmap</strong> and fill in the areas marked
-with <strong>TODO 2</strong>.</p>
+with <strong>TODO 1</strong>.</p>
 <p>Allocate a memory area of NPAGES with <code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
@@ -601,12 +614,15 @@ use <code class="xref c c-func docutils literal"><span class="pre">vmalloc_to_pf
 needed to use <code class="xref c c-func docutils literal"><span class="pre">remap_pfn_range()</span></code> for each page.</p>
 <p>Loop through all virtual pages and for each:
 * determine the physical address
-* map it with <code class="xref c c-func docutils literal"><span class="pre">remap_fpn_range()</span></code></p>
-<p class="last">Make sure the that you determine the physical address
+* map it with <code class="xref c c-func docutils literal"><span class="pre">remap_pfn_range()</span></code></p>
+<p class="last">Make sure that you determine the physical address
 each time and that you use a range of one page for mapping.</p>
 </div>
-<p>For testing, use <em>test/mmap-test</em>. If everything goes well the test
-will show “matched” messages.</p>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">1</span>
+</pre></div>
+</div>
+<p>If everything goes well, the test will show &quot;matched&quot; messages.</p>
 </div>
 <div class="section" id="read-write-operations-in-mapped-memory">
 <h3>3. Read / write operations in mapped memory<a class="headerlink" href="#read-write-operations-in-mapped-memory" title="Permalink to this headline">¶</a></h3>
@@ -614,15 +630,15 @@ will show “matched” messages.</p>
 your device. This is a didactic exercise to see that the same space
 can also be used with the <code class="xref c c-func docutils literal"><span class="pre">mmap()</span></code> call and with <code class="xref c c-func docutils literal"><span class="pre">read()</span></code>
 and <code class="xref c c-func docutils literal"><span class="pre">write()</span></code> calls.</p>
-<p>Fill in areas marked with <strong>TODO 3</strong>.</p>
+<p>Fill in areas marked with <strong>TODO 2</strong>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The offset parameter sent to the read / write operation can
 be ignored as all reads / writes from the test program will
 be done with 0 offsets.</p>
 </div>
-<p>For testing run <code class="file docutils literal"><span class="pre">test/mmap-test</span></code> with 3 as parameter:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">3</span>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">2</span>
 </pre></div>
 </div>
 </div>
@@ -630,7 +646,7 @@ be done with 0 offsets.</p>
 <h3>4. Display memory mapped in procfs<a class="headerlink" href="#display-memory-mapped-in-procfs" title="Permalink to this headline">¶</a></h3>
 <p>Using one of the previous modules, create a procfs file in which you
 display the total memory mapped by the calling process.</p>
-<p>Fill in the areas marked with <strong>TODO 4</strong>.</p>
+<p>Fill in the areas marked with <strong>TODO 3</strong>.</p>
 <p>Create a new entry in procfs (<code class="xref c c-macro docutils literal"><span class="pre">PROC_ENTRY_NAME</span></code>, defined in
 <code class="file docutils literal"><span class="pre">mmap-test.h</span></code>) that will show the total memory mapped by the process
 that called the <code class="xref c c-func docutils literal"><span class="pre">read()</span></code> on that file.</p>
@@ -648,7 +664,7 @@ using <code class="xref c c-func docutils literal"><span class="pre">remove_proc
 <span class="pre">seq_file</span></code> interface can be found here in this <a class="reference external" href="http://tldp.org/LDP/lkmpg/2.6/html/x861.html">example</a> .</p>
 <p class="last">For this exercise, just a simple use of the interface
 described <a class="reference external" href="http://lwn.net/Articles/22355/">here</a> is
-sufficient. Check the “extra-simple” API described there.</p>
+sufficient. Check the &quot;extra-simple&quot; API described there.</p>
 </div>
 <p>In the <code class="xref c c-func docutils literal"><span class="pre">my_seq_show()</span></code> function you will need to:</p>
 <ul>
@@ -688,8 +704,8 @@ no other messages. Do not even show newline (n).</p>
 <p class="first admonition-title">Note</p>
 <p class="last"><code class="xref c c-func docutils literal"><span class="pre">single_open()</span></code> can use <code class="xref c c-macro docutils literal"><span class="pre">NULL</span></code> as its third argument.</p>
 </div>
-<p>For testing run <code class="file docutils literal"><span class="pre">kmmap/mmap-test</span></code> with 4 as parameter:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/kmmap/mmap-test <span class="m">4</span>
+<p>For testing, load the kernel module and run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>root@qemux86:~# skels/memory_mapping/test/mmap-test <span class="m">3</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -708,29 +724,29 @@ mappings of the test and compare those to the test results.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="device_model.html" class="btn btn-neutral float-right" title="Linux Device Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="networking.html" class="btn btn-neutral float-left" title="Networking" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="device_model.html" class="btn btn-neutral float-right" title="Linux Device Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="networking.html" class="btn btn-neutral float-left" title="Networking" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright The kernel development community
+        &#169; Copyright The kernel development community.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -738,7 +754,6 @@ mappings of the test and compare those to the test results.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
