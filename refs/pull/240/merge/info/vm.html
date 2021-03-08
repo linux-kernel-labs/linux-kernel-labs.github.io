@@ -212,15 +212,19 @@ virtual machine.</p>
 <p>In order to run and use the virtual machine the following packages are required
 on a Debian/Ubuntu system:</p>
 <ul class="simple">
+<li><code class="docutils literal"><span class="pre">flex</span></code></li>
+<li><code class="docutils literal"><span class="pre">bison</span></code></li>
 <li><code class="docutils literal"><span class="pre">build-essential</span></code></li>
 <li><code class="docutils literal"><span class="pre">gcc-multilib</span></code></li>
 <li><code class="docutils literal"><span class="pre">libncurses5-dev</span></code></li>
 <li><code class="docutils literal"><span class="pre">qemu-system-x86</span></code></li>
 <li><code class="docutils literal"><span class="pre">qemu-system-arm</span></code></li>
-<li><code class="docutils literal"><span class="pre">kvm</span></code></li>
 <li><code class="docutils literal"><span class="pre">python3</span></code></li>
 <li><code class="docutils literal"><span class="pre">minicom</span></code></li>
 </ul>
+<p>The <code class="docutils literal"><span class="pre">kvm</span></code> package is not strictly required, but will make the virtual machine
+faster by using KVM support (with the <code class="docutils literal"><span class="pre">-enable-kvm</span></code> option to QEMU). If <code class="docutils literal"><span class="pre">kvm</span></code>
+is absent, the virtual machine will still run (albeit slower) using emulation.</p>
 <p>The virtual machine setup uses prebuild Yocto images that it downloads and a
 kernel image that it builds itself. The following images are supported:</p>
 <ul class="simple">
