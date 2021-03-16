@@ -71,11 +71,6 @@ tools/labs/docs/Dockerfile for dependencies):
    labs/device_model.rst
 
 .. toctree::
-   :caption: Assignments
-
-   so2/assign0-kernel-api.rst
-
-.. toctree::
    :caption: Useful info
 
    info/vm.rst
