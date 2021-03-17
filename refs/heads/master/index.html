@@ -107,6 +107,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="lectures/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/processes.html">Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
@@ -297,7 +298,45 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec2-syscalls.html#accessing-user-space-from-system-calls">Accessing user space from system calls</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec3-processes.html">SO2 Lecture 03 - Processes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#processes-and-threads">Processes and threads</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#overview-of-process-resources">Overview of process resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#struct-task-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#inspecting-task-struct">Inspecting task_struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-inspect-a-task-to-determine-opened-files">Quiz: Inspect a task to determine opened files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#threads">Threads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#the-clone-system-call">The clone system call</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#namespaces-and-containers">Namespaces and &quot;containers&quot;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#accessing-the-current-process">Accessing the current process</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-previous-implementation-for-current-x86">Quiz: previous implementation for current (x86)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#context-switching">Context switching</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-context-switch">Quiz: context switch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#blocking-and-waking-up-tasks">Blocking and waking up tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#task-states">Task states</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#blocking-the-current-thread">Blocking the current thread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#waking-up-a-task">Waking up a task</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#preempting-tasks">Preempting tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#non-preemptive-kernel">Non preemptive kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#preemptive-kernel">Preemptive kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#process-context">Process context</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#kernel-threads">Kernel threads</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#using-gdb-scripts-for-kernel-inspection">Using gdb scripts for kernel inspection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-kernel-gdb-scripts">Quiz: Kernel gdb scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#lecture-objectives">Lecture objectives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#what-is-an-interrupt">What is an interrupt?</a><ul>
@@ -856,6 +895,45 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#virtual-dynamic-shared-object-vdso">Virtual Dynamic Shared Object (VDSO)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#accessing-user-space-from-system-calls">Accessing user space from system calls</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/processes.html">Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#processes-and-threads">Processes and threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#overview-of-process-resources">Overview of process resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#struct-task-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#inspecting-task-struct">Inspecting task_struct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-inspect-a-task-to-determine-opened-files">Quiz: Inspect a task to determine opened files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#threads">Threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#the-clone-system-call">The clone system call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#namespaces-and-containers">Namespaces and &quot;containers&quot;</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#accessing-the-current-process">Accessing the current process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-previous-implementation-for-current-x86">Quiz: previous implementation for current (x86)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#context-switching">Context switching</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-context-switch">Quiz: context switch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#blocking-and-waking-up-tasks">Blocking and waking up tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#task-states">Task states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#blocking-the-current-thread">Blocking the current thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#waking-up-a-task">Waking up a task</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#preempting-tasks">Preempting tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#non-preemptive-kernel">Non preemptive kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#preemptive-kernel">Preemptive kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#process-context">Process context</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#kernel-threads">Kernel threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#using-gdb-scripts-for-kernel-inspection">Using gdb scripts for kernel inspection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-kernel-gdb-scripts">Quiz: Kernel gdb scripts</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a><ul>
