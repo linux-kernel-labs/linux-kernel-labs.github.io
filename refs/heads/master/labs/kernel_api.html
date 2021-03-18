@@ -410,10 +410,10 @@ call:</p>
 <span class="n">pr_alert</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_ALERT pr_fmt(fmt), ...); */</span>
 <span class="n">pr_crit</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_CRIT pr_fmt(fmt), ...); */</span>
 <span class="n">pr_err</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_ERR pr_fmt(fmt), ...); */</span>
-<span class="n">pr_warning</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_WARNING pr_fmt(fmt), ...); */</span>
-<span class="n">pr_warn</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to cu printk(KERN_WARNING pr_fmt(fmt), ...); */</span>
+<span class="n">pr_warn</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_WARNING pr_fmt(fmt), ...); */</span>
 <span class="n">pr_notice</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_NOTICE pr_fmt(fmt), ...); */</span>
 <span class="n">pr_info</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_INFO pr_fmt(fmt), ...); */</span>
+<span class="n">pr_debug</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span> <span class="cm">/* similar to printk(KERN_DEBUG pr_fmt(fmt), ...); */</span>
 </pre></div>
 </div>
 <p>A special case is <code class="xref c c-func docutils literal"><span class="pre">pr_debug()</span></code> that calls the <code class="xref c c-func docutils literal"><span class="pre">printk()</span></code> function
