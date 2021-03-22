@@ -341,30 +341,38 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#lecture-objectives">Lecture objectives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#what-is-an-interrupt">What is an interrupt?</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#exceptions">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-interrupt-terminology">Quiz: interrupt terminology</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#hardware-concepts">Hardware Concepts</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
-<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#advanced-programmable-interrupt-controller">Advanced Programmable Interrupt Controller</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-controllers-in-smp-systems">Interrupt controllers in SMP systems</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-control">Interrupt Control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-priorities">Interrupt priorities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-hardware-concepts">Quiz: hardware concepts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#architecture-specific-interrupt-handling-in-linux">Architecture specific interrupt handling in Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-handling-on-the-x86-architecture">Interrupt handling on the x86 architecture</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-handler-address">Interrupt handler address</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#handling-an-interrupt-request">Handling an interrupt request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#returning-from-an-interrupt-handler">Returning from an interrupt handler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#inspecting-the-x86-interrupt-handling">Inspecting the x86 interrupt handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-x86-interrupt-handling">Quiz: x86 interrupt handling</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#generic-interrupt-handling-in-linux">Generic interrupt handling in Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-handling-in-linux">Interrupt handling in Linux</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-context">Interrupt context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#deferrable-actions">Deferrable actions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#soft-irqs">Soft IRQs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#packet-flood-example">Packet flood example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#tasklets">Tasklets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#workqueues">Workqueues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#timers">Timers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#deferrable-actions-summary">Deferrable actions summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-linux-interrupt-handling">Quiz: Linux interrupt handling</a></li>
 </ul>
 </li>
 </ul>
@@ -940,30 +948,38 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#lecture-objectives">Lecture objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#what-is-an-interrupt">What is an interrupt?</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#exceptions">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-interrupt-terminology">Quiz: interrupt terminology</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#hardware-concepts">Hardware Concepts</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#advanced-programmable-interrupt-controller">Advanced Programmable Interrupt Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-controllers-in-smp-systems">Interrupt controllers in SMP systems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-control">Interrupt Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-priorities">Interrupt priorities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-hardware-concepts">Quiz: hardware concepts</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#architecture-specific-interrupt-handling-in-linux">Architecture specific interrupt handling in Linux</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#interrupt-handling-on-the-x86-architecture">Interrupt handling on the x86 architecture</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-handler-address">Interrupt handler address</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#handling-an-interrupt-request">Handling an interrupt request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#returning-from-an-interrupt-handler">Returning from an interrupt handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#inspecting-the-x86-interrupt-handling">Inspecting the x86 interrupt handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-x86-interrupt-handling">Quiz: x86 interrupt handling</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#generic-interrupt-handling-in-linux">Generic interrupt handling in Linux</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#interrupt-handling-in-linux">Interrupt handling in Linux</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-context">Interrupt context</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions">Deferrable actions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#soft-irqs">Soft IRQs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#packet-flood-example">Packet flood example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#tasklets">Tasklets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#workqueues">Workqueues</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#timers">Timers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions-summary">Deferrable actions summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-linux-interrupt-handling">Quiz: Linux interrupt handling</a></li>
 </ul>
 </li>
 </ul>

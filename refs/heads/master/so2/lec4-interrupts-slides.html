@@ -121,20 +121,50 @@
 
 
 </article>
-<article class="admonition-hardware-pic slide level-2">
+<article class="admonition-quiz-interrupt-terminology slide level-2">
 
-<h2>Hardware (PIC)</h2>
+<h2>Quiz: interrupt terminology</h2>
 
+<p>For each of the following term on the left select all the terms
+from right that best describe them.</p>
+<table class="hlist"><tr><td><ul class="simple">
+<li>Watchdog</li>
+<li>Demand paging</li>
+<li>Division by zero</li>
+<li>Timer</li>
+<li>System call</li>
+<li>Breakpoint</li>
+</ul>
+</td><td><ul class="simple">
+<li>Exception</li>
+<li>Interrupt</li>
+<li>Maskable</li>
+<li>Nonmaskable</li>
+<li>Trap</li>
+<li>Fault</li>
+</ul>
+</td></tr></table>
+
+
+
+
+</article>
+<article class="admonition-programmable-interrupt-controller slide level-2">
+
+<h2>Programmable Interrupt Controller</h2>
+
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-5db1739b80a83b12505e4ff749b5e69fccd01f1b.png" src="../_images/ditaa-5db1739b80a83b12505e4ff749b5e69fccd01f1b.png" />
 
 
 
 
 </article>
-<article class="admonition-hardware-apic slide level-2">
+<article class="admonition-interrupt-controllers-in-smp-systems slide level-2">
 
-<h2>Hardware (APIC)</h2>
+<h2>Interrupt controllers in SMP systems</h2>
 
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-9d23d02ebdff6eeb6bec8044480f055de9852ecc.png" src="../_images/ditaa-9d23d02ebdff6eeb6bec8044480f055de9852ecc.png" />
 
 
@@ -168,6 +198,37 @@ instructions:</li>
 
 
 </article>
+<article class="admonition-interrupt-priorities slide level-2">
+
+<h2>Interrupt priorities</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-8b00a68b494f72d54b5fad38c88f7265aadaaa0e.png" src="../_images/ditaa-8b00a68b494f72d54b5fad38c88f7265aadaaa0e.png" />
+
+
+
+
+</article>
+<article class="admonition-quiz-hardware-concepts slide level-2">
+
+<h2>Quiz: hardware concepts</h2>
+
+<p>Which of the following statements are true?</p>
+<ul class="simple">
+<li>The CPU can start processing a new interrupt before the current
+one is finished</li>
+<li>Interrupts can be disabled at the device level</li>
+<li>Lower priority interrupts can not preempt handlers for higher
+priority interrupts</li>
+<li>Interrupts can be disabled at the interrupt controller level</li>
+<li>On SMP systems the same interrupt can be routed to different CPUs</li>
+<li>Interrupts can be disabled at the CPU level</li>
+</ul>
+
+
+
+
+</article>
 <article class="admonition-interrupt-descriptor-table slide level-2">
 
 <h2>Interrupt Descriptor Table</h2>
@@ -187,6 +248,7 @@ instructions:</li>
 
 <h2>Linux IRQ vector layout</h2>
 
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-5b3c93f6e612d0cc0e4d4837d92a443627405262.png" src="../_images/ditaa-5b3c93f6e612d0cc0e4d4837d92a443627405262.png" />
 
 
@@ -197,6 +259,7 @@ instructions:</li>
 
 <h2>Interrupt descriptor table entry (gate)</h2>
 
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-eff5e0e3b58ce239d5310b22b89c0927be5853bd.png" src="../_images/ditaa-eff5e0e3b58ce239d5310b22b89c0927be5853bd.png" />
 
 
@@ -207,6 +270,7 @@ instructions:</li>
 
 <h2>Interrupt handler address</h2>
 
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-b2023fce22479e20bbe08fd76eed87e9a0527688.png" src="../_images/ditaa-b2023fce22479e20bbe08fd76eed87e9a0527688.png" />
 
 
@@ -217,6 +281,7 @@ instructions:</li>
 
 <h2>Interrupt handler stack</h2>
 
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-85b69602726fa6143fc3ba0ffdb492454864aacf.png" src="../_images/ditaa-85b69602726fa6143fc3ba0ffdb492454864aacf.png" />
 
 
@@ -267,25 +332,65 @@ instructions:</li>
 
 
 </article>
+<article class="admonition-inspecting-the-x86-interrupt-handling slide level-2">
+
+<h2>Inspecting the x86 interrupt handling</h2>
+
+<p>&nbsp;</p>
+<asciinema-player src="intr_x86.cast"></asciinema-player>
+
+
+
+</article>
+<article class="admonition-quiz-x86-interrupt-handling slide level-2">
+
+<h2>Quiz: x86 interrupt handling</h2>
+
+<p>The following gdb commands are used to determine the handler for
+the int80 based system call exception. Select and arrange the
+commands or output of the commands in the correct order.</p>
+<div class="highlight-gdb"><div class="highlight"><pre><span></span>(void *) 0xc15de780 &lt;entry_SYSENTER_32&gt;
+
+set $idtr_addr=($idtr_entry&gt;&gt;48&lt;&lt;16)|($idtr_entry&amp;0xffff)
+
+print (void*)$idtr_addr
+
+set $idtr = 0xff800000
+
+(void *) 0xc15de874 &lt;entry_INT80_32&gt;
+
+set $idtr = 0xff801000
+
+set $idtr_entry = *(uint64_t*)($idtr + 8 * 128)
+
+monitor info registers
+</pre></div>
+</div>
+
+
+
+
+</article>
 <article class="admonition-interrupt-handling-in-linux slide level-2">
 
 <h2>Interrupt handling in Linux</h2>
 
+<p>&nbsp;</p>
 <img alt="../_images/ditaa-da31e3d17a4d55e5c3dbc0bd5903306418a896ca.png" src="../_images/ditaa-da31e3d17a4d55e5c3dbc0bd5903306418a896ca.png" />
 
 
 
 
 </article>
-<article class="admonition-irq-nesting-in-linux slide level-2">
+<article class="admonition-irq-and-exception-nesting-in-linux slide level-2">
 
-<h2>IRQ nesting in Linux</h2>
+<h2>IRQ and exception nesting in Linux</h2>
 
 <ul class="simple">
 <li>an exception (e.g. page fault, system call) can not preempt an interrupt;
 if that occurs it is considered a bug</li>
-<li>an interrupt can preempt an exception or other interrupts; however, only
-one level of interrupt nesting is allowed</li>
+<li>an interrupt can preempt an exception</li>
+<li>an interrupt can not preempt another interrupt (it used to be possible)</li>
 </ul>
 
 
@@ -296,7 +401,8 @@ one level of interrupt nesting is allowed</li>
 
 <h2>Interrupt/Exception nesting</h2>
 
-<img alt="../_images/ditaa-cf9d88cddb9129693d8858ceb52726cc5d6cd391.png" src="../_images/ditaa-cf9d88cddb9129693d8858ceb52726cc5d6cd391.png" />
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-2e49ca6ac606dab4b2b53231cfbe85ff06312d36.png" src="../_images/ditaa-2e49ca6ac606dab4b2b53231cfbe85ff06312d36.png" />
 
 
 
@@ -318,28 +424,16 @@ one level of interrupt nesting is allowed</li>
 
 
 </article>
-<article class="admonition-deferrable-actions-in-linux slide level-2">
+<article class="admonition-deferrable-actions slide level-2">
 
-<h2>Deferrable actions in Linux</h2>
+<h2>Deferrable actions</h2>
 
 <blockquote>
 <div><ul class="simple">
-<li>softIRQ<ul>
-<li>runs in interrupt context</li>
-<li>statically allocated</li>
-<li>same handler may run in parallel on multiple cores</li>
-</ul>
-</li>
-<li>tasklet<ul>
-<li>runs in interrupt context</li>
-<li>can be dynamically allocated</li>
-<li>same handler runs are serialized</li>
-</ul>
-</li>
-<li>workqueues<ul>
-<li>run in process context</li>
-</ul>
-</li>
+<li>Schedule callback functions to run a later time</li>
+<li>Interrupt context deferrable actions</li>
+<li>Process context deferrable actions</li>
+<li>APIs for initialization, scheduling and masking</li>
 </ul>
 </div></blockquote>
 
@@ -389,25 +483,44 @@ one level of interrupt nesting is allowed</li>
 
 
 </article>
-<article class="admonition-types-of-soft-irq slide level-2">
+<article class="admonition-types-of-soft-irqs slide level-2">
 
-<h2>Types of soft IRQ</h2>
+<h2>Types of soft IRQs</h2>
 
-<blockquote>
-<div><ul class="simple">
-<li>HI_SOFTIRQ</li>
-<li>TIMER_SOFTIRQ</li>
-<li>NET_TX_SOFTIRQ</li>
-<li>NET_RX_SOFTIRQ</li>
-<li>BLOCK_SOFTIRQ</li>
-<li>IRQ_POLL_SOFTIRQ</li>
-<li>TASKLET_SOFTIRQ</li>
-<li>SCHED_SOFTIRQ</li>
-<li>HRTIMER_SOFTIRQ,</li>
-<li>RCU_SOFTIRQ</li>
-</ul>
-</div></blockquote>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* PLEASE, avoid to allocate new softirqs, if you need not _really_ high</span>
+<span class="cm">   frequency threaded job scheduling. For almost all the purposes</span>
+<span class="cm">   tasklets are more than enough. F.e. all serial device BHs et</span>
+<span class="cm">   al. should be converted to tasklets, not to softirqs.</span>
+<span class="cm">*/</span>
 
+<span class="k">enum</span>
+<span class="p">{</span>
+  <span class="n">HI_SOFTIRQ</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+  <span class="n">TIMER_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">NET_TX_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">NET_RX_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">BLOCK_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">IRQ_POLL_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">TASKLET_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">SCHED_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">HRTIMER_SOFTIRQ</span><span class="p">,</span>
+  <span class="n">RCU_SOFTIRQ</span><span class="p">,</span>    <span class="cm">/* Preferable RCU should always be the last softirq */</span>
+
+  <span class="n">NR_SOFTIRQS</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-packet-flood-example slide level-2">
+
+<h2>Packet flood example</h2>
+
+<p>&nbsp;</p>
+<asciinema-player src="ksoftirqd-packet-flood.cast"></asciinema-player>
 
 
 
@@ -464,6 +577,51 @@ deferred work running in interrupt context.</p>
 <li>activation: <code class="xref c c-func docutils literal"><span class="pre">mod_timer()</span></code></li>
 </ul>
 </div></blockquote>
+
+
+
+
+</article>
+<article class="admonition-deferrable-actions-summary slide level-2">
+
+<h2>Deferrable actions summary</h2>
+
+<blockquote>
+<div><ul class="simple">
+<li>softIRQ<ul>
+<li>runs in interrupt context</li>
+<li>statically allocated</li>
+<li>same handler may run in parallel on multiple cores</li>
+</ul>
+</li>
+<li>tasklet<ul>
+<li>runs in interrupt context</li>
+<li>can be dynamically allocated</li>
+<li>same handler runs are serialized</li>
+</ul>
+</li>
+<li>workqueues<ul>
+<li>run in process context</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+
+
+
+
+</article>
+<article class="admonition-quiz-linux-interrupt-handling slide level-2">
+
+<h2>Quiz: Linux interrupt handling</h2>
+
+<p>Which of the following phases of interrupt handling runs with
+interrupts disabled at the CPU level?</p>
+<ul class="simple">
+<li>Critical</li>
+<li>Immediate</li>
+<li>Deferred</li>
+</ul>
 
 
 
