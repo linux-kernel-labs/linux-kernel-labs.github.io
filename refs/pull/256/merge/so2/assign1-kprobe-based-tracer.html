@@ -249,7 +249,7 @@
   <div class="section" id="assignment-1-kprobe-based-tracer">
 <h1>Assignment 1 - Kprobe based tracer<a class="headerlink" href="#assignment-1-kprobe-based-tracer" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>Deadline: <strong class="command">Wednesday, 7 April 2021, 23:00</strong></li>
+<li>Deadline: <strong class="command">Wednesday, April 7th 2021, 23:00</strong></li>
 </ul>
 <div class="section" id="assignment-s-objectives">
 <h2>Assignment's Objectives<a class="headerlink" href="#assignment-s-objectives" title="Permalink to this headline">¶</a></h2>
@@ -276,10 +276,10 @@ shown.</p>
 <div class="section" id="implementation-details">
 <h3>Implementation details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h3>
 <p>The interception will be done by recording a sample (<code class="docutils literal"><span class="pre">kretprobe</span></code>) for each of the above functions. The
-surveillant will retain a list/table of dispersion with the monitored processes and will account for
+surveillant will retain a list/hashtable with the monitored processes and will account for
 the above information for these processes.</p>
-<p>For the control of the list/table of dispersion with the monitored processes, a char device called <code class="docutils literal"><span class="pre">/dev/tracer</span></code>
-will be used, with major 10 and minor 42. It will expose an <code class="docutils literal"><span class="pre">ioctl</span></code> interface with two arguments:</p>
+<p>For the control of the list/hashtable with the monitored processes, a char device called <code class="docutils literal"><span class="pre">/dev/tracer</span></code>
+will be used, with major <cite>10</cite> and minor <cite>42</cite>. It will expose an <code class="docutils literal"><span class="pre">ioctl</span></code> interface with two arguments:</p>
 <ul>
 <li><p class="first">the first argument is the request to the monitoring subsystem:</p>
 <blockquote>
@@ -292,7 +292,7 @@ will be used, with major 10 and minor 42. It will expose an <code class="docutil
 <li><p class="first">the second argument is the PID of the process for which the monitoring request will be executed</p>
 </li>
 </ul>
-<p>In order to create a char device with major 10 you will need to use the <a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/include/linux/miscdevice.h">miscdevice</a> interface in the kernel.
+<p>In order to create a char device with major <cite>10</cite> you will need to use the <a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/include/linux/miscdevice.h">miscdevice</a> interface in the kernel.
 Definitions of related macros can be found in the <a class="reference external" href="http://elf.cs.pub.ro/so2/res/teme/tracer.h">tracer.h header</a>.</p>
 <p>Since the <code class="docutils literal"><span class="pre">kmalloc</span></code> function is inline for instrumenting the allocated amount of memory, the <code class="docutils literal"><span class="pre">__kmalloc</span></code>
 function will be inspected as follows:</p>
@@ -320,8 +320,8 @@ This is possible because there is an address-size association made when inspecti
 <p>The virtual machine kernel has the <code class="docutils literal"><span class="pre">CONFIG_DEBUG_LOCK_ALLOC</span></code> option enabled where the <code class="docutils literal"><span class="pre">mutex_lock</span></code> symbol
 is a macro that expands to <code class="docutils literal"><span class="pre">mutex_lock_nested</span></code>. Thus, in order to obtain information about the <code class="docutils literal"><span class="pre">mutex_lock</span></code>
 function you will have to instrument the <code class="docutils literal"><span class="pre">mutex_lock_nested</span></code> function.</p>
-<p>Processes that have been added to the dispersion list/table and that end their execution will be removed
-from the dispersion list/table. Also, a process will be removed from the dispatch list/table following
+<p>Processes that have been added to the list/hashtable and that end their execution will be removed
+from the list/hashtable. Also, a process will be removed from the dispatch list/hashtable following
 the <code class="docutils literal"><span class="pre">TRACER_REMOVE_PROCESS</span></code> operation.</p>
 <p>The information retained by the surveillant will be displayed via the procfs file system, in the <code class="docutils literal"><span class="pre">/proc/tracer</span></code> file.
 For each monitored process an entry is created in the <code class="docutils literal"><span class="pre">/proc/tracer</span></code> file having as first field the process PID.
@@ -377,7 +377,7 @@ coding style described in the <a class="reference external" href="https://elixir
 elements will be taken into account:</p>
 <ul class="simple">
 <li><em>-2</em>: missing of proper disposal of resources (<code class="docutils literal"><span class="pre">kretprobes</span></code>, entries in <code class="docutils literal"><span class="pre">/proc</span></code>)</li>
-<li><em>-2</em>: data synchronization issues for data used by multiple executing instances (e.g. the dispersion list/table)</li>
+<li><em>-2</em>: data synchronization issues for data used by multiple executing instances (e.g. the list/hashtable)</li>
 </ul>
 <p>In exceptional cases (the assigment passes the tests but it is not complying with the requirements)
 and if the assigment does not pass all the tests, the grade may decrease more than mentioned above.</p>

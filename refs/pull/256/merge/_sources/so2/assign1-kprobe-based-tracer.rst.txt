@@ -2,7 +2,7 @@
 Assignment 1 - Kprobe based tracer
 ==================================
 
--  Deadline: :command:`Wednesday, 7 April 2021, 23:00`
+-  Deadline: :command:`Wednesday, April 7th 2021, 23:00`
 
 Assignment's Objectives
 =======================
@@ -33,11 +33,11 @@ Implementation details
 ----------------------
 
 The interception will be done by recording a sample (``kretprobe``) for each of the above functions. The
-surveillant will retain a list/table of dispersion with the monitored processes and will account for
+surveillant will retain a list/hashtable with the monitored processes and will account for
 the above information for these processes.
 
-For the control of the list/table of dispersion with the monitored processes, a char device called ``/dev/tracer``
-will be used, with major 10 and minor 42. It will expose an ``ioctl`` interface with two arguments:
+For the control of the list/hashtable with the monitored processes, a char device called ``/dev/tracer``
+will be used, with major `10` and minor `42`. It will expose an ``ioctl`` interface with two arguments:
 
 * the first argument is the request to the monitoring subsystem:
 
@@ -46,7 +46,7 @@ will be used, with major 10 and minor 42. It will expose an ``ioctl`` interface 
 
 * the second argument is the PID of the process for which the monitoring request will be executed
 
-In order to create a char device with major 10 you will need to use the `miscdevice <https://elixir.bootlin.com/linux/latest/source/include/linux/miscdevice.h>`__ interface in the kernel.
+In order to create a char device with major `10` you will need to use the `miscdevice <https://elixir.bootlin.com/linux/latest/source/include/linux/miscdevice.h>`__ interface in the kernel.
 Definitions of related macros can be found in the `tracer.h header <http://elf.cs.pub.ro/so2/res/teme/tracer.h>`__.
 
 Since the ``kmalloc`` function is inline for instrumenting the allocated amount of memory, the ``__kmalloc``
@@ -80,8 +80,8 @@ The virtual machine kernel has the ``CONFIG_DEBUG_LOCK_ALLOC`` option enabled wh
 is a macro that expands to ``mutex_lock_nested``. Thus, in order to obtain information about the ``mutex_lock``
 function you will have to instrument the ``mutex_lock_nested`` function.
 
-Processes that have been added to the dispersion list/table and that end their execution will be removed
-from the dispersion list/table. Also, a process will be removed from the dispatch list/table following
+Processes that have been added to the list/hashtable and that end their execution will be removed
+from the list/hashtable. Also, a process will be removed from the dispatch list/hashtable following
 the ``TRACER_REMOVE_PROCESS`` operation.
 
 The information retained by the surveillant will be displayed via the procfs file system, in the ``/proc/tracer`` file.
@@ -143,7 +143,7 @@ Information about assigments penalties can be found on the
 elements will be taken into account:
 
 * *-2*: missing of proper disposal of resources (``kretprobes``, entries in ``/proc``)
-* *-2*: data synchronization issues for data used by multiple executing instances (e.g. the dispersion list/table)
+* *-2*: data synchronization issues for data used by multiple executing instances (e.g. the list/hashtable)
 
 In exceptional cases (the assigment passes the tests but it is not complying with the requirements)
 and if the assigment does not pass all the tests, the grade may decrease more than mentioned above.
