@@ -7,9 +7,9 @@ Assignment 1 - Kprobe based tracer
 Assignment's Objectives
 =======================
 
-*  acquiring knowledge related to the instrumentation of functions in the Linux kernel (``kretprobes`` mechanism)
+*  gaining knowledge related to the instrumentation of functions in the Linux kernel (``kretprobes`` mechanism)
 *  gaining knowledge regarding the ``/proc`` file system from the Linux kernel
-*  getting more familiar with the data structures specific to the Linux kernel (``hash table``, ``list``)
+*  get familiar with data structures specific to the Linux kernel (``hash table`` and ``list``)
 
 Statement
 =========
