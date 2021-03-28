@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>General Tips &mdash; The Linux Kernel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Contributing to linux-kernel-labs" href="contributing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5.10.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to linux-kernel-labs</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">General Tips</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>General Tips</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/info/general-tips.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="general-tips">
+<h1>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this headline">¶</a></h1>
+<p>Your code must not only &quot;work&quot;, but also meet certain standards.
+Below are some tips for assignments, along with related penalties for non-compliance:</p>
+<blockquote>
+<div><ul class="simple">
+<li>0.2: compilation warnings</li>
+<li>0.1: 10-20 lines longer than 80 characters;</li>
+<li>0.2: more than 20 lines longer than 80 characters;</li>
+<li>0.1: duplicated code;</li>
+<li>0.1: magic numbers, not symbolic constants;</li>
+<li>0.1: identation where tabs are mixed with spaces;</li>
+<li>0.1: mixed line endings;</li>
+<li>0.1: trailing whitespace; do not leave spaces or tabs at the end of lines;</li>
+<li>0.1: long functions(&gt; 150 de lines);</li>
+<li>0.2: very long functions (&gt; 300 de lines);</li>
+<li>0.1: commented code; for debugging we recommend using a macro;</li>
+<li>0.1: inappropriate comments; we recommend briefly browsing the <strong class="command">Documentation/kernel-doc-nano-HOWTO.txt</strong> file for infomation about comment format;</li>
+<li>0.1: functions and variables used only locally that are not static;</li>
+<li>0.2: no <cite>copy_ {to, from} _user</cite> functions are used where needed;</li>
+<li>0.2: the return values of the functions are not checked;</li>
+<li>0.1: no relevant error codes are returned;</li>
+<li>0.2/-0.3: synchronization problems (-0.2 partial synchronizations, -0.3 synchronization mechanisms are missing or incorrect);</li>
+<li>0.1: inclusion of binary or irrelevant files in the archive;</li>
+<li>0.2: memory leaks;</li>
+<li>0.3: use of blocking operations in atomic context;</li>
+</ul>
+</div></blockquote>
+<p>You can check most style comments using
+<a class="reference external" href="git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/scripts/checkpatch.pl">scripts/checkpatch.pl</a>,
+found in any Linux tree. For specific situations where you break the rules,
+argue with a comment or specification in the README file.</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> scripts/checkpatch.pl --no-tree --terse -f my-homework.c
+</pre></div>
+</div>
+<p>For more information on coding style,
+you can read the file <a class="reference external" href="https://elixir.bootlin.com/linux/v4.19.19/source/Documentation/process/coding-style.rst">Coding Style</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="contributing.html" class="btn btn-neutral float-left" title="Contributing to linux-kernel-labs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright The kernel development community.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
