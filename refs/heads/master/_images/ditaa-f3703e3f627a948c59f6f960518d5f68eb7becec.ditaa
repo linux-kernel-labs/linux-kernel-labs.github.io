@@ -1,0 +1,6 @@
+           +--------------+           +------------+
+ logical   |              |  linear   |            |  physical
+---------> | Segmentation | --------> |   Paging   | ---------->
+ address   |     Unit     |  address  |    Unit    |  address
+           |              |           |            |
+           +--------------+           +------------+

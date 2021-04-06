@@ -146,8 +146,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec6-virtmem.html">SO2 Lecture 06 - Virtual Memory Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec7-physmem.html">SO2 Lecture 07 - Physical Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
@@ -177,6 +177,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -375,7 +376,7 @@ the debugger to the running virtual machine. We are going to use a
 helper gdb command <cite>lx-ps</cite> to list the processes and the address of
 the task_struct for each process.</p>
 <p class="admonition-inspecting-task-struct">&nbsp;</p>
-<asciinema-player src="inspect_task_struct.cast"></asciinema-player></div>
+<asciinema-player src="../_images/inspect_task_struct.cast"></asciinema-player></div>
 <div class="section" id="quiz-inspect-a-task-to-determine-opened-files">
 <h3>Quiz: Inspect a task to determine opened files<a class="headerlink" href="#quiz-inspect-a-task-to-determine-opened-files" title="Permalink to this headline">¶</a></h3>
 <p class="admonition-quiz-inspect-opened-files">Use the debugger to inspect the process named syslogd.</p>
@@ -655,7 +656,7 @@ address from the stack</li>
 <p>The following screencast uses the debugger to setup a breaking in
 __switch_to_asm and examine the stack during the context switch:</p>
 <p class="admonition-inspecting-task-struct">&nbsp;</p>
-<asciinema-player src="context_switch.cast"></asciinema-player><div class="section" id="quiz-context-switch">
+<asciinema-player src="../_images/context_switch.cast"></asciinema-player><div class="section" id="quiz-context-switch">
 <h3>Quiz: context switch<a class="headerlink" href="#quiz-context-switch" title="Permalink to this headline">¶</a></h3>
 <p class="admonition-quiz-context-switch">We are executing a context switch. Select all of the statements that are true.</p>
 <ul class="simple">
@@ -1064,7 +1065,7 @@ tasks that don't &quot;userspace&quot; resources (e.g. no address space or
 opened files).</p>
 <p>The following screencast takes a closer look at kernel threads:</p>
 <p class="admonition-inspecting-kernel-threads">&nbsp;</p>
-<asciinema-player src="kernel_threads.cast"></asciinema-player></div>
+<asciinema-player src="../_images/kernel_threads.cast"></asciinema-player></div>
 </div>
 <div class="section" id="using-gdb-scripts-for-kernel-inspection">
 <h2>Using gdb scripts for kernel inspection<a class="headerlink" href="#using-gdb-scripts-for-kernel-inspection" title="Permalink to this headline">¶</a></h2>

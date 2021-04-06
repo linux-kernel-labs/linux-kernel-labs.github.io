@@ -110,6 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/processes.html">Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/address-space.html">Address Space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -393,8 +394,31 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#read-copy-update-rcu">Read Copy Update (RCU)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec6-virtmem.html">SO2 Lecture 06 - Virtual Memory Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec7-physmem.html">SO2 Lecture 07 - Physical Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec6-address-space.html">SO2 Lecture 06 - Address Space</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec6-address-space.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec6-address-space.html#x86-mmu">x86 MMU</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#selectors">Selectors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#segment-descriptor">Segment descriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#segmentation-in-linux">Segmentation in Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#inspecting-selectors-and-segments">Inspecting selectors and segments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#x86-paging">x86 Paging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#page-tables">Page tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#linux-paging">Linux paging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#translation-look-aside-buffer">Translation Look-aside Buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec6-address-space.html#linux-address-space">Linux address space</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#address-space-options-for-32bit-systems">Address space options for 32bit systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#linear-mappings">Linear mappings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#highmem">Highmem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#fixed-mapped-linear-addresses">Fixed-mapped linear addresses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#temporary-mappings">Temporary mappings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#permanent-mappings">Permanent mappings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#lecture-objectives">Lecture objectives:</a></li>
@@ -1014,6 +1038,30 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#per-cpu-data">Per CPU data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#memory-ordering-and-barriers">Memory Ordering and Barriers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#read-copy-update-rcu">Read Copy Update (RCU)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/address-space.html">Address Space</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/address-space.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/address-space.html#x86-mmu">x86 MMU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#selectors">Selectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#segment-descriptor">Segment descriptor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#segmentation-in-linux">Segmentation in Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#inspecting-selectors-and-segments">Inspecting selectors and segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#x86-paging">x86 Paging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#page-tables">Page tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#linux-paging">Linux paging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#translation-look-aside-buffer">Translation Look-aside Buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/address-space.html#linux-address-space">Linux address space</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#address-space-options-for-32bit-systems">Address space options for 32bit systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#linear-mappings">Linear mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#highmem">Highmem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#fixed-mapped-linear-addresses">Fixed-mapped linear addresses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#temporary-mappings">Temporary mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#permanent-mappings">Permanent mappings</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a><ul>
