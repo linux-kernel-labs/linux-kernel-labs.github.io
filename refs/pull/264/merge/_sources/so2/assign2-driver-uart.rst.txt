@@ -9,7 +9,7 @@ Assignment's Objectives
 
 *  consolidating the knowledge of device driver
 *  read hardware documentation and track the desired functionality in the documentation
-*  work with interruptions; use of non-blocking functions in interrupt context
+*  work with interrupts; use of non-blocking functions in interrupt context
 *  use of buffers; synchronization
 *  kernel modules with parameters
 
