@@ -108,8 +108,8 @@
 <li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec6-virtmem.html">SO2 Lecture 06 - Virtual Memory Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec7-physmem.html">SO2 Lecture 07 - Physical Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
@@ -156,6 +156,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -251,12 +252,13 @@
   <div class="section" id="assignment-2-driver-uart">
 <h1>Assignment 2 - Driver UART<a class="headerlink" href="#assignment-2-driver-uart" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>Deadline: <strong class="command">Wednesday, 21 April 2021, 23:00</strong></li>
+<li>Deadline: <strong class="command">Wednesday, April 21st, 2021, 23:00</strong></li>
+<li>This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.</li>
 </ul>
 <div class="section" id="assignment-s-objectives">
 <h2>Assignment's Objectives<a class="headerlink" href="#assignment-s-objectives" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>consolidating the knowledge of device driver</li>
+<li>consolidating the knowledge of device drivers</li>
 <li>read hardware documentation and track the desired functionality in the documentation</li>
 <li>work with interrupts; use of non-blocking functions in interrupt context</li>
 <li>use of buffers; synchronization</li>
@@ -272,7 +274,7 @@ In addition to the standard routines (<cite>open</cite>, <cite>read</cite>, <cit
 the driver must also have support for changing communication parameters using an <cite>ioctl</cite> operation (<cite>UART16550_IOCTL_SET_LINE</cite>).</p>
 <p>The driver must use interrupts for both reception and transmission to reduce latency and CPU usage time.
 <cite>Read</cite> and <cite>write</cite> calls must also be blocking. <strong class="command">Assignments that do not meet these requirements will not be considered.</strong>
-It is recommended that you use a buffer for read and another buffer for write buffer for each serial port in the driver.</p>
+It is recommended that you use a buffer for the read routine and another buffer for the write routine for each serial port in the driver.</p>
 <p>A blocking read call means that the read routine called from the user-space will be blocked until <strong class="command">at least</strong> one byte is read
 (the read buffer in the kernel is empty and no data can be read).
 A blocking write call means that the write routine called from the user-space will be blocked until <strong class="command">at least</strong> one byte is written
@@ -282,8 +284,8 @@ A blocking write call means that the write routine called from the user-space wi
 <img alt="../_images/buffers-scheme.png" src="../_images/buffers-scheme.png" />
 <p>Data transfer between the various buffers is a <a class="reference external" href="https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem">Producer-Consumer</a> problem. Example:</p>
 <ul class="simple">
-<li>if it is written from a process to the device, the process is the producer and the device is the consumer; the process will block until there is at least one free space in the consumer's buffer</li>
-<li>if it is read from a process from the device, the process is the consumer and the device the producer; the process will block until there is at least one element in the producer's buffer.</li>
+<li>The process is the producer and the device is the consumer if it is written from the process to the device; the process will block until there is at least one free space in the consumer's buffer</li>
+<li>The process is the consumer and the device is the producer if it is read from a process from the device; the process will block until there is at least one element in the producer's buffer.</li>
 </ul>
 </div>
 </div>
@@ -303,12 +305,12 @@ A blocking write call means that the write routine called from the user-space wi
 <li>the default values are <cite>major=42</cite> and <cite>option=OPTION_BOTH</cite>.</li>
 </ul>
 </li>
-<li>the number of interrupts associated with COM1 is 4 (<cite>IRQ_COM1</cite>) and the number of interrupts associated with COM2 is 3 (<cite>IRQ_COM2</cite>)</li>
+<li>the interrupt number associated with COM1 is 4 (<cite>IRQ_COM1</cite>) and the interrupt number associated with COM2 is 3 (<cite>IRQ_COM2</cite>)</li>
 <li><a class="reference external" href="elf.cs.pub.ro/so2/res/teme/uart16550.h">the header</a> with the definitions needed for special operations;</li>
 <li>a starting point in implementing read / write routines is the <a class="reference external" href="elf.cs.pub.ro/so2/res/teme/case.zip">example</a> of uppercase / lowercase character device driver; the only difference is that you have to use two buffers, one for read and one for write;</li>
 <li>you can use <a class="reference external" href="elf.cs.pub.ro/so2/res/teme/case.zip">kfifo</a> for buffers;</li>
-<li>you do not have to use deferred functions to read / write data from / to ports (you can do everything from interruption context);</li>
-<li>you will need to synchronize the read / write routines with the interrupt handling routine for the routines to be blocking; it is recommended to use <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/laboratoare/lab04?&amp;#sincronizare_-_cozi_de_asteptare">synchronization with queues</a></li>
+<li>you do not have to use deferred functions to read / write data from / to ports (you can do everything from interrupt context);</li>
+<li>you will need to synchronize the read / write routines with the interrupt handling routine for the routines to be blocking; it is recommended to use <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/laboratoare/lab04?&amp;#sincronizare_-_cozi_de_asteptare">synchronization with waiting queues</a></li>
 <li>In order for the assigment to work, the <cite>default serial driver</cite> must be disabled:<ul>
 <li><cite>cat /proc/ioports | grep serial</cite> will detect the presence of the default driver on the regions where COM1 and COM2 are defined</li>
 <li>in order to deactivate it, the kernel must be recompiled, either by setting the serial driver as the module, or by deactivating it completely (this modification is already made on the virtual machine)<ul>
