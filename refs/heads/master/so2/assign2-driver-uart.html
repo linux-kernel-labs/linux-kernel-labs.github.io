@@ -306,9 +306,9 @@ A blocking write call means that the write routine called from the user-space wi
 </ul>
 </li>
 <li>the interrupt number associated with COM1 is 4 (<cite>IRQ_COM1</cite>) and the interrupt number associated with COM2 is 3 (<cite>IRQ_COM2</cite>)</li>
-<li><a class="reference external" href="elf.cs.pub.ro/so2/res/teme/uart16550.h">the header</a> with the definitions needed for special operations;</li>
-<li>a starting point in implementing read / write routines is the <a class="reference external" href="elf.cs.pub.ro/so2/res/teme/case.zip">example</a> of uppercase / lowercase character device driver; the only difference is that you have to use two buffers, one for read and one for write;</li>
-<li>you can use <a class="reference external" href="elf.cs.pub.ro/so2/res/teme/case.zip">kfifo</a> for buffers;</li>
+<li><a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/2-uart/uart16550.h">the header</a> with the definitions needed for special operations;</li>
+<li>a starting point in implementing read / write routines is the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/laboratoare/lab04?&amp;#sincronizare_-_cozi_de_asteptare">example</a> of uppercase / lowercase character device driver; the only difference is that you have to use two buffers, one for read and one for write;</li>
+<li>you can use <a class="reference external" href="https://lwn.net/Articles/347619/">kfifo</a> for buffers;</li>
 <li>you do not have to use deferred functions to read / write data from / to ports (you can do everything from interrupt context);</li>
 <li>you will need to synchronize the read / write routines with the interrupt handling routine for the routines to be blocking; it is recommended to use <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/laboratoare/lab04?&amp;#sincronizare_-_cozi_de_asteptare">synchronization with waiting queues</a></li>
 <li>In order for the assigment to work, the <cite>default serial driver</cite> must be disabled:<ul>
