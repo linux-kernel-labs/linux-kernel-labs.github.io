@@ -1,0 +1,1655 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Linux Kernel Teaching &mdash; The Linux Kernel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/asciinema-player.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Operating Systems 2" href="so2/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> The Linux Kernel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5.10.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">The Linux Kernel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Linux Kernel Teaching</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="linux-kernel-teaching">
+<h1>Linux Kernel Teaching<a class="headerlink" href="#linux-kernel-teaching" title="Permalink to this headline">¶</a></h1>
+<p>This is a collection of lectures and labs Linux kernel topics. The
+lectures focus on theoretical and Linux kernel exploration.</p>
+<p>The labs focus on device drivers topics and they resemble &quot;howto&quot;
+style documentation. Each topic has two parts:</p>
+<ul class="simple">
+<li>a walk-through the topic which contains an overview, the main
+abstractions, simple examples and pointers to APIs</li>
+<li>a hands-on part which contains a few exercises that should be
+resolved by the student; to focus on the topic at hand, the student
+is presented with a starting coding skeleton and with in-depth tips
+on how to solve the exercises</li>
+</ul>
+<p>This content is based on the <a class="reference external" href="http://ocw.cs.pub.ro/courses/so2">Operatings Systems 2</a> course from the Computer Science
+and Engineering Department, the Faculty of Automatic Control and
+Computers, University POLITEHNICA of Bucharest.</p>
+<p>You can get the latest version at <a class="reference external" href="http://github.com/linux-kernel-labs">http://github.com/linux-kernel-labs</a>.</p>
+<p>To get started build the documentation from the sources after
+installing docker-compose on you host:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">tools</span><span class="o">/</span><span class="n">labs</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">docker</span><span class="o">-</span><span class="n">docs</span>
+</pre></div>
+</div>
+<p>then point your browser at <strong>Documentation/output/labs/index.html</strong>.</p>
+<p>Alternatively, you can build directly on the host (see
+tools/labs/docs/Dockerfile for dependencies):</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">tools</span><span class="o">/</span><span class="n">labs</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">docs</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="so2/index.html">Operating Systems 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#echipa">Echipa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#pozitionare-curs">Poziționare curs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#resurse">Resurse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#comunitate">Comunitate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#notare">Notare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#obiectivele-cursului">Obiectivele cursului</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#obiectivele-laboratorului-si-a-temelor">Obiectivele laboratorului si a temelor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#cursuri-necesare">Cursuri necesare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#despre-curs">Despre curs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#lista-cursuri">Lista cursuri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#despre-laborator">Despre laborator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#despre-teme">Despre teme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#lista-teme">Lista teme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#bibliografie-curs">Bibliografie curs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#bibliografie-laborator">Bibliografie laborator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#basic-operating-systems-terms-and-concepts">Basic operating systems terms and concepts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#user-vs-kernel">User vs Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#typical-operating-system-architecture">Typical operating system architecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#monolithic-kernel">Monolithic kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#micro-kernel">Micro kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#micro-kernels-vs-monolithic-kernels">Micro-kernels vs monolithic kernels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#address-space">Address space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#user-and-kernel-sharing-the-virtual-address-space">User and kernel sharing the virtual address space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#execution-contexts">Execution contexts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#multi-tasking">Multi-tasking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#preemptive-kernel">Preemptive kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#pageable-kernel-memory">Pageable kernel memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#kernel-stack">Kernel stack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#portability">Portability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#asymmetric-multiprocessing-asmp">Asymmetric MultiProcessing (ASMP)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#symmetric-multiprocessing-smp">Symmetric MultiProcessing (SMP)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#cpu-scalability">CPU Scalability</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec1-intro.html#overview-of-the-linux-kernel">Overview of the Linux kernel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#linux-development-model">Linux development model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#maintainer-hierarchy">Maintainer hierarchy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#linux-source-code-layout">Linux source code layout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec1-intro.html#linux-kernel-architecture">Linux kernel architecture</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#arch">arch</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#device-drivers">Device drivers</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#process-management">Process management</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#memory-management">Memory management</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#block-i-o-management">Block I/O management</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#virtual-filesystem-switch">Virtual Filesystem Switch</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#networking-stack">Networking stack</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec1-intro.html#linux-security-modules">Linux Security Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec2-syscalls.html">SO2 Lecture 02 - System calls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec2-syscalls.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec2-syscalls.html#linux-system-calls-implementation">Linux system calls implementation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec2-syscalls.html#system-call-table">System call table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec2-syscalls.html#system-call-parameters-handling">System call parameters handling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec2-syscalls.html#virtual-dynamic-shared-object-vdso">Virtual Dynamic Shared Object (VDSO)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec2-syscalls.html#accessing-user-space-from-system-calls">Accessing user space from system calls</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec3-processes.html">SO2 Lecture 03 - Processes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#processes-and-threads">Processes and threads</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#overview-of-process-resources">Overview of process resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#struct-task-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#inspecting-task-struct">Inspecting task_struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-inspect-a-task-to-determine-opened-files">Quiz: Inspect a task to determine opened files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#threads">Threads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#the-clone-system-call">The clone system call</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#namespaces-and-containers">Namespaces and &quot;containers&quot;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#accessing-the-current-process">Accessing the current process</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-previous-implementation-for-current-x86">Quiz: previous implementation for current (x86)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#context-switching">Context switching</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-context-switch">Quiz: context switch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#blocking-and-waking-up-tasks">Blocking and waking up tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#task-states">Task states</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#blocking-the-current-thread">Blocking the current thread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#waking-up-a-task">Waking up a task</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#preempting-tasks">Preempting tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#non-preemptive-kernel">Non preemptive kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#preemptive-kernel">Preemptive kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#process-context">Process context</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#kernel-threads">Kernel threads</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec3-processes.html#using-gdb-scripts-for-kernel-inspection">Using gdb scripts for kernel inspection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec3-processes.html#quiz-kernel-gdb-scripts">Quiz: Kernel gdb scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#what-is-an-interrupt">What is an interrupt?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#exceptions">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-interrupt-terminology">Quiz: interrupt terminology</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#hardware-concepts">Hardware Concepts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-controllers-in-smp-systems">Interrupt controllers in SMP systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-control">Interrupt Control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-priorities">Interrupt priorities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-hardware-concepts">Quiz: hardware concepts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-handling-on-the-x86-architecture">Interrupt handling on the x86 architecture</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-handler-address">Interrupt handler address</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#handling-an-interrupt-request">Handling an interrupt request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#returning-from-an-interrupt-handler">Returning from an interrupt handler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#inspecting-the-x86-interrupt-handling">Inspecting the x86 interrupt handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-x86-interrupt-handling">Quiz: x86 interrupt handling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-handling-in-linux">Interrupt handling in Linux</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#interrupt-context">Interrupt context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#deferrable-actions">Deferrable actions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#soft-irqs">Soft IRQs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#packet-flood-example">Packet flood example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#tasklets">Tasklets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#workqueues">Workqueues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#timers">Timers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#deferrable-actions-summary">Deferrable actions summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec4-interrupts.html#quiz-linux-interrupt-handling">Quiz: Linux interrupt handling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#synchronization-basics">Synchronization basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#linux-kernel-concurrency-sources">Linux kernel concurrency sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#atomic-operations">Atomic operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#disabling-preemption-interrupts">Disabling preemption (interrupts)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#spin-locks">Spin Locks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#cache-coherency-in-multi-processor-systems">Cache coherency in multi-processor systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#optimized-spin-locks">Optimized spin locks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#process-and-interrupt-context-synchronization">Process and Interrupt Context Synchronization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#mutexes">Mutexes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#per-cpu-data">Per CPU data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#memory-ordering-and-barriers">Memory Ordering and Barriers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec5-smp.html#read-copy-update-rcu">Read Copy Update (RCU)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec6-address-space.html">SO2 Lecture 06 - Address Space</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec6-address-space.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec6-address-space.html#x86-mmu">x86 MMU</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#selectors">Selectors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#segment-descriptor">Segment descriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#segmentation-in-linux">Segmentation in Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#inspecting-selectors-and-segments">Inspecting selectors and segments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#x86-paging">x86 Paging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#page-tables">Page tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#linux-paging">Linux paging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#translation-look-aside-buffer">Translation Look-aside Buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec6-address-space.html#linux-address-space">Linux address space</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#address-space-options-for-32bit-systems">Address space options for 32bit systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#linear-mappings">Linear mappings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#highmem">Highmem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#fixed-mapped-linear-addresses">Fixed-mapped linear addresses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#temporary-mappings">Temporary mappings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec6-address-space.html#permanent-mappings">Permanent mappings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#decoding-an-oops">Decoding an oops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#addr2line">addr2line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#objdump">objdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#gdb">gdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#kernel-panic">Kernel panic</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#list-debugging">List debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#memory-debugging">Memory debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#slab-debugging">Slab debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#kasan">KASan</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec9-debugging.html#kasan-vs-debug-pagealloc">KASan vs DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec9-debugging.html#kasan-vs-slub-debug">KASan vs SLUB_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec9-debugging.html#kmemleak">Kmemleak</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#perf">perf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#other-tools">Other tools</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec11-virtualization.html">SO2 Lecture 11 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec12-profiling.html">SO2 Lecture 12 - Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab1-intro.html">SO2 Lab 01 - Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#about-this-laboratory">About this laboratory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#kernel-modules-overview">Kernel Modules Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#an-example-of-a-kernel-module">An example of a kernel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#compiling-kernel-modules">Compiling kernel modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#kernel-module-debugging">Kernel Module Debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#objdump">objdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#addr2line">addr2line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#minicom">minicom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#netconsole">netconsole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#printk-debugging">Printk debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#dynamic-debugging">Dynamic debugging</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab1-intro.html#dyndbg-options">Dyndbg Options</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#kdb-kernel-debugger">KDB: Kernel debugger</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#remarks">Remarks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#booting-the-virtual-machine">Booting the virtual machine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#kernel-module">1. Kernel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#printk">2. Printk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#error">3. Error</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#sub-modules">4. Sub-modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#id1">5. Kernel oops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#module-parameters">6. Module parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#id2">7. Proc info</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#good-to-know">Good to know</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#source-code-navigation">Source code navigation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#cscope">cscope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#clangd">clangd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#kscope">Kscope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#lxr-cross-reference">LXR Cross-Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#sourceweb">SourceWeb</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#kernel-debugging">Kernel Debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#gdb-linux">gdb (Linux)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab1-intro.html#getting-a-stack-trace">Getting a stack trace</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#accessing-memory">Accessing memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#contexts-of-execution">Contexts of execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#locking">Locking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#preemptivity">Preemptivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#linux-kernel-api">Linux Kernel API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#convention-indicating-errors">Convention indicating errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#strings-of-characters">Strings of characters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#printk">printk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#memory-allocation">Memory allocation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#lists">lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#spinlock">Spinlock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#mutex">mutex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#atomic-variables">Atomic variables</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab2-kernel-api.html#use-of-atomic-variables">Use of atomic variables</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#atomic-bitwise-operations">Atomic bitwise operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab2-kernel-api.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#memory-allocation-in-linux-kernel">1. Memory allocation in Linux kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#sleeping-in-atomic-context">2. Sleeping in atomic context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#working-with-kernel-memory">3. Working with kernel memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#working-with-kernel-lists">4. Working with kernel lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#working-with-kernel-lists-for-process-handling">5. Working with kernel lists for process handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#synchronizing-list-work">6. Synchronizing list work</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab2-kernel-api.html#test-module-calling-in-our-list-module">7. Test module calling in our list module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#laboratory-objectives">Laboratory objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#majors-and-minors">Majors and minors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#data-structures-for-a-character-device">Data structures for a character device</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#struct-file-operations"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#inode-and-file-structures"><code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">file</span></code> structures</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#implementation-of-operations">Implementation of operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#registration-and-unregistration-of-character-devices">Registration and unregistration of character devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#access-to-the-address-space-of-the-process">Access to the address space of the process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#open-and-release">Open and release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#read-and-write">Read and write</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#ioctl">ioctl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#waiting-queues">Waiting queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#register-unregister">1. Register/unregister</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#register-an-already-registered-major">2. Register an already registered major</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#open-and-close">3. Open and close</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#access-restriction">4. Access restriction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#read-operation">5. Read operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#write-operation">6. Write operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#ioctl-operation">7. ioctl operation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab3-device-drivers.html#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#ioctl-with-messaging">Ioctl with messaging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#ioctl-with-waiting-queues">Ioctl with waiting queues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab3-device-drivers.html#o-nonblock-implementation">O_NONBLOCK implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#background-information">Background information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#accessing-the-hardware">Accessing the hardware</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#request-access-to-i-o-ports">Request access to I/O ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#accessing-i-o-ports">Accessing I/O ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#accessing-i-o-ports-from-userspace">5. Accessing I/O ports from userspace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#interrupt-handling">Interrupt handling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#requesting-an-interrupt">Requesting an interrupt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#implementing-an-interrupt-handler">Implementing an interrupt handler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#locking">Locking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#interrupt-statistics">Interrupt statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#further-reading">Further reading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#serial-port">Serial Port</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#parallel-port">Parallel port</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#keyboard-controller">Keyboard controller</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#linux-device-drivers">Linux device drivers</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#keyboard-driver">Keyboard driver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#request-the-i-o-ports">1. Request the I/O ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#interrupt-handling-routine">2. Interrupt handling routine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#store-ascii-keys-to-buffer">3. Store ASCII keys to buffer</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab4-interrupts.html#reading-the-data-register">Reading the data register</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab4-interrupts.html#interpreting-the-scancode">Interpreting the scancode</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab4-interrupts.html#store-characters-to-the-buffer">Store characters to the buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#reading-the-buffer">4. Reading the buffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#reset-the-buffer">5. Reset the buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab4-interrupts.html#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab4-interrupts.html#kfifo">1. kfifo</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#background-information">Background information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#softirqs">Softirqs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#tasklets">Tasklets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#timers">Timers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#locking">Locking</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#workqueues">Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#kernel-threads">Kernel threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab5-deferred-work.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#timer">1.Timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#periodic-timer">2. Periodic timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#timer-control-using-ioctl">3. Timer control using ioctl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#blocking-operations">4. Blocking operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#id3">5. Workqueues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#kernel-thread">6. Kernel thread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab5-deferred-work.html#buffer-shared-between-timer-and-process">7. Buffer shared between timer and process</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab6-memory-mapping.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab6-memory-mapping.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab6-memory-mapping.html#structures-used-for-memory-mapping">Structures used for memory mapping</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#struct-page"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#struct-vm-area-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#struct-mm-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab6-memory-mapping.html#device-driver-memory-mapping">Device driver memory mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab6-memory-mapping.html#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab6-memory-mapping.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#mapping-contiguous-physical-memory-to-userspace">1. Mapping contiguous physical memory to userspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#mapping-non-contiguous-physical-memory-to-userspace">2. Mapping non-contiguous physical memory to userspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#read-write-operations-in-mapped-memory">3. Read / write operations in mapped memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab6-memory-mapping.html#display-memory-mapped-in-procfs">4. Display memory mapped in procfs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#register-a-block-i-o-device">Register a block I/O device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#register-a-disk">Register a disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#request-queues">Request queues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#requests-for-block-devices">Requests for block devices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#create-a-request">Create a request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#finish-a-request">Finish a request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#process-a-request">Process a request</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#submit-a-struct-bio-structure">Submit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#block-device">1. Block device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#disk-registration">2. Disk registration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#ram-disk">3. RAM disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#read-data-from-the-disk">4. Read data from the disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#write-data-to-the-disk">5. Write data to the disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#processing-requests-from-the-request-queue-at-struct-bio-level">6. Processing requests from the request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#virtual-filesystem-vfs">Virtual Filesystem (VFS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#the-general-file-system-model">The general file system model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#superblock">superblock</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#localization">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#inode">inode</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#id1">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#file">file</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#id2">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#dentry">dentry</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#register-and-unregister-filesystems">Register and unregister filesystems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#functions-mount-kill-sb">Functions mount, kill_sb</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#superblock-in-vfs">Superblock in VFS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#the-struct-super-block-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#superblock-operations">Superblock operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#the-fill-super-function">The <code class="docutils literal"><span class="pre">fill_super()</span></code> function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#buffer-cache">Buffer cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#functions-and-useful-macros">Functions and useful macros</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab8-filesystems-part1.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#myfs">myfs</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#register-and-unregister-the-myfs-file-system">1. Register and unregister the myfs file system</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#completing-myfs-superblock">2. Completing myfs superblock</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#initialize-myfs-root-inode">3. Initialize myfs root inode</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#test-myfs-mount-and-unmount">4. Test myfs mount and unmount</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab8-filesystems-part1.html#minfs">minfs</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#registering-and-unregistering-the-minfs-file-system">1. Registering and unregistering the minfs file system</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#completing-minfs-superblock">2. Completing minfs superblock</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab8-filesystems-part1.html#testing-of-minfs-mount-and-unmount">5. Testing of minfs mount and unmount</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#inode">Inode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#the-inode-structure">The inode structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#inode-operations">Inode operations</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#getting-an-inode">Getting an inode</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#superoperations">Superoperations</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#id1">inode_operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#the-file-structure">The file structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#regular-files-inodes">Regular files inodes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#regular-files-inode-operations">Regular files inode operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#address-space-operations">Address space operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#dentry-structure">Dentry structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#dentry-operations">Dentry operations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#directory-inodes-operations">Directory inodes operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#creating-an-inode">Creating an inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#creating-a-directory">Creating a directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#creating-a-link">Creating a link</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#creating-a-symbolic-link">Creating a symbolic link</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#deleting-a-link">Deleting a link</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#deleting-a-directory">Deleting a directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#searching-for-an-inode-in-a-directory">Searching for an inode in a directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#iterating-through-entries-in-a-directory">Iterating through entries in a directory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#bitmap-operations">Bitmap operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab9-filesystems-part2.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#myfs">myfs</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#directory-operations">1. Directory operations</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab9-filesystems-part2.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#file-operations">2. File operations</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab9-filesystems-part2.html#id2">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab9-filesystems-part2.html#minfs">minfs</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#iterate-operation">1. Iterate operation</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab9-filesystems-part2.html#id3">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#lookup-operation">2. Lookup operation</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab9-filesystems-part2.html#id4">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab9-filesystems-part2.html#create-operation">3. Create operation</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab9-filesystems-part2.html#id5">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab10-networking.html">SO2 Lab 10 - Networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#overview">Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#networking-in-user-space">Networking in user space</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#linux-networking">Linux networking</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#the-struct-socket-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab10-networking.html#operations-on-the-socket-structure">Operations on the socket structure</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab10-networking.html#creation">Creation</a></li>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab10-networking.html#closing">Closing</a></li>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab10-networking.html#sending-receiving-messages">Sending/receiving messages</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lab10-networking.html#the-struct-socket-fields">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> fields</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="so2/lab10-networking.html#the-struct-proto-ops-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">proto_ops</span></code> structure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#the-struct-sock-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#the-struct-sk-buff-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#conversions">Conversions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#netfilter">netfilter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#netcat">netcat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab10-networking.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#displaying-packets-in-kernel-space">1. Displaying packets in kernel space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#filtering-by-destination-address">2. Filtering by destination address</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#listening-on-a-tcp-socket">3. Listening on a TCP socket</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#accepting-connections-in-kernel-space">4. Accepting connections in kernel space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab10-networking.html#udp-socket-sender">5. UDP socket sender</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/assign0-kernel-api.html">Assignment 0 - Kernel API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign0-kernel-api.html#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign0-kernel-api.html#statement">Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign0-kernel-api.html#testing">Testing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign0-kernel-api.html#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign0-kernel-api.html#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign0-kernel-api.html#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign0-kernel-api.html#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign0-kernel-api.html#questions">Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#statement">Statement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#implementation-details">Implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#testing">Testing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign1-kprobe-based-tracer.html#questions">Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/assign2-driver-uart.html">Assignment 2 - Driver UART</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign2-driver-uart.html#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign2-driver-uart.html#statement">Statement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign2-driver-uart.html#buffers-scheme">Buffers Scheme</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign2-driver-uart.html#implementation-details">Implementation Details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign2-driver-uart.html#testing">Testing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign2-driver-uart.html#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign2-driver-uart.html#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign2-driver-uart.html#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign2-driver-uart.html#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign2-driver-uart.html#questions">Questions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="lectures/intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/intro.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/intro.html#basic-operating-systems-terms-and-concepts">Basic operating systems terms and concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#user-vs-kernel">User vs Kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#typical-operating-system-architecture">Typical operating system architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#monolithic-kernel">Monolithic kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#micro-kernel">Micro kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#micro-kernels-vs-monolithic-kernels">Micro-kernels vs monolithic kernels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#address-space">Address space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#user-and-kernel-sharing-the-virtual-address-space">User and kernel sharing the virtual address space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#execution-contexts">Execution contexts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#multi-tasking">Multi-tasking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#preemptive-kernel">Preemptive kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#pageable-kernel-memory">Pageable kernel memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#kernel-stack">Kernel stack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#portability">Portability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#asymmetric-multiprocessing-asmp">Asymmetric MultiProcessing (ASMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#symmetric-multiprocessing-smp">Symmetric MultiProcessing (SMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#cpu-scalability">CPU Scalability</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/intro.html#overview-of-the-linux-kernel">Overview of the Linux kernel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#linux-development-model">Linux development model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#maintainer-hierarchy">Maintainer hierarchy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#linux-source-code-layout">Linux source code layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/intro.html#linux-kernel-architecture">Linux kernel architecture</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#arch">arch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#device-drivers">Device drivers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#process-management">Process management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#memory-management">Memory management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#block-i-o-management">Block I/O management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#virtual-filesystem-switch">Virtual Filesystem Switch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#networking-stack">Networking stack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/intro.html#linux-security-modules">Linux Security Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/syscalls.html">System Calls</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#linux-system-calls-implementation">Linux system calls implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/syscalls.html#system-call-table">System call table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/syscalls.html#system-call-parameters-handling">System call parameters handling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#virtual-dynamic-shared-object-vdso">Virtual Dynamic Shared Object (VDSO)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/syscalls.html#accessing-user-space-from-system-calls">Accessing user space from system calls</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/processes.html">Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#processes-and-threads">Processes and threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#overview-of-process-resources">Overview of process resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#struct-task-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#inspecting-task-struct">Inspecting task_struct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-inspect-a-task-to-determine-opened-files">Quiz: Inspect a task to determine opened files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#threads">Threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#the-clone-system-call">The clone system call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#namespaces-and-containers">Namespaces and &quot;containers&quot;</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#accessing-the-current-process">Accessing the current process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-previous-implementation-for-current-x86">Quiz: previous implementation for current (x86)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#context-switching">Context switching</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-context-switch">Quiz: context switch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#blocking-and-waking-up-tasks">Blocking and waking up tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#task-states">Task states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#blocking-the-current-thread">Blocking the current thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#waking-up-a-task">Waking up a task</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#preempting-tasks">Preempting tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#non-preemptive-kernel">Non preemptive kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#preemptive-kernel">Preemptive kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#process-context">Process context</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#kernel-threads">Kernel threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/processes.html#using-gdb-scripts-for-kernel-inspection">Using gdb scripts for kernel inspection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/processes.html#quiz-kernel-gdb-scripts">Quiz: Kernel gdb scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#what-is-an-interrupt">What is an interrupt?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#exceptions">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-interrupt-terminology">Quiz: interrupt terminology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#hardware-concepts">Hardware Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#programmable-interrupt-controller">Programmable Interrupt Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-controllers-in-smp-systems">Interrupt controllers in SMP systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-control">Interrupt Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-priorities">Interrupt priorities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-hardware-concepts">Quiz: hardware concepts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#interrupt-handling-on-the-x86-architecture">Interrupt handling on the x86 architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-descriptor-table">Interrupt Descriptor Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-handler-address">Interrupt handler address</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#stack-of-interrupt-handler">Stack of interrupt handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#handling-an-interrupt-request">Handling an interrupt request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#returning-from-an-interrupt-handler">Returning from an interrupt handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#inspecting-the-x86-interrupt-handling">Inspecting the x86 interrupt handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-x86-interrupt-handling">Quiz: x86 interrupt handling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/interrupts.html#interrupt-handling-in-linux">Interrupt handling in Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#nested-interrupts-and-exceptions">Nested interrupts and exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#interrupt-context">Interrupt context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions">Deferrable actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#soft-irqs">Soft IRQs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#packet-flood-example">Packet flood example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#tasklets">Tasklets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#workqueues">Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#timers">Timers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#deferrable-actions-summary">Deferrable actions summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/interrupts.html#quiz-linux-interrupt-handling">Quiz: Linux interrupt handling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#synchronization-basics">Synchronization basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#linux-kernel-concurrency-sources">Linux kernel concurrency sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#atomic-operations">Atomic operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#disabling-preemption-interrupts">Disabling preemption (interrupts)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#spin-locks">Spin Locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#cache-coherency-in-multi-processor-systems">Cache coherency in multi-processor systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#optimized-spin-locks">Optimized spin locks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#process-and-interrupt-context-synchronization">Process and Interrupt Context Synchronization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#mutexes">Mutexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#per-cpu-data">Per CPU data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#memory-ordering-and-barriers">Memory Ordering and Barriers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/smp.html#read-copy-update-rcu">Read Copy Update (RCU)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/address-space.html">Address Space</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/address-space.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/address-space.html#x86-mmu">x86 MMU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#selectors">Selectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#segment-descriptor">Segment descriptor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#segmentation-in-linux">Segmentation in Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#inspecting-selectors-and-segments">Inspecting selectors and segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#x86-paging">x86 Paging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#page-tables">Page tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#linux-paging">Linux paging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#translation-look-aside-buffer">Translation Look-aside Buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/address-space.html#linux-address-space">Linux address space</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#address-space-options-for-32bit-systems">Address space options for 32bit systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#linear-mappings">Linear mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#highmem">Highmem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#fixed-mapped-linear-addresses">Fixed-mapped linear addresses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#temporary-mappings">Temporary mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/address-space.html#permanent-mappings">Permanent mappings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#decoding-an-oops">Decoding an oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#addr2line">addr2line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#objdump">objdump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#gdb">gdb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kernel-panic">Kernel panic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#list-debugging">List debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#memory-debugging">Memory debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#slab-debugging">Slab debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kasan">KASan</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lectures/debugging.html#kasan-vs-debug-pagealloc">KASan vs DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lectures/debugging.html#kasan-vs-slub-debug">KASan vs SLUB_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/debugging.html#kmemleak">Kmemleak</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#perf">perf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#other-tools">Other tools</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#keywords">Keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#about-this-laboratory">About this laboratory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#source-code-navigation">Source code navigation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#cscope">cscope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#clangd">clangd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#kscope">Kscope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#lxr-cross-reference">LXR Cross-Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#sourceweb">SourceWeb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#kernel-debugging">Kernel Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#gdb-linux">gdb (Linux)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#getting-a-stack-trace">Getting a stack trace</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/introduction.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#remarks">Remarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#booting-the-virtual-machine">Booting the virtual machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#adding-and-using-a-virtual-disk">Adding and using a virtual disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#gdb-and-qemu">GDB and QEMU</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#gdb-spelunking">4. GDB spelunking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/introduction.html#cscope-spelunking">5. Cscope spelunking</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/kernel_modules.html">Kernel modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#kernel-modules-overview">Kernel Modules Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#an-example-of-a-kernel-module">An example of a kernel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#compiling-kernel-modules">Compiling kernel modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#loading-unloading-a-kernel-module">Loading/unloading a kernel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#kernel-module-debugging">Kernel Module Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#objdump">objdump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#addr2line">addr2line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#minicom">minicom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#netconsole">netconsole</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#printk-debugging">Printk debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#dynamic-debugging">Dynamic debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/kernel_modules.html#dyndbg-options">Dyndbg Options</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#kdb-kernel-debugger">KDB: Kernel debugger</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#kernel-module">1. Kernel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#printk">2. Printk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#error">3. Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#sub-modules">4. Sub-modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id1">5. Kernel oops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#module-parameters">6. Module parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id2">7. Proc info</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_modules.html#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#kdb">1. KDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#ps-module">2. PS Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#memory-info">3. Memory Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#id3">4. Dynamic Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_modules.html#dynamic-debugging-during-initialization">5. Dynamic Debugging During Initialization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/kernel_api.html">Kernel API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#accessing-memory">Accessing memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#contexts-of-execution">Contexts of execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#locking">Locking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#preemptivity">Preemptivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#linux-kernel-api">Linux Kernel API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#convention-indicating-errors">Convention indicating errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#strings-of-characters">Strings of characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#printk">printk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#memory-allocation">Memory allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#lists">lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#spinlock">Spinlock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#mutex">mutex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#atomic-variables">Atomic variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/kernel_api.html#use-of-atomic-variables">Use of atomic variables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#atomic-bitwise-operations">Atomic bitwise operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_api.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#memory-allocation-in-linux-kernel">1. Memory allocation in Linux kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#sleeping-in-atomic-context">2. Sleeping in atomic context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#working-with-kernel-memory">3. Working with kernel memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#working-with-kernel-lists">4. Working with kernel lists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#working-with-kernel-lists-for-process-handling">5. Working with kernel lists for process handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#synchronizing-list-work">6. Synchronizing list work</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_api.html#test-module-calling-in-our-list-module">7. Test module calling in our list module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/device_drivers.html">Character device drivers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#laboratory-objectives">Laboratory objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#majors-and-minors">Majors and minors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#data-structures-for-a-character-device">Data structures for a character device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#struct-file-operations"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#inode-and-file-structures"><code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">file</span></code> structures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#implementation-of-operations">Implementation of operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#registration-and-unregistration-of-character-devices">Registration and unregistration of character devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#access-to-the-address-space-of-the-process">Access to the address space of the process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#open-and-release">Open and release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#read-and-write">Read and write</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#ioctl">ioctl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#waiting-queues">Waiting queues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#register-unregister">1. Register/unregister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#register-an-already-registered-major">2. Register an already registered major</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#open-and-close">3. Open and close</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#access-restriction">4. Access restriction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#read-operation">5. Read operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#write-operation">6. Write operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#ioctl-operation">7. ioctl operation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_drivers.html#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#ioctl-with-messaging">Ioctl with messaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#ioctl-with-waiting-queues">Ioctl with waiting queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_drivers.html#o-nonblock-implementation">O_NONBLOCK implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/interrupts.html">I/O access and Interrupts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#background-information">Background information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#accessing-the-hardware">Accessing the hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#request-access-to-i-o-ports">Request access to I/O ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#accessing-i-o-ports">Accessing I/O ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#accessing-i-o-ports-from-userspace">5. Accessing I/O ports from userspace</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#interrupt-handling">Interrupt handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#requesting-an-interrupt">Requesting an interrupt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#implementing-an-interrupt-handler">Implementing an interrupt handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#locking">Locking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#interrupt-statistics">Interrupt statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#further-reading">Further reading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#serial-port">Serial Port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#parallel-port">Parallel port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#keyboard-controller">Keyboard controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#linux-device-drivers">Linux device drivers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#keyboard-driver">Keyboard driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#request-the-i-o-ports">1. Request the I/O ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#interrupt-handling-routine">2. Interrupt handling routine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#store-ascii-keys-to-buffer">3. Store ASCII keys to buffer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/interrupts.html#reading-the-data-register">Reading the data register</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/interrupts.html#interpreting-the-scancode">Interpreting the scancode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/interrupts.html#store-characters-to-the-buffer">Store characters to the buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#reading-the-buffer">4. Reading the buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#reset-the-buffer">5. Reset the buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/interrupts.html#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/interrupts.html#kfifo">1. kfifo</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/deferred_work.html">Deferred work</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#background-information">Background information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#softirqs">Softirqs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#tasklets">Tasklets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#timers">Timers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#locking">Locking</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#workqueues">Workqueues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#kernel-threads">Kernel threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/deferred_work.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#timer">1.Timer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#periodic-timer">2. Periodic timer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#timer-control-using-ioctl">3. Timer control using ioctl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#blocking-operations">4. Blocking operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#id3">5. Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#kernel-thread">6. Kernel thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/deferred_work.html#buffer-shared-between-timer-and-process">7. Buffer shared between timer and process</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/block_device_drivers.html">Block Device Drivers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#register-a-block-i-o-device">Register a block I/O device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#register-a-disk">Register a disk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#request-queues">Request queues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#requests-for-block-devices">Requests for block devices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-a-request">Create a request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#finish-a-request">Finish a request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#process-a-request">Process a request</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-bio-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-a-struct-bio-structure">Create a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#submit-a-struct-bio-structure">Submit a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#wait-for-the-completion-of-a-struct-bio-structure">Wait for the completion of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#block-device">1. Block device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#disk-registration">2. Disk registration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#ram-disk">3. RAM disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#read-data-from-the-disk">4. Read data from the disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#write-data-to-the-disk">5. Write data to the disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#processing-requests-from-the-request-queue-at-struct-bio-level">6. Processing requests from the request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#virtual-filesystem-vfs">Virtual Filesystem (VFS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#the-general-file-system-model">The general file system model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#superblock">superblock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#localization">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#inode">inode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#id1">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#file">file</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#id2">Localization:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#dentry">dentry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#register-and-unregister-filesystems">Register and unregister filesystems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#functions-mount-kill-sb">Functions mount, kill_sb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#superblock-in-vfs">Superblock in VFS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#the-struct-super-block-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">super_block</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#superblock-operations">Superblock operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#the-fill-super-function">The <code class="docutils literal"><span class="pre">fill_super()</span></code> function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#buffer-cache">Buffer cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#functions-and-useful-macros">Functions and useful macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part1.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#myfs">myfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#register-and-unregister-the-myfs-file-system">1. Register and unregister the myfs file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#completing-myfs-superblock">2. Completing myfs superblock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#initialize-myfs-root-inode">3. Initialize myfs root inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#test-myfs-mount-and-unmount">4. Test myfs mount and unmount</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part1.html#minfs">minfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#registering-and-unregistering-the-minfs-file-system">1. Registering and unregistering the minfs file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#completing-minfs-superblock">2. Completing minfs superblock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#creating-and-destroying-minfs-inodes">3. Creating and destroying minfs inodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#initialize-minfs-root-inode">4. Initialize minfs root inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part1.html#testing-of-minfs-mount-and-unmount">5. Testing of minfs mount and unmount</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part2.html">File system drivers (Part 2)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#inode">Inode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#the-inode-structure">The inode structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#inode-operations">Inode operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#getting-an-inode">Getting an inode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#superoperations">Superoperations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#id1">inode_operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#the-file-structure">The file structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#regular-files-inodes">Regular files inodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#regular-files-inode-operations">Regular files inode operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#address-space-operations">Address space operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#dentry-structure">Dentry structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#dentry-operations">Dentry operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#directory-inodes-operations">Directory inodes operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-an-inode">Creating an inode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-a-directory">Creating a directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-a-link">Creating a link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#creating-a-symbolic-link">Creating a symbolic link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#deleting-a-link">Deleting a link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#deleting-a-directory">Deleting a directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#searching-for-an-inode-in-a-directory">Searching for an inode in a directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#iterating-through-entries-in-a-directory">Iterating through entries in a directory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#bitmap-operations">Bitmap operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/filesystems_part2.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#myfs">myfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#directory-operations">1. Directory operations</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#file-operations">2. File operations</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id2">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/filesystems_part2.html#minfs">minfs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#iterate-operation">1. Iterate operation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id3">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#lookup-operation">2. Lookup operation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id4">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/filesystems_part2.html#create-operation">3. Create operation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/filesystems_part2.html#id5">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/networking.html">Networking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#networking-in-user-space">Networking in user space</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#linux-networking">Linux networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#the-struct-socket-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="labs/networking.html#operations-on-the-socket-structure">Operations on the socket structure</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/networking.html#creation">Creation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="labs/networking.html#closing">Closing</a></li>
+<li class="toctree-l5"><a class="reference internal" href="labs/networking.html#sending-receiving-messages">Sending/receiving messages</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="labs/networking.html#the-struct-socket-fields">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">socket</span></code> fields</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="labs/networking.html#the-struct-proto-ops-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">proto_ops</span></code> structure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#the-struct-sock-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sock</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#the-struct-sk-buff-structure">The <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#conversions">Conversions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#netfilter">netfilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#netcat">netcat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/networking.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#displaying-packets-in-kernel-space">1. Displaying packets in kernel space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#filtering-by-destination-address">2. Filtering by destination address</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#listening-on-a-tcp-socket">3. Listening on a TCP socket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#accepting-connections-in-kernel-space">4. Accepting connections in kernel space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/networking.html#udp-socket-sender">5. UDP socket sender</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#structures-used-for-memory-mapping">Structures used for memory mapping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#struct-page"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#struct-vm-area-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#struct-mm-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#device-driver-memory-mapping">Device driver memory mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#mapping-contiguous-physical-memory-to-userspace">1. Mapping contiguous physical memory to userspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#mapping-non-contiguous-physical-memory-to-userspace">2. Mapping non-contiguous physical memory to userspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#read-write-operations-in-mapped-memory">3. Read / write operations in mapped memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/memory_mapping.html#display-memory-mapped-in-procfs">4. Display memory mapped in procfs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#sysfs">sysfs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#basic-structures-in-linux-devices">Basic Structures in Linux Devices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#the-kobject-structure">The kobject structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#buses">Buses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#devices">Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#drivers">Drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#hotplug">Hotplug</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#plug-and-play">Plug and Play</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#pnp-bus">PNP bus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#pnp-operations">PNP operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#adding-a-driver">Adding a driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#removing-a-driver">Removing a driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#adding-a-new-device">Adding a new device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#removing-a-device">Removing a device</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/device_model.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#bus-implementation">1. Bus implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#add-type-and-version-device-attributes">2. Add type and version device attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#add-del-and-add-bus-attributes">3. Add del and add bus attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#register-the-bex-misc-driver">4. Register the bex misc driver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#register-misc-device-in-the-bex-misc-probe-function">5. Register misc device in the bex_misc probe function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#monitor-uevent-notifications">6. Monitor uevent notifications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="info/vm.html">Virtual Machine Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="info/vm.html#starting-the-virtual-machine">Starting the Virtual Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info/vm.html#connecting-to-the-virtual-machine">Connecting to the Virtual Machine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="info/extra-vm.html">Customizing the Virtual Machine Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="info/extra-vm.html#connect-to-the-virtual-machine-via-ssh">Connect to the Virtual Machine via SSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info/extra-vm.html#connecting-a-debugger-to-the-virtual-machine-kernel">Connecting a Debugger to the Virtual Machine Kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info/extra-vm.html#rebuild-the-kernel-image">Rebuild the Kernel Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info/extra-vm.html#using-docker-containers">Using Docker containers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="info/contributing.html">Contributing to linux-kernel-labs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="info/contributing.html#repository-structure">Repository structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info/contributing.html#building-the-documentation">Building the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info/contributing.html#creating-a-contribution">Creating a contribution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="info/contributing.html#forking-the-repository">Forking the repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="info/contributing.html#creating-a-pull-request">Creating a pull request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="info/contributing.html#making-changes-to-a-pull-request">Making changes to a Pull Request</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="so2/index.html" class="btn btn-neutral float-right" title="Operating Systems 2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright The kernel development community.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
