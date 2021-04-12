@@ -118,8 +118,8 @@
 <li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec6-virtmem.html">SO2 Lecture 06 - Virtual Memory Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec7-physmem.html">SO2 Lecture 07 - Physical Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
@@ -139,6 +139,7 @@
 <li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
 </ul>
 </li>
 </ul>
@@ -149,6 +150,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -319,7 +321,7 @@ number and run the kernel function associated with the system call.</p>
 machine setup, attach gdb to a running kernel, add a breakpoint to the
 dup2 system call and inspect the state.</p>
 <p class="admonition-inspecting-dup2-system-call">&nbsp;</p>
-<asciinema-player src="syscalls-inspection.cast"></asciinema-player><p>In summary, this is what happens during a system call:</p>
+<asciinema-player src="../_images/syscalls-inspection.cast"></asciinema-player><p>In summary, this is what happens during a system call:</p>
 <ul class="admonition-system-call-flow-summary simple">
 <li>The application is setting up the system call number and
 parameters and it issues a trap instruction</li>
@@ -462,7 +464,7 @@ space</li>
 system call</li>
 </ul>
 <p class="admonition-inspecting-vdso">&nbsp;</p>
-<asciinema-player src="syscalls-vdso.cast"></asciinema-player><p>An interesting development of the VDSO are the virtual system calls
+<asciinema-player src="../_images/syscalls-vdso.cast"></asciinema-player><p>An interesting development of the VDSO are the virtual system calls
 (vsyscalls) which run directly from user space. These vsyscalls are
 also part of VDSO and they are accessing data from the VDSO page that
 is either static or modified by the kernel in a separate read-write

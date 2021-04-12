@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -149,6 +150,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#initialize-a-struct-bio-structure">Initialize a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-use-the-content-of-a-struct-bio-structure">How to use the content of a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#free-a-struct-bio-structure">Free a <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-a-request-queue-at-struct-bio-level">Set up a request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
@@ -159,6 +161,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#ram-disk">3. RAM disk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read-data-from-the-disk">4. Read data from the disk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#write-data-to-the-disk">5. Write data to the disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processing-requests-from-the-request-queue-at-struct-bio-level">6. Processing requests from the request queue at <code class="docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level</a></li>
 </ul>
 </li>
 </ul>
@@ -501,6 +504,7 @@ are presented below:</p>
     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">media_changed</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">gendisk</span> <span class="o">*</span><span class="p">);</span>
     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">revalidate_disk</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">gendisk</span> <span class="o">*</span><span class="p">);</span>
     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">getgeo</span><span class="p">)(</span><span class="k">struct</span> <span class="n">block_device</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">hd_geometry</span> <span class="o">*</span><span class="p">);</span>
+    <span class="n">blk_qc_t</span> <span class="p">(</span><span class="o">*</span><span class="n">submit_bio</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">);</span>
     <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
@@ -1044,6 +1048,29 @@ structure and the iterator that traverses its segments.</p>
 <p>Once a kernel subsystem uses a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, it will have to
 release the reference to it. This is done by calling <code class="xref c c-func docutils literal"><span class="pre">bio_put()</span></code> function.</p>
 </div>
+<div class="section" id="set-up-a-request-queue-at-struct-bio-level">
+<h3>Set up a request queue at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level<a class="headerlink" href="#set-up-a-request-queue-at-struct-bio-level" title="Permalink to this headline">¶</a></h3>
+<p>We have previously seen how we can specify a function to be used to process
+requests sent to the driver. The function receives as argument the requests and
+carries out processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> level.</p>
+<p>If, for flexibility reasons, we need to specify a function that carries
+out processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure level, we no longer
+use request queues and we will need to fill the <code class="docutils literal"><span class="pre">submit_bio</span></code> field in the
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> associated to the driver.</p>
+<p>Below is a typical example of initializing a function that carries out
+processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure level:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="c1">// the declaration of the function that carries out processing</span>
+<span class="c1">// :c:type:`struct bio` structures</span>
+<span class="k">static</span> <span class="n">blk_qc_t</span> <span class="nf">my_submit_bio</span><span class="p">(</span><span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">);</span>
+
+<span class="k">struct</span> <span class="n">block_device_operations</span> <span class="n">my_block_ops</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="p">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+   <span class="p">.</span><span class="n">submit_bio</span> <span class="o">=</span> <span class="n">my_submit_bio</span>
+   <span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
@@ -1125,7 +1152,7 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 <div class="section" id="block-device">
 <h3>1. Block device<a class="headerlink" href="#block-device" title="Permalink to this headline">¶</a></h3>
 <p>Create a kernel module that allows you to register or deregister a block device.
-Start from the files in the <code class="file docutils literal"><span class="pre">1-2-3-ram-disk/kernel</span></code> directory in the
+Start from the files in the <code class="file docutils literal"><span class="pre">1-2-3-6-ram-disk/kernel</span></code> directory in the
 lab skeleton.</p>
 <p>Follow the comments marked with <strong>TODO 1</strong> in the laboratory skeleton. Use the
 existing macrodefinitions (<code class="xref c c-macro docutils literal"><span class="pre">MY_BLOCK_MAJOR</span></code>,
@@ -1327,6 +1354,55 @@ accordingly.</p>
 </div>
 <p>The script will display the <code class="docutils literal"><span class="pre">&quot;read</span> <span class="pre">from</span> <span class="pre">/dev/sdb:</span> <span class="pre">64</span> <span class="pre">65</span> <span class="pre">66&quot;</span></code> message at the
 standard output.</p>
+</div>
+<div class="section" id="processing-requests-from-the-request-queue-at-struct-bio-level">
+<h3>6. Processing requests from the request queue at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level<a class="headerlink" href="#processing-requests-from-the-request-queue-at-struct-bio-level" title="Permalink to this headline">¶</a></h3>
+<p>In the implementation from Exercise 3, we have only processed a
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> of the current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> from the request.
+We want to process all <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> structures from all
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structures.
+For this, we will iterate through all <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> requests and through
+all <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio_vec</span></code> structures (also called segments) of each
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>.</p>
+<p>Add, within the ramdisk implementation (<code class="file docutils literal"><span class="pre">1-2-3-6-ram-disk/</span></code> directory),
+support for processing the requests from the request queue at
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level. Follow the comments marked with <strong>TODO 6</strong>.</p>
+<p>Set the <code class="xref c c-macro docutils literal"><span class="pre">USE_BIO_TRANSFER</span></code> macro to 1.</p>
+<p>Implement the <code class="xref c c-func docutils literal"><span class="pre">my_xfer_request()</span></code> function. Use the
+<code class="xref c c-macro docutils literal"><span class="pre">rq_for_each_segment</span></code> macro to iterate through the <code class="xref c c-type docutils literal"><span class="pre">bio_vec</span></code>
+structures of each <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> from the request.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Review the indications and the code snippets from the
+<a class="reference internal" href="../so2/lab7-block-device-drivers.html#bio-content"><span class="std std-ref">How to use the content of a struct bio structure</span></a> section.</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Use the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> segment iterator to get the current
+sector (<code class="xref c c-member docutils literal"><span class="pre">iter.iter.bi_sector</span></code>).</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Use the request iterator to get the reference to the current
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> (<code class="xref c c-member docutils literal"><span class="pre">iter.bio</span></code>).</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Use the <code class="xref c c-macro docutils literal"><span class="pre">bio_data_dir</span></code> macro to find the reading or writing
+direction for a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code>.</p>
+</div>
+<p>Use the <code class="xref c c-macro docutils literal"><span class="pre">kmap_atomic</span></code> or the <code class="xref c c-macro docutils literal"><span class="pre">kunmap_atomic</span></code> macros to map
+the pages of each <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure and access its associated
+buffers. For the actual transfer, call the <code class="xref c c-func docutils literal"><span class="pre">my_block_transfer()</span></code> function
+implemented in the previous exercise.</p>
+<p>For testing, use the <code class="file docutils literal"><span class="pre">ram-disk-test.c</span></code> test file:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>./ram-disk-test
+</pre></div>
+</div>
+<p>There is no need to insert the module into the kernel, it will be inserted by
+the <strong class="command">ram-disk-test</strong> executable.</p>
+<p>Some tests may crash because of lack of synchronization between the transmitted
+data (flush).</p>
 </div>
 </div>
 </div>

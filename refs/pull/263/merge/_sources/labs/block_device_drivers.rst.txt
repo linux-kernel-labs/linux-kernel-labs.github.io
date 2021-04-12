@@ -285,6 +285,7 @@ are presented below:
        int (*media_changed) (struct gendisk *);
        int (*revalidate_disk) (struct gendisk *);
        int (*getgeo)(struct block_device *, struct hd_geometry *);
+       blk_qc_t (*submit_bio) (struct bio *bio);
        struct module *owner;
    }
 
@@ -876,6 +877,33 @@ Free a :c:type:`struct bio` structure
 Once a kernel subsystem uses a :c:type:`struct bio` structure, it will have to
 release the reference to it. This is done by calling :c:func:`bio_put` function.
 
+Set up a request queue at :c:type:`struct bio` level
+----------------------------------------------------
+
+We have previously seen how we can specify a function to be used to process
+requests sent to the driver. The function receives as argument the requests and
+carries out processing at :c:type:`struct request` level.
+
+If, for flexibility reasons, we need to specify a function that carries
+out processing at :c:type:`struct bio` structure level, we no longer
+use request queues and we will need to fill the ``submit_bio`` field in the
+:c:type:`struct block_device_operations` associated to the driver.
+
+Below is a typical example of initializing a function that carries out
+processing at :c:type:`struct bio` structure level:
+
+.. code-block:: c
+
+    // the declaration of the function that carries out processing
+    // :c:type:`struct bio` structures
+    static blk_qc_t my_submit_bio(struct bio *bio);
+
+    struct block_device_operations my_block_ops = {
+       .owner = THIS_MODULE,
+       .submit_bio = my_submit_bio
+       ...
+    };
+
 Further reading
 ===============
 
@@ -913,7 +941,7 @@ Using |LXR|_ find the definitions of the following symbols in the Linux kernel:
 ---------------
 
 Create a kernel module that allows you to register or deregister a block device.
-Start from the files in the :file:`1-2-3-ram-disk/kernel` directory in the
+Start from the files in the :file:`1-2-3-6-ram-disk/kernel` directory in the
 lab skeleton.
 
 Follow the comments marked with **TODO 1** in the laboratory skeleton. Use the
@@ -1130,3 +1158,53 @@ For testing, run the :file:`test-relay-disk` script using the command:
 
 The script will display the ``"read from /dev/sdb: 64 65 66"`` message at the
 standard output.
+
+6. Processing requests from the request queue at :c:type:`struct bio` level
+---------------------------------------------------------------------------
+
+In the implementation from Exercise 3, we have only processed a
+:c:type:`struct bio_vec` of the current :c:type:`struct bio` from the request.
+We want to process all :c:type:`struct bio_vec` structures from all
+:c:type:`struct bio` structures.
+For this, we will iterate through all :c:type:`struct bio` requests and through
+all :c:type:`struct bio_vec` structures (also called segments) of each
+:c:type:`struct bio`.
+
+Add, within the ramdisk implementation (:file:`1-2-3-6-ram-disk/` directory),
+support for processing the requests from the request queue at
+:c:type:`struct bio` level. Follow the comments marked with **TODO 6**.
+
+Set the :c:macro:`USE_BIO_TRANSFER` macro to 1.
+
+Implement the :c:func:`my_xfer_request` function. Use the
+:c:macro:`rq_for_each_segment` macro to iterate through the :c:type:`bio_vec`
+structures of each :c:type:`struct bio` from the request.
+
+.. hint:: Review the indications and the code snippets from the
+          :ref:`bio_content` section.
+
+.. hint:: Use the :c:type:`struct bio` segment iterator to get the current
+          sector (:c:member:`iter.iter.bi_sector`).
+
+.. hint:: Use the request iterator to get the reference to the current
+          :c:type:`struct bio` (:c:member:`iter.bio`).
+
+.. hint:: Use the :c:macro:`bio_data_dir` macro to find the reading or writing
+          direction for a :c:type:`struct bio`.
+
+Use the :c:macro:`kmap_atomic` or the :c:macro:`kunmap_atomic` macros to map
+the pages of each :c:type:`struct bio` structure and access its associated
+buffers. For the actual transfer, call the :c:func:`my_block_transfer` function
+implemented in the previous exercise.
+
+For testing, use the :file:`ram-disk-test.c` test file:
+
+.. code-block:: shell
+
+   ./ram-disk-test
+
+There is no need to insert the module into the kernel, it will be inserted by
+the :command:`ram-disk-test` executable.
+
+Some tests may crash because of lack of synchronization between the transmitted
+data (flush).
