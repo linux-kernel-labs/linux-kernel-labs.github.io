@@ -130,14 +130,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#register-a-disk">Register a disk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#request-queues">Request queues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#request-queues-multi-queue-block-layer">Request Queues - Multi-Queue Block Layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#software-staging-queues">Software staging queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hardware-dispatch-queues">Hardware dispatch queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tag-sets">Tag sets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#create-a-request">Create a request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#finish-a-request">Finish a request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#process-a-request">Process a request</a></li>
 </ul>
 </li>
@@ -502,6 +504,7 @@ are presented below:</p>
     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">media_changed</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">gendisk</span> <span class="o">*</span><span class="p">);</span>
     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">revalidate_disk</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">gendisk</span> <span class="o">*</span><span class="p">);</span>
     <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">getgeo</span><span class="p">)(</span><span class="k">struct</span> <span class="n">block_device</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">hd_geometry</span> <span class="o">*</span><span class="p">);</span>
+    <span class="n">blk_qc_t</span> <span class="p">(</span><span class="o">*</span><span class="n">submit_bio</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">);</span>
     <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
@@ -556,25 +559,99 @@ space.</p>
 performed by the <code class="xref c c-func docutils literal"><span class="pre">request()</span></code> function associated with the request queue
 of the disk.</p>
 </div>
-<div class="section" id="request-queues">
-<h2>Request queues<a class="headerlink" href="#request-queues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="request-queues-multi-queue-block-layer">
+<h2>Request Queues - Multi-Queue Block Layer<a class="headerlink" href="#request-queues-multi-queue-block-layer" title="Permalink to this headline">¶</a></h2>
 <p>Drivers for block devices use queues to store the block I/O requests that will
 be processed. A request queue is represented by the
 <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request_queue</span></code> structure. The request queue is made up of a
 double-linked list of requests and their associated control information. The
 requests are added to the queue by higher-level kernel code (for example, file
-systems). As long as the request queue is not empty, the queue's associated
-driver will have to retrieve the first request from the queue and pass it to the
-associated block device. Each item in the request queue is a request represented
-by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure.</p>
-<p>Request queues implement an interface that allows the use of multiple I/O
-schedulers. A scheduler must sort the requests and present them to the driver
-in order to maximize performance. The scheduler also deals with the combination
-of adjacent requests (which refer to adjacent sectors of the disk).</p>
+systems).</p>
+<p>The block device driver associates each queue with a handling function, which
+will be called for each request in the queue
+(the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> structure).</p>
+<p>In earlier version of the Linux kernel, each device driver had associated one or
+more request queues (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request_queue</span></code>), where any client could add
+requests, while also being able to reorder them.
+The problem with this approach is that it requires a per-queue lock, making it
+inefficient in distributed systems.</p>
+<p>The <a class="reference external" href="https://www.kernel.org/doc/html/latest/block/blk-mq.html">Multi-Queue Block Queing Mechanism</a>
+solves this issue by splitting the device driver queue in two parts:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Software staging queues</li>
+<li>Hardware dispatch queues</li>
+</ol>
+</div></blockquote>
+<div class="section" id="software-staging-queues">
+<h3>Software staging queues<a class="headerlink" href="#software-staging-queues" title="Permalink to this headline">¶</a></h3>
+<p>The staging queues hold requests from the clients before sending them to the
+block device driver. To prevent the waiting for a per-queue lock, a staging
+queue is allocated for each CPU or node. A software queue is associated to
+only one hardware queue.</p>
+<p>While in this queue, the requests can be merged or reordered, according to an
+I/O Scheduler, in order to maximize performance. This means that only the
+requests coming from the same CPU or node can be optimized.</p>
+<p>Staging queues are usually not used by the block device drivers, but only
+internally by the I/O subsystem to optimize requests before sending them to the
+device drivers.</p>
+</div>
+<div class="section" id="hardware-dispatch-queues">
+<h3>Hardware dispatch queues<a class="headerlink" href="#hardware-dispatch-queues" title="Permalink to this headline">¶</a></h3>
+<p>The hardware queues (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">blk_mq_hw_ctx</span></code>) are used to send the
+requests from the staging queues to the block device driver.
+Once in this queue, the requests can't be merged or reordered.</p>
+<p>Depending on the underlying hardware, a block device driver can create multiple
+hardware queues in order to improve parallelism and maximize performance.</p>
+</div>
+<div class="section" id="tag-sets">
+<h3>Tag sets<a class="headerlink" href="#tag-sets" title="Permalink to this headline">¶</a></h3>
+<p>A block device driver can accept a request before the previous one is completed.
+As a consequence, the upper layers need a way to know when a request is
+completed. For this, a &quot;tag&quot; is added to each request upon submission and sent
+back using a completion notification after the request is completed.</p>
+<p>The tags are part of a tag set (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">blk_mq_tag_set</span></code>), which is
+unique to a device.
+The tag set structure is allocated and initialized before the request queues
+and also stores some of the queues properties.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">blk_mq_tag_set</span> <span class="p">{</span>
+  <span class="p">...</span>
+  <span class="k">const</span> <span class="k">struct</span> <span class="n">blk_mq_ops</span>   <span class="o">*</span><span class="n">ops</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">int</span>               <span class="n">nr_hw_queues</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">int</span>               <span class="n">queue_depth</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">int</span>               <span class="n">cmd_size</span><span class="p">;</span>
+  <span class="kt">int</span>                        <span class="n">numa_node</span><span class="p">;</span>
+  <span class="kt">void</span>                      <span class="o">*</span><span class="n">driver_data</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">blk_mq_tags</span>       <span class="o">**</span><span class="n">tags</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">list_head</span>           <span class="n">tag_list</span><span class="p">;</span>
+  <span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Some of the fields in <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">blk_mq_tag_set</span></code> are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">ops</span></code> - Queue operations, most notably the request handling function.</li>
+<li><code class="docutils literal"><span class="pre">nr_hw_queues</span></code> - The number of hardware queues allocated for the device</li>
+<li><code class="docutils literal"><span class="pre">queue_depth</span></code> - Hardware queues size</li>
+<li><code class="docutils literal"><span class="pre">cmd_size</span></code> - Number of extra bytes allocated at the end of the device, to
+be used by the block device driver, if needed.</li>
+<li><code class="docutils literal"><span class="pre">numa_node</span></code> - In NUMA systems, the index of the node the storage device is
+connected to.</li>
+<li><code class="docutils literal"><span class="pre">driver_data</span></code> - Data private to the driver, if needed.</li>
+<li><code class="docutils literal"><span class="pre">tags</span></code> - Pointer to an array of <code class="docutils literal"><span class="pre">nr_hw_queues</span></code> tag sets.</li>
+<li><code class="docutils literal"><span class="pre">tag_list</span></code> - List of request queues using this tag set.</li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="create-and-delete-a-request-queue">
 <h3>Create and delete a request queue<a class="headerlink" href="#create-and-delete-a-request-queue" title="Permalink to this headline">¶</a></h3>
-<p>A request queue is created with the <code class="xref c c-func docutils literal"><span class="pre">blk_init_queue()</span></code> function and is
-deleted using the <code class="xref c c-func docutils literal"><span class="pre">blk_cleanup_queue()</span></code> function.</p>
+<p>Request queues are created using the <code class="xref c c-func docutils literal"><span class="pre">blk_mq_init_queue()</span></code> function and
+are deleted using <code class="xref c c-func docutils literal"><span class="pre">blk_cleanup_queue()</span></code>. The first function creates both
+the hardware and the software queues and initializes their structures.</p>
+<p>Queue properties, including the number of hardware queues, their capacity and
+request handling function are configured using the <code class="xref c c-type docutils literal"><span class="pre">blk_mq_tag_set</span></code>
+structure, as described above.</p>
 <p>An example of using these functions is as follows:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;linux/genhd.h&gt;</span><span class="cp"></span>
@@ -582,24 +659,47 @@ deleted using the <code class="xref c c-func docutils literal"><span class="pre"
 
 <span class="k">static</span> <span class="k">struct</span> <span class="n">my_block_dev</span> <span class="p">{</span>
     <span class="c1">//...</span>
+    <span class="k">struct</span> <span class="n">blk_mq_tag_set</span> <span class="n">tag_set</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">request_queue</span> <span class="o">*</span><span class="n">queue</span><span class="p">;</span>
     <span class="c1">//...</span>
 <span class="p">}</span> <span class="n">dev</span><span class="p">;</span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_block_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">request_queue</span> <span class="o">*</span><span class="n">q</span><span class="p">);</span>
+<span class="k">static</span> <span class="n">blk_status_t</span> <span class="nf">my_block_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">blk_mq_hw_ctx</span> <span class="o">*</span><span class="n">hctx</span><span class="p">,</span>
+                                     <span class="k">const</span> <span class="k">struct</span> <span class="n">blk_mq_queue_data</span> <span class="o">*</span><span class="n">bd</span><span class="p">)</span>
 <span class="c1">//...</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">blk_mq_ops</span> <span class="n">my_queue_ops</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="p">.</span><span class="n">queue_rq</span> <span class="o">=</span> <span class="n">my_block_request</span><span class="p">,</span>
+<span class="p">};</span>
 
 <span class="k">static</span> <span class="kt">int</span> <span class="nf">create_block_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">my_block_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="cm">/* Initialize the I/O queue */</span>
-    <span class="n">spin_lock_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
-    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span> <span class="o">=</span> <span class="n">blk_init_queue</span><span class="p">(</span><span class="n">my_block_request</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="cm">/* Initialize tag set. */</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">.</span><span class="n">ops</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">my_queue_ops</span><span class="p">;</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">.</span><span class="n">nr_hw_queues</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">.</span><span class="n">queue_depth</span> <span class="o">=</span> <span class="mi">128</span><span class="p">;</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">.</span><span class="n">numa_node</span> <span class="o">=</span> <span class="n">NUMA_NO_NODE</span><span class="p">;</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">.</span><span class="n">cmd_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">BLK_MQ_F_SHOULD_MERGE</span><span class="p">;</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">blk_mq_alloc_tag_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">goto</span> <span class="n">out_err</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* Allocate queue. */</span>
+    <span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span> <span class="o">=</span> <span class="n">blk_mq_init_queue</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">IS_ERR</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">goto</span> <span class="n">out_blk_init</span><span class="p">;</span>
+    <span class="p">}</span>
+
     <span class="n">blk_queue_logical_block_size</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">,</span> <span class="n">KERNEL_SECTOR_SIZE</span><span class="p">);</span>
+
+     <span class="cm">/* Assign private data to queue structure. */</span>
     <span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">queuedata</span> <span class="o">=</span> <span class="n">dev</span><span class="p">;</span>
     <span class="c1">//...</span>
 
+<span class="nl">out_blk_init</span><span class="p">:</span>
+    <span class="n">blk_mq_free_tag_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">);</span>
 <span class="nl">out_err</span><span class="p">:</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
 <span class="p">}</span>
@@ -617,8 +717,8 @@ deleted using the <code class="xref c c-func docutils literal"><span class="pre"
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">delete_block_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">block_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="c1">//...</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">)</span>
-        <span class="n">blk_cleanup_queue</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">);</span>
+    <span class="n">blk_mq_free_tag_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">);</span>
+    <span class="n">blk_cleanup_queue</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">my_block_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
@@ -628,44 +728,34 @@ deleted using the <code class="xref c c-func docutils literal"><span class="pre"
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The <code class="xref c c-func docutils literal"><span class="pre">blk_init_queue()</span></code> function receives as first argument a pointer to
-the function which processes the requests for the device (of type
-<code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code>). In the example above, the function is
-<code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>. The lock parameter is a spinlock (initialized by the
-driver) that the kernel holds during the <code class="xref c c-func docutils literal"><span class="pre">request()</span></code> function call to
-ensure exclusive access to the queue. This spinlock can also be used in other
-driver functions to protect access to shared data with the <code class="xref c c-func docutils literal"><span class="pre">request()</span></code>
-function.</p>
+<p>After initializing the tag set structure, the tag lists are allocated using the
+<code class="xref c c-func docutils literal"><span class="pre">blk_mq_alloc_tag_set()</span></code> function.
+The pointer to the function which will process the requests
+(<code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>) is filled in the <code class="docutils literal"><span class="pre">my_queue_ops</span></code> structure and
+then the pointer to this structure is added to the tag set.</p>
+<p>The queue is created using the <code class="xref c c-func docutils literal"><span class="pre">blk_mq_init_queue()</span></code> function, based on
+the information added in the tag set.</p>
 <p>As part of the request queue initialization, you can configure the
 <code class="xref c c-member docutils literal"><span class="pre">queuedata</span></code> field, which is equivalent to the <code class="xref c c-member docutils literal"><span class="pre">private_data</span></code>
 field in other structures.</p>
 </div>
 <div class="section" id="useful-functions-for-processing-request-queues">
 <h3>Useful functions for processing request queues<a class="headerlink" href="#useful-functions-for-processing-request-queues" title="Permalink to this headline">¶</a></h3>
-<p>The function of type <code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code> is used to handle requests for
-working  with the block device. This function is the equivalent of read and
-write  functions encountered on character devices. The function receives the
-request queue associated with the device as an argument and can use various
-functions for processing the requests from the request queue.</p>
-<p>The functions used to process the requests from the request queue are
-described below:</p>
+<p>The <code class="docutils literal"><span class="pre">queue_rq</span></code> function from <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">blk_mq_ops</span></code> is used to handle
+requests for working with the block device.
+This function is the equivalent of read and write functions encountered on
+character devices. The function receives the requests for the device as
+arguments and can use various functions for processing them.</p>
+<p>The functions used to process the requests in the handler are described below:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="xref c c-func docutils literal"><span class="pre">blk_peek_request()</span></code> - retrieves a reference to the first request
-from the queue; the respective request must be started using
-<code class="xref c c-func docutils literal"><span class="pre">blk_start_request()</span></code>;</li>
-<li><code class="xref c c-func docutils literal"><span class="pre">blk_start_request()</span></code> - extracts the request from the queue and
-starts it for processing; in general, the function receives as a reference
-a pointer to a request returned by <code class="xref c c-func docutils literal"><span class="pre">blk_peek_request()</span></code>;</li>
-<li><code class="xref c c-func docutils literal"><span class="pre">blk_fetch_request()</span></code> - retrieves the first request from the queue
-(using <code class="xref c c-func docutils literal"><span class="pre">blk_peek_request()</span></code>) and starts it (using
-<code class="xref c c-func docutils literal"><span class="pre">blk_start_request()</span></code>);</li>
-<li><code class="xref c c-func docutils literal"><span class="pre">blk_requeue_request()</span></code> - to re-enter queue.</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">blk_mq_start_request()</span></code> - must be called before starting processing
+a request;</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">blk_mq_requeue_request()</span></code> - to re-send the request in the queue;</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">blk_mq_end_request()</span></code> - to end request processing and notify the
+upper layers.</li>
 </ul>
 </div></blockquote>
-<p>Before calling any of the functions above, the spinlock associated to the queue
-must be acquired. If the function is called from the function of type
-<code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code>, then the spinlock is already held.</p>
 </div>
 </div>
 <div class="section" id="requests-for-block-devices">
@@ -706,88 +796,63 @@ under the responsibility of the I/O subsystem are adding requests to the queue
 of the specific block device and sorting and merging requests according to
 performance considerations.</p>
 </div>
-<div class="section" id="finish-a-request">
-<h3>Finish a request<a class="headerlink" href="#finish-a-request" title="Permalink to this headline">¶</a></h3>
-<p>When the driver has finished transferring all the sectors of a request to /from
-the device, it must inform the I/O subsystem by calling the
-<code class="xref c c-func docutils literal"><span class="pre">blk_end_request()</span></code> function. If the lock associated to the request queue
-is already acquired, the <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request()</span></code> function can be used.</p>
-<p>If the driver wants to close the request even if it did not transfer all the
-related sectors, it can call the <code class="xref c c-func docutils literal"><span class="pre">blk_end_request_all()</span></code> or
-<code class="xref c c-func docutils literal"><span class="pre">__blk_end_request_all()</span></code> function. The <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request_all()</span></code>
-function is called if the lock associated to the request queue is already
-acquired.</p>
-</div>
 <div class="section" id="process-a-request">
 <h3>Process a request<a class="headerlink" href="#process-a-request" title="Permalink to this headline">¶</a></h3>
-<p>The central part of a block device driver is the <code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code>
-function type. In previous examples, the function that fulfilled this role was
+<p>The central part of a block device driver is the request handling function
+(<code class="docutils literal"><span class="pre">queue_rq</span></code>). In previous examples, the function that fulfilled this role was
 <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>. As stated in the
 <a class="reference internal" href="#create-and-delete-a-request-queue">Create and delete a request queue</a> section, this function is associated to the
-driver by calling <code class="xref c c-func docutils literal"><span class="pre">blk_init_queue()</span></code> function.</p>
+driver when creating the tag set structure.</p>
 <p>This function is called when the kernel considers that the driver should process
 I/O requests. The function must start processing the requests from the queue,
 but it is not mandatory to finish them, as requests may be finished by other
 parts of the driver.</p>
-<p>The <code class="xref c c-data docutils literal"><span class="pre">lock</span></code> parameter, sent when creating a request queue, is a spinlock
-that the kernel holds when executing the request method. For this reason, the
-request function runs in an atomic context and must follow the rules for
-atomic code (it does not need to call functions that can cause sleep, etc.).
-This lock also ensures that no other requests for the device will be added to
-the queue while the request function is running.</p>
-<p>Calling the function that processes the request queue is asynchronous relative
+<p>The request function runs in an atomic context and must follow the rules for
+atomic code (it does not need to call functions that can cause sleep, etc.).</p>
+<p>Calling the function that processes the requests is asynchronous relative
 to the actions of any userspace process and no assumptions about the process
 in which the respective function is running should be made. Also, it should not
 be assumed that the buffer provided by a request is from kernel space or user
 space, any operation that accesses the userspace being erroneous.</p>
-<p>Below is presented one of the simplest function of type
-<code class="xref c c-type docutils literal"><span class="pre">request_fn_proc</span></code>:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">my_block_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">request_queue</span> <span class="o">*</span><span class="n">q</span><span class="p">)</span>
+<p>One of the simplest request handling function is presented below:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">blk_status_t</span> <span class="nf">my_block_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">blk_mq_hw_ctx</span> <span class="o">*</span><span class="n">hctx</span><span class="p">,</span>
+                                     <span class="k">const</span> <span class="k">struct</span> <span class="n">blk_mq_queue_data</span> <span class="o">*</span><span class="n">bd</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="k">struct</span> <span class="n">request</span> <span class="o">*</span><span class="n">rq</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">request</span> <span class="o">*</span><span class="n">rq</span> <span class="o">=</span> <span class="n">bd</span><span class="o">-&gt;</span><span class="n">rq</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">my_block_dev</span> <span class="o">*</span><span class="n">dev</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">queuedata</span><span class="p">;</span>
 
-    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">rq</span> <span class="o">=</span> <span class="n">blk_fetch_request</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">rq</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-            <span class="k">break</span><span class="p">;</span>
+    <span class="n">blk_mq_start_request</span><span class="p">(</span><span class="n">rq</span><span class="p">);</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">blk_rq_is_passthrough</span><span class="p">(</span><span class="n">rq</span><span class="p">))</span> <span class="p">{</span>
-            <span class="n">printk</span> <span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">&quot;Skip non-fs request</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-            <span class="n">__blk_end_request_all</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="o">-</span><span class="n">EIO</span><span class="p">);</span>
-           <span class="k">continue</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="cm">/* do work */</span>
-        <span class="p">...</span>
-
-        <span class="n">__blk_end_request_all</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">blk_rq_is_passthrough</span><span class="p">(</span><span class="n">rq</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">printk</span> <span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">&quot;Skip non-fs request</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="n">blk_mq_end_request</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="n">BLK_STS_IOERR</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
     <span class="p">}</span>
+
+    <span class="cm">/* do work */</span>
+    <span class="p">...</span>
+
+    <span class="n">blk_mq_end_request</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="n">BLK_STS_OK</span><span class="p">);</span>
+
+<span class="nl">out</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">BLK_STS_OK</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function contains a <code class="xref c c-func docutils literal"><span class="pre">while()</span></code> loop for
-iterating through the request queue sent as argument. The operations performed
-within this loop are:</p>
+<p>The <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function performs the following operations:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Read the first request from the queue using <code class="xref c c-func docutils literal"><span class="pre">blk_fetch_request()</span></code>.
-As described in <a class="reference internal" href="#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a> section,
-the <code class="xref c c-func docutils literal"><span class="pre">blk_fetch_request()</span></code> function retrieves the first item from the
-request queue and starts the request.</li>
-<li>If the function returns NULL, it has reached the end of the request queue
-(there is no remaining request to be processed) and exits
-<code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code>.</li>
+<li>Get a pointer to the request structure from the <code class="docutils literal"><span class="pre">bd</span></code> argument and start
+its processing using the <code class="xref c c-func docutils literal"><span class="pre">blk_mq_start_request()</span></code> function.</li>
 <li>A block device can receive calls which do not transfer data blocks (e.g.
 low level operations on the disk, instructions referring to special ways of
 accessing the device). Most drivers do not know how to handle these
 requests and return an error.</li>
-<li>To return an error, <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request_all()</span></code> function is called,
--EIO being the second argument.</li>
+<li>To return an error, <code class="xref c c-func docutils literal"><span class="pre">blk_mq_end_request()</span></code> function is called,
+<code class="docutils literal"><span class="pre">BLK_STS_IOERR</span></code> being the second argument.</li>
 <li>The request is processed according to the needs of the associated device.</li>
-<li>The request ends. In this case, <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request_all()</span></code> function is
-called in order to complete the request entirely. If all request sectors
-have been processed, the <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request()</span></code> function is used.</li>
+<li>The request ends. In this case, <code class="xref c c-func docutils literal"><span class="pre">blk_mq_end_request()</span></code> function is
+called in order to complete the request.</li>
 </ul>
 </div></blockquote>
 </div>
@@ -985,32 +1050,24 @@ release the reference to it. This is done by calling <code class="xref c c-func 
 </div>
 <div class="section" id="set-up-a-request-queue-at-struct-bio-level">
 <h3>Set up a request queue at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level<a class="headerlink" href="#set-up-a-request-queue-at-struct-bio-level" title="Permalink to this headline">¶</a></h3>
-<p>The function <code class="xref c c-func docutils literal"><span class="pre">blk_init_queue()</span></code> may specify a function to be used to
-process requests sent to the driver. The function receives as argument the
-request queue as queries and carries out processing at
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> level.</p>
-<p>If, for flexibility reasons, it is needed to specify a function that carries
-out processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure level, the function
-<code class="xref c c-func docutils literal"><span class="pre">blk_queue_make_request()</span></code> in conjunction with the
-<code class="xref c c-func docutils literal"><span class="pre">blk_alloc_queue()</span></code> function should be used.</p>
+<p>We have previously seen how we can specify a function to be used to process
+requests sent to the driver. The function receives as argument the requests and
+carries out processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">request</span></code> level.</p>
+<p>If, for flexibility reasons, we need to specify a function that carries
+out processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure level, we no longer
+use request queues and we will need to fill the <code class="docutils literal"><span class="pre">submit_bio</span></code> field in the
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> associated to the driver.</p>
 <p>Below is a typical example of initializing a function that carries out
 processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure level:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="c1">// the declaration of the function that carries out processing</span>
 <span class="c1">// :c:type:`struct bio` structures</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">my_make_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">request_queue</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">);</span>
+<span class="k">static</span> <span class="n">blk_qc_t</span> <span class="nf">my_submit_bio</span><span class="p">(</span><span class="k">struct</span> <span class="n">bio</span> <span class="o">*</span><span class="n">bio</span><span class="p">);</span>
 
-
-<span class="c1">// ...</span>
-<span class="c1">// queue creation</span>
-<span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span> <span class="o">=</span> <span class="n">blk_alloc_queue</span> <span class="p">(</span><span class="n">GFP_KERNEL</span><span class="p">);</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">printk</span><span class="p">(</span><span class="n">KERN_ERR</span> <span class="s">&quot;cannot allocate block device queue</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">ENOMEM</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="c1">// the registration of the function that carries out processing</span>
-<span class="c1">// :c:type:`struct bio` structures</span>
-<span class="n">blk_queue_make_request</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">,</span> <span class="n">my_make_request</span><span class="p">);</span>
-<span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">queuedata</span> <span class="o">=</span> <span class="n">dev</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">block_device_operations</span> <span class="n">my_block_ops</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="p">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+   <span class="p">.</span><span class="n">submit_bio</span> <span class="o">=</span> <span class="n">my_submit_bio</span>
+   <span class="p">...</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1127,7 +1184,7 @@ the <code class="file docutils literal"><span class="pre">ram-disk.c</span></cod
 <p class="first admonition-title">Hint</p>
 <p class="last">Review the <a class="reference internal" href="#register-a-disk">Register a disk</a> and <a class="reference internal" href="#process-a-request">Process a request</a> sections.</p>
 </div>
-<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to process the request queue
+<p>Fill in the <code class="xref c c-func docutils literal"><span class="pre">my_block_request()</span></code> function to process the request
 without actually processing your request: display the &quot;request received&quot; message
 and the following information: start sector, total size, data size from the
 current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, direction. To validate a request type,
@@ -1135,10 +1192,10 @@ use the <code class="xref c c-func docutils literal"><span class="pre">blk_rq_is
 which we are interested, i.e. when the request is generated by the file system).</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">To retrieve the needed info, review the <a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a>
+<p class="last">To find the needed info, review the <a class="reference internal" href="#requests-for-block-devices">Requests for block devices</a>
 section.</p>
 </div>
-<p>Use the <code class="xref c c-func docutils literal"><span class="pre">__blk_end_request_all()</span></code> function to finish processing the
+<p>Use the <code class="xref c c-func docutils literal"><span class="pre">blk_mq_end_request()</span></code> function to finish processing the
 request.</p>
 <p>Insert the module into the kernel and inspect the messages printed
 by the module. When a device is added, a request is sent to the device. Check
@@ -1181,7 +1238,7 @@ information, use the fields of the <code class="xref c c-type docutils literal">
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">To find out the buffer associated to the request, use
-<code class="xref c c-data docutils literal"><span class="pre">bio_data</span></code> (<code class="xref c c-data docutils literal"><span class="pre">rq-&gt;bio</span></code>).</p>
+<code class="xref c c-data docutils literal"><span class="pre">bio_data`(:c:data:`rq-&gt;bio</span></code>).</p>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
