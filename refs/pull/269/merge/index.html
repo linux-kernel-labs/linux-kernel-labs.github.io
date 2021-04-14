@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/interrupts.html">Interrupts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/memory-management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -418,7 +419,19 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec7-memory-management.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec7-memory-management.html#physical-memory-management">Physical Memory Management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec7-memory-management.html#memory-zones">Memory zones</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec7-memory-management.html#non-uniform-memory-access">Non-Uniform Memory Access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec7-memory-management.html#page-allocation">Page allocation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec7-memory-management.html#small-allocations">Small allocations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec7-memory-management.html#virtual-memory-management">Virtual memory management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec7-memory-management.html#fault-page-handling">Fault page handling</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#lecture-objectives">Lecture objectives:</a></li>
@@ -666,14 +679,16 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#register-a-disk">Register a disk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#request-queues">Request queues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#request-queues-multi-queue-block-layer">Request Queues - Multi-Queue Block Layer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#software-staging-queues">Software staging queues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#hardware-dispatch-queues">Hardware dispatch queues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#tag-sets">Tag sets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab7-block-device-drivers.html#requests-for-block-devices">Requests for block devices</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#create-a-request">Create a request</a></li>
-<li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#finish-a-request">Finish a request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab7-block-device-drivers.html#process-a-request">Process a request</a></li>
 </ul>
 </li>
@@ -1081,6 +1096,19 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/memory-management.html">Memory Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/memory-management.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/memory-management.html#physical-memory-management">Physical Memory Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/memory-management.html#memory-zones">Memory zones</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/memory-management.html#non-uniform-memory-access">Non-Uniform Memory Access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/memory-management.html#page-allocation">Page allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/memory-management.html#small-allocations">Small allocations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/memory-management.html#virtual-memory-management">Virtual memory management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/memory-management.html#fault-page-handling">Fault page handling</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lecture-objectives">Lecture objectives:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
@@ -1330,14 +1358,16 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#register-a-disk">Register a disk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-gendisk-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#struct-block-device-operations-structure"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code> structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#request-queues">Request queues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#request-queues-multi-queue-block-layer">Request Queues - Multi-Queue Block Layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#software-staging-queues">Software staging queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#hardware-dispatch-queues">Hardware dispatch queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#tag-sets">Tag sets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-and-delete-a-request-queue">Create and delete a request queue</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#useful-functions-for-processing-request-queues">Useful functions for processing request queues</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="labs/block_device_drivers.html#requests-for-block-devices">Requests for block devices</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#create-a-request">Create a request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#finish-a-request">Finish a request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/block_device_drivers.html#process-a-request">Process a request</a></li>
 </ul>
 </li>
