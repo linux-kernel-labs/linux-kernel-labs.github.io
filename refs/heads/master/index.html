@@ -112,6 +112,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/smp.html">Symmetric Multi-Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/address-space.html">Address Space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -432,7 +433,31 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec7-memory-management.html#fault-page-handling">Fault page handling</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec8-filesystems.html">SO2 Lecture 08 - Filesystems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec8-filesystems.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec8-filesystems.html#filesystem-abstractions">Filesystem Abstractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec8-filesystems.html#filesystem-operations">Filesystem Operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#mounting-a-filesystem">Mounting a filesystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#opening-a-file">Opening a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#querying-file-attributes">Querying file attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#reading-data-from-a-file">Reading data from a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#writing-data-to-a-file">Writing data to a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#closing-a-file">Closing a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#directories">Directories</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#creating-a-file">Creating a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#deleting-a-file">Deleting a file</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec8-filesystems.html#linux-virtual-file-system">Linux Virtual File System</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#superblock-operations">Superblock Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#inode-operations">Inode Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#the-inode-cache">The Inode Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#the-dentry-cache">The Dentry Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec8-filesystems.html#the-page-cache">The Page Cache</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#lecture-objectives">Lecture objectives:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
@@ -1107,6 +1132,31 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/memory-management.html#virtual-memory-management">Virtual memory management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/memory-management.html#fault-page-handling">Fault page handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/fs.html">Filesystem Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/fs.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/fs.html#filesystem-abstractions">Filesystem Abstractions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/fs.html#filesystem-operations">Filesystem Operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#mounting-a-filesystem">Mounting a filesystem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#opening-a-file">Opening a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#querying-file-attributes">Querying file attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#reading-data-from-a-file">Reading data from a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#writing-data-to-a-file">Writing data to a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#closing-a-file">Closing a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#directories">Directories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#creating-a-file">Creating a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#deleting-a-file">Deleting a file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/fs.html#linux-virtual-file-system">Linux Virtual File System</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#superblock-operations">Superblock Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#inode-operations">Inode Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#the-inode-cache">The Inode Cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#the-dentry-cache">The Dentry Cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/fs.html#the-page-cache">The Page Cache</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a><ul>
