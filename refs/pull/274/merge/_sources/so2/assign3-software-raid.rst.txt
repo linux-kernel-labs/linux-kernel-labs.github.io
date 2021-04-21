@@ -152,7 +152,7 @@ From the vmchecker interface choose the `Driver RAID` option for this assigment.
 Resources
 =========
 
-- implementation of the RAID software in the Linux kernel
+- implementation of the `RAID <https://elixir.bootlin.com/linux/v5.10/source/drivers/md>` software in the Linux kernel
 
 We recommend that you use gitlab to store your homework. Follow the directions in
 `README <https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/README.md>`__
