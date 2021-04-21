@@ -286,34 +286,38 @@ code will be returned.</p>
 <h3>Important to know<a class="headerlink" href="#important-to-know" title="Permalink to this headline">¶</a></h3>
 <p>To ensure error recovery, a CRC code is associated with each sector. CRC codes are stored by LOGICAL_DISK_SIZE byte of the partition
 (macro defined in the assignment header). The disk structure will have the following layout:</p>
-<p><cite>TBA</cite></p>
-<p>where <cite>C1</cite>, <cite>C2</cite>, <cite>C3</cite> are the values CRC sectors <cite>sector1</cite>, <cite>sector2</cite>, <cite>sector3</cite>. The CRC area is found immediately after the <cite>LOGICAL_DISK_SIZE</cite> bytes of the partition.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">+-----------+-----------+-----------+     +---+---+---+</span>
+<span class="go">|  sector1  |  sector2  |  sector3  |.....|C1 |C2 |C3 |</span>
+<span class="go">+-----------+-----------+-----------+     +---+---+---+</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">C1</span></code>, <code class="docutils literal"><span class="pre">C2</span></code>, <code class="docutils literal"><span class="pre">C3</span></code> are the values CRC sectors <code class="docutils literal"><span class="pre">sector1</span></code>, <code class="docutils literal"><span class="pre">sector2</span></code>, <code class="docutils literal"><span class="pre">sector3</span></code>. The CRC area is found immediately after the <code class="docutils literal"><span class="pre">LOGICAL_DISK_SIZE</span></code> bytes of the partition.</p>
 <p>As a seed for CRC use 0(zero).</p>
 </div>
 </div>
 <div class="section" id="implementation-details">
 <h2>Implementation Details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>the kernel module will be named <cite>ssr.ko</cite></li>
-<li>the logical device will be accessed as a block device with the major <cite>SSR_MAJOR</cite> and minor <cite>SSR_FIRST_MINOR</cite> under the name <cite>/dev/ssr</cite> (via the macro <cite>LOGICAL_DISK_NAME</cite>)</li>
-<li>the virtual device (<cite>LOGICAL_DISK_NAME</cite>-<cite>/dev/ssr</cite>) will have the capacity of <cite>LOGICAL_DISK_SECTORS</cite> (use <cite>set_capacity</cite> with the <cite>struct gendisk</cite> structure)</li>
-<li>the two disks are represented by the devices <cite>/dev/vdb</cite>, respectively <cite>/dev/vdc</cite>, defined by means of macros <cite>PHYSICAL_DISK1_NAME</cite>, respectively <cite>PHYSICAL_DISK2_NAME</cite></li>
-<li>to work with the <cite>struct block _device</cite> structure associated with a physical device, you can use the <cite>blkdev_get_by_path</cite> and <cite>blkdev_put</cite> functions</li>
-<li>for the handling of requests from the user space, we recommend not to use a queue of requests, but to do processing at the level of struct <cite>bio</cite> structures
-you can register an appropriate routine using the <cite>blk_queue_make_request</cite> call</li>
+<li>the kernel module will be named <code class="docutils literal"><span class="pre">ssr.ko</span></code></li>
+<li>the logical device will be accessed as a block device with the major <code class="docutils literal"><span class="pre">SSR_MAJOR</span></code> and minor <code class="docutils literal"><span class="pre">SSR_FIRST_MINOR</span></code> under the name <code class="docutils literal"><span class="pre">/dev/ssr</span></code> (via the macro <code class="docutils literal"><span class="pre">LOGICAL_DISK_NAME</span></code>)</li>
+<li>the virtual device (<code class="docutils literal"><span class="pre">LOGICAL_DISK_NAME</span></code>-<code class="docutils literal"><span class="pre">/dev/ssr</span></code>) will have the capacity of <code class="docutils literal"><span class="pre">LOGICAL_DISK_SECTORS</span></code> (use <code class="docutils literal"><span class="pre">set_capacity</span></code> with the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure)</li>
+<li>the two disks are represented by the devices <code class="docutils literal"><span class="pre">/dev/vdb</span></code>, respectively <code class="docutils literal"><span class="pre">/dev/vdc</span></code>, defined by means of macros <code class="docutils literal"><span class="pre">PHYSICAL_DISK1_NAME</span></code>, respectively <code class="docutils literal"><span class="pre">PHYSICAL_DISK2_NAME</span></code></li>
+<li>to work with the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">block</span> <span class="pre">_device</span></code> structure associated with a physical device, you can use the <code class="docutils literal"><span class="pre">blkdev_get_by_path</span></code> and <code class="docutils literal"><span class="pre">blkdev_put</span></code> functions</li>
+<li>for the handling of requests from the user space, we recommend not to use a queue of requests, but to do processing at the level of struct <code class="docutils literal"><span class="pre">bio</span></code> structures
+you can register an appropriate routine using the <code class="docutils literal"><span class="pre">blk_queue_make_request</span></code> call</li>
 <li>the <cite>make_request_fn</cite> function can be called in parallel</li>
 <li>since data sectors are separated from CRC sectors you will have to build separate <cite>bio</cite> structures for data and CRC values</li>
-<li>to allocate a <cite>bio</cite> for physical disks you can use <cite>bio_alloc</cite>; to add data pages to bio use <cite>alloc_page</cite> and <cite>bio_add_page</cite></li>
-<li>to free up the space allocated by a <cite>bio</cite> you need to release the pages allocated to the bio (using the <cite>__free_page</cite> macro ) and call <cite>bio_put</cite></li>
-<li>when generating a <cite>bio</cite> structure, consider that it must be multiple times the size of the disk sector (<cite>KERNEL_SECTOR_SIZE</cite>)</li>
-<li>to send a request to a block device and wait for it to end, you can use the <cite>submit_bio_wait</cite> function</li>
-<li>use <cite>bio_endio</cite> to signal the completion of processing a bio structure</li>
-<li>for the CRC32 calculation you can use the <cite>crc32</cite> macro provided by the kernel</li>
+<li>to allocate a <code class="docutils literal"><span class="pre">bio</span></code> for physical disks you can use <code class="docutils literal"><span class="pre">bio_alloc</span></code>; to add data pages to bio use <code class="docutils literal"><span class="pre">alloc_page</span></code> and <code class="docutils literal"><span class="pre">bio_add_page</span></code></li>
+<li>to free up the space allocated by a <cite>bio</cite> you need to release the pages allocated to the bio (using the <code class="docutils literal"><span class="pre">__free_page</span></code> macro ) and call <code class="docutils literal"><span class="pre">bio_put</span></code></li>
+<li>when generating a <code class="docutils literal"><span class="pre">bio</span></code> structure, consider that it must be multiple times the size of the disk sector (<code class="docutils literal"><span class="pre">KERNEL_SECTOR_SIZE</span></code>)</li>
+<li>to send a request to a block device and wait for it to end, you can use the <code class="docutils literal"><span class="pre">submit_bio_wait</span></code> function</li>
+<li>use <code class="docutils literal"><span class="pre">bio_endio</span></code> to signal the completion of processing a bio structure</li>
+<li>for the CRC32 calculation you can use the <code class="docutils literal"><span class="pre">crc32</span></code> macro provided by the kernel</li>
 <li>useful macro definitions can be found in the assignment support header</li>
 <li>our recommendationsa are not manddatory (any solution that meets the requirements of the assignment are accepted)</li>
 <li>A single request processing function for block devices can be active at one time in a call stack (more details here).</li>
 </ul>
-<p>You will need to submit requests for physical devices in a thread kernel; we recommend using <cite>workqueues</cite>.
+<p>You will need to submit requests for physical devices in a thread kernel; we recommend using <code class="docutils literal"><span class="pre">workqueues</span></code>.
 - For a quick run, use a single bio to batch send the read/write request for CRC values for adjacent sectors. For example,
 if you need to send requests for CRCs in sectors 0, 1, 7, use a single bio, not 8 bios.</p>
 </div>
@@ -334,16 +338,14 @@ public tests that are in the new infrastructure. For local testing, use the foll
 <p>If, as a result of the testing process, the sectors on both disks contain invalid data, resulting in
 read errors that make the module impossible to use, you will need to redo the two disks in the
 virtual machine using the commands:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/dev/vdb <span class="nv">bs</span><span class="o">=</span>1M
+<span class="gp">$</span> dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/dev/vdc <span class="nv">bs</span><span class="o">=</span>1M
 </pre></div>
 </div>
-<p>dd if=/dev/zero of=/dev/vdb bs=1M
-dd if=/dev/zero of=/dev/vdc bs=1M</p>
 <p>You can also get the same result using the following command to start the virtual machine:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> rm disk<span class="o">{</span><span class="m">1</span>,2<span class="o">}</span>.img<span class="p">;</span> make
 </pre></div>
 </div>
-<p>rm disk{1,2}.img; make</p>
 <div class="section" id="tips">
 <h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
 <p>To increase your chances of getting the highest grade, read and follow the Linux kernel
