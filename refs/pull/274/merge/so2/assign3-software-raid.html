@@ -299,26 +299,29 @@ code will be returned.</p>
 <ul class="simple">
 <li>the kernel module will be named <code class="docutils literal"><span class="pre">ssr.ko</span></code></li>
 <li>the logical device will be accessed as a block device with the major <code class="docutils literal"><span class="pre">SSR_MAJOR</span></code> and minor <code class="docutils literal"><span class="pre">SSR_FIRST_MINOR</span></code> under the name <code class="docutils literal"><span class="pre">/dev/ssr</span></code> (via the macro <code class="docutils literal"><span class="pre">LOGICAL_DISK_NAME</span></code>)</li>
-<li>the virtual device (<code class="docutils literal"><span class="pre">LOGICAL_DISK_NAME</span></code>-<code class="docutils literal"><span class="pre">/dev/ssr</span></code>) will have the capacity of <code class="docutils literal"><span class="pre">LOGICAL_DISK_SECTORS</span></code> (use <code class="docutils literal"><span class="pre">set_capacity</span></code> with the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure)</li>
+<li>the virtual device (<code class="docutils literal"><span class="pre">LOGICAL_DISK_NAME</span></code> - <code class="docutils literal"><span class="pre">/dev/ssr</span></code>) will have the capacity of <code class="docutils literal"><span class="pre">LOGICAL_DISK_SECTORS</span></code> (use <code class="docutils literal"><span class="pre">set_capacity</span></code> with the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">gendisk</span></code> structure)</li>
 <li>the two disks are represented by the devices <code class="docutils literal"><span class="pre">/dev/vdb</span></code>, respectively <code class="docutils literal"><span class="pre">/dev/vdc</span></code>, defined by means of macros <code class="docutils literal"><span class="pre">PHYSICAL_DISK1_NAME</span></code>, respectively <code class="docutils literal"><span class="pre">PHYSICAL_DISK2_NAME</span></code></li>
 <li>to work with the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">block</span> <span class="pre">_device</span></code> structure associated with a physical device, you can use the <code class="docutils literal"><span class="pre">blkdev_get_by_path</span></code> and <code class="docutils literal"><span class="pre">blkdev_put</span></code> functions</li>
-<li>for the handling of requests from the user space, we recommend not to use a queue of requests, but to do processing at the level of struct <code class="docutils literal"><span class="pre">bio</span></code> structures
-you can register an appropriate routine using the <code class="docutils literal"><span class="pre">blk_queue_make_request</span></code> call</li>
-<li>the <cite>make_request_fn</cite> function can be called in parallel</li>
-<li>since data sectors are separated from CRC sectors you will have to build separate <cite>bio</cite> structures for data and CRC values</li>
-<li>to allocate a <code class="docutils literal"><span class="pre">bio</span></code> for physical disks you can use <code class="docutils literal"><span class="pre">bio_alloc</span></code>; to add data pages to bio use <code class="docutils literal"><span class="pre">alloc_page</span></code> and <code class="docutils literal"><span class="pre">bio_add_page</span></code></li>
-<li>to free up the space allocated by a <cite>bio</cite> you need to release the pages allocated to the bio (using the <code class="docutils literal"><span class="pre">__free_page</span></code> macro ) and call <code class="docutils literal"><span class="pre">bio_put</span></code></li>
-<li>when generating a <code class="docutils literal"><span class="pre">bio</span></code> structure, consider that it must be multiple times the size of the disk sector (<code class="docutils literal"><span class="pre">KERNEL_SECTOR_SIZE</span></code>)</li>
-<li>to send a request to a block device and wait for it to end, you can use the <code class="docutils literal"><span class="pre">submit_bio_wait</span></code> function</li>
-<li>use <code class="docutils literal"><span class="pre">bio_endio</span></code> to signal the completion of processing a bio structure</li>
-<li>for the CRC32 calculation you can use the <code class="docutils literal"><span class="pre">crc32</span></code> macro provided by the kernel</li>
+<li>for the handling of requests from the user space, we recommend not to use a <code class="docutils literal"><span class="pre">request_queue</span></code>, but to do processing at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> level
+using the <code class="docutils literal"><span class="pre">submit_bio</span></code> field of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code></li>
+<li>since data sectors are separated from CRC sectors you will have to build separate <code class="docutils literal"><span class="pre">bio</span></code> structures for data and CRC values</li>
+<li>to allocate a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> for physical disks you can use <code class="xref c c-func docutils literal"><span class="pre">bio_alloc()</span></code>; to add data pages to bio use <code class="xref c c-func docutils literal"><span class="pre">alloc_page()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">bio_add_page()</span></code></li>
+<li>to free up the space allocated for a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> you need to release the pages allocated to the bio (using the <code class="xref c c-func docutils literal"><span class="pre">__free_page()</span></code> macro ) and call</li>
+</ul>
+<blockquote>
+<div><code class="xref c c-func docutils literal"><span class="pre">bio_put`()</span></code></div></blockquote>
+<ul class="simple">
+<li>when generating a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, consider that its size must be multiple of the disk sector size (<code class="docutils literal"><span class="pre">KERNEL_SECTOR_SIZE</span></code>)</li>
+<li>to send a request to a block device and wait for it to end, you can use the <code class="xref c c-func docutils literal"><span class="pre">submit_bio_wait()</span></code> function</li>
+<li>use <code class="xref c c-func docutils literal"><span class="pre">bio_endio()</span></code> to signal the completion of processing a <code class="docutils literal"><span class="pre">bio</span></code> structure</li>
+<li>for the CRC32 calculation you can use the <code class="xref c c-func docutils literal"><span class="pre">crc32()</span></code> macro provided by the kernel</li>
 <li>useful macro definitions can be found in the assignment support <a class="reference external" href="http://elf.cs.pub.ro/so2/res/teme/ssr.h">header</a></li>
-<li>our recommendations are not manddatory (any solution that meets the requirements of the assignment are accepted)</li>
+<li>our recommendations are not mandatory (any solution that meets the requirements of the assignment is accepted)</li>
 <li>A single request processing function for block devices can be active at one time in a call stack (more details <a class="reference external" href="https://elixir.bootlin.com/linux/v5.10/source/block/blk-core.c#L1048">here</a>).</li>
 </ul>
-<p>You will need to submit requests for physical devices in a thread kernel; we recommend using <code class="docutils literal"><span class="pre">workqueues</span></code>.
+<p>You will need to submit requests for physical devices in a kernel thread; we recommend using <code class="docutils literal"><span class="pre">workqueues</span></code>.
 - For a quick run, use a single bio to batch send the read/write request for CRC values for adjacent sectors. For example,
-if you need to send requests for CRCs in sectors 0, 1, 7, use a single bio, not 8 bios.</p>
+if you need to send requests for CRCs in sectors 0, 1, ..., 7, use a single bio, not 8 bios.</p>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
