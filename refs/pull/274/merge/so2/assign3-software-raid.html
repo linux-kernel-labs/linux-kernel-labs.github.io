@@ -309,19 +309,19 @@ using the <code class="docutils literal"><span class="pre">submit_bio</span></co
 <li>to free up the space allocated for a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> you need to release the pages allocated to the bio (using the <code class="xref c c-func docutils literal"><span class="pre">__free_page()</span></code> macro ) and call</li>
 </ul>
 <blockquote>
-<div><code class="xref c c-func docutils literal"><span class="pre">bio_put`()</span></code></div></blockquote>
+<div><code class="xref c c-func docutils literal"><span class="pre">bio_put()</span></code></div></blockquote>
 <ul class="simple">
 <li>when generating a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, consider that its size must be multiple of the disk sector size (<code class="docutils literal"><span class="pre">KERNEL_SECTOR_SIZE</span></code>)</li>
 <li>to send a request to a block device and wait for it to end, you can use the <code class="xref c c-func docutils literal"><span class="pre">submit_bio_wait()</span></code> function</li>
 <li>use <code class="xref c c-func docutils literal"><span class="pre">bio_endio()</span></code> to signal the completion of processing a <code class="docutils literal"><span class="pre">bio</span></code> structure</li>
 <li>for the CRC32 calculation you can use the <code class="xref c c-func docutils literal"><span class="pre">crc32()</span></code> macro provided by the kernel</li>
 <li>useful macro definitions can be found in the assignment support <a class="reference external" href="http://elf.cs.pub.ro/so2/res/teme/ssr.h">header</a></li>
+<li>a single request processing function for block devices can be active at one time in a call stack (more details <a class="reference external" href="https://elixir.bootlin.com/linux/v5.10/source/block/blk-core.c#L1048">here</a>).
+You will need to submit requests for physical devices in a kernel thread; we recommend using <code class="docutils literal"><span class="pre">workqueues</span></code>.</li>
+<li>For a quick run, use a single bio to batch send the read/write request for CRC values for adjacent sectors. For example,
+if you need to send requests for CRCs in sectors 0, 1, ..., 7, use a single bio, not 8 bios.</li>
 <li>our recommendations are not mandatory (any solution that meets the requirements of the assignment is accepted)</li>
-<li>A single request processing function for block devices can be active at one time in a call stack (more details <a class="reference external" href="https://elixir.bootlin.com/linux/v5.10/source/block/blk-core.c#L1048">here</a>).</li>
 </ul>
-<p>You will need to submit requests for physical devices in a kernel thread; we recommend using <code class="docutils literal"><span class="pre">workqueues</span></code>.
-- For a quick run, use a single bio to batch send the read/write request for CRC values for adjacent sectors. For example,
-if you need to send requests for CRCs in sectors 0, 1, ..., 7, use a single bio, not 8 bios.</p>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
