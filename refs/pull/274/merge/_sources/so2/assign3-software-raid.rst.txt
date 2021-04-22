@@ -64,7 +64,7 @@ Implementation Details
 - since data sectors are separated from CRC sectors you will have to build separate ``bio`` structures for data and CRC values
 - to allocate a :c:type:`struct bio` for physical disks you can use :c:func:`bio_alloc`; to add data pages to bio use :c:func:`alloc_page` and :c:func:`bio_add_page`
 - to free up the space allocated for a :c:type:`struct bio` you need to release the pages allocated to the bio (using the :c:func:`__free_page` macro ) and call
- :c:func:`bio_put`
+  :c:func:`bio_put`
 - when generating a :c:type:`struct bio` structure, consider that its size must be multiple of the disk sector size (``KERNEL_SECTOR_SIZE``)
 - to send a request to a block device and wait for it to end, you can use the :c:func:`submit_bio_wait` function
 - use :c:func:`bio_endio` to signal the completion of processing a ``bio`` structure

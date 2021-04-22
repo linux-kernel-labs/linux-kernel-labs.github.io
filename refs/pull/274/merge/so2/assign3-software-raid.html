@@ -307,11 +307,8 @@ code will be returned.</p>
 using the <code class="docutils literal"><span class="pre">submit_bio</span></code> field of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">block_device_operations</span></code></li>
 <li>since data sectors are separated from CRC sectors you will have to build separate <code class="docutils literal"><span class="pre">bio</span></code> structures for data and CRC values</li>
 <li>to allocate a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> for physical disks you can use <code class="xref c c-func docutils literal"><span class="pre">bio_alloc()</span></code>; to add data pages to bio use <code class="xref c c-func docutils literal"><span class="pre">alloc_page()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">bio_add_page()</span></code></li>
-<li>to free up the space allocated for a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> you need to release the pages allocated to the bio (using the <code class="xref c c-func docutils literal"><span class="pre">__free_page()</span></code> macro ) and call</li>
-</ul>
-<blockquote>
-<div><code class="xref c c-func docutils literal"><span class="pre">bio_put()</span></code></div></blockquote>
-<ul class="simple">
+<li>to free up the space allocated for a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> you need to release the pages allocated to the bio (using the <code class="xref c c-func docutils literal"><span class="pre">__free_page()</span></code> macro ) and call
+<code class="xref c c-func docutils literal"><span class="pre">bio_put()</span></code></li>
 <li>when generating a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">bio</span></code> structure, consider that its size must be multiple of the disk sector size (<code class="docutils literal"><span class="pre">KERNEL_SECTOR_SIZE</span></code>)</li>
 <li>to send a request to a block device and wait for it to end, you can use the <code class="xref c c-func docutils literal"><span class="pre">submit_bio_wait()</span></code> function</li>
 <li>use <code class="xref c c-func docutils literal"><span class="pre">bio_endio()</span></code> to signal the completion of processing a <code class="docutils literal"><span class="pre">bio</span></code> structure</li>
