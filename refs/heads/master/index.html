@@ -114,6 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/memory-management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/networking.html">Network Management</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
 <ul>
@@ -485,7 +486,33 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lec9-debugging.html#other-tools">Other tools</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec10-networking.html">SO2 Lecture 10 - Networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#decoding-an-oops">Decoding an oops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#addr2line">addr2line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#objdump">objdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#gdb">gdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#kernel-panic">Kernel panic</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#list-debugging">List debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#memory-debugging">Memory debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#slab-debugging">Slab debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#kasan">KASan</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec10-networking.html#kasan-vs-debug-pagealloc">KASan vs DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l5"><a class="reference internal" href="so2/lec10-networking.html#kasan-vs-slub-debug">KASan vs SLUB_DEBUG</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec10-networking.html#kmemleak">Kmemleak</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#perf">perf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec10-networking.html#other-tools">Other tools</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec11-virtualization.html">SO2 Lecture 11 - Virtualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec12-profiling.html">SO2 Lecture 12 - Profiling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lab1-intro.html">SO2 Lab 01 - Introduction</a><ul>
@@ -1213,6 +1240,28 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#lockdep-checker">Lockdep checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#perf">perf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/debugging.html#other-tools">Other tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/networking.html">Network Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#network-management-overview">Network Management Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#sockets-implementation-overview">Sockets Implementation Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#sockets-families-and-protocols">Sockets Families and Protocols</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/networking.html#example-udp-send">Example: UDP send</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#network-processing-phases">Network processing phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#packet-routing">Packet Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/networking.html#routing-table-s">Routing Table(s)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/networking.html#routing-policy-database">Routing Policy Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/networking.html#routing-table-processing">Routing table processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/networking.html#forwarding-information-database">Forwarding Information Database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#netfilter">Netfilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#network-packets-skbs-struct-sk-buff">Network packets / skbs (struct sk_buff)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#network-device">Network Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#hardware-and-software-acceleration-techniques">Hardware and Software Acceleration Techniques</a></li>
 </ul>
 </li>
 </ul>
