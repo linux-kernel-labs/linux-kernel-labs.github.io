@@ -125,7 +125,23 @@
 <li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 11 - Kernel Development on ARM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-on-a-chip">System on a Chip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#board-support-package">Board Support package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toolchain">Toolchain</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#compiling-the-linux-kernel-for-arm">Compiling the Linux kernel for ARM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#device-tree">Device tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boot">1. Boot</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
@@ -241,6 +257,181 @@
             
   <div class="section" id="so2-lab-11-kernel-development-on-arm">
 <h1>SO2 Lab 11 - Kernel Development on ARM<a class="headerlink" href="#so2-lab-11-kernel-development-on-arm" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lab-objectives">
+<h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>get a feeling of what System on a Chip (SoC) means</li>
+<li>get familiar with embedded world using ARM as support architecture</li>
+<li>understand what a Board Support Package means (BSP)</li>
+<li>compile and boot an ARM kernel with Qemu using i.MX6UL platform as an example</li>
+<li>get familiar with hardware description using Device Trees</li>
+</ul>
+</div>
+<div class="section" id="system-on-a-chip">
+<h2>System on a Chip<a class="headerlink" href="#system-on-a-chip" title="Permalink to this headline">¶</a></h2>
+<p>A System on a Chip (<strong>SoC</strong>) is an integrated circuit (<strong>IC</strong>) that integrates an entire system onto it. The components
+that can be usually found on an SoC include a central processing unit (<strong>CPU</strong>), memory, input/output ports, storage devices
+together with more sophisticated modules like audio digital interfaces, neural processing units (<strong>NPU</strong>) or graphical
+processing units (<strong>GPU</strong>).</p>
+<dl class="docutils">
+<dt>SoCs can be used in various applications most common are:</dt>
+<dd><ul class="first last simple">
+<li>consumer electronics (TV sets, mobile phones, video game consoles)</li>
+<li>industrial computers (medical imaging, etc)</li>
+<li>automotive</li>
+<li>home appliances</li>
+</ul>
+</dd>
+</dl>
+<p>The leading architecture for SoCs is <strong>ARM</strong>. Worth mentioning here is that there are also x86-based SoCs platforms. Another thing
+we need to keep an eye on is <strong>RISC-V</strong> an open standard instruction set architecture.</p>
+<p>A simplified view of an <strong>ARM</strong> platform is shown in the image below:</p>
+<img alt="../_images/schematic1.png" class="align-center" src="../_images/schematic1.png" />
+<p>We will refer as a reference platform at NXP's <a class="reference external" href="imx6ul">i.MX6UL</a> platform, but in general all SoC's contain the following building blocks:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li>one or more CPU cores</li>
+<li>a system bus</li>
+<li>clock and reset module<ul>
+<li>PLL</li>
+<li>OSC</li>
+<li>reset controller</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>interrupt controller</li>
+<li>timers</li>
+<li>memory controller</li>
+<li>peripheral controllers<ul>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/I%C2%B2C">I2C</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface">SPI</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/General-purpose_input/output">GPIO</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Network_interface_controller">Ethernet</a> (for network)</li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/MultiMediaCard">uSDHC</a> (for storage)</li>
+<li>USB</li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter">UART</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/I%C2%B2S">I2S</a> (for sound)</li>
+<li>eLCDIF (for LCD Panel)</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>Here is the complete block diagram for i.MX6UL platform:</p>
+<a class="reference internal image-reference" href="https://www.nxp.com/assets/images/en/block-diagrams/IMX6UL-BD.jpg"><img alt="IMX6UL-BD" class="align-center" src="https://www.nxp.com/assets/images/en/block-diagrams/IMX6UL-BD.jpg" style="width: 60%;" /></a>
+<p>i.MX6UL Evaluation Kit board looks like this:</p>
+<a class="reference internal image-reference" href="https://www.compulab.com/wp-content/gallery/sbc-imx6ul/compulab_sbc-imx6ul_single-board-computer.jpg"><img alt="imx6ul-evk" class="align-center" src="https://www.compulab.com/wp-content/gallery/sbc-imx6ul/compulab_sbc-imx6ul_single-board-computer.jpg" style="width: 60%;" /></a>
+<p>Other popular SoC boards:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Raspberry_Pi">Broadcom Raspberry Pi</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/BeagleBoard">Texas Instruments Beagle board</a></li>
+<li><a class="reference external" href="https://wiki.odroid.com/odroid-xu4/odroid-xu4">Odroid Xu4</a></li>
+<li><a class="reference external" href="https://developer.nvidia.com/embedded/jetson-nano-developer-kit">Nvidia Jetson Nano</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="board-support-package">
+<h2>Board Support package<a class="headerlink" href="#board-support-package" title="Permalink to this headline">¶</a></h2>
+<p>A board support package (<strong>BSP</strong>) is the minimal set of software packages that allow to demonstrate the capabilities of a certain hardware platform. This includes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>toolchain</li>
+<li>bootloader</li>
+<li>Linux kernel image, device tree files and drivers</li>
+<li>root filesystem</li>
+</ul>
+</div></blockquote>
+<p>Semiconductor manufacturers usually provide a <strong>BSP</strong> together with an evaluation board. BSP is typically bundled using <a class="reference external" href="https://www.yoctoproject.org/">Yocto</a></p>
+</div>
+<div class="section" id="toolchain">
+<h2>Toolchain<a class="headerlink" href="#toolchain" title="Permalink to this headline">¶</a></h2>
+<p>Because our development machines are mostly x86-based we need a cross compiler that can produce executable
+code for ARM platform.</p>
+<p>We can build our own cross compiler from scratch using <a class="reference external" href="https://crosstool-ng.github.io/">https://crosstool-ng.github.io/</a> or we can install one</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf <span class="c1"># for arm32</span>
+$ sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu     <span class="c1"># for arm64</span>
+</pre></div>
+</div>
+<div class="section" id="compiling-the-linux-kernel-for-arm">
+<h3>Compiling the Linux kernel for ARM<a class="headerlink" href="#compiling-the-linux-kernel-for-arm" title="Permalink to this headline">¶</a></h3>
+<p>Compile the kernel for 32bit ARM boards:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># select defconfig based on your platform</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make imx_v6_v7_defconfig
+<span class="c1"># compile the kernel</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+<p>Compile the kernel for 64bit ARM boards:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># for 64bit ARM there is a single config for all supported boards</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make defconfig
+<span class="c1"># compile the kernel</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm64 <span class="nv">CROSS_COMPILE</span><span class="o">=</span>aarch64-linux-gnu- make -j8
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="linux-kernel-image">
+<h2>Linux kernel image<a class="headerlink" href="#linux-kernel-image" title="Permalink to this headline">¶</a></h2>
+<p>The kernel image binary is named <code class="docutils literal"><span class="pre">vmlinux</span></code> and it can be found in the root of the kernel tree. Compressed image used for booting can be found under:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">arch/arm/boot/Image</span></code>, for arm32</li>
+<li><code class="docutils literal"><span class="pre">arc/arm64/boot/Image</span></code>, for arm64</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ file vmlinux
+  vmlinux: ELF <span class="m">32</span>-bit LSB executable, ARM, EABI5 version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
+
+$ file vmlinux
+  vmlinux: ELF <span class="m">64</span>-bit LSB shared object, ARM aarch64, version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
+</pre></div>
+</div>
+</div>
+<div class="section" id="device-tree">
+<h2>Device tree<a class="headerlink" href="#device-tree" title="Permalink to this headline">¶</a></h2>
+<p>Device tree (<strong>DT</strong>) is a tree structure used to describe the hardware devices in a system. Each node in the tree describes a device hence it is called <strong>device node</strong>. DT was introduced
+to provide a way to discover non-discoverable hardware (e.g a device on an I2C bus). This information was previously stored inside the source code for the Linux kernel. This meant that
+each time we needed to modify a node for a device the kernel needed to be recompiled. This no longer holds true as device tree and kernel image are separate binaries now.</p>
+<p>Device trees are stored inside device tree sources (<em>.dts</em>) and compiled into device tree blobs (<em>.dtb</em>).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># compile dtbs</span>
+$ make dtbs
+
+<span class="c1"># location for DT sources on arm32</span>
+$ ls arch/arm/boot/dts/
+  imx6ul-14x14-evk.dtb imx6ull-14x14-evk.dtb bcm2835-rpi-a-plus.dts
+
+<span class="c1"># location for DT source on arm64</span>
+$ ls arch/arm64/boot/dts/&lt;vendor&gt;
+  imx8mm-evk.dts imx8mp-evk.dts
+</pre></div>
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="intro">
+<h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
+<p>Inspect the following locations in the Linux kernel code and identify platforms and vendors using
+ARM architecture:
+* 32-bit: <code class="docutils literal"><span class="pre">arch/arm/boot/dts/</span></code>
+* 64-bit: <code class="docutils literal"><span class="pre">arch/arm64/boot/dts</span></code></p>
+</div>
+<div class="section" id="boot">
+<h3>1. Boot<a class="headerlink" href="#boot" title="Permalink to this headline">¶</a></h3>
+<p>Using <cite>qemu</cite> boot i.MX6UL platform.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>../qemu/build/arm-softmmu/qemu-system-arm  -M mcimx6ul-evk -cpu
+cortex-a7 -m 512M -kernel arch/arm/boot/zImage -nographic  -dtb
+arch/arm/boot/dts/imx6ul-14x14-evk.dtb -append <span class="s2">&quot;root=/dev/mmcblk0 rw</span>
+<span class="s2">console=ttymxc0 loglevel=8 earlycon init=/bin/sh&quot;</span> -sd
+../images/core-image-minimal-dev-qemuarm.ext4
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Device tree</li>
+</ol>
+<p>Study <cite>imx6ul-14x14-evk.dts</cite> file and identify the main components on the SoC.</p>
+</div>
+</div>
 </div>
 
 
