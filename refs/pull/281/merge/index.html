@@ -129,7 +129,7 @@
 <li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="labs/arm-kernel-development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a></li>
 </ul>
@@ -941,7 +941,8 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#boot">1. Boot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#cpu-information">2. CPU information</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#i-o-memory">3. I/O memory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#kernel-modules">4. Kernel modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#hello-world">4. Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#simple-device">5. Simple device</a></li>
 </ul>
 </li>
 </ul>
@@ -1718,24 +1719,25 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="labs/arm-kernel-development.html">Kernel Development on ARM</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#lab-objectives">Lab objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#system-on-a-chip">System on a Chip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#board-support-package">Board Support package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#toolchain">Toolchain</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/arm_kernel_development.html">Kernel Development on ARM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#system-on-a-chip">System on a Chip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#board-support-package">Board Support package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#toolchain">Toolchain</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#linux-kernel-image">Linux kernel image</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#rootfs">Rootfs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#device-tree">Device tree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#qemu">Qemu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#exercises">Exercises</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#intro">0. Intro</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#boot">1. Boot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#cpu-information">2. CPU information</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#i-o-memory">3. I/O memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#kernel-modules">4. Kernel modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#rootfs">Rootfs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#device-tree">Device tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#qemu">Qemu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#boot">1. Boot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#cpu-information">2. CPU information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#hello-world">4. Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#simple-device">5. Simple device</a></li>
 </ul>
 </li>
 </ul>

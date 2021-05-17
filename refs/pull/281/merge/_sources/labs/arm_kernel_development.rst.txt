@@ -204,6 +204,22 @@ Qemu
 Exercises
 =========
 
+.. include:: ../labs/exercises-summary.hrst
+.. |LAB_NAME| replace:: arm_kernel_development
+
+.. warning::
+
+  The rules for working with the virtual machine for ``ARM`` are modified as follows
+
+  .. code-block:: shell
+
+     # modules build
+     tools/labs $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make build
+     # modules copy
+     tools/labs $ ARCH=arm make copy
+     # kernel build 
+     $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make -j8
+
 0. Intro
 --------
 
@@ -288,9 +304,16 @@ Identify device tree nodes corresponding to:
   -  ``GPIO1``, look for ``gpio@209c000`` node in ``arch/arm/boot/dts/imx6ul.dtsi``. What's the size of the I/O space for this device?
   -  ``I2C1``,  look for ``i2c@21a0000`` node in ``arch/arm/boot/dts/imx6ul.dtsi``. What's the size of the I/O spaces for this device?
 
-4. Kernel modules
------------------
+4. Hello World
+--------------
 
-Compile and run one previous lab.
+5. Simple device
+----------------
+
+.. code:: bash
+
+   $ TODO=5 LABS=block_device_drivers make skels
+   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make build
+   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make copy
 
 .. _imx6ul: https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/i-mx-applications-processors/i-mx-6-processors/i-mx-6ultralite-processor-low-power-secure-arm-cortex-a7-core:i.MX6UL

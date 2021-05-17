@@ -147,7 +147,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#boot">1. Boot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cpu-information">2. CPU information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#i-o-memory">3. I/O memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#kernel-modules">4. Kernel modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hello-world">4. Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simple-device">5. Simple device</a></li>
 </ul>
 </li>
 </ul>
@@ -214,7 +215,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/labs/arm-kernel-development.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/labs/arm_kernel_development.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -415,6 +416,64 @@ $ ls arch/arm64/boot/dts/&lt;vendor&gt;
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>To solve exercises, you need to perform these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>prepare skeletons from templates</li>
+<li>build modules</li>
+<li>copy modules to the VM</li>
+<li>start the VM and test the module in the VM.</li>
+</ul>
+</div></blockquote>
+<p>The current lab name is arm_kernel_development. See the exercises for the task name.</p>
+<p>The skeleton code is generated from full source examples located in
+<code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
+the skeleton code for a complete lab:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
+</pre></div>
+</div>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+</pre></div>
+</div>
+<p>Then, copy the modules and start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+tools/labs $ make boot
+</pre></div>
+</div>
+<p>The modules are placed in /home/root/skels/arm_kernel_development/&lt;task_name&gt;.</p>
+<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
+For additional details about connecting to the VM via the network, please check <a class="reference internal" href="../info/vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the Virtual Machine</span></a>.</p>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Before starting the exercises or generating the skeletons, please run <strong>git pull</strong> inside the Linux repo,
+to make sure you have the latest version of the exercises.</p>
+<p>If you have local changes, the pull command will fail. Check for local changes using <code class="docutils literal"><span class="pre">git</span> <span class="pre">status</span></code>.
+If you want to keep them, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span></code> before <code class="docutils literal"><span class="pre">pull</span></code> and <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span> <span class="pre">pop</span></code> after.
+To discard the changes, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">reset</span> <span class="pre">--hard</span> <span class="pre">master</span></code>.</p>
+<p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>The rules for working with the virtual machine for <code class="docutils literal"><span class="pre">ARM</span></code> are modified as follows</p>
+<div class="last highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># modules build</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make build
+<span class="c1"># modules copy</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm make copy
+<span class="c1"># kernel build</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+</div>
 <div class="section" id="intro">
 <h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
 <p>Inspect the following locations in the Linux kernel code and identify platforms and vendors using
@@ -502,9 +561,16 @@ $ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="kernel-modules">
-<h3>4. Kernel modules<a class="headerlink" href="#kernel-modules" title="Permalink to this headline">¶</a></h3>
-<p>Compile and run one previous lab.</p>
+<div class="section" id="hello-world">
+<h3>4. Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="simple-device">
+<h3>5. Simple device<a class="headerlink" href="#simple-device" title="Permalink to this headline">¶</a></h3>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ TODO=5 LABS=block_device_drivers make skels
+$ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make build
+$ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make copy
+</pre></div>
+</div>
 </div>
 </div>
 </div>
