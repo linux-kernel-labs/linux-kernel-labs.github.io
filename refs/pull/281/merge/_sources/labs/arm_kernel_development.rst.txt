@@ -307,13 +307,24 @@ Identify device tree nodes corresponding to:
 4. Hello World
 --------------
 
+Implement a simple kernel module that prints a message at load/unload time. Compile it and load it on ``i.MX6UL`` emulated platform.
+
+.. code-block:: shell
+
+   # modules build
+   tools/labs $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make build
+   # modules copy
+   tools/labs $ ARCH=arm make copy
+   # kernel build
+   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make -j8
+
 5. Simple device
 ----------------
 
-.. code:: bash
+Implement a driver for a simple platform device. Find ``TODO 1`` and notice how ``simple_driver`` is declared and register as a platform driver.
+Follow ``TODO 2`` and add the ``so2,simple-device-v1`` and ``so2,simple-device-v2`` compatible strings in the simple_device_ids array.
 
-   $ TODO=5 LABS=block_device_drivers make skels
-   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make build
-   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make copy
+Create two device tree nodes in ``arch/arm/boot/dts/imx6ul.dtsi`` under ``soc`` node with compatible strings ``so2,simple-device-v1`` and
+``so2,simple-device-v2`` respectively. Then notice the behavior when loading ``simple_driver`` module.
 
 .. _imx6ul: https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/i-mx-applications-processors/i-mx-6-processors/i-mx-6ultralite-processor-low-power-secure-arm-cortex-a7-core:i.MX6UL

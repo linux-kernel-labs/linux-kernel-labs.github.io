@@ -597,14 +597,22 @@ $ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 </div>
 <div class="section" id="hello-world">
 <h3>4. Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
+<p>Implement a simple kernel module that prints a message at load/unload time. Compile it and load it on <code class="docutils literal"><span class="pre">i.MX6UL</span></code> emulated platform.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># modules build</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make build
+<span class="c1"># modules copy</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm make copy
+<span class="c1"># kernel build</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
 </div>
 <div class="section" id="simple-device">
 <h3>5. Simple device<a class="headerlink" href="#simple-device" title="Permalink to this headline">¶</a></h3>
-<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ TODO=5 LABS=block_device_drivers make skels
-$ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make build
-$ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make copy
-</pre></div>
-</div>
+<p>Implement a driver for a simple platform device. Find <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code> and notice how <code class="docutils literal"><span class="pre">simple_driver</span></code> is declared and register as a platform driver.
+Follow <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code> and add the <code class="docutils literal"><span class="pre">so2,simple-device-v1</span></code> and <code class="docutils literal"><span class="pre">so2,simple-device-v2</span></code> compatible strings in the simple_device_ids array.</p>
+<p>Create two device tree nodes in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul.dtsi</span></code> under <code class="docutils literal"><span class="pre">soc</span></code> node with compatible strings <code class="docutils literal"><span class="pre">so2,simple-device-v1</span></code> and
+<code class="docutils literal"><span class="pre">so2,simple-device-v2</span></code> respectively. Then notice the behavior when loading <code class="docutils literal"><span class="pre">simple_driver</span></code> module.</p>
 </div>
 </div>
 </div>
