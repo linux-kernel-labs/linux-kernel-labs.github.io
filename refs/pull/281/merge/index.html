@@ -929,14 +929,19 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#system-on-a-chip">System on a Chip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#board-support-package">Board Support package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#toolchain">Toolchain</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#compiling-the-linux-kernel-for-arm">Compiling the Linux kernel for ARM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#rootfs">Rootfs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#device-tree">Device tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#qemu">Qemu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#exercises">Exercises</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#intro">0. Intro</a></li>
 <li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#boot">1. Boot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#cpu-information">2. CPU information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#kernel-modules">4. Kernel modules</a></li>
 </ul>
 </li>
 </ul>
@@ -1015,6 +1020,24 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign-chall-pitix.html#resources">Resources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign-chall-pitix.html#questions">Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#statement">Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#implementation-details">Implementation Details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#sample-protocol-implementations">Sample Protocol Implementations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#testing">Testing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#tcpdump">tcpdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#questions">Questions</a></li>
 </ul>
 </li>
 </ul>
@@ -1700,14 +1723,19 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#system-on-a-chip">System on a Chip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#board-support-package">Board Support package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#toolchain">Toolchain</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#compiling-the-linux-kernel-for-arm">Compiling the Linux kernel for ARM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#rootfs">Rootfs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#device-tree">Device tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#qemu">Qemu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/arm-kernel-development.html#exercises">Exercises</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#intro">0. Intro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#boot">1. Boot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#cpu-information">2. CPU information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm-kernel-development.html#kernel-modules">4. Kernel modules</a></li>
 </ul>
 </li>
 </ul>

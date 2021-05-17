@@ -104,8 +104,8 @@ We can build our own cross compiler from scratch using https://crosstool-ng.gith
   $ sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu     # for arm64
 
 
-Compiling the Linux kernel for ARM
-----------------------------------
+Compiling the Linux kernel on ARM
+---------------------------------
 
 Compile the kernel for 32bit ARM boards:
 
@@ -131,7 +131,7 @@ Linux kernel image
 The kernel image binary is named ``vmlinux`` and it can be found in the root of the kernel tree. Compressed image used for booting can be found under:
 
 - ``arch/arm/boot/Image``, for arm32
-- ``arc/arm64/boot/Image``, for arm64
+- ``arch/arm64/boot/Image``, for arm64
 
 .. code-block:: bash
 
@@ -140,6 +140,41 @@ The kernel image binary is named ``vmlinux`` and it can be found in the root of 
 
     $ file vmlinux
       vmlinux: ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), statically linked, not stripped
+
+Rootfs
+======
+
+The root filesystem (``rootfs``) is the filesystem mounted at the top of files hierarchy (``/``). It should contain at least
+the critical files allowing the system to boot to a shell.
+
+.. code-block:: bash
+
+   root@so2$ tree -d -L 2
+   ├── bin
+   ├── boot
+   ├── dev
+   ├── etc
+   ├── home
+   │   └── root
+   ├── lib
+   │   └── udev
+   ├── mnt
+   ├── proc
+   ├── sbin
+   │   └── init
+   ├── sys
+   ├── usr
+   │   ├── bin
+   │   ├── include
+   │   ├── lib
+   └── var
+
+As for ``x86`` we will make use of Yocto rootfs images. In order to download an ``ext4`` rootfs image for ``arm32`` one needs to run:
+
+.. code-block:: bash
+
+   $ cd tools/labs/
+   $ ARCH=arm make core-image-minimal-qemuarm.ext4
 
 Device tree
 ===========
@@ -163,6 +198,8 @@ Device trees are stored inside device tree sources (*.dts*) and compiled into de
    $ ls arch/arm64/boot/dts/<vendor>
      imx8mm-evk.dts imx8mp-evk.dts
 
+Qemu
+====
 
 Exercises
 =========
@@ -172,26 +209,88 @@ Exercises
 
 Inspect the following locations in the Linux kernel code and identify platforms and vendors using
 ARM architecture:
-* 32-bit: ``arch/arm/boot/dts/``
-* 64-bit: ``arch/arm64/boot/dts``
+
+ - 32-bit: ``arch/arm/boot/dts``
+ - 64-bit: ``arch/arm64/boot/dts``
+
+
+Use ``qemu`` and look at the supported platforms:
+
+.. code-block:: bash
+
+   ../qemu/build/arm-softmmu/qemu-system-arm -M ?
+
+.. note:: We used our own compiled version of ``Qemu`` for ``arm32``. See `Qemu`_ section for more details.
 
 1. Boot
 -------
 
-Using `qemu` boot i.MX6UL platform.
+Use ``qemu`` to boot ``i.MX6UL`` platform. In order to boot, we first need to compile the kernel.
+Review `Compiling the Linux kernel on ARM`_ section.
+
+Successful compilation will result in the following binaries:
+
+   - ``arch/arm/boot/Image``, kernel image compiled for ARM
+   - ``arch/arm/boot/dts/imx6ul-14x14-evk.dtb``, device tree blob for ``i.MX6UL`` board
+
+Review `Rootfs`_ section and download ``core-image-minimal-qemuarm.ext4`` rootfs.
+Run ``qemu`` using then following command:
 
 .. code-block:: bash
 
-   ../qemu/build/arm-softmmu/qemu-system-arm  -M mcimx6ul-evk -cpu
-   cortex-a7 -m 512M -kernel arch/arm/boot/zImage -nographic  -dtb
-   arch/arm/boot/dts/imx6ul-14x14-evk.dtb -append "root=/dev/mmcblk0 rw
-   console=ttymxc0 loglevel=8 earlycon init=/bin/sh" -sd
-   ../images/core-image-minimal-dev-qemuarm.ext4
+   ../qemu/build/arm-softmmu/qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M \
+     -kernel arch/arm/boot/zImage -nographic  -dtb arch/arm/boot/dts/imx6ul-14x14-evk.dtb \
+     -append "root=/dev/mmcblk0 rw console=ttymxc0 loglevel=8 earlycon printk" -sd tools/labs/core-image-minimal-qemuarm.ext4
 
+.. note:: LCDIF and ASRC devices are not well supported with ``Qemu``. Remove them from compilation.
 
-2. Device tree
+.. code-block:: bash
 
-Study `imx6ul-14x14-evk.dts` file and identify the main components on the SoC.
+   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make menuconfig
+   # set FSL_ASRC=n and DRM_MXSFB=n
+   $ ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make -j8
 
+Once the kernel is booted check kernel version and cpu info:
+
+.. code-block:: bash
+
+   $ cat /proc/cpuinfo
+   $ cat /proc/version
+
+2. CPU information
+------------------
+
+Inspect the CPU configuration for ``NXP i.MX6UL`` board. Start with ``arch/arm/boot/dts/imx6ul-14x14-evk.dts``.
+
+  - find ``cpu@0`` device tree node and look for ``operating-points`` property.
+  - read the maximum and minimum operating frequency the processor can run
+
+   .. code:: bash
+
+      $ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+      $ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+
+3. I/O memory
+-------------
+Inspect I/O space configuration for ``NXP i.MX6UL`` board. Start with ``arch/arm/boot/dts/imx6ul-14x14-evk.dts`` and identify each device mentioned below.
+
+.. code:: bash
+
+   $ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+     00900000-0091ffff : 900000.sram sram@900000
+     0209c000-0209ffff : 209c000.gpio gpio@209c000
+     021a0000-021a3fff : 21a0000.i2c i2c@21a0000
+     80000000-9fffffff : System RAM
+
+Identify device tree nodes corresponding to:
+
+  -  ``System RAM``, look for ``memory@80000000`` node in ``arch/arm/boot/dts/imx6ul-14x14-evk.dtsi``. What's the size of the System RAM?
+  -  ``GPIO1``, look for ``gpio@209c000`` node in ``arch/arm/boot/dts/imx6ul.dtsi``. What's the size of the I/O space for this device?
+  -  ``I2C1``,  look for ``i2c@21a0000`` node in ``arch/arm/boot/dts/imx6ul.dtsi``. What's the size of the I/O spaces for this device?
+
+4. Kernel modules
+-----------------
+
+Compile and run one previous lab.
 
 .. _imx6ul: https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/i-mx-applications-processors/i-mx-6-processors/i-mx-6ultralite-processor-low-power-secure-arm-cortex-a7-core:i.MX6UL

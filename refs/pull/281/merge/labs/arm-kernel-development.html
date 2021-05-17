@@ -135,14 +135,19 @@
 <li class="toctree-l2"><a class="reference internal" href="#system-on-a-chip">System on a Chip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#board-support-package">Board Support package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#toolchain">Toolchain</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#compiling-the-linux-kernel-for-arm">Compiling the Linux kernel for ARM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rootfs">Rootfs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#device-tree">Device tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qemu">Qemu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#boot">1. Boot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cpu-information">2. CPU information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-modules">4. Kernel modules</a></li>
 </ul>
 </li>
 </ul>
@@ -322,8 +327,8 @@ code for ARM platform.</p>
 $ sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu     <span class="c1"># for arm64</span>
 </pre></div>
 </div>
-<div class="section" id="compiling-the-linux-kernel-for-arm">
-<h3>Compiling the Linux kernel for ARM<a class="headerlink" href="#compiling-the-linux-kernel-for-arm" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="compiling-the-linux-kernel-on-arm">
+<h3>Compiling the Linux kernel on ARM<a class="headerlink" href="#compiling-the-linux-kernel-on-arm" title="Permalink to this headline">¶</a></h3>
 <p>Compile the kernel for 32bit ARM boards:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># select defconfig based on your platform</span>
 $ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make imx_v6_v7_defconfig
@@ -345,13 +350,44 @@ $ <span class="nv">ARCH</span><span class="o">=</span>arm64 <span class="nv">CRO
 <p>The kernel image binary is named <code class="docutils literal"><span class="pre">vmlinux</span></code> and it can be found in the root of the kernel tree. Compressed image used for booting can be found under:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">arch/arm/boot/Image</span></code>, for arm32</li>
-<li><code class="docutils literal"><span class="pre">arc/arm64/boot/Image</span></code>, for arm64</li>
+<li><code class="docutils literal"><span class="pre">arch/arm64/boot/Image</span></code>, for arm64</li>
 </ul>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ file vmlinux
   vmlinux: ELF <span class="m">32</span>-bit LSB executable, ARM, EABI5 version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
 
 $ file vmlinux
   vmlinux: ELF <span class="m">64</span>-bit LSB shared object, ARM aarch64, version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
+</pre></div>
+</div>
+</div>
+<div class="section" id="rootfs">
+<h2>Rootfs<a class="headerlink" href="#rootfs" title="Permalink to this headline">¶</a></h2>
+<p>The root filesystem (<code class="docutils literal"><span class="pre">rootfs</span></code>) is the filesystem mounted at the top of files hierarchy (<code class="docutils literal"><span class="pre">/</span></code>). It should contain at least
+the critical files allowing the system to boot to a shell.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@so2$ tree -d -L <span class="m">2</span>
+├── bin
+├── boot
+├── dev
+├── etc
+├── home
+│   └── root
+├── lib
+│   └── udev
+├── mnt
+├── proc
+├── sbin
+│   └── init
+├── sys
+├── usr
+│   ├── bin
+│   ├── include
+│   ├── lib
+└── var
+</pre></div>
+</div>
+<p>As for <code class="docutils literal"><span class="pre">x86</span></code> we will make use of Yocto rootfs images. In order to download an <code class="docutils literal"><span class="pre">ext4</span></code> rootfs image for <code class="docutils literal"><span class="pre">arm32</span></code> one needs to run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> tools/labs/
+$ <span class="nv">ARCH</span><span class="o">=</span>arm make core-image-minimal-qemuarm.ext4
 </pre></div>
 </div>
 </div>
@@ -374,29 +410,101 @@ $ ls arch/arm64/boot/dts/&lt;vendor&gt;
 </pre></div>
 </div>
 </div>
+<div class="section" id="qemu">
+<h2>Qemu<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="intro">
 <h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
 <p>Inspect the following locations in the Linux kernel code and identify platforms and vendors using
-ARM architecture:
-* 32-bit: <code class="docutils literal"><span class="pre">arch/arm/boot/dts/</span></code>
-* 64-bit: <code class="docutils literal"><span class="pre">arch/arm64/boot/dts</span></code></p>
+ARM architecture:</p>
+<blockquote>
+<div><ul class="simple">
+<li>32-bit: <code class="docutils literal"><span class="pre">arch/arm/boot/dts</span></code></li>
+<li>64-bit: <code class="docutils literal"><span class="pre">arch/arm64/boot/dts</span></code></li>
+</ul>
+</div></blockquote>
+<p>Use <code class="docutils literal"><span class="pre">qemu</span></code> and look at the supported platforms:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>../qemu/build/arm-softmmu/qemu-system-arm -M ?
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We used our own compiled version of <code class="docutils literal"><span class="pre">Qemu</span></code> for <code class="docutils literal"><span class="pre">arm32</span></code>. See <a class="reference internal" href="#qemu">Qemu</a> section for more details.</p>
+</div>
 </div>
 <div class="section" id="boot">
 <h3>1. Boot<a class="headerlink" href="#boot" title="Permalink to this headline">¶</a></h3>
-<p>Using <cite>qemu</cite> boot i.MX6UL platform.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>../qemu/build/arm-softmmu/qemu-system-arm  -M mcimx6ul-evk -cpu
-cortex-a7 -m 512M -kernel arch/arm/boot/zImage -nographic  -dtb
-arch/arm/boot/dts/imx6ul-14x14-evk.dtb -append <span class="s2">&quot;root=/dev/mmcblk0 rw</span>
-<span class="s2">console=ttymxc0 loglevel=8 earlycon init=/bin/sh&quot;</span> -sd
-../images/core-image-minimal-dev-qemuarm.ext4
+<p>Use <code class="docutils literal"><span class="pre">qemu</span></code> to boot <code class="docutils literal"><span class="pre">i.MX6UL</span></code> platform. In order to boot, we first need to compile the kernel.
+Review <a class="reference internal" href="#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a> section.</p>
+<p>Successful compilation will result in the following binaries:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">arch/arm/boot/Image</span></code>, kernel image compiled for ARM</li>
+<li><code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dtb</span></code>, device tree blob for <code class="docutils literal"><span class="pre">i.MX6UL</span></code> board</li>
+</ul>
+</div></blockquote>
+<p>Review <a class="reference internal" href="#rootfs">Rootfs</a> section and download <code class="docutils literal"><span class="pre">core-image-minimal-qemuarm.ext4</span></code> rootfs.
+Run <code class="docutils literal"><span class="pre">qemu</span></code> using then following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>../qemu/build/arm-softmmu/qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M <span class="se">\</span>
+  -kernel arch/arm/boot/zImage -nographic  -dtb arch/arm/boot/dts/imx6ul-14x14-evk.dtb <span class="se">\</span>
+  -append <span class="s2">&quot;root=/dev/mmcblk0 rw console=ttymxc0 loglevel=8 earlycon printk&quot;</span> -sd tools/labs/core-image-minimal-qemuarm.ext4
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li>Device tree</li>
-</ol>
-<p>Study <cite>imx6ul-14x14-evk.dts</cite> file and identify the main components on the SoC.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">LCDIF and ASRC devices are not well supported with <code class="docutils literal"><span class="pre">Qemu</span></code>. Remove them from compilation.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make menuconfig
+<span class="c1"># set FSL_ASRC=n and DRM_MXSFB=n</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+<p>Once the kernel is booted check kernel version and cpu info:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ cat /proc/cpuinfo
+$ cat /proc/version
+</pre></div>
+</div>
+</div>
+<div class="section" id="cpu-information">
+<h3>2. CPU information<a class="headerlink" href="#cpu-information" title="Permalink to this headline">¶</a></h3>
+<p>Inspect the CPU configuration for <code class="docutils literal"><span class="pre">NXP</span> <span class="pre">i.MX6UL</span></code> board. Start with <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dts</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>find <code class="docutils literal"><span class="pre">cpu&#64;0</span></code> device tree node and look for <code class="docutils literal"><span class="pre">operating-points</span></code> property.</li>
+<li>read the maximum and minimum operating frequency the processor can run</li>
+</ul>
+<blockquote>
+<div><div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="i-o-memory">
+<h3>3. I/O memory<a class="headerlink" href="#i-o-memory" title="Permalink to this headline">¶</a></h3>
+<p>Inspect I/O space configuration for <code class="docutils literal"><span class="pre">NXP</span> <span class="pre">i.MX6UL</span></code> board. Start with <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dts</span></code> and identify each device mentioned below.</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+  00900000-0091ffff : 900000.sram sram@900000
+  0209c000-0209ffff : 209c000.gpio gpio@209c000
+  021a0000-021a3fff : 21a0000.i2c i2c@21a0000
+  80000000-9fffffff : System RAM
+</pre></div>
+</div>
+<p>Identify device tree nodes corresponding to:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">System</span> <span class="pre">RAM</span></code>, look for <code class="docutils literal"><span class="pre">memory&#64;80000000</span></code> node in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dtsi</span></code>. What's the size of the System RAM?</li>
+<li><code class="docutils literal"><span class="pre">GPIO1</span></code>, look for <code class="docutils literal"><span class="pre">gpio&#64;209c000</span></code> node in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul.dtsi</span></code>. What's the size of the I/O space for this device?</li>
+<li><code class="docutils literal"><span class="pre">I2C1</span></code>,  look for <code class="docutils literal"><span class="pre">i2c&#64;21a0000</span></code> node in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul.dtsi</span></code>. What's the size of the I/O spaces for this device?</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="kernel-modules">
+<h3>4. Kernel modules<a class="headerlink" href="#kernel-modules" title="Permalink to this headline">¶</a></h3>
+<p>Compile and run one previous lab.</p>
 </div>
 </div>
 </div>
