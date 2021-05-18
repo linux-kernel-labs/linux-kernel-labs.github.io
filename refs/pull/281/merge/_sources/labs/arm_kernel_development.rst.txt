@@ -198,6 +198,44 @@ Device trees are stored inside device tree sources (*.dts*) and compiled into de
    $ ls arch/arm64/boot/dts/<vendor>
      imx8mm-evk.dts imx8mp-evk.dts
 
+The following image is a represantation of a simple device tree, describing board type, cpu and memory.
+
+.. image:: ../res/dts_node.png
+   :align: center
+
+Notice that a device tree node can be defined using ``label: name@address``:
+
+   - ``label``, is an identifier used to reference the node from other places
+   - ``name``, node identifier
+   - ``address``, used to differentiate nodes with the same name.
+
+A node might contain several properties arranged in the ``name = value`` format. The name is a string
+and the value can be bytes, strings, array of strings.
+
+Here is an example:
+
+.. code:: c
+
+   / {
+        node@0 {
+             empty-property;
+             string-property = "string value";
+             string-list-property = "string value 1", "string value 2";
+             int-list-property = <value1 value2>;
+
+             child-node@0 {
+                     child-empty-property;
+                     child-string-property = "string value";
+                     child-node-reference = <&child-node1>;
+             };
+
+             child-node1: child-node@1 {
+                     child-empty-property;
+                     child-string-property = "string value";
+             };
+      };
+   };
+
 Qemu
 ====
 

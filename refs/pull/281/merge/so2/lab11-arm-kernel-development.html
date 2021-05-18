@@ -445,6 +445,40 @@ $ ls arch/arm64/boot/dts/&lt;vendor&gt;
   imx8mm-evk.dts imx8mp-evk.dts
 </pre></div>
 </div>
+<p>The following image is a represantation of a simple device tree, describing board type, cpu and memory.</p>
+<img alt="../_images/dts_node1.png" class="align-center" src="../_images/dts_node1.png" />
+<p>Notice that a device tree node can be defined using <code class="docutils literal"><span class="pre">label:</span> <span class="pre">name&#64;address</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">label</span></code>, is an identifier used to reference the node from other places</li>
+<li><code class="docutils literal"><span class="pre">name</span></code>, node identifier</li>
+<li><code class="docutils literal"><span class="pre">address</span></code>, used to differentiate nodes with the same name.</li>
+</ul>
+</div></blockquote>
+<p>A node might contain several properties arranged in the <code class="docutils literal"><span class="pre">name</span> <span class="pre">=</span> <span class="pre">value</span></code> format. The name is a string
+and the value can be bytes, strings, array of strings.</p>
+<p>Here is an example:</p>
+<div class="code c highlight-none"><div class="highlight"><pre><span></span>/ {
+     node@0 {
+          empty-property;
+          string-property = &quot;string value&quot;;
+          string-list-property = &quot;string value 1&quot;, &quot;string value 2&quot;;
+          int-list-property = &lt;value1 value2&gt;;
+
+          child-node@0 {
+                  child-empty-property;
+                  child-string-property = &quot;string value&quot;;
+                  child-node-reference = &lt;&amp;child-node1&gt;;
+          };
+
+          child-node1: child-node@1 {
+                  child-empty-property;
+                  child-string-property = &quot;string value&quot;;
+          };
+   };
+};
+</pre></div>
+</div>
 </div>
 <div class="section" id="qemu">
 <h2>Qemu<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
