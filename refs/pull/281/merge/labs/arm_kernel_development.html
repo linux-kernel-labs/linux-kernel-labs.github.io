@@ -329,6 +329,13 @@ code for ARM platform.</p>
 $ sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu     <span class="c1"># for arm64</span>
 </pre></div>
 </div>
+<p>There are several of toolchain binaries depending on the configuration:</p>
+<blockquote>
+<div><ul class="simple">
+<li>With &quot;arm-eabi-gcc&quot; you have the Linux system C library which will make calls into the kernel IOCTLs, e.g. for allocating memory pages to the process.</li>
+<li>With &quot;arm-eabi-none-gcc&quot; you are running on platform which doesn't have an operating system at all - so the C library is different to cope with that.</li>
+</ul>
+</div></blockquote>
 <div class="section" id="compiling-the-linux-kernel-on-arm">
 <h3>Compiling the Linux kernel on ARM<a class="headerlink" href="#compiling-the-linux-kernel-on-arm" title="Permalink to this headline">¶</a></h3>
 <p>Compile the kernel for 32bit ARM boards:</p>
