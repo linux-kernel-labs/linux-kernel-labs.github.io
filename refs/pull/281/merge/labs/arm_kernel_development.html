@@ -116,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
 <ul class="current">
@@ -413,6 +414,17 @@ $ ls arch/arm64/boot/dts/&lt;vendor&gt;
 </div>
 <div class="section" id="qemu">
 <h2>Qemu<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+<p>We will use <code class="docutils literal"><span class="pre">qemu-system-arm</span></code> to boot 32bit ARM platforms. Although, this can be installed from official distro repos, for example:</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>sudo apt-get install -y qemu-system-arm
+</pre></div>
+</div>
+<p>We strongly recommend using latest version of <code class="docutils literal"><span class="pre">qemu-system-arm</span></code> build from sources:</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ git clone https://gitlab.com/qemu-project/qemu.git
+$ ./configure --target-list=arm-softmmu --disable-docs
+$ make -j8
+$ ./build/qemu-system-arm
+</pre></div>
+</div>
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>

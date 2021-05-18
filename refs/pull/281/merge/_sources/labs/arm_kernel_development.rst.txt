@@ -201,6 +201,21 @@ Device trees are stored inside device tree sources (*.dts*) and compiled into de
 Qemu
 ====
 
+We will use ``qemu-system-arm`` to boot 32bit ARM platforms. Although, this can be installed from official distro repos, for example:
+
+.. code:: bash
+
+   sudo apt-get install -y qemu-system-arm
+
+We strongly recommend using latest version of ``qemu-system-arm`` build from sources:
+
+.. code:: bash
+
+   $ git clone https://gitlab.com/qemu-project/qemu.git
+   $ ./configure --target-list=arm-softmmu --disable-docs
+   $ make -j8
+   $ ./build/qemu-system-arm
+
 Exercises
 =========
 

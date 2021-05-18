@@ -114,7 +114,7 @@
 <li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec11-virtualization.html">SO2 Lecture 11 - Virtualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec12-profiling.html">SO2 Lecture 12 - Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
@@ -170,6 +170,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
 <ul>
@@ -447,6 +448,17 @@ $ ls arch/arm64/boot/dts/&lt;vendor&gt;
 </div>
 <div class="section" id="qemu">
 <h2>Qemu<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+<p>We will use <code class="docutils literal"><span class="pre">qemu-system-arm</span></code> to boot 32bit ARM platforms. Although, this can be installed from official distro repos, for example:</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>sudo apt-get install -y qemu-system-arm
+</pre></div>
+</div>
+<p>We strongly recommend using latest version of <code class="docutils literal"><span class="pre">qemu-system-arm</span></code> build from sources:</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ git clone https://gitlab.com/qemu-project/qemu.git
+$ ./configure --target-list=arm-softmmu --disable-docs
+$ make -j8
+$ ./build/qemu-system-arm
+</pre></div>
+</div>
 </div>
 <div class="section" id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
