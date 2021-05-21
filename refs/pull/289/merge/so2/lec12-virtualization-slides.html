@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SO2 Lecture 12 - Virtualization &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="up" title="Operating Systems 2" href="index.html" />
+    <link rel="next" title="SO2 Lab 01 - Introduction" href="lab1-intro.html" />
+    <link rel="prev" title="SO2 Lecture 11 - Architecture Layer" href="lec11-arch.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-so2-lecture-12-virtualization slide level-1">
+
+<h1>SO2 Lecture 12 - Virtualization</h1>
+
+
+
+
+
+</article>
+<article class="admonition-network-management slide level-2">
+
+<h2>Network Management</h2>
+
+<ul class="simple">
+<li>Emulation basics</li>
+<li>Virtualization basics</li>
+<li>Paravitualization basics</li>
+<li>Hardware support for virtualization</li>
+<li>Overview of the Xen hypervisor</li>
+<li>Overview of the KVM hypervisor</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-emulation-basics slide level-2">
+
+<h2>Emulation basics</h2>
+
+<ul class="simple">
+<li>Instructions are emulated (each time they are executed)</li>
+<li>The other system components are also emulated:<ul>
+<li>MMU</li>
+<li>Physical memory access</li>
+<li>Peripherals</li>
+</ul>
+</li>
+<li>Target architecture - the architecture that it is emulated</li>
+<li>Host architecture - the architecture that the emulator runs on</li>
+<li>For emulation target and host architectures can be different</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtualization-basics slide level-2">
+
+<h2>Virtualization basics</h2>
+
+<ul class="simple">
+<li>Defined in a paper by Popek &amp; Goldberg in 1974</li>
+<li>Fidelity</li>
+<li>Performance</li>
+<li>Security</li>
+</ul>
+<img alt="../_images/ditaa-91f08f7db4b54069e16694eab8d75c06400fc47b.png" src="../_images/ditaa-91f08f7db4b54069e16694eab8d75c06400fc47b.png" />
+
+
+
+
+</article>
+<article class="admonition-classic-virtualization slide level-2">
+
+<h2>Classic virtualization</h2>
+
+<ul class="simple">
+<li>Trap &amp; Emulate</li>
+<li>Same architecture for host and target</li>
+<li>Most of the target instructions are natively executed</li>
+<li>Target OS runs in non-privilege mode on the host</li>
+<li>Privileged instructions are trapped and emulated</li>
+<li>Two machine states: host and guest</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-software-virtualization slide level-2">
+
+<h2>Software virtualization</h2>
+
+<ul class="simple">
+<li>Not all architecture can be virtualized; e.g. x86:<ul>
+<li>CS register encodes the CPL</li>
+<li>Some instructions don't generate a trap (e.g. popf)</li>
+</ul>
+</li>
+<li>Solution: emulate instructions using binary translation</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-mmu-virtualization slide level-2">
+
+<h2>MMU virtualization</h2>
+
+<ul class="simple">
+<li>&quot;Fake&quot; VM physical addresses are translated by the host to actual
+physical addresses</li>
+<li>The guest page tables are not directly used by the host hardware</li>
+<li>VM page tables are verified then translated into a new set of page
+tables on the host (shadow page tables)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-shadow-page-tables slide level-2">
+
+<h2>Shadow page tables</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-8632e22c6d89bd18f97c9cef127444486b5077df.png" src="../_images/ditaa-8632e22c6d89bd18f97c9cef127444486b5077df.png" />
+
+
+
+
+</article>
+<article class="admonition-lazy-shadow-sync slide level-2">
+
+<h2>Lazy shadow sync</h2>
+
+<ul class="simple">
+<li>Guest page tables changes are typically batched</li>
+<li>To avoid repeated traps, checks and transformations map guest
+page table entries with write access</li>
+<li>Update the shadow page table when the TLB is flushed</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-i-o-virtualization slide level-2">
+
+<h2>I/O virtualization</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-bb69666d75b9670e542682753fb8cc9b77ff8894.png" src="../_images/ditaa-bb69666d75b9670e542682753fb8cc9b77ff8894.png" />
+
+
+
+
+</article>
+<article class="admonition-paravirtualization slide level-2">
+
+<h2>Paravirtualization</h2>
+
+<ul class="simple">
+<li>Change the guest OS so that it cooperates with the VMM<ul>
+<li>CPU paravirtualization</li>
+<li>MMU paravirtualization</li>
+<li>I/O paravirtualization</li>
+</ul>
+</li>
+<li>VMM exposes hypercalls for:<ul>
+<li>activate / deactivate the interrupts</li>
+<li>changing page tables</li>
+<li>accessing virtualized peripherals</li>
+</ul>
+</li>
+<li>VMM uses events to trigger interrupts in the VM</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-intel-vt-x slide level-2">
+
+<h2>Intel VT-x</h2>
+
+<ul class="simple">
+<li>Hardware extension to transform x86 to the point it can be
+virtualized &quot;classically&quot;</li>
+<li>New execution mode: non-root mode</li>
+<li>Each non-root mode instance uses a Virtual Machine Control
+Structure (VMCS) to store its state</li>
+<li>VMM runs in root mode</li>
+<li>VM-entry and VM-exit are used to transition between the two modes</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtual-machine-control-structure slide level-2">
+
+<h2>Virtual Machine Control Structure</h2>
+
+<ul class="simple">
+<li>Guest information: state of the virtual CPU</li>
+<li>Host information: state of the physical CPU</li>
+<li>Saved information:<ul>
+<li>visible state: segment registers, CR3, IDTR, etc.</li>
+<li>internal state</li>
+</ul>
+</li>
+<li>VMCS can not be accessed directly but certain information can be
+accessed with special instructions</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-vm-execution-control-fields slide level-2">
+
+<h2>VM execution control fields</h2>
+
+<ul class="simple">
+<li>Selects conditions which triggers a VM exit; examples:<ul>
+<li>If an external interrupt is generated</li>
+<li>If an external interrupt is generated and EFLAGS.IF is set</li>
+<li>If CR0-CR4 registers are modified</li>
+</ul>
+</li>
+<li>Exception bitmap - selects which exceptions will generate a VM
+exit</li>
+<li>IO bitmap - selects which I/O addresses (IN/OUT accesses)
+generates a VM exit</li>
+<li>MSR bitmaps - selects which RDMSR or WRMSR instructions will
+generate a VM exit</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-vm-entry-exit slide level-2">
+
+<h2>VM entry &amp; exit</h2>
+
+<ul class="simple">
+<li>VM entry - new instructions that switches the CPU in non-root
+mode and loads the VM state from a VMCS; host state is saved in
+VMCS</li>
+<li>Allows injecting interrupts and exceptions in the guest</li>
+<li>VM exit will be automatically triggered based on the VMCS
+configuration</li>
+<li>When VM exit occurs host state is loaded from VMCS, guest state
+is saved in VMCS</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-extend-page-tables slide level-2">
+
+<h2>Extend Page Tables</h2>
+
+<ul class="simple">
+<li>Reduces the complexity of MMU virtualization and improves
+performance</li>
+<li>Access to CR3, INVLPG and page faults do not require VM exit
+anymore</li>
+<li>The EPT page table is controlled by the VMM</li>
+</ul>
+<img alt="../_images/ditaa-cc9a2e995be74ee99646ea4bf0e551d766fa92ef.png" src="../_images/ditaa-cc9a2e995be74ee99646ea4bf0e551d766fa92ef.png" />
+
+
+
+
+</article>
+<article class="admonition-vpid slide level-2">
+
+<h2>VPID</h2>
+
+<ul class="simple">
+<li>VM entry and VM exit forces a TLB flush - loses VMM / VM translations</li>
+<li>To avoid this issue a VPID (Virtual Processor ID) tag is
+associated with each VM (VPID 0 is reserved for the VMM)</li>
+<li>All TLB entries are tagged</li>
+<li>At VM entry and exit just the entries associated with the tags
+are flushed</li>
+<li>When searching the TLB just the current VPID is used</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-intel-vt-d slide level-2">
+
+<h2>Intel VT-d</h2>
+
+<ul class="simple">
+<li>Direct access to hardware from a VM - in a controlled was</li>
+<li>The physical device must support multiplexing (e.g. SR-IOV)<ul>
+<li>I/O assignments</li>
+<li>IRQ routing</li>
+</ul>
+</li>
+<li>VT-d protects and translates VM physical addresses using an I/O
+MMU (DMA remaping)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-dma-remapping slide level-2">
+
+<h2>DMA remapping</h2>
+
+<img alt="../_images/dma-remapping1.png" src="../_images/dma-remapping1.png" />
+
+
+
+
+</article>
+<article class="admonition-qemu slide level-2">
+
+<h2>qemu</h2>
+
+<ul class="simple">
+<li>Uses binary translation via Tiny Code Generator (TCG) for
+efficient emulation</li>
+<li>Supports different target and host architectures (e.g. running
+ARM VMs on x86)</li>
+<li>Both process and full system level emulation</li>
+<li>MMU emulation</li>
+<li>I/O emulation</li>
+<li>Can be used with KVM for accelerated virtualization</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-kvm slide level-2">
+
+<h2>KVM</h2>
+
+<ul class="simple">
+<li>VMM implemented inside the Linux kernel</li>
+<li>Requires hardware virtualization (e.g. Intel VT-x)</li>
+<li>Shadow page tables or EPT if present</li>
+<li>Uses qemu or virtio for I/O virtualization</li>
+</ul>
+<img alt="../_images/ditaa-f8fcc760ef5dad50d1038ed3426d0fcce12fd3e6.png" src="../_images/ditaa-f8fcc760ef5dad50d1038ed3426d0fcce12fd3e6.png" />
+
+
+
+
+</article>
+<article class="admonition-xen slide level-2">
+
+<h2>Xen</h2>
+
+<img alt="../_images/xen-overview1.png" src="../_images/xen-overview1.png" />
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
