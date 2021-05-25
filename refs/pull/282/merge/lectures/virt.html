@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Virtualization &mdash; The Linux Kernel  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Infrastructure" href="../labs/infrastructure.html" />
+    <link rel="prev" title="Network Management" href="networking.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> The Linux Kernel
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                5.10.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">Network Management</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Virtualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#emulation-basics">Emulation basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#virtualization-basics">Virtualization basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#classic-virtualization">Classic virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#software-virtualization">Software virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mmu-virtualization">MMU virtualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#shadow-page-tables">Shadow page tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lazy-shadow-sync">Lazy shadow sync</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#i-o-virtualization">I/O virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#paravirtualization">Paravirtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#intel-vt-x">Intel VT-x</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#virtual-machine-control-structure">Virtual Machine Control Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vm-execution-control-fields">VM execution control fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vm-entry-exit">VM entry &amp; exit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extend-page-tables">Extend Page Tables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vpid">VPID</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#intel-vt-d">Intel VT-d</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dma-remapping">DMA remapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#qemu">qemu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm">KVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#xen">Xen</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Virtualization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/lectures/virt.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="virtualization">
+<h1>Virtualization<a class="headerlink" href="#virtualization" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="virt-slides.html">View slides</a></p>
+<div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-network-management simple">
+<li>Emulation basics</li>
+<li>Virtualization basics</li>
+<li>Paravitualization basics</li>
+<li>Hardware support for virtualization</li>
+<li>Overview of the Xen hypervisor</li>
+<li>Overview of the KVM hypervisor</li>
+</ul>
+</div>
+<div class="section" id="emulation-basics">
+<h2>Emulation basics<a class="headerlink" href="#emulation-basics" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-emulation-basics simple">
+<li>Instructions are emulated (each time they are executed)</li>
+<li>The other system components are also emulated:<ul>
+<li>MMU</li>
+<li>Physical memory access</li>
+<li>Peripherals</li>
+</ul>
+</li>
+<li>Target architecture - the architecture that it is emulated</li>
+<li>Host architecture - the architecture that the emulator runs on</li>
+<li>For emulation target and host architectures can be different</li>
+</ul>
+</div>
+<div class="section" id="virtualization-basics">
+<h2>Virtualization basics<a class="headerlink" href="#virtualization-basics" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-virtualization-basics simple">
+<li>Defined in a paper by Popek &amp; Goldberg in 1974</li>
+<li>Fidelity</li>
+<li>Performance</li>
+<li>Security</li>
+</ul>
+<img alt="../_images/ditaa-91f08f7db4b54069e16694eab8d75c06400fc47b.png" src="../_images/ditaa-91f08f7db4b54069e16694eab8d75c06400fc47b.png" />
+</div>
+<div class="section" id="classic-virtualization">
+<h2>Classic virtualization<a class="headerlink" href="#classic-virtualization" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-classic-virtualization simple">
+<li>Trap &amp; Emulate</li>
+<li>Same architecture for host and target</li>
+<li>Most of the target instructions are natively executed</li>
+<li>Target OS runs in non-privilege mode on the host</li>
+<li>Privileged instructions are trapped and emulated</li>
+<li>Two machine states: host and guest</li>
+</ul>
+</div>
+<div class="section" id="software-virtualization">
+<h2>Software virtualization<a class="headerlink" href="#software-virtualization" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-software-virtualization simple">
+<li>Not all architecture can be virtualized; e.g. x86:<ul>
+<li>CS register encodes the CPL</li>
+<li>Some instructions don't generate a trap (e.g. popf)</li>
+</ul>
+</li>
+<li>Solution: emulate instructions using binary translation</li>
+</ul>
+</div>
+<div class="section" id="mmu-virtualization">
+<h2>MMU virtualization<a class="headerlink" href="#mmu-virtualization" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-mmu-virtualization simple">
+<li>&quot;Fake&quot; VM physical addresses are translated by the host to actual
+physical addresses</li>
+<li>The guest page tables are not directly used by the host hardware</li>
+<li>VM page tables are verified then translated into a new set of page
+tables on the host (shadow page tables)</li>
+</ul>
+<div class="section" id="shadow-page-tables">
+<h3>Shadow page tables<a class="headerlink" href="#shadow-page-tables" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-shadow-page-tables">&nbsp;</p>
+<img alt="../_images/ditaa-8632e22c6d89bd18f97c9cef127444486b5077df.png" src="../_images/ditaa-8632e22c6d89bd18f97c9cef127444486b5077df.png" />
+</div>
+<div class="section" id="lazy-shadow-sync">
+<h3>Lazy shadow sync<a class="headerlink" href="#lazy-shadow-sync" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-lazy-shadow-sync simple">
+<li>Guest page tables changes are typically batched</li>
+<li>To avoid repeated traps, checks and transformations map guest
+page table entries with write access</li>
+<li>Update the shadow page table when the TLB is flushed</li>
+</ul>
+</div>
+</div>
+<div class="section" id="i-o-virtualization">
+<h2>I/O virtualization<a class="headerlink" href="#i-o-virtualization" title="Permalink to this headline">¶</a></h2>
+<p class="admonition-i-o-virtualization">&nbsp;</p>
+<img alt="../_images/ditaa-bb69666d75b9670e542682753fb8cc9b77ff8894.png" src="../_images/ditaa-bb69666d75b9670e542682753fb8cc9b77ff8894.png" />
+</div>
+<div class="section" id="paravirtualization">
+<h2>Paravirtualization<a class="headerlink" href="#paravirtualization" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-paravirtualization simple">
+<li>Change the guest OS so that it cooperates with the VMM<ul>
+<li>CPU paravirtualization</li>
+<li>MMU paravirtualization</li>
+<li>I/O paravirtualization</li>
+</ul>
+</li>
+<li>VMM exposes hypercalls for:<ul>
+<li>activate / deactivate the interrupts</li>
+<li>changing page tables</li>
+<li>accessing virtualized peripherals</li>
+</ul>
+</li>
+<li>VMM uses events to trigger interrupts in the VM</li>
+</ul>
+</div>
+<div class="section" id="intel-vt-x">
+<h2>Intel VT-x<a class="headerlink" href="#intel-vt-x" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-intel-vt-x simple">
+<li>Hardware extension to transform x86 to the point it can be
+virtualized &quot;classically&quot;</li>
+<li>New execution mode: non-root mode</li>
+<li>Each non-root mode instance uses a Virtual Machine Control
+Structure (VMCS) to store its state</li>
+<li>VMM runs in root mode</li>
+<li>VM-entry and VM-exit are used to transition between the two modes</li>
+</ul>
+<div class="section" id="virtual-machine-control-structure">
+<h3>Virtual Machine Control Structure<a class="headerlink" href="#virtual-machine-control-structure" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-virtual-machine-control-structure simple">
+<li>Guest information: state of the virtual CPU</li>
+<li>Host information: state of the physical CPU</li>
+<li>Saved information:<ul>
+<li>visible state: segment registers, CR3, IDTR, etc.</li>
+<li>internal state</li>
+</ul>
+</li>
+<li>VMCS can not be accessed directly but certain information can be
+accessed with special instructions</li>
+</ul>
+</div>
+<div class="section" id="vm-execution-control-fields">
+<h3>VM execution control fields<a class="headerlink" href="#vm-execution-control-fields" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-vm-execution-control-fields simple">
+<li>Selects conditions which triggers a VM exit; examples:<ul>
+<li>If an external interrupt is generated</li>
+<li>If an external interrupt is generated and EFLAGS.IF is set</li>
+<li>If CR0-CR4 registers are modified</li>
+</ul>
+</li>
+<li>Exception bitmap - selects which exceptions will generate a VM
+exit</li>
+<li>IO bitmap - selects which I/O addresses (IN/OUT accesses)
+generates a VM exit</li>
+<li>MSR bitmaps - selects which RDMSR or WRMSR instructions will
+generate a VM exit</li>
+</ul>
+</div>
+<div class="section" id="vm-entry-exit">
+<h3>VM entry &amp; exit<a class="headerlink" href="#vm-entry-exit" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-vm-entry-exit simple">
+<li>VM entry - new instructions that switches the CPU in non-root
+mode and loads the VM state from a VMCS; host state is saved in
+VMCS</li>
+<li>Allows injecting interrupts and exceptions in the guest</li>
+<li>VM exit will be automatically triggered based on the VMCS
+configuration</li>
+<li>When VM exit occurs host state is loaded from VMCS, guest state
+is saved in VMCS</li>
+</ul>
+</div>
+</div>
+<div class="section" id="extend-page-tables">
+<h2>Extend Page Tables<a class="headerlink" href="#extend-page-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-extend-page-tables simple">
+<li>Reduces the complexity of MMU virtualization and improves
+performance</li>
+<li>Access to CR3, INVLPG and page faults do not require VM exit
+anymore</li>
+<li>The EPT page table is controlled by the VMM</li>
+</ul>
+<img alt="../_images/ditaa-cc9a2e995be74ee99646ea4bf0e551d766fa92ef.png" src="../_images/ditaa-cc9a2e995be74ee99646ea4bf0e551d766fa92ef.png" />
+<div class="section" id="vpid">
+<h3>VPID<a class="headerlink" href="#vpid" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-vpid simple">
+<li>VM entry and VM exit forces a TLB flush - loses VMM / VM translations</li>
+<li>To avoid this issue a VPID (Virtual Processor ID) tag is
+associated with each VM (VPID 0 is reserved for the VMM)</li>
+<li>All TLB entries are tagged</li>
+<li>At VM entry and exit just the entries associated with the tags
+are flushed</li>
+<li>When searching the TLB just the current VPID is used</li>
+</ul>
+</div>
+</div>
+<div class="section" id="intel-vt-d">
+<h2>Intel VT-d<a class="headerlink" href="#intel-vt-d" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-intel-vt-d simple">
+<li>Direct access to hardware from a VM - in a controlled was</li>
+<li>The physical device must support multiplexing (e.g. SR-IOV)<ul>
+<li>I/O assignments</li>
+<li>IRQ routing</li>
+</ul>
+</li>
+<li>VT-d protects and translates VM physical addresses using an I/O
+MMU (DMA remaping)</li>
+</ul>
+<div class="section" id="dma-remapping">
+<h3>DMA remapping<a class="headerlink" href="#dma-remapping" title="Permalink to this headline">¶</a></h3>
+<img alt="../_images/dma-remapping.png" class="admonition-dma-remapping" src="../_images/dma-remapping.png" />
+</div>
+</div>
+<div class="section" id="qemu">
+<h2>qemu<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-qemu simple">
+<li>Uses binary translation via Tiny Code Generator (TCG) for
+efficient emulation</li>
+<li>Supports different target and host architectures (e.g. running
+ARM VMs on x86)</li>
+<li>Both process and full system level emulation</li>
+<li>MMU emulation</li>
+<li>I/O emulation</li>
+<li>Can be used with KVM for accelerated virtualization</li>
+</ul>
+</div>
+<div class="section" id="kvm">
+<h2>KVM<a class="headerlink" href="#kvm" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-kvm simple">
+<li>VMM implemented inside the Linux kernel</li>
+<li>Requires hardware virtualization (e.g. Intel VT-x)</li>
+<li>Shadow page tables or EPT if present</li>
+<li>Uses qemu or virtio for I/O virtualization</li>
+</ul>
+<img alt="../_images/ditaa-f8fcc760ef5dad50d1038ed3426d0fcce12fd3e6.png" src="../_images/ditaa-f8fcc760ef5dad50d1038ed3426d0fcce12fd3e6.png" />
+</div>
+<div class="section" id="xen">
+<h2>Xen<a class="headerlink" href="#xen" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/xen-overview.png" class="admonition-xen" src="../_images/xen-overview.png" />
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../labs/infrastructure.html" class="btn btn-neutral float-right" title="Infrastructure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="networking.html" class="btn btn-neutral float-left" title="Network Management" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright The kernel development community.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

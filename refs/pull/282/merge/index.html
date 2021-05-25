@@ -115,6 +115,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/virt.html">Virtualization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
 <ul>
@@ -129,6 +130,7 @@
 <li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/kernel_profiling.html">Kernel Profiling</a></li>
@@ -515,7 +517,38 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lec11-virtualization.html">SO2 Lecture 11 - Virtualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lec12-profiling.html">SO2 Lecture 12 - Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#emulation-basics">Emulation basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#virtualization-basics">Virtualization basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#classic-virtualization">Classic virtualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#software-virtualization">Software virtualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#mmu-virtualization">MMU virtualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#shadow-page-tables">Shadow page tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#lazy-shadow-sync">Lazy shadow sync</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#i-o-virtualization">I/O virtualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#paravirtualization">Paravirtualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#intel-vt-x">Intel VT-x</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#virtual-machine-control-structure">Virtual Machine Control Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#vm-execution-control-fields">VM execution control fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#vm-entry-exit">VM entry &amp; exit</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#extend-page-tables">Extend Page Tables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#vpid">VPID</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#intel-vt-d">Intel VT-d</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lec12-virtualization.html#dma-remapping">DMA remapping</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#qemu">qemu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#kvm">KVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lec12-virtualization.html#xen">Xen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lab1-intro.html">SO2 Lab 01 - Introduction</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/lab1-intro.html#about-this-laboratory">About this laboratory</a></li>
@@ -924,7 +957,29 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#system-on-a-chip">System on a Chip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#board-support-package">Board Support package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#toolchain">Toolchain</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#rootfs">Rootfs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#device-tree">Device tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#qemu">Qemu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#boot">1. Boot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#cpu-information">2. CPU information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#hello-world">4. Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab11-arm-kernel-development.html#simple-device">5. Simple device</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="so2/assign0-kernel-api.html">Assignment 0 - Kernel API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign0-kernel-api.html#assignment-s-objectives">Assignment's Objectives</a></li>
@@ -999,6 +1054,24 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign-chall-pitix.html#resources">Resources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign-chall-pitix.html#questions">Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="so2/assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#statement">Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#implementation-details">Implementation Details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#sample-protocol-implementations">Sample Protocol Implementations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#testing">Testing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#tcpdump">tcpdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/assign4-transport-protocol.html#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/assign4-transport-protocol.html#questions">Questions</a></li>
 </ul>
 </li>
 </ul>
@@ -1263,6 +1336,38 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#network-packets-skbs-struct-sk-buff">Network packets / skbs (struct sk_buff)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#network-device">Network Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lectures/networking.html#hardware-and-software-acceleration-techniques">Hardware and Software Acceleration Techniques</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lectures/virt.html">Virtualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#emulation-basics">Emulation basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#virtualization-basics">Virtualization basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#classic-virtualization">Classic virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#software-virtualization">Software virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#mmu-virtualization">MMU virtualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#shadow-page-tables">Shadow page tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#lazy-shadow-sync">Lazy shadow sync</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#i-o-virtualization">I/O virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#paravirtualization">Paravirtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#intel-vt-x">Intel VT-x</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#virtual-machine-control-structure">Virtual Machine Control Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#vm-execution-control-fields">VM execution control fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#vm-entry-exit">VM entry &amp; exit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#extend-page-tables">Extend Page Tables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#vpid">VPID</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#intel-vt-d">Intel VT-d</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lectures/virt.html#dma-remapping">DMA remapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#qemu">qemu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#kvm">KVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lectures/virt.html#xen">Xen</a></li>
 </ul>
 </li>
 </ul>
@@ -1679,6 +1784,29 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="labs/arm_kernel_development.html">Kernel Development on ARM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#system-on-a-chip">System on a Chip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#board-support-package">Board Support package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#toolchain">Toolchain</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#rootfs">Rootfs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#device-tree">Device tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#qemu">Qemu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/arm_kernel_development.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#boot">1. Boot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#cpu-information">2. CPU information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#hello-world">4. Hello World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/arm_kernel_development.html#simple-device">5. Simple device</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/memory_mapping.html#overview">Overview</a></li>
@@ -1735,9 +1863,24 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l1"><a class="reference internal" href="labs/kernel_profiling.html">Kernel Profiling</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#lab-objectives">Lab objectives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-tools">Profiling tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#perf">perf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#ps">ps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#time">time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#top">top</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-methodology">Profiling methodology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-memory-usage">Profiling memory usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-io-problems">Profiling IO problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-scheduling-issues">Profiling scheduling issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#investigating-reduced-responsiveness">1. Investigating reduced responsiveness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#launching-new-threads">2. Launching new threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#i-o-latency">4. I/O latency</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

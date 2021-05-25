@@ -12,11 +12,255 @@ Lab objectives
 Overview
 ========
 
+Up until now we have studied how the different components of the Linux kernel
+work, and how to write drivers that interface with them in order to provide
+support for devices or protocols.This has helped us understand how the Linux
+kernel works, but most people will not get to write kernel drivers.
+
+Nonetheless, the skills learned will help us to write applications that better
+integrate with the whole operating system. In order to do this, one has to have
+a good view of both the user space and the kernel space.
+
+This session will try to merge the work we have done up until now in the kernel
+space with real world use cases where we do not write kernel space code, but we
+look through the kernel using profiling tools, in order to debug issues that
+we're having when writing regular, low level, applications.
+
+Another focus of this laboratory will be learning a general methodology for
+debugging software issues, and we will approach some tools that give us insight
+from the kernel on the way our application runs.
+
+Profiling tools
+===============
+
+The main tool that we will focus our attention on is ``perf``, which offers
+support for tracing applications, and also inspecting general aspects of the
+system. We will also be using debugging tools that most people have used in
+their day to day life, such as ``htop``, ``ps``, ``lsof`` and others.
+
+perf
+----
+
+``perf``,  is a tool that instruments the CPU using
+tracepoints, kprobes and uprobes. This tool allows us to take a look at what
+functions are being called at a given point. This allows us to take a peak at
+where the kernel is pending the most time, print out call stacks of functions,
+and in general log what the CPU is running.
+
+``perf`` integrates modules such as:
+* static tracing
+* dynamic tracing
+* resource monitoring
+
+The tracing interface that is offered by perf can be used by itself, using the
+``perf`` command together with its subcommands.
+
+
+.. code-block:: bash
+
+    root@qemux86:~# ./skels/profiling/perf 
+
+     usage: perf [--version] [--help] [OPTIONS] COMMAND [ARGS]
+
+     The most commonly used perf commands are:
+       annotate        Read perf.data (created by perf record) and display annotated code
+       archive         Create archive with object files with build-ids found in perf.data file
+       bench           General framework for benchmark suites
+       buildid-cache   Manage build-id cache.
+       buildid-list    List the buildids in a perf.data file
+       c2c             Shared Data C2C/HITM Analyzer.
+       config          Get and set variables in a configuration file.
+       data            Data file related processing
+       diff            Read perf.data files and display the differential profile
+       evlist          List the event names in a perf.data file
+       ftrace          simple wrapper for kernel's ftrace functionality
+       inject          Filter to augment the events stream with additional information
+       kallsyms        Searches running kernel for symbols
+       kmem            Tool to trace/measure kernel memory properties
+       kvm             Tool to trace/measure kvm guest os
+       list            List all symbolic event types
+       lock            Analyze lock events
+       mem             Profile memory accesses
+       record          Run a command and record its profile into perf.data
+       report          Read perf.data (created by perf record) and display the profile
+       sched           Tool to trace/measure scheduler properties (latencies)
+       script          Read perf.data (created by perf record) and display trace output
+       stat            Run a command and gather performance counter statistics
+       test            Runs sanity tests.
+       timechart       Tool to visualize total system behavior during a workload
+       top             System profiling tool.
+       version         display the version of perf binary
+       probe           Define new dynamic tracepoints
+
+     See 'perf help COMMAND' for more information on a specific command.
+
+In the output above we can see all of perf's subcommands together with a
+description of their functionality the most significant of which are:
+
+* ``stat`` - displays statistics such as the number of context switches and page
+  faults;
+* ``top`` - an interactive interface where we can inspect the most frequent
+  function calls and their caller. This interface allows us direct feedback
+  while profiling;
+* ``list`` - lists the static trace point that we can instrument inside the
+  kernel. These are useful when trying to get an insight from inside the kernel;
+* ``probe`` - add a dynamic trace point that instruments a function call in
+  order to be recorded by perf;
+* ``record`` - records function calls and stack traces based on tracing points
+  defined by the user; It can also record specific function calls and their
+  stack traces. The record is saved in a file, named ``perf.data`` by default;
+* ``report`` - displays the information saved in a perf recording.
+
+Below is an example of tracing the ``kern_clone`` function, which is called in
+by the ``clone()`` and ``fork()`` system calls.
+
+.. code-block:: bash
+
+    TODO
+
+Another way to use perf's interface is through scripts that wrap over perf that
+offer a higher level way of looking at events or data, without needing to know
+the intricacies of the command. An example of this is the ``iosnoop.sh`` script,
+which displays what I/O transfers are taking place.
+
+ps
+--
+
+``ps`` is the linux tool that allows us to monitor the processes that are
+running at a given time on the machine, including the kernel threads. This is a
+simple and easy to use way of checking at a glance what processes are running on
+the CPU, and what is their CPU and memory usage.
+
+In order to list all the processes running, we use to ``ps aux`` command in the
+following way:
+
+.. code-block:: c
+
+   TODO
+
+One information of note is that the 7th column represents the that of the
+process, ``S`` meaning suspended, ``D`` suspended due to I/O, and ``R`` meaning
+running.
+
+time
+----
+
+The ``time`` command allows us to inspect the amount of time spent by a
+process in I/O, running the application code, or running code in kernel space.
+This can be useful in order to find out whether an application's issue comes
+from running too much in kernel space, so it has some overhead when it does
+system calls, or the issue is in the user code.
+
+.. code-block:: c
+
+   TODO
+
+
+top
+---
+
+``top`` is an application that is found on most system which lists in real time
+the applications that are running on the system. ``top`` runs interactively, and
+it auto-refreshes its output, as opposed to ``ps``. We use this tool when we
+want a high level of continuous monitoring.
+
+Profiling methodology
+=====================
+
+When doing profiling, our goal is to research the cause of a problem. Usually
+this problem is observed by someone when their application doesn't work as
+expected. When we say that an application did not work as expected, this can
+mean different things for different people. For example, one person might
+complain that the application has a slowdown, while another might say that the
+application runs on the CPU, but it doesn't output anything.
+
+The first step in any problem solving context is to understand the default
+behaviour of the application we're trying to debug, and to make sure that it is
+now not running in the expected parameters.
+
 Profiling memory usage
 ======================
 
 Profiling IO problems
 =====================
 
+I/O issues usually come from applications that do a large amount of
+I/O, which it doesn't handle well, because the code sends requests, but it
+doesn't handle them well, or there's an application that sends so much I/O that
+the other applications are being starved out.
+
+
 Profiling scheduling issues
 ===========================
+
+For scheduling learning how to debug scheduling issues, we'll be taking a look
+
+Exercises
+=========
+
+.. include:: ../labs/exercises-summary.hrst
+.. |LAB_NAME| replace:: kernel_profiling
+
+1. Investigating reduced responsiveness
+---------------------------------------
+
+The ``io.ko`` module, located in the ``kernel_profiling/1-io`` directory,
+decreases the system's responsiveness when inserted. We see that the command
+line stutters when typing commands, but when running top, we see that the
+system's load is not high, and there aren't any processes that are hogging
+resources.
+
+Find out what the ``io.ko`` module is doing and why is it leading to the
+stuttering effect that we experience.
+
+.. hint:: Trace all the functions being called and check where the CPU is
+          spending most of its time
+
+2. Launching new threads
+------------------------
+
+We want to run the same function in a loop 100 times in parallel. We have
+implemented two solutions inside the ``scheduling`` binary file.
+
+When executing the ``scheduling`` binary, it prints a message in parallel from
+100 running instances. We can tune this execution by running the application
+either with the first parameter ``0`` or ``1``.
+
+Find out which solution is better, and why.
+
+3. Tuning ``cp``
+----------------
+
+Our goal is to write a copy of the ``cp`` tool integrated in Linux. In order to
+do this, we have to approaches that we can take in the implementation:
+
+* reading the contents of the source file in a buffer in memory using the
+  ``read()`` system call, and writing that buffer to the destination file using
+  the ``write()`` system call;
+* mapping the source and destination files to memory using the ``mmap`` system
+  call, and copying the contents of the source file to the destination in
+  memory.
+
+Another tunable parameter that we're going to use is the block size of to copies
+that we're going to make, either through reads/writes or in memory.
+
+1) Investigate which of the two copying mechanisms is faster. For this step, you
+will use the 1024 block size.
+
+2) Once you have found which copying mechanism is faster, change the block size
+parameter and see which value gives you the best copies. Why?
+
+4. I/O latency
+--------------
+
+We have written a module that reads the content of a disk. Insert the ``bio.ko``
+module, located in the ``4-bio`` module, we see a large spike in the system's
+load, as can be seen in the ``top`` command, but we see that the system is still
+responsive.
+
+Investigate what is causing the increase load to the system. Is it an I/O issue,
+or is it a scheduling issue?
+
+.. hint:: Try to trace the I/O operations using ``perf``, or use the
+        ``iosnoop.sh`` script in order to inspect what I/O is happening at a
+        certain point.

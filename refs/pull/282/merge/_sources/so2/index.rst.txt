@@ -18,7 +18,7 @@ Operating Systems 2
    lec9-debugging.rst
    lec10-networking.rst
    lec11-virtualization.rst
-   lec12-profiling.rst
+   lec12-virtualization.rst
 
 .. toctree::
    :caption: Labs
@@ -46,3 +46,4 @@ Operating Systems 2
    assign2-driver-uart.rst
    assign3-software-raid.rst
    assign-chall-pitix.rst
+   assign4-transport-protocol.rst
