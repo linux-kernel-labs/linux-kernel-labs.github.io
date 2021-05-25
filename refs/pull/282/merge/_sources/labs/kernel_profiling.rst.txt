@@ -181,14 +181,106 @@ now not running in the expected parameters.
 Profiling memory usage
 ======================
 
-Profiling IO problems
+Profiling I/O problems
 =====================
 
-I/O issues usually come from applications that do a large amount of
-I/O, which it doesn't handle well, because the code sends requests, but it
-doesn't handle them well, or there's an application that sends so much I/O that
-the other applications are being starved out.
+When working with I/O, we have to keep in mind that it is one of the slowest
+systems in the operating system, compared to memory, which is an order of
+magnitude faster, and scheduling, which deals with what is currently running on
+the CPU.
 
+Because of this, I/O operations have do be thought out, because you might starve
+you application by saturating the system with requests. Another issue that you
+might face is that the I/O's slow speed might affect your application's
+responsiveness, if it waits for the I/O operations to finish.
+
+Let's take a look at an application and debug its issues.
+
+We are going to run the ``io-app`` application, from the ``0-demo`` directory.
+
+In order to inspect what is running on the CPU, and look at the stack of the
+process, we can use the ``perf record`` subcommand in the following way:
+
+.. code-block:: bash
+
+    root@qemux86:~# ./perf record -a -g
+    Couldn't synthesize bpf events.
+    ^C[ perf record: Woken up 7 times to write data ]
+    [ perf record: Captured and wrote 1.724 MB perf.data (8376 samples) ]
+
+
+perf will record values indefinitely, but we can close it using the ``Ctrl+c``
+hotkey. We used the ``-a`` option in order to probe all CPUs, and ``-g`` option,
+which record the whole call stack.
+
+To visualize the recorded information, we will use the ``perf report`` command,
+which will bring up a pager which will display the most frequent function calls
+that were found on the CPU, and their call stack.
+
+.. code-block:: bash
+
+    root@qemux86:~# ./perf report --header -F overhead,comm,parent
+    # Total Lost Samples: 0
+    #
+    # Samples: 8K of event 'cpu-clock:pppH'
+    # Event count (approx.): 2094000000
+    #
+    # Overhead  Command          Parent symbol
+    # ........  ...............  .............
+    #
+        58.63%  io-app           [other]
+                |
+                 --58.62%--__libc_start_main
+                           main
+                           __kernel_vsyscall
+                           |
+                            --58.61%--__irqentry_text_end
+                                      do_SYSENTER_32
+                                      do_fast_syscall_32
+                                      __noinstr_text_start
+                                      __ia32_sys_write
+                                      ksys_write
+                                      vfs_write
+                                      |
+                                       --58.60%--ext4_file_write_iter
+                                                 ext4_buffered_write_iter
+    [...]
+
+We have used the ``--header`` in order to print the table header, and ``-F
+overhead,comm,parent``, in order to print the percentage of time where the call
+stack, the command and the caller.
+
+We can see that the ``io-app`` command is doing some writes in the file system,
+and this contributes to much of the load on the system.
+
+Armed with this information, we know that there are many I/O calls being done by
+the application. In order to look at the size of these requests, we can use the
+``iosnoop.sh`` script in order to see how big these requests are.
+
+.. code-block:: bash
+
+    root@qemux86:~/skels/kernel_profiling# ./iosnoop.sh 1
+    Tracing block I/O. Ctrl-C to end.
+    COMM         PID    TYPE DEV      BLOCK        BYTES     LATms
+    io-app       889    WS   254,0    4800512      1310720     2.10
+    io-app       889    WS   254,0    4803072      1310720     2.04
+    io-app       889    WS   254,0    4805632      1310720     2.03
+    io-app       889    WS   254,0    4808192      1310720     2.43
+    io-app       889    WS   254,0    4810752      1310720     3.48
+    io-app       889    WS   254,0    4813312      1310720     3.46
+    io-app       889    WS   254,0    4815872      524288     1.03
+    io-app       889    WS   254,0    5029888      1310720     5.82
+    io-app       889    WS   254,0    5032448      786432     5.80
+    jbd2/vda-43  43     WS   254,0    2702392      8192       0.22
+    kworker/0:1H 34     WS   254,0    2702408      4096       0.40
+    io-app       889    WS   254,0    4800512      1310720     2.60
+    io-app       889    WS   254,0    4803072      1310720     2.58
+    [...]
+
+From this output we see that the ``io-app`` is reading in a loop from the fact
+that the first block ``4800512`` is repeating, and that it is doing big reads,
+since it is reading one megabyte fer request. This constant looping adds the
+load to the system that we're experiencing.
 
 Profiling scheduling issues
 ===========================

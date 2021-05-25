@@ -116,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -146,7 +147,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#profiling-methodology">Profiling methodology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#profiling-memory-usage">Profiling memory usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#profiling-io-problems">Profiling IO problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling-i-o-problems">Profiling I/O problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#profiling-scheduling-issues">Profiling scheduling issues</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#investigating-reduced-responsiveness">1. Investigating reduced responsiveness</a></li>
@@ -391,12 +392,91 @@ now not running in the expected parameters.</p>
 <div class="section" id="profiling-memory-usage">
 <h2>Profiling memory usage<a class="headerlink" href="#profiling-memory-usage" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="profiling-io-problems">
-<h2>Profiling IO problems<a class="headerlink" href="#profiling-io-problems" title="Permalink to this headline">¶</a></h2>
-<p>I/O issues usually come from applications that do a large amount of
-I/O, which it doesn't handle well, because the code sends requests, but it
-doesn't handle them well, or there's an application that sends so much I/O that
-the other applications are being starved out.</p>
+<div class="section" id="profiling-i-o-problems">
+<h2>Profiling I/O problems<a class="headerlink" href="#profiling-i-o-problems" title="Permalink to this headline">¶</a></h2>
+<p>When working with I/O, we have to keep in mind that it is one of the slowest
+systems in the operating system, compared to memory, which is an order of
+magnitude faster, and scheduling, which deals with what is currently running on
+the CPU.</p>
+<p>Because of this, I/O operations have do be thought out, because you might starve
+you application by saturating the system with requests. Another issue that you
+might face is that the I/O's slow speed might affect your application's
+responsiveness, if it waits for the I/O operations to finish.</p>
+<p>Let's take a look at an application and debug its issues.</p>
+<p>We are going to run the <code class="docutils literal"><span class="pre">io-app</span></code> application, from the <code class="docutils literal"><span class="pre">0-demo</span></code> directory.</p>
+<p>In order to inspect what is running on the CPU, and look at the stack of the
+process, we can use the <code class="docutils literal"><span class="pre">perf</span> <span class="pre">record</span></code> subcommand in the following way:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~# ./perf record -a -g
+Couldn&#39;t synthesize bpf events.
+^C[ perf record: Woken up 7 times to write data ]
+[ perf record: Captured and wrote 1.724 MB perf.data (8376 samples) ]
+</pre></div>
+</div>
+<p>perf will record values indefinitely, but we can close it using the <code class="docutils literal"><span class="pre">Ctrl+c</span></code>
+hotkey. We used the <code class="docutils literal"><span class="pre">-a</span></code> option in order to probe all CPUs, and <code class="docutils literal"><span class="pre">-g</span></code> option,
+which record the whole call stack.</p>
+<p>To visualize the recorded information, we will use the <code class="docutils literal"><span class="pre">perf</span> <span class="pre">report</span></code> command,
+which will bring up a pager which will display the most frequent function calls
+that were found on the CPU, and their call stack.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~# ./perf report --header -F overhead,comm,parent
+<span class="c1"># Total Lost Samples: 0</span>
+<span class="c1">#</span>
+<span class="c1"># Samples: 8K of event &#39;cpu-clock:pppH&#39;</span>
+<span class="c1"># Event count (approx.): 2094000000</span>
+<span class="c1">#</span>
+<span class="c1"># Overhead  Command          Parent symbol</span>
+<span class="c1"># ........  ...............  .............</span>
+<span class="c1">#</span>
+    <span class="m">58</span>.63%  io-app           <span class="o">[</span>other<span class="o">]</span>
+            <span class="p">|</span>
+             --58.62%--__libc_start_main
+                       main
+                       __kernel_vsyscall
+                       <span class="p">|</span>
+                        --58.61%--__irqentry_text_end
+                                  do_SYSENTER_32
+                                  do_fast_syscall_32
+                                  __noinstr_text_start
+                                  __ia32_sys_write
+                                  ksys_write
+                                  vfs_write
+                                  <span class="p">|</span>
+                                   --58.60%--ext4_file_write_iter
+                                             ext4_buffered_write_iter
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>We have used the <code class="docutils literal"><span class="pre">--header</span></code> in order to print the table header, and <code class="docutils literal"><span class="pre">-F</span>
+<span class="pre">overhead,comm,parent</span></code>, in order to print the percentage of time where the call
+stack, the command and the caller.</p>
+<p>We can see that the <code class="docutils literal"><span class="pre">io-app</span></code> command is doing some writes in the file system,
+and this contributes to much of the load on the system.</p>
+<p>Armed with this information, we know that there are many I/O calls being done by
+the application. In order to look at the size of these requests, we can use the
+<code class="docutils literal"><span class="pre">iosnoop.sh</span></code> script in order to see how big these requests are.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/kernel_profiling# ./iosnoop.sh <span class="m">1</span>
+Tracing block I/O. Ctrl-C to end.
+COMM         PID    TYPE DEV      BLOCK        BYTES     LATms
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4800512</span>      <span class="m">1310720</span>     <span class="m">2</span>.10
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4803072</span>      <span class="m">1310720</span>     <span class="m">2</span>.04
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4805632</span>      <span class="m">1310720</span>     <span class="m">2</span>.03
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4808192</span>      <span class="m">1310720</span>     <span class="m">2</span>.43
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4810752</span>      <span class="m">1310720</span>     <span class="m">3</span>.48
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4813312</span>      <span class="m">1310720</span>     <span class="m">3</span>.46
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4815872</span>      <span class="m">524288</span>     <span class="m">1</span>.03
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">5029888</span>      <span class="m">1310720</span>     <span class="m">5</span>.82
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">5032448</span>      <span class="m">786432</span>     <span class="m">5</span>.80
+jbd2/vda-43  <span class="m">43</span>     WS   <span class="m">254</span>,0    <span class="m">2702392</span>      <span class="m">8192</span>       <span class="m">0</span>.22
+kworker/0:1H <span class="m">34</span>     WS   <span class="m">254</span>,0    <span class="m">2702408</span>      <span class="m">4096</span>       <span class="m">0</span>.40
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4800512</span>      <span class="m">1310720</span>     <span class="m">2</span>.60
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4803072</span>      <span class="m">1310720</span>     <span class="m">2</span>.58
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>From this output we see that the <code class="docutils literal"><span class="pre">io-app</span></code> is reading in a loop from the fact
+that the first block <code class="docutils literal"><span class="pre">4800512</span></code> is repeating, and that it is doing big reads,
+since it is reading one megabyte fer request. This constant looping adds the
+load to the system that we're experiencing.</p>
 </div>
 <div class="section" id="profiling-scheduling-issues">
 <h2>Profiling scheduling issues<a class="headerlink" href="#profiling-scheduling-issues" title="Permalink to this headline">¶</a></h2>

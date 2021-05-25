@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>SO2 Lecture 11 - Virtualization &mdash; The Linux Kernel  documentation</title>
+  <title>SO2 Lecture 11 - Architecture Layer &mdash; The Linux Kernel  documentation</title>
   
 
   
@@ -113,7 +113,24 @@
 <li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lecture 11 - Virtualization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lecture 11 - Architecture Layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-the-arch-layer">Overview of the arch layer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#boot-strap">Boot strap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Boot strap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#memory-setup">Memory setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mmu-management">MMU management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#thread-management">Thread Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-management">Time Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#irqs-and-exception-management">IRQs and exception management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#system-calls">System calls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#platform-drivers">Platform Drivers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#machine-specific-code">Machine specific code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-the-boot-process">Overview of the boot process</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
@@ -148,6 +165,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
@@ -223,13 +241,13 @@
         
           <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
         
-      <li>SO2 Lecture 11 - Virtualization</li>
+      <li>SO2 Lecture 11 - Architecture Layer</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/so2/lec11-virtualization.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/lec11-arch.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -242,10 +260,113 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="so2-lecture-11-virtualization">
-<h1>SO2 Lecture 11 - Virtualization<a class="headerlink" href="#so2-lecture-11-virtualization" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="lec11-virtualization-slides.html">View slides</a></p>
-<span class="admonition-so2-lecture-11-virtualization"></span></div>
+  <div class="section" id="so2-lecture-11-architecture-layer">
+<h1>SO2 Lecture 11 - Architecture Layer<a class="headerlink" href="#so2-lecture-11-architecture-layer" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="lec11-arch-slides.html">View slides</a></p>
+<span class="admonition-so2-lecture-11-architecture-layer"></span><div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-introduction simple">
+<li>Overview of the arch layer</li>
+<li>Overview of the boot process</li>
+</ul>
+</div>
+<div class="section" id="overview-of-the-arch-layer">
+<h2>Overview of the arch layer<a class="headerlink" href="#overview-of-the-arch-layer" title="Permalink to this headline">¶</a></h2>
+<a class="admonition-overview-of-the-arch-layer reference internal image-reference" href="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png"><img alt="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png" class="admonition-overview-of-the-arch-layer" src="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png" style="height: 100%;" /></a>
+<div class="section" id="boot-strap">
+<h3>Boot strap<a class="headerlink" href="#boot-strap" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-bootstrap simple">
+<li>The first kernel code that runs</li>
+<li>Typically runs with the MMU disabled</li>
+<li>Move / Relocate kernel code</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>Boot strap<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-bootstrap simple">
+<li>The first kernel code that runs</li>
+<li>Typically runs with the MMU disabled</li>
+<li>Copy bootloader arguments and determine kernel run location</li>
+<li>Move / relocate kernel code to final location</li>
+<li>Initial MMU setup - map the kernel</li>
+</ul>
+</div>
+<div class="section" id="memory-setup">
+<h3>Memory setup<a class="headerlink" href="#memory-setup" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-memory-setup simple">
+<li>Determine available memory and setup the boot memory allocator</li>
+<li>Manages memory regions before the page allocator is setup</li>
+<li>Bootmem - used a bitmap to track free blocks</li>
+<li>Memblock - deprecates bootmem and adds support for memory ranges<ul>
+<li>Supports both physical and virtual addresses</li>
+<li>support NUMA architectures</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="mmu-management">
+<h3>MMU management<a class="headerlink" href="#mmu-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-mmu-management simple">
+<li>Implements the generic page table manipulation APIs: types,
+accessors, flags</li>
+<li>Implement TLB management APIs: flush, invalidate</li>
+</ul>
+</div>
+<div class="section" id="thread-management">
+<h3>Thread Management<a class="headerlink" href="#thread-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-thread-management simple">
+<li>Defines the thread type (struct thread_info) and implements
+functions for allocating threads (if needed)</li>
+<li>Implement <code class="xref c c-func docutils literal"><span class="pre">copy_thread()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">switch_context()</span></code></li>
+</ul>
+</div>
+<div class="section" id="time-management">
+<h3>Time Management<a class="headerlink" href="#time-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-timer-management simple">
+<li>Setup the timer tick and provide a time source</li>
+<li>Mostly transitioned to platform drivers<ul>
+<li>clock_event_device - for scheduling timers</li>
+<li>clocksource - for reading the time</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="irqs-and-exception-management">
+<h3>IRQs and exception management<a class="headerlink" href="#irqs-and-exception-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-irqs-and-exception-management simple">
+<li>Define interrupt and exception handlers / entry points</li>
+<li>Setup priorities</li>
+<li>Platform drivers for interrupt controllers</li>
+</ul>
+</div>
+<div class="section" id="system-calls">
+<h3>System calls<a class="headerlink" href="#system-calls" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-system-calls simple">
+<li>Define system call entry point(s)</li>
+<li>Implement user-space access primitives (e.g. copy_to_user)</li>
+</ul>
+</div>
+<div class="section" id="platform-drivers">
+<h3>Platform Drivers<a class="headerlink" href="#platform-drivers" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-platform-drivers simple">
+<li>Platform and architecture specific drivers</li>
+<li>Bindings to platform device enumeration methods (e.g. device tree
+or ACPI)</li>
+</ul>
+</div>
+<div class="section" id="machine-specific-code">
+<h3>Machine specific code<a class="headerlink" href="#machine-specific-code" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-machine-specific-code simple">
+<li>Some architectures use a &quot;machine&quot; / &quot;platform&quot; abstraction</li>
+<li>Typical for architecture used in embedded systems with a lot of
+variety (e.g. ARM, powerPC)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="overview-of-the-boot-process">
+<h2>Overview of the boot process<a class="headerlink" href="#overview-of-the-boot-process" title="Permalink to this headline">¶</a></h2>
+<asciinema-player src="../_images/boot.cast"></asciinema-player></div>
+</div>
 
 
            </div>
