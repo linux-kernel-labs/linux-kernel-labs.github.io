@@ -143,6 +143,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#launching-new-threads">2. Launching New Threads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#i-o-latency">4. I/O Latency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bad-elf">5. Bad ELF</a></li>
 </ul>
 </li>
 </ul>
@@ -690,6 +691,38 @@ or is it a scheduling issue?</p>
 <code class="docutils literal"><span class="pre">iosnoop.sh</span></code> script in order to inspect what I/O is happening at a
 certain point.</p>
 </div>
+</div>
+<div class="section" id="bad-elf">
+<h3>5. Bad ELF<a class="headerlink" href="#bad-elf" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is a bonus exercise that has been tested on a native Linux system.
+It may run under the QEMU virtual machine, but the behavior was weird in our testing.
+We recommend you used a native (or VirtualBox or VMware) Linux system.</p>
+</div>
+<p>We managed to build (as part of a <a class="reference external" href="https://github.com/unikraft/unikraft">Unikraft</a> build) an ELF file that is valid when doing static analysis, but that can't be executed.
+The file is <code class="docutils literal"><span class="pre">bad_elf</span></code>, located in the <code class="docutils literal"><span class="pre">5-bad-elf/</span></code> folder.</p>
+<p>Running it triggers a <em>segmentation fault</em> message.
+Running it using <code class="docutils literal"><span class="pre">strace</span></code> show an error with <code class="docutils literal"><span class="pre">execve()</span></code>.</p>
+<div class="code highlight-none"><div class="highlight"><pre><span></span>... skels/kernel_profiling/5-bad-elf$ ./bad_elf
+Segmentation fault
+
+... skels/kernel_profiling/5-bad-elf$ strace ./bad_elf
+execve(&quot;./bad_elf&quot;, [&quot;./bad_elf&quot;], 0x7ffc3349ba50 /* 70 vars \*/) = -1 EINVAL (Invalid argument)
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SI_KERNEL, si_addr=NULL} ---
++++ killed by SIGSEGV +++
+Segmentation fault (core dumped)
+</pre></div>
+</div>
+<p>The ELF file itself is valid:</p>
+<div class="code highlight-none"><div class="highlight"><pre><span></span>... skels/kernel_profiling/5-bad-elf$ readelf -a bad_elf
+</pre></div>
+</div>
+<p>The issue is to be detected in the kernel.</p>
+<p>Use either <code class="docutils literal"><span class="pre">perf</span></code>, or, better yet <a class="reference external" href="https://jvns.ca/blog/2017/03/19/getting-started-with-ftrace/">ftrace</a> to inspect the kernel function calls done by the program.
+Identify the function call that sends out the <code class="docutils literal"><span class="pre">SIGSEGV</span></code> signal.
+Identify the cause of the issue.
+Find that cause in the <a class="reference external" href="https://linux.die.net/man/5/elf">manual page elf(5)</a>.</p>
 </div>
 </div>
 </div>
