@@ -1,36 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>File system drivers (Part 2) &mdash; The Linux Kernel  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>File system drivers (Part 2) &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript">
+      <script>
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
               VERSION:'',
@@ -41,47 +22,27 @@
               SOURCELINK_SUFFIX: '.txt'
           };
       </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Networking" href="networking.html" />
     <link rel="prev" title="File system drivers (Part 1)" href="filesystems_part1.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> The Linux Kernel
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 5.10.14
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -89,18 +50,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
 </ul>
@@ -137,7 +87,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#inode-operations">Inode operations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#getting-an-inode">Getting an inode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#superoperations">Superoperations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">inode_operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inode-operations-1">inode_operations</a></li>
 </ul>
 </li>
 </ul>
@@ -193,71 +143,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">The Linux Kernel</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>File system drivers (Part 2)</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/labs/filesystems_part2.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="file-system-drivers-part-2">
 <h1>File system drivers (Part 2)<a class="headerlink" href="#file-system-drivers-part-2" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
@@ -398,8 +307,8 @@ The <code class="xref c c-func docutils literal"><span class="pre">alloc_inode()
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="id1">
-<h4>inode_operations<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="inode-operations-1">
+<h4>inode_operations<a class="headerlink" href="#inode-operations-1" title="Permalink to this headline">¶</a></h4>
 <p>The inode operations are described by the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode_operations</span></code> structure.</p>
 <p>Inodes are of several types: file, directory, special file (pipe, fifo), block device, character device, link etc.
 For this reason, the operations that an inode needs to implement are different for each type of inode.
@@ -1029,8 +938,8 @@ Follow the implementation of <code class="docutils literal"><span class="pre">ra
 <p class="last">You do not need to define the function of type <code class="docutils literal"><span class="pre">set_page_dirty</span></code>.</p>
 </div>
 <p>Initialize the <code class="docutils literal"><span class="pre">i_mapping-&gt;a_ops</span></code> field of the inode structure to <code class="docutils literal"><span class="pre">myfs_aops</span></code>.</p>
-<div class="section" id="id2">
-<h5>Testing<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h5>
+<div class="section" id="testing-1">
+<h5>Testing<a class="headerlink" href="#testing-1" title="Permalink to this headline">¶</a></h5>
 <p>For testing, we use the steps described in the previous exercise.
 In addition to those steps, we will now be able to read, write and modify a file using commands like the ones below:</p>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> <span class="nb">echo</span> <span class="s2">&quot;chocolate&quot;</span> &gt; /mnt/myfs/peanuts.txt
@@ -1109,8 +1018,8 @@ Ignore dentries that have an <code class="docutils literal"><span class="pre">in
 <p>For each valid entry, there is an existing call <code class="xref c c-func docutils literal"><span class="pre">dir_emit()</span></code> with the appropriate parameters. This is the call that sends the dentries to the caller (and then to user space).</p>
 <p class="last">Check the call examples in <code class="xref c c-func docutils literal"><span class="pre">qnx6_readdir()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">minix_readdir()</span></code>.</p>
 </div>
-<div class="section" id="id3">
-<h5>Testing<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h5>
+<div class="section" id="testing-2">
+<h5>Testing<a class="headerlink" href="#testing-2" title="Permalink to this headline">¶</a></h5>
 <p>Once the module is done, we can test the listing of the root directory contents.
 To do this, we compile the kernel module (<code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code>) and copy the result to the virtual machine together with the test scripts (<code class="docutils literal"><span class="pre">minfs/user/test-minfs-{0,1}.sh</span></code>) and the formatting utility (<code class="docutils literal"><span class="pre">minfs/user/mkfs.minfs</span></code>) using <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code>, then start the machine.</p>
 <div class="admonition note">
@@ -1166,8 +1075,8 @@ Use pointer arithmetics to get entries of type <code class="docutils literal"><s
 If you do not find any dentry, then the <code class="docutils literal"><span class="pre">final_de</span></code> variable will have the value <code class="docutils literal"><span class="pre">NULL</span></code>, the value with which it was initialized.</p>
 </div>
 <p>Comment the <code class="docutils literal"><span class="pre">simple_lookup</span></code> call in the <code class="docutils literal"><span class="pre">minfs_lookup</span></code> function to invoke the implementation of <code class="docutils literal"><span class="pre">minfs_readdir</span></code>.</p>
-<div class="section" id="id4">
-<h5>Testing<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h5>
+<div class="section" id="testing-3">
+<h5>Testing<a class="headerlink" href="#testing-3" title="Permalink to this headline">¶</a></h5>
 <p>For testing, we use the steps described in the previous exercise.
 The long file listing (<code class="docutils literal"><span class="pre">ls</span> <span class="pre">-l</span></code>) of the contents of a directory (root directory) will display permissions and other file-specific information:</p>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> ls -l /mnt/minfs
@@ -1243,8 +1152,8 @@ The block contains at most <code class="docutils literal"><span class="pre">MINF
 </div></blockquote>
 <p class="last">Then mark the buffer dirty.</p>
 </div>
-<div class="section" id="id5">
-<h5>Testing<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h5>
+<div class="section" id="testing-4">
+<h5>Testing<a class="headerlink" href="#testing-4" title="Permalink to this headline">¶</a></h5>
 <p>For testing, we use the steps described in the previous exercise.
 Now we can create files within the file system:</p>
 <div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">#</span> touch /mnt/minfs/peanuts.txt
@@ -1268,50 +1177,33 @@ To be complete, the implementations needs function to delete files, create and d
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="networking.html" class="btn btn-neutral float-right" title="Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="filesystems_part1.html" class="btn btn-neutral float-left" title="File system drivers (Part 1)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="networking.html" class="btn btn-neutral float-right" title="Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright The kernel development community.
-
-    </p>
+    <p>&#169; Copyright The kernel development community.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

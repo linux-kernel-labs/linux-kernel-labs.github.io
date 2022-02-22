@@ -1,36 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>File system drivers (Part 1) &mdash; The Linux Kernel  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>File system drivers (Part 1) &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript">
+      <script>
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
               VERSION:'',
@@ -41,47 +22,27 @@
               SOURCELINK_SUFFIX: '.txt'
           };
       </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="File system drivers (Part 2)" href="filesystems_part2.html" />
     <link rel="prev" title="Block Device Drivers" href="block_device_drivers.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> The Linux Kernel
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 5.10.14
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -89,18 +50,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
 </ul>
@@ -138,11 +88,11 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#inode">inode</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Localization:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#localization-1">Localization:</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#file">file</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Localization:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#localization-2">Localization:</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#dentry">dentry</a></li>
@@ -194,71 +144,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">The Linux Kernel</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>File system drivers (Part 1)</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/labs/filesystems_part1.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="file-system-drivers-part-1">
 <h1>File system drivers (Part 1)<a class="headerlink" href="#file-system-drivers-part-1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
@@ -338,8 +247,8 @@ Each entity is treated as an object: it has a associated data structure and a po
 <p class="first admonition-title">Note</p>
 <p class="last">Usually, the inode does not contain the file name. The name is stored by the <code class="xref c c-type docutils literal"><span class="pre">dentry</span></code> entity. This way, an inode can have multiple names (hardlinks).</p>
 </div>
-<div class="section" id="id1">
-<h4>Localization:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="localization-1">
+<h4>Localization:<a class="headerlink" href="#localization-1" title="Permalink to this headline">¶</a></h4>
 <p>Like the superblock, the <code class="xref c c-type docutils literal"><span class="pre">inode</span></code> has a disk correspondent.
 The inodes on disk are generally grouped into a specialized area (inode area) separated from the data blocks area; In some file systems, the equivalents of the inodes are spread in the file system structure (FAT);
 As a VFS entity, an inode is represented by the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code> and by the operations with it defined in the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">inode_operations</span></code>.</p>
@@ -365,8 +274,8 @@ From the point of view of the process, the file entity abstracts the file. From 
 <li>pointer to the associated inode (eventually its index).</li>
 </ul>
 </div></blockquote>
-<div class="section" id="id2">
-<h4>Localization:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="localization-2">
+<h4>Localization:<a class="headerlink" href="#localization-2" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><ul class="simple">
 <li>The structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code> is the associated VFS entity, and the structure <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> represents the operations associated with it.</li>
@@ -1011,50 +920,33 @@ We verify that the file system was mounted by investigating the <code class="doc
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="filesystems_part2.html" class="btn btn-neutral float-right" title="File system drivers (Part 2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="block_device_drivers.html" class="btn btn-neutral float-left" title="Block Device Drivers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="filesystems_part2.html" class="btn btn-neutral float-right" title="File system drivers (Part 2)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright The kernel development community.
-
-    </p>
+    <p>&#169; Copyright The kernel development community.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
