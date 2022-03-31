@@ -627,7 +627,7 @@ This function is called indirectly when information about the inode associated w
 Such a function performs the following operations:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Searces in the directory indicated by <code class="docutils literal"><span class="pre">dir</span></code> the entry having the name <code class="docutils literal"><span class="pre">dentry-&gt;d_name.name</span></code>.</li>
+<li>Searches in the directory indicated by <code class="docutils literal"><span class="pre">dir</span></code> the entry having the name <code class="docutils literal"><span class="pre">dentry-&gt;d_name.name</span></code>.</li>
 <li>If the entry is found, it will return <code class="docutils literal"><span class="pre">NULL</span></code> and associate the inode with the name using the <code class="xref c c-func docutils literal"><span class="pre">d_add()</span></code> function.</li>
 <li>Otherwise, returns <code class="docutils literal"><span class="pre">ERR_PTR</span></code>.</li>
 </ol>
