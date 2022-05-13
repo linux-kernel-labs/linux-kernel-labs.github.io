@@ -127,9 +127,9 @@ After we setup our VCPU in real or long mode we can finally start running code o
 
 1. We copy to the vm memory the guest code, `memcpy(vm->mem, guest_code, guest_code_size)` The guest code will be available in two variables which will be discussed below.
 2. In a infinite loop we run the following:
-  * We call ``KVM_RUN`` on the VCPU file descriptor to run the VPCU
-  * Through the shared memory of the VCPU we check the ``exit_reason`` parameter to see if the guest has made any requests:
-  * We will handle the following VMEXITs: `KVM_EXIT_MMIO`, `KVM_EXIT_IO` and ``KVM_EXIT_HLT``. ``KVM_EXIT_MMIO`` is triggered when the VM writes to a MMIO address. ``KVM_EXIT_IO`` is called when the VM calls ``inb`` or ``outb``. ``KVM_EXIT_HLT`` is called when the user does a ``hlt`` instruction.
+3. We call ``KVM_RUN`` on the VCPU file descriptor to run the VPCU
+4. Through the shared memory of the VCPU we check the ``exit_reason`` parameter to see if the guest has made any requests:
+5. We will handle the following VMEXITs: `KVM_EXIT_MMIO`, `KVM_EXIT_IO` and ``KVM_EXIT_HLT``. ``KVM_EXIT_MMIO`` is triggered when the VM writes to a MMIO address. ``KVM_EXIT_IO`` is called when the VM calls ``inb`` or ``outb``. ``KVM_EXIT_HLT`` is called when the user does a ``hlt`` instruction.
 
 Guest code
 ----------
@@ -198,7 +198,7 @@ the state `DEVICE_READY` the devices is ready and only data is now being sent be
 configuration commands).
 
 The frontend from the guest uses the following commands: ``R``, ``C`` and ``D`` (ascii characters). ``R`` instructs the device to reset. ``C`` tells the device to go to the configuration state and finally ``D``
-sends the device to the ``DEVICE_READY`` state in which data will be sent. We use ``DEVICE_OK`` in the guest to acknowledge a state of a device and send commands to switch state.
+sends the device to the ``DEVICE_READY`` state in which data will be sent. We use ``DEVICE_OK`` in the guest to acknowledge a state of a device and send commands to switch state through ``driver_status``.
 
 To better understand hwo all this works, we will study the following example:
 
@@ -206,7 +206,7 @@ To better understand hwo all this works, we will study the following example:
 2. The VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the ``R`` letter it will initiate the reset procedure of the device and set the device status to `DEVICE_RESET`. The device will clear all the buffers for the queues.
 3. After the reset handling, the guest must set the status of the device to ``DRIVER_ACK``. Next, the guest will write to the TX queue the letter `C` to configure the device.
 4. In the VMM we will initialize the config process when letter ``C`` is received. It will set the device status to ``DEVICE_CONFIG`` and add a new entry in the device_table
-5. After the configuration process is finished, the guest will set the driver status to ``DRIVER_OK`` and send to the backend the ``D`` command.
+5. After the configuration process is finished, the guest will set the driver status (use ``driver_status`` from ``struct device``) to ``DRIVER_OK`` and send to the backend the ``D`` command.
 6. On receving ``D``, the VMM will set the device status to ``DEVICE_READY``. From now on all messages passed between the frontend and backend will be printed by the VMM to the standard output.
 7. The guest will write in the TX queue "Ana are mere" which will be printed to the standard output by the VMM.
 
@@ -234,13 +234,14 @@ that may be used when implementing `SIMVIRTIO`
 	#define DRIVER_OK 0x4
 	#define DRIVER_RESET 0x8000
 
+    /* Structure for a device */
 	typedef struct device {
 	    uint32_t magic;
 	    uint8_t device_status;
 	    uint8_t driver_status;
 	    uint8_t max_queue_len;
 	} device_t;
-
+driver_status
 	typedef struct device_table {
 	    uint16_t count;
 	    uint64_t device_addresses[10];
@@ -256,7 +257,7 @@ Tasks
 5. **10p** Implement pooling as opposed to VMEXIT. We will use the macro `USE_POOLING` to switch this option on and off.
 6. **10p** Add profiling code. Measure the number of VMEXITs triggered by the VMM.
 
-**Note: you may find extra hints through the skeleton. **
+**Note: you may find extra hints through the skeleton.**
 
 Submitting the assigment
 ------------------------

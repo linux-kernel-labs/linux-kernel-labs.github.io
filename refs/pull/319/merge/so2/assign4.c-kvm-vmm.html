@@ -28,7 +28,9 @@
         <script src="../_static/asciinema-player.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction" href="../lectures/intro.html" />
+    <link rel="prev" title="Assignment 4.b - SO2 Transport Protocol" href="assign4.b-transport-protocol.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,8 +51,71 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Operating Systems 2</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4.a-pitix.html">Assignment 4.a - PITIX Filesystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4.b-transport-protocol.html">Assignment 4.b - SO2 Transport Protocol</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 4.b - SO2 Virtual Machine Manager with KVM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-virtual-machine-manager">I. Virtual Machine Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#initialize-the-vmm">1. Initialize the VMM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-vm">Running the VM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup-real-mode">Setup real mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setup-long-mode">Setup long mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running">Running</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#guest-code">Guest code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#simvirtio">SIMVIRTIO</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#controller-queues">Controller queues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protocol-description">Protocol description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#device-structures">Device structures</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tasks">Tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submitting-the-assigment">Submitting the assigment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#penalties">Penalties</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tldr">TLDR</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -105,6 +170,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
       <li>Assignment 4.b - SO2 Virtual Machine Manager with KVM</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/so2/assign4.c-kvm-vmm.rst.txt" rel="nofollow"> View page source</a>
@@ -220,14 +286,10 @@ most programs nowdays need 64 bits addresses, and such we will need to switch to
 <ol class="arabic simple">
 <li>We copy to the vm memory the guest code, <cite>memcpy(vm-&gt;mem, guest_code, guest_code_size)</cite> The guest code will be available in two variables which will be discussed below.</li>
 <li>In a infinite loop we run the following:</li>
-</ol>
-<blockquote>
-<div><ul class="simple">
 <li>We call <code class="docutils literal"><span class="pre">KVM_RUN</span></code> on the VCPU file descriptor to run the VPCU</li>
 <li>Through the shared memory of the VCPU we check the <code class="docutils literal"><span class="pre">exit_reason</span></code> parameter to see if the guest has made any requests:</li>
 <li>We will handle the following VMEXITs: <cite>KVM_EXIT_MMIO</cite>, <cite>KVM_EXIT_IO</cite> and <code class="docutils literal"><span class="pre">KVM_EXIT_HLT</span></code>. <code class="docutils literal"><span class="pre">KVM_EXIT_MMIO</span></code> is triggered when the VM writes to a MMIO address. <code class="docutils literal"><span class="pre">KVM_EXIT_IO</span></code> is called when the VM calls <code class="docutils literal"><span class="pre">inb</span></code> or <code class="docutils literal"><span class="pre">outb</span></code>. <code class="docutils literal"><span class="pre">KVM_EXIT_HLT</span></code> is called when the user does a <code class="docutils literal"><span class="pre">hlt</span></code> instruction.</li>
-</ul>
-</div></blockquote>
+</ol>
 </div>
 <div class="section" id="guest-code">
 <h3>Guest code<a class="headerlink" href="#guest-code" title="Permalink to this headline">¶</a></h3>
@@ -316,14 +378,14 @@ negotiate different parameters. In our case, our very simple protocol uses a har
 the state <cite>DEVICE_READY</cite> the devices is ready and only data is now being sent between the guest and vmm (e.g. all calls of circ_bbuf_push/circ_bbuf_pop are data such as the string &quot;Ana are mere&quot;, not
 configuration commands).</p>
 <p>The frontend from the guest uses the following commands: <code class="docutils literal"><span class="pre">R</span></code>, <code class="docutils literal"><span class="pre">C</span></code> and <code class="docutils literal"><span class="pre">D</span></code> (ascii characters). <code class="docutils literal"><span class="pre">R</span></code> instructs the device to reset. <code class="docutils literal"><span class="pre">C</span></code> tells the device to go to the configuration state and finally <code class="docutils literal"><span class="pre">D</span></code>
-sends the device to the <code class="docutils literal"><span class="pre">DEVICE_READY</span></code> state in which data will be sent. We use <code class="docutils literal"><span class="pre">DEVICE_OK</span></code> in the guest to acknowledge a state of a device and send commands to switch state.</p>
+sends the device to the <code class="docutils literal"><span class="pre">DEVICE_READY</span></code> state in which data will be sent. We use <code class="docutils literal"><span class="pre">DEVICE_OK</span></code> in the guest to acknowledge a state of a device and send commands to switch state through <code class="docutils literal"><span class="pre">driver_status</span></code>.</p>
 <p>To better understand hwo all this works, we will study the following example:</p>
 <ol class="arabic simple">
 <li>The guest writes in the TX queue (queue 0) the ascii code for <code class="docutils literal"><span class="pre">R</span></code> which will result in a <code class="docutils literal"><span class="pre">VMEXIT</span></code></li>
 <li>The VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the <code class="docutils literal"><span class="pre">R</span></code> letter it will initiate the reset procedure of the device and set the device status to <cite>DEVICE_RESET</cite>. The device will clear all the buffers for the queues.</li>
 <li>After the reset handling, the guest must set the status of the device to <code class="docutils literal"><span class="pre">DRIVER_ACK</span></code>. Next, the guest will write to the TX queue the letter <cite>C</cite> to configure the device.</li>
 <li>In the VMM we will initialize the config process when letter <code class="docutils literal"><span class="pre">C</span></code> is received. It will set the device status to <code class="docutils literal"><span class="pre">DEVICE_CONFIG</span></code> and add a new entry in the device_table</li>
-<li>After the configuration process is finished, the guest will set the driver status to <code class="docutils literal"><span class="pre">DRIVER_OK</span></code> and send to the backend the <code class="docutils literal"><span class="pre">D</span></code> command.</li>
+<li>After the configuration process is finished, the guest will set the driver status (use <code class="docutils literal"><span class="pre">driver_status</span></code> from <code class="docutils literal"><span class="pre">struct</span> <span class="pre">device</span></code>) to <code class="docutils literal"><span class="pre">DRIVER_OK</span></code> and send to the backend the <code class="docutils literal"><span class="pre">D</span></code> command.</li>
 <li>On receving <code class="docutils literal"><span class="pre">D</span></code>, the VMM will set the device status to <code class="docutils literal"><span class="pre">DEVICE_READY</span></code>. From now on all messages passed between the frontend and backend will be printed by the VMM to the standard output.</li>
 <li>The guest will write in the TX queue &quot;Ana are mere&quot; which will be printed to the standard output by the VMM.</li>
 </ol>
@@ -338,28 +400,36 @@ sends the device to the <code class="docutils literal"><span class="pre">DEVICE_
 <h3>Device structures<a class="headerlink" href="#device-structures" title="Permalink to this headline">¶</a></h3>
 <p>We provide you with the <cite>device</cite> and <cite>device_table</cite> structures as well as macros
 that may be used when implementing <cite>SIMVIRTIO</cite></p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define MAGIC_VALUE 0x74726976</span>
-<span class="cp">#define DEVICE_RESET 0x0</span>
-<span class="cp">#define DEVICE_CONFIG 0x2</span>
-<span class="cp">#define DEVICE_READY 0x4</span>
-<span class="cp">#define DRIVER_ACK 0x0</span>
-<span class="cp">#define DRIVER 0x2</span>
-<span class="cp">#define DRIVER_OK 0x4</span>
-<span class="cp">#define DRIVER_RESET 0x8000</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span>    <span class="cp">#define MAGIC_VALUE 0x74726976</span>
+    <span class="cp">#define DEVICE_RESET 0x0</span>
+    <span class="cp">#define DEVICE_CONFIG 0x2</span>
+    <span class="cp">#define DEVICE_READY 0x4</span>
+    <span class="cp">#define DRIVER_ACK 0x0</span>
+    <span class="cp">#define DRIVER 0x2</span>
+    <span class="cp">#define DRIVER_OK 0x4</span>
+    <span class="cp">#define DRIVER_RESET 0x8000</span>
 
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
-    <span class="kt">uint32_t</span> <span class="n">magic</span><span class="p">;</span>
-    <span class="kt">uint8_t</span> <span class="n">device_status</span><span class="p">;</span>
-    <span class="kt">uint8_t</span> <span class="n">driver_status</span><span class="p">;</span>
-    <span class="kt">uint8_t</span> <span class="n">max_queue_len</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">device_t</span><span class="p">;</span>
-
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">device_table</span> <span class="p">{</span>
-    <span class="kt">uint16_t</span> <span class="n">count</span><span class="p">;</span>
-    <span class="kt">uint64_t</span> <span class="n">device_addresses</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
- <span class="p">}</span> <span class="n">device_table_t</span><span class="p">;</span>
+<span class="cm">/* Structure for a device */</span>
+    <span class="k">typedef</span> <span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
+        <span class="kt">uint32_t</span> <span class="n">magic</span><span class="p">;</span>
+        <span class="kt">uint8_t</span> <span class="n">device_status</span><span class="p">;</span>
+        <span class="kt">uint8_t</span> <span class="n">driver_status</span><span class="p">;</span>
+        <span class="kt">uint8_t</span> <span class="n">max_queue_len</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">device_t</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="docutils">
+<dt>driver_status</dt>
+<dd><dl class="first last docutils">
+<dt>typedef struct device_table {</dt>
+<dd><blockquote class="first">
+<div>uint16_t count;
+uint64_t device_addresses[10];</div></blockquote>
+<p class="last">} device_table_t;</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="tasks">
@@ -372,7 +442,7 @@ that may be used when implementing <cite>SIMVIRTIO</cite></p>
 <li><strong>10p</strong> Implement pooling as opposed to VMEXIT. We will use the macro <cite>USE_POOLING</cite> to switch this option on and off.</li>
 <li><strong>10p</strong> Add profiling code. Measure the number of VMEXITs triggered by the VMM.</li>
 </ol>
-<p><a href="#system-message-1"><span class="problematic" id="problematic-1">**</span></a>Note: you may find extra hints through the skeleton. **</p>
+<p><strong>Note: you may find extra hints through the skeleton.</strong></p>
 <div class="section" id="submitting-the-assigment">
 <h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
 <p>The assignment archive will be submitted on <strong>Moodle</strong>, according to the rules on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/reguli-notare#reguli_de_trimitere_a_temelor">rules page</a>.</p>
@@ -439,7 +509,10 @@ that may be used when implementing <cite>SIMVIRTIO</cite></p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="assign4.b-transport-protocol.html" class="btn btn-neutral float-left" title="Assignment 4.b - SO2 Transport Protocol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lectures/intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
