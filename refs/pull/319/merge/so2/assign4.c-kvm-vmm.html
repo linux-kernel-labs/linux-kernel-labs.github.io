@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assignment 4.b - SO2 Virtual Machine Manager with KVM &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>Assignment 4.c - SO2 Virtual Machine Manager with KVM &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
       <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
@@ -84,7 +84,7 @@
 <li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign4.a-pitix.html">Assignment 4.a - PITIX Filesystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign4.b-transport-protocol.html">Assignment 4.b - SO2 Transport Protocol</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 4.b - SO2 Virtual Machine Manager with KVM</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 4.c - SO2 Virtual Machine Manager with KVM</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#i-virtual-machine-manager">I. Virtual Machine Manager</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#initialize-the-vmm">1. Initialize the VMM</a></li>
 </ul>
@@ -171,7 +171,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
-      <li>Assignment 4.b - SO2 Virtual Machine Manager with KVM</li>
+      <li>Assignment 4.c - SO2 Virtual Machine Manager with KVM</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/so2/assign4.c-kvm-vmm.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -181,8 +181,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="assignment-4-b-so2-virtual-machine-manager-with-kvm">
-<h1>Assignment 4.b - SO2 Virtual Machine Manager with KVM<a class="headerlink" href="#assignment-4-b-so2-virtual-machine-manager-with-kvm" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="assignment-4-c-so2-virtual-machine-manager-with-kvm">
+<h1>Assignment 4.c - SO2 Virtual Machine Manager with KVM<a class="headerlink" href="#assignment-4-c-so2-virtual-machine-manager-with-kvm" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>Deadline: <strong class="command">Tuesday, 26 May 2022, 23:00</strong></li>
 <li>This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.</li>
@@ -200,6 +200,7 @@ to enable the communication between the two components. The protocol is called S
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">vm</span> <span class="p">{</span>
         <span class="kt">int</span> <span class="n">sys_fd</span><span class="p">;</span>
         <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+        <span class="cm">/* Memory of the VM */</span>
         <span class="kt">char</span> <span class="o">*</span><span class="n">mem</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">virtual_machine</span><span class="p">;</span>
 </pre></div>

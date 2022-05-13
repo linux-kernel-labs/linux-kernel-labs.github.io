@@ -1,5 +1,5 @@
 =====================================================
-Assignment 4.b - SO2 Virtual Machine Manager with KVM
+Assignment 4.c - SO2 Virtual Machine Manager with KVM
 =====================================================
 
 - Deadline: :command:`Tuesday, 26 May 2022, 23:00`
@@ -27,6 +27,7 @@ A VM will be represented in general by three elements, a file descriptor used to
 	typedef struct vm {
 		int sys_fd;
 		int fd;
+		/* Memory of the VM */
 		char *mem;
 	} virtual_machine;
 
