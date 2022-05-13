@@ -6,7 +6,7 @@ Assignment 4.c - SO2 Virtual Machine Manager with KVM
 - This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.
 
 In this assignment we will work on a simple Virtual Machine Manager (VMM). We will be using the KVM API
-from the Linux kernel. 
+from the Linux kernel. We will be working in **user space** for this homework.
 
 The assignment has two components: the VM code and the VMM code. We will be using a very simple protocol
 to enable the communication between the two components. The protocol is called SIMVIRTIO.
@@ -251,6 +251,9 @@ driver_status
 
 Tasks
 =====
+You may find the skeleton for this homework in ``linux-labs/tools/labs/templates/assignments/7-kvm-vmm``.
+
+
 1. **20p** Implement a simple VMM that runs the code from `guest_16_bits`. We will be running the VCPU in read mode for this task
 2. **20p** Extend the previous implementation to run the VCPU in real mode. We will be running the `guest_32_bits` example
 3. **30p** Implement the `SIMVIRTIO` protocol. We will write code in `guest_32_bits` to use the `SIMVIRTIO` for communication between the vmm and guest. We will send the message "Ana are mere!" from the guest to the VMM.

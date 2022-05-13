@@ -188,7 +188,7 @@
 <li>This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.</li>
 </ul>
 <p>In this assignment we will work on a simple Virtual Machine Manager (VMM). We will be using the KVM API
-from the Linux kernel.</p>
+from the Linux kernel. We will be working in <strong>user space</strong> for this homework.</p>
 <p>The assignment has two components: the VM code and the VMM code. We will be using a very simple protocol
 to enable the communication between the two components. The protocol is called SIMVIRTIO.</p>
 <div class="section" id="i-virtual-machine-manager">
@@ -435,6 +435,7 @@ uint64_t device_addresses[10];</div></blockquote>
 </div>
 <div class="section" id="tasks">
 <h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<p>You may find the skeleton for this homework in <code class="docutils literal"><span class="pre">linux-labs/tools/labs/templates/assignments/7-kvm-vmm</span></code>.</p>
 <ol class="arabic simple">
 <li><strong>20p</strong> Implement a simple VMM that runs the code from <cite>guest_16_bits</cite>. We will be running the VCPU in read mode for this task</li>
 <li><strong>20p</strong> Extend the previous implementation to run the VCPU in real mode. We will be running the <cite>guest_32_bits</cite> example</li>
