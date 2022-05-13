@@ -107,13 +107,15 @@ need to configure several CPU registers.
 2. We will need to set ``cs.selector`` and ``cs.base`` to 0. We will use ``KVM_SET_SREGS`` to set the registers.
 3. Next we will clear all ``FLAGS`` bits via the ``rflags`` register, this means setting ``rflags`` to 2 since bit 1 must always be to 1. We alo set the ``RIP`` register to 0.
 
+We will run only the simple `guest_16_bits` guest code in real mode, we will switch to `long_mod` for the second part of the assignment.
+
 Setup long mode
 ---------------
 
 Read mode is all right for very simple guests, such as the one found in the folder `guest_16_bits`. But,
 most programs nowdays need 64 bits addresses, and such we will need to switch to long mode. The following article from OSDev presents all the necessary information about  [Setting Up Long Mode](https://wiki.osdev.org/Setting_Up_Long_Mode).
 
-In ``vcpu.h``, you may found helpful macros such as CR0_PE, CR0_MP, CR0_ET, etc. 
+In ``vcpu.h``, you may found helpful macros such as CR0_PE, CR0_MP, CR0_ET, etc. You will need to configure ``pml4``, ``pdpt`` and ``pd`` as well as the registers ``cr3``, ``cr4``, ``cr0`` and ``efer`` and the code segment (``kvm_segment`` and ``cs``.)
 
 Since we will running a more complex program, we will also create a small stack for our program
 ``regs.rsp = 1 << 20;``. Don't forget to set the RIP and RFLAGS registers.
@@ -132,16 +134,16 @@ After we setup our VCPU in real or long mode we can finally start running code o
 Guest code
 ----------
 
-The VM that is running is also called guest. We will be using the guest to test our implementation.
+The VM that is running is also called guest. We have two guest implementation for this homework `guest_16_bits` and `guest_32_bits`. In the first
+part of the assignment we will run the `guest_16_bits`, whereas for the second part where we implement `SIMVIRTIO` we will run `guest_32_bits`.
 
-1. To test the implementation before implementing SIMVIRTIO. The guest will write at address 400 and the RAX register the value 42.
-2. To test a more complicated implementation,we will extend the previous program to also write "Hello, world!\n" on port `0xE9` using the `outb` instruction.
-3. To test the implementation of `SIMVIRTIO`, we will 
 
 How do we get the guest code? The guest code is available at the following static pointers guest16, guest16_end-guest16. The linker script is populating them.
 
 
-## SIMVIRTIO:
+SIMVIRTIO
+=========
+
 From the communication between the guest and the VMM we will implement a very simple protocol called ``SIMVIRTIO``. It's a simplified version of the real protocol used in the real world called virtio.
 
 Configuration space:
@@ -157,17 +159,20 @@ Configuration space:
 Controller queues
 -----------------
 
-We provide you with the following structures and methods for the ``SIMVIRTIO`` implementation.
+In ``SIMVIRTIO`` we are using a ring buffer over the shared memory between the VMM and guest. For this homework
+we provide you with a ring buffer implementation in ``queue.h``. Using the provided queue is optional.
 
 .. code-block:: c
 
 	typedef uint8_t q_elem_t;
+
 	typedef struct queue_control {
 	    // Ptr to current available head/producer index in 'buffer'.
 	    unsigned head;
 	    // Ptr to last index in 'buffer' used by consumer.
 	    unsigned tail;
 	} queue_control_t;
+
 	typedef struct simqueue {
 	    // MMIO queue control.
 	    volatile queue_control_t *q_ctrl;
@@ -176,16 +181,47 @@ We provide you with the following structures and methods for the ``SIMVIRTIO`` i
 	    // Queue data buffer.
 	    q_elem_t *buffer;
 	} simqueue_t;
-	int circ_bbuf_push(simqueue_t *q, q_elem_t data)
-	{
-	}
-	int circ_bbuf_pop(simqueue_t *q, q_elem_t *data)
-	{
-	}
+        
+        /* Pushes a byte to the queue */
+	int circ_bbuf_push(simqueue_t *q, q_elem_t data);
+	/* Pops a byte from the queue */
+        int circ_bbuf_pop(simqueue_t *q, q_elem_t *data);
 
+
+Protocol description
+--------------------
+The devices has three states: ``DEVICE_RESET``. ``DEVICE_CONFIG`` and ``DEVICE_READY``. These are all set in the backend. We will cycle between them when receiving commands
+from the guest. The device starts in the `DEVICE_RESET` state where the queue is
+empty and the queue's buffers are set to 0. The next state, `DEVICE_CONFIG` is used for device configuraitons, basically this is when the device frontend (int the guest) and backend (in the VMM)
+negotiate different parameters. In our case, our very simple protocol uses a hard coded queue length and **nothing needed for configuration**. Lastly, in
+the state `DEVICE_READY` the devices is ready and only data is now being sent between the guest and vmm (e.g. all calls of circ_bbuf_push/circ_bbuf_pop are data such as the string "Ana are mere", not
+configuration commands).
+
+The frontend from the guest uses the following commands: ``R``, ``C`` and ``D`` (ascii characters). ``R`` instructs the device to reset. ``C`` tells the device to go to the configuration state and finally ``D``
+sends the device to the ``DEVICE_READY`` state in which data will be sent. We use ``DEVICE_OK`` in the guest to acknowledge a state of a device and send commands to switch state.
+
+To better understand hwo all this works, we will study the following example:
+
+1. The guest writes in the TX queue (queue 0) the ascii code for ``R`` which will result in a ``VMEXIT``
+2. The VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the ``R`` letter it will initiate the reset procedure of the device and set the device status to `DEVICE_RESET`. The device will clear all the buffers for the queues.
+3. After the reset handling, the guest must set the status of the device to ``DRIVER_ACK``. Next, the guest will write to the TX queue the letter `C` to configure the device.
+4. In the VMM we will initialize the config process when letter ``C`` is received. It will set the device status to ``DEVICE_CONFIG`` and add a new entry in the device_table
+5. After the configuration process is finished, the guest will set the driver status to ``DRIVER_OK`` and send to the backend the ``D`` command.
+6. On receving ``D``, the VMM will set the device status to ``DEVICE_READY``. From now on all messages passed between the frontend and backend will be printed by the VMM to the standard output.
+7. The guest will write in the TX queue "Ana are mere" which will be printed to the standard output by the VMM.
+
+**We will store the device table at heap_phys_addr + 0xa**.
+
+We will be implementing the following handles:
+
+* MMIO (read/write) VMEXIT
+* PIO (read/write) VMEXIT
 
 Device structures
 -----------------
+
+We provide you with the `device` and `device_table` structures as well as macros
+that may be used when implementing `SIMVIRTIO`
 
 .. code-block:: c
 
@@ -197,36 +233,30 @@ Device structures
 	#define DRIVER 0x2
 	#define DRIVER_OK 0x4
 	#define DRIVER_RESET 0x8000
+
 	typedef struct device {
 	    uint32_t magic;
 	    uint8_t device_status;
 	    uint8_t driver_status;
 	    uint8_t max_queue_len;
 	} device_t;
+
 	typedef struct device_table {
 	    uint16_t count;
 	    uint64_t device_addresses[10];
 	 } device_table_t;
  
 
-We will be implementing the following handles:
-* MMIO (read/write) VMEXIT
-* PIO (read/write) VMEXIT
-
-Using the skeleton
-==================
-
-Debugging
-=========
-
-
 Tasks
 =====
-1. 30p Implement a simple VMM that runs the code from `guest_16_bits`. We will be running the VCPU in read mode for this task
-2. 20p Extend the previous implementation to run the VCPU in real mode. We will be running the `guest_32_bits` example
-3. 30p Implement the `SIMVIRTIO` protocol.
-4. 10p Implement pooling as opposed to VMEXIT. We will use the macro `USE_POOLING` to switch this option on and off.
-5. 10p Add profiling code. Measure the number of VMEXITs triggered by the VMM.
+1. **20p** Implement a simple VMM that runs the code from `guest_16_bits`. We will be running the VCPU in read mode for this task
+2. **20p** Extend the previous implementation to run the VCPU in real mode. We will be running the `guest_32_bits` example
+3. **30p** Implement the `SIMVIRTIO` protocol. We will write code in `guest_32_bits` to use the `SIMVIRTIO` for communication between the vmm and guest. We will send the message "Ana are mere!" from the guest to the VMM.
+4. **10p** Implement a set of tests to automatically verify the corectness of your `SIMVIRTIO` implementation.
+5. **10p** Implement pooling as opposed to VMEXIT. We will use the macro `USE_POOLING` to switch this option on and off.
+6. **10p** Add profiling code. Measure the number of VMEXITs triggered by the VMM.
+
+**Note: you may find extra hints through the skeleton. **
 
 Submitting the assigment
 ------------------------
@@ -269,10 +299,13 @@ Information about assigments penalties can be found on the `General Directions p
 
 In exceptional cases (the assigment passes the tests by not complying with the requirements) and if the assigment does not pass all the tests, the grade will may decrease more than mentioned above.
 
-## References
-We recommend you the following readings before starting to work on the homework:
-* [KVM host in a few lines of code](https://zserge.com/posts/kvm/)
+References
+==========
 
+We recommend you the following readings before starting to work on the homework:
+
+* `KVM host in a few lines of code <https://zserge.com/posts/kvm/>`__. 
+* `Virtio Devices High-Level Design <https://projectacrn.github.io/latest/developer-guides/hld/hld-virtio-devices.html/>`__. 
   
 TLDR
 ----
@@ -282,8 +315,7 @@ TLDR
 3. We switch to long mode and run the more complex guest from `guest_32_bits`
 4. We implement the SIMVIRTIO protocol. We will describe how it behaves in the following subtasks.
 5. The guest writes in the TX queue (queue 0) the ascii code for `R` which will result in a `VMEXIT`
-6. the VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the
-`R` letter it will initiate the reser procedure of the device and set the device status to `DEVICE_RESET`
+6. the VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the `R` letter it will initiate the reser procedure of the device and set the device status to `DEVICE_RESET`
 7. After the reset handling, the guest must set the status of the device to `DRIVER_ACK`. After this, the guest will write to the TX queue the letter `C`
 8. In the VMM we will initialize the config process when letter `C` is received.It will set the device status to `DEVICE_CONFIG` and add a new entry in the device_table
 9. After the configuration process is finished, the guest will set the driver status to `DRIVER_OK`

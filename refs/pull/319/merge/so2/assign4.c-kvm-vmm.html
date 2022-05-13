@@ -204,12 +204,13 @@ need to configure several CPU registers.</p>
 <li>We will need to set <code class="docutils literal"><span class="pre">cs.selector</span></code> and <code class="docutils literal"><span class="pre">cs.base</span></code> to 0. We will use <code class="docutils literal"><span class="pre">KVM_SET_SREGS</span></code> to set the registers.</li>
 <li>Next we will clear all <code class="docutils literal"><span class="pre">FLAGS</span></code> bits via the <code class="docutils literal"><span class="pre">rflags</span></code> register, this means setting <code class="docutils literal"><span class="pre">rflags</span></code> to 2 since bit 1 must always be to 1. We alo set the <code class="docutils literal"><span class="pre">RIP</span></code> register to 0.</li>
 </ol>
+<p>We will run only the simple <cite>guest_16_bits</cite> guest code in real mode, we will switch to <cite>long_mod</cite> for the second part of the assignment.</p>
 </div>
 <div class="section" id="setup-long-mode">
 <h3>Setup long mode<a class="headerlink" href="#setup-long-mode" title="Permalink to this headline">¶</a></h3>
 <p>Read mode is all right for very simple guests, such as the one found in the folder <cite>guest_16_bits</cite>. But,
 most programs nowdays need 64 bits addresses, and such we will need to switch to long mode. The following article from OSDev presents all the necessary information about  [Setting Up Long Mode](<a class="reference external" href="https://wiki.osdev.org/Setting_Up_Long_Mode">https://wiki.osdev.org/Setting_Up_Long_Mode</a>).</p>
-<p>In <code class="docutils literal"><span class="pre">vcpu.h</span></code>, you may found helpful macros such as CR0_PE, CR0_MP, CR0_ET, etc.</p>
+<p>In <code class="docutils literal"><span class="pre">vcpu.h</span></code>, you may found helpful macros such as CR0_PE, CR0_MP, CR0_ET, etc. You will need to configure <code class="docutils literal"><span class="pre">pml4</span></code>, <code class="docutils literal"><span class="pre">pdpt</span></code> and <code class="docutils literal"><span class="pre">pd</span></code> as well as the registers <code class="docutils literal"><span class="pre">cr3</span></code>, <code class="docutils literal"><span class="pre">cr4</span></code>, <code class="docutils literal"><span class="pre">cr0</span></code> and <code class="docutils literal"><span class="pre">efer</span></code> and the code segment (<code class="docutils literal"><span class="pre">kvm_segment</span></code> and <code class="docutils literal"><span class="pre">cs</span></code>.)</p>
 <p>Since we will running a more complex program, we will also create a small stack for our program
 <code class="docutils literal"><span class="pre">regs.rsp</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">20;</span></code>. Don't forget to set the RIP and RFLAGS registers.</p>
 </div>
@@ -230,15 +231,14 @@ most programs nowdays need 64 bits addresses, and such we will need to switch to
 </div>
 <div class="section" id="guest-code">
 <h3>Guest code<a class="headerlink" href="#guest-code" title="Permalink to this headline">¶</a></h3>
-<p>The VM that is running is also called guest. We will be using the guest to test our implementation.</p>
-<ol class="arabic simple">
-<li>To test the implementation before implementing SIMVIRTIO. The guest will write at address 400 and the RAX register the value 42.</li>
-<li>To test a more complicated implementation,we will extend the previous program to also write &quot;Hello, world!n&quot; on port <cite>0xE9</cite> using the <cite>outb</cite> instruction.</li>
-<li>To test the implementation of <cite>SIMVIRTIO</cite>, we will</li>
-</ol>
+<p>The VM that is running is also called guest. We have two guest implementation for this homework <cite>guest_16_bits</cite> and <cite>guest_32_bits</cite>. In the first
+part of the assignment we will run the <cite>guest_16_bits</cite>, whereas for the second part where we implement <cite>SIMVIRTIO</cite> we will run <cite>guest_32_bits</cite>.</p>
 <p>How do we get the guest code? The guest code is available at the following static pointers guest16, guest16_end-guest16. The linker script is populating them.</p>
-<p>## SIMVIRTIO:
-From the communication between the guest and the VMM we will implement a very simple protocol called <code class="docutils literal"><span class="pre">SIMVIRTIO</span></code>. It's a simplified version of the real protocol used in the real world called virtio.</p>
+</div>
+</div>
+<div class="section" id="simvirtio">
+<h2>SIMVIRTIO<a class="headerlink" href="#simvirtio" title="Permalink to this headline">¶</a></h2>
+<p>From the communication between the guest and the VMM we will implement a very simple protocol called <code class="docutils literal"><span class="pre">SIMVIRTIO</span></code>. It's a simplified version of the real protocol used in the real world called virtio.</p>
 <p>Configuration space:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -278,17 +278,19 @@ R/w</td>
 </tr>
 </tbody>
 </table>
-</div>
 <div class="section" id="controller-queues">
 <h3>Controller queues<a class="headerlink" href="#controller-queues" title="Permalink to this headline">¶</a></h3>
-<p>We provide you with the following structures and methods for the <code class="docutils literal"><span class="pre">SIMVIRTIO</span></code> implementation.</p>
+<p>In <code class="docutils literal"><span class="pre">SIMVIRTIO</span></code> we are using a ring buffer over the shared memory between the VMM and guest. For this homework
+we provide you with a ring buffer implementation in <code class="docutils literal"><span class="pre">queue.h</span></code>. Using the provided queue is optional.</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="kt">uint8_t</span> <span class="n">q_elem_t</span><span class="p">;</span>
+
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">queue_control</span> <span class="p">{</span>
     <span class="c1">// Ptr to current available head/producer index in &#39;buffer&#39;.</span>
     <span class="kt">unsigned</span> <span class="n">head</span><span class="p">;</span>
     <span class="c1">// Ptr to last index in &#39;buffer&#39; used by consumer.</span>
     <span class="kt">unsigned</span> <span class="n">tail</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">queue_control_t</span><span class="p">;</span>
+
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">simqueue</span> <span class="p">{</span>
     <span class="c1">// MMIO queue control.</span>
     <span class="k">volatile</span> <span class="n">queue_control_t</span> <span class="o">*</span><span class="n">q_ctrl</span><span class="p">;</span>
@@ -297,17 +299,45 @@ R/w</td>
     <span class="c1">// Queue data buffer.</span>
     <span class="n">q_elem_t</span> <span class="o">*</span><span class="n">buffer</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">simqueue_t</span><span class="p">;</span>
-<span class="kt">int</span> <span class="nf">circ_bbuf_push</span><span class="p">(</span><span class="n">simqueue_t</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">q_elem_t</span> <span class="n">data</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="p">}</span>
-<span class="kt">int</span> <span class="nf">circ_bbuf_pop</span><span class="p">(</span><span class="n">simqueue_t</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">q_elem_t</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="p">}</span>
+
+<span class="cm">/* Pushes a byte to the queue */</span>
+<span class="kt">int</span> <span class="nf">circ_bbuf_push</span><span class="p">(</span><span class="n">simqueue_t</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">q_elem_t</span> <span class="n">data</span><span class="p">);</span>
+<span class="cm">/* Pops a byte from the queue */</span>
+<span class="kt">int</span> <span class="nf">circ_bbuf_pop</span><span class="p">(</span><span class="n">simqueue_t</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">q_elem_t</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
+<div class="section" id="protocol-description">
+<h3>Protocol description<a class="headerlink" href="#protocol-description" title="Permalink to this headline">¶</a></h3>
+<p>The devices has three states: <code class="docutils literal"><span class="pre">DEVICE_RESET</span></code>. <code class="docutils literal"><span class="pre">DEVICE_CONFIG</span></code> and <code class="docutils literal"><span class="pre">DEVICE_READY</span></code>. These are all set in the backend. We will cycle between them when receiving commands
+from the guest. The device starts in the <cite>DEVICE_RESET</cite> state where the queue is
+empty and the queue's buffers are set to 0. The next state, <cite>DEVICE_CONFIG</cite> is used for device configuraitons, basically this is when the device frontend (int the guest) and backend (in the VMM)
+negotiate different parameters. In our case, our very simple protocol uses a hard coded queue length and <strong>nothing needed for configuration</strong>. Lastly, in
+the state <cite>DEVICE_READY</cite> the devices is ready and only data is now being sent between the guest and vmm (e.g. all calls of circ_bbuf_push/circ_bbuf_pop are data such as the string &quot;Ana are mere&quot;, not
+configuration commands).</p>
+<p>The frontend from the guest uses the following commands: <code class="docutils literal"><span class="pre">R</span></code>, <code class="docutils literal"><span class="pre">C</span></code> and <code class="docutils literal"><span class="pre">D</span></code> (ascii characters). <code class="docutils literal"><span class="pre">R</span></code> instructs the device to reset. <code class="docutils literal"><span class="pre">C</span></code> tells the device to go to the configuration state and finally <code class="docutils literal"><span class="pre">D</span></code>
+sends the device to the <code class="docutils literal"><span class="pre">DEVICE_READY</span></code> state in which data will be sent. We use <code class="docutils literal"><span class="pre">DEVICE_OK</span></code> in the guest to acknowledge a state of a device and send commands to switch state.</p>
+<p>To better understand hwo all this works, we will study the following example:</p>
+<ol class="arabic simple">
+<li>The guest writes in the TX queue (queue 0) the ascii code for <code class="docutils literal"><span class="pre">R</span></code> which will result in a <code class="docutils literal"><span class="pre">VMEXIT</span></code></li>
+<li>The VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the <code class="docutils literal"><span class="pre">R</span></code> letter it will initiate the reset procedure of the device and set the device status to <cite>DEVICE_RESET</cite>. The device will clear all the buffers for the queues.</li>
+<li>After the reset handling, the guest must set the status of the device to <code class="docutils literal"><span class="pre">DRIVER_ACK</span></code>. Next, the guest will write to the TX queue the letter <cite>C</cite> to configure the device.</li>
+<li>In the VMM we will initialize the config process when letter <code class="docutils literal"><span class="pre">C</span></code> is received. It will set the device status to <code class="docutils literal"><span class="pre">DEVICE_CONFIG</span></code> and add a new entry in the device_table</li>
+<li>After the configuration process is finished, the guest will set the driver status to <code class="docutils literal"><span class="pre">DRIVER_OK</span></code> and send to the backend the <code class="docutils literal"><span class="pre">D</span></code> command.</li>
+<li>On receving <code class="docutils literal"><span class="pre">D</span></code>, the VMM will set the device status to <code class="docutils literal"><span class="pre">DEVICE_READY</span></code>. From now on all messages passed between the frontend and backend will be printed by the VMM to the standard output.</li>
+<li>The guest will write in the TX queue &quot;Ana are mere&quot; which will be printed to the standard output by the VMM.</li>
+</ol>
+<p><strong>We will store the device table at heap_phys_addr + 0xa</strong>.</p>
+<p>We will be implementing the following handles:</p>
+<ul class="simple">
+<li>MMIO (read/write) VMEXIT</li>
+<li>PIO (read/write) VMEXIT</li>
+</ul>
+</div>
 <div class="section" id="device-structures">
 <h3>Device structures<a class="headerlink" href="#device-structures" title="Permalink to this headline">¶</a></h3>
+<p>We provide you with the <cite>device</cite> and <cite>device_table</cite> structures as well as macros
+that may be used when implementing <cite>SIMVIRTIO</cite></p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define MAGIC_VALUE 0x74726976</span>
 <span class="cp">#define DEVICE_RESET 0x0</span>
 <span class="cp">#define DEVICE_CONFIG 0x2</span>
@@ -316,38 +346,33 @@ R/w</td>
 <span class="cp">#define DRIVER 0x2</span>
 <span class="cp">#define DRIVER_OK 0x4</span>
 <span class="cp">#define DRIVER_RESET 0x8000</span>
+
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
     <span class="kt">uint32_t</span> <span class="n">magic</span><span class="p">;</span>
     <span class="kt">uint8_t</span> <span class="n">device_status</span><span class="p">;</span>
     <span class="kt">uint8_t</span> <span class="n">driver_status</span><span class="p">;</span>
     <span class="kt">uint8_t</span> <span class="n">max_queue_len</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">device_t</span><span class="p">;</span>
+
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">device_table</span> <span class="p">{</span>
     <span class="kt">uint16_t</span> <span class="n">count</span><span class="p">;</span>
     <span class="kt">uint64_t</span> <span class="n">device_addresses</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
  <span class="p">}</span> <span class="n">device_table_t</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>We will be implementing the following handles:
-* MMIO (read/write) VMEXIT
-* PIO (read/write) VMEXIT</p>
 </div>
-</div>
-<div class="section" id="using-the-skeleton">
-<h2>Using the skeleton<a class="headerlink" href="#using-the-skeleton" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="debugging">
-<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="tasks">
 <h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>30p Implement a simple VMM that runs the code from <cite>guest_16_bits</cite>. We will be running the VCPU in read mode for this task</li>
-<li>20p Extend the previous implementation to run the VCPU in real mode. We will be running the <cite>guest_32_bits</cite> example</li>
-<li>30p Implement the <cite>SIMVIRTIO</cite> protocol.</li>
-<li>10p Implement pooling as opposed to VMEXIT. We will use the macro <cite>USE_POOLING</cite> to switch this option on and off.</li>
-<li>10p Add profiling code. Measure the number of VMEXITs triggered by the VMM.</li>
+<li><strong>20p</strong> Implement a simple VMM that runs the code from <cite>guest_16_bits</cite>. We will be running the VCPU in read mode for this task</li>
+<li><strong>20p</strong> Extend the previous implementation to run the VCPU in real mode. We will be running the <cite>guest_32_bits</cite> example</li>
+<li><strong>30p</strong> Implement the <cite>SIMVIRTIO</cite> protocol. We will write code in <cite>guest_32_bits</cite> to use the <cite>SIMVIRTIO</cite> for communication between the vmm and guest. We will send the message &quot;Ana are mere!&quot; from the guest to the VMM.</li>
+<li><strong>10p</strong> Implement a set of tests to automatically verify the corectness of your <cite>SIMVIRTIO</cite> implementation.</li>
+<li><strong>10p</strong> Implement pooling as opposed to VMEXIT. We will use the macro <cite>USE_POOLING</cite> to switch this option on and off.</li>
+<li><strong>10p</strong> Add profiling code. Measure the number of VMEXITs triggered by the VMM.</li>
 </ol>
+<p><a href="#system-message-1"><span class="problematic" id="problematic-1">**</span></a>Note: you may find extra hints through the skeleton. **</p>
 <div class="section" id="submitting-the-assigment">
 <h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
 <p>The assignment archive will be submitted on <strong>Moodle</strong>, according to the rules on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/reguli-notare#reguli_de_trimitere_a_temelor">rules page</a>.</p>
@@ -381,10 +406,15 @@ R/w</td>
 <h3>Penalties<a class="headerlink" href="#penalties" title="Permalink to this headline">¶</a></h3>
 <p>Information about assigments penalties can be found on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/general">General Directions page</a>.</p>
 <p>In exceptional cases (the assigment passes the tests by not complying with the requirements) and if the assigment does not pass all the tests, the grade will may decrease more than mentioned above.</p>
-<p>## References
-We recommend you the following readings before starting to work on the homework:
-* [KVM host in a few lines of code](<a class="reference external" href="https://zserge.com/posts/kvm/">https://zserge.com/posts/kvm/</a>)</p>
 </div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>We recommend you the following readings before starting to work on the homework:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://zserge.com/posts/kvm/">KVM host in a few lines of code</a>.</li>
+<li><a class="reference external" href="https://projectacrn.github.io/latest/developer-guides/hld/hld-virtio-devices.html/">Virtio Devices High-Level Design</a>.</li>
+</ul>
 <div class="section" id="tldr">
 <h3>TLDR<a class="headerlink" href="#tldr" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
@@ -393,16 +423,15 @@ We recommend you the following readings before starting to work on the homework:
 <li>We switch to long mode and run the more complex guest from <cite>guest_32_bits</cite></li>
 <li>We implement the SIMVIRTIO protocol. We will describe how it behaves in the following subtasks.</li>
 <li>The guest writes in the TX queue (queue 0) the ascii code for <cite>R</cite> which will result in a <cite>VMEXIT</cite></li>
+<li>the VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the <cite>R</cite> letter it will initiate the reser procedure of the device and set the device status to <cite>DEVICE_RESET</cite></li>
+<li>After the reset handling, the guest must set the status of the device to <cite>DRIVER_ACK</cite>. After this, the guest will write to the TX queue the letter <cite>C</cite></li>
+<li>In the VMM we will initialize the config process when letter <cite>C</cite> is received.It will set the device status to <cite>DEVICE_CONFIG</cite> and add a new entry in the device_table</li>
+<li>After the configuration process is finished, the guest will set the driver status to <cite>DRIVER_OK</cite></li>
+<li>Nex, the VMM will set the device status to <cite>DEVICE_READY</cite></li>
+<li>The guest will write in the TX queue &quot;Ana are mere&quot; and will execute a halt</li>
+<li>The VMM will print to the STDOUT the message received and execute the halt request</li>
+<li>Finally, the VMM will verify that at address 0x400 and in register RAX is stored the value 42</li>
 </ol>
-<p>6. the VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the
-<cite>R</cite> letter it will initiate the reser procedure of the device and set the device status to <cite>DEVICE_RESET</cite>
-7. After the reset handling, the guest must set the status of the device to <cite>DRIVER_ACK</cite>. After this, the guest will write to the TX queue the letter <cite>C</cite>
-8. In the VMM we will initialize the config process when letter <cite>C</cite> is received.It will set the device status to <cite>DEVICE_CONFIG</cite> and add a new entry in the device_table
-9. After the configuration process is finished, the guest will set the driver status to <cite>DRIVER_OK</cite>
-10. Nex, the VMM will set the device status to <cite>DEVICE_READY</cite>
-11. The guest will write in the TX queue &quot;Ana are mere&quot; and will execute a halt
-12. The VMM will print to the STDOUT the message received and execute the halt request
-13. Finally, the VMM will verify that at address 0x400 and in register RAX is stored the value 42</p>
 </div>
 </div>
 </div>
