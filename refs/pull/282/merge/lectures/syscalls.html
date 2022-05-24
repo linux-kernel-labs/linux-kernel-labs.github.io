@@ -1,36 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>System Calls &mdash; The Linux Kernel  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>System Calls &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript">
+      <script>
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
               VERSION:'',
@@ -41,47 +22,27 @@
               SOURCELINK_SUFFIX: '.txt'
           };
       </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Processes" href="processes.html" />
     <link rel="prev" title="Introduction" href="intro.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> The Linux Kernel
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 5.10.14
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -89,18 +50,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
 </ul>
@@ -154,71 +104,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">The Linux Kernel</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>System Calls</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/lectures/syscalls.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="system-calls">
 <h1>System Calls<a class="headerlink" href="#system-calls" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="syscalls-slides.html">View slides</a></p>
@@ -234,7 +143,7 @@
 <h2>Linux system calls implementation<a class="headerlink" href="#linux-system-calls-implementation" title="Permalink to this headline">¶</a></h2>
 <p>At a high level system calls are &quot;services&quot; offered by the kernel to
 user applications and they resemble library APIs in that they are
-described as a function call with a name, parameters and return value.</p>
+described as a function call with a name, parameters, and return value.</p>
 <p class="admonition-system-calls-as-kernel-services">&nbsp;</p>
 <img alt="../_images/ditaa-e76e44cad2e92f2134ab77f6a09605b29524d039.png" src="../_images/ditaa-e76e44cad2e92f2134ab77f6a09605b29524d039.png" />
 <p>However, on a closer look, we can see that system calls are actually
@@ -256,8 +165,8 @@ EDX, ESI, EDI, EBP.</p>
 actual system calls in order to make it easier for applications to use
 them.</p>
 <p>When a user to kernel mode transition occurs, the execution flow is
-interrupted and it is transfered to a kernel entry point. This is
-similar with how interrupts and exception are handled (in fact on some
+interrupted and it is transferred to a kernel entry point. This is
+similar to how interrupts and exceptions are handled (in fact on some
 architectures this transition happens as a result of an exception).</p>
 <p>The system call entry point will save registers (which contains values
 from user space, including system call number and system call
@@ -266,7 +175,7 @@ system call dispatcher.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">During the user - kernel mode transition the stack is also
-switched from ther user stack to the kernel stack. This is
+switched from the user stack to the kernel stack. This is
 explained in more details in the interrupts lecture.</p>
 </div>
 <img alt="../_images/ditaa-eeb919cd078d0ba5021028fa628bb47d7d6866e2.png" class="admonition-example-of-linux-system-call-setup-and-handling" src="../_images/ditaa-eeb919cd078d0ba5021028fa628bb47d7d6866e2.png" />
@@ -339,7 +248,7 @@ system call numbers to kernel functions:</p>
 <h3>System call parameters handling<a class="headerlink" href="#system-call-parameters-handling" title="Permalink to this headline">¶</a></h3>
 <p>Handling system call parameters is tricky. Since these values are
 setup by user space, the kernel can not assume correctness and must
-always verify them throughly.</p>
+always verify them thoroughly.</p>
 <p>Pointers have a few important special cases that must be checked:</p>
 <ul class="admonition-system-calls-pointer-parameters simple">
 <li>Never allow pointers to kernel-space</li>
@@ -348,14 +257,14 @@ always verify them throughly.</p>
 <p>Since system calls are executed in kernel mode, they have access to
 kernel space and if pointers are not properly checked user
 applications might get read or write access to kernel space.</p>
-<p>For example, lets consider the case where such a check is not made for
+<p>For example, let's consider the case where such a check is not made for
 the read or write system calls. If the user passes a kernel-space
 pointer to a write system call then it can get access to kernel data
 by later reading the file. If it passes a kernel-space pointer to a
 read system call then it can corrupt kernel memory.</p>
 <span class="admonition-pointers-to-kernel-space"></span><p>Likewise, if a pointer passed by the application is invalid
 (e.g. unmapped, read-only for cases where it is used for writing), it
-could &quot;crash&quot; the kernel. There two approaches that could be used:</p>
+could &quot;crash&quot; the kernel. Two approaches could be used:</p>
 <ul class="admonition-invalid-pointers-handling-approaches simple">
 <li>Check the pointer against the user address space before using it,
 or</li>
@@ -381,7 +290,7 @@ invalid</li>
 </div></blockquote>
 <p>But in the last two cases we don't have enough information to
 determine the cause of the fault.</p>
-<p>In order to solve this issue Linux uses special APIs (e.g
+<p>In order to solve this issue, Linux uses special APIs (e.g
 <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>) to accesses user space that are specially
 crafted:</p>
 <ul class="admonition-marking-kernel-code-that-accesses-user-space simple">
@@ -425,8 +334,8 @@ and used in Linux.</p>
 system call implementation, in a way that does not impact libc with
 having to track the CPU capabilities in conjunction with the kernel
 version.</p>
-<p>For example: x86 has two ways of issuing system calls: int 0x80 and
-sysenter. The later is significantly faster so it should be used when
+<p>For example, x86 has two ways of issuing system calls: int 0x80 and
+sysenter. The latter is significantly faster so it should be used when
 available. However, it is only available for processors newer than
 Pentium II and only for kernel versions greater than 2.6.</p>
 <p>With VDSO the system call interface is decided by the kernel:</p>
@@ -440,7 +349,7 @@ space</li>
 system call</li>
 </ul>
 <p class="admonition-inspecting-vdso">&nbsp;</p>
-<asciinema-player src="../_images/syscalls-vdso.cast"></asciinema-player><p>An interesting development of the VDSO are the virtual system calls
+<asciinema-player src="../_images/syscalls-vdso.cast"></asciinema-player><p>An interesting development of the VDSO is the virtual system calls
 (vsyscalls) which run directly from user space. These vsyscalls are
 also part of VDSO and they are accessing data from the VDSO page that
 is either static or modified by the kernel in a separate read-write
@@ -457,9 +366,9 @@ as vsyscalls are: getpid or gettimeofday.</p>
 <h2>Accessing user space from system calls<a class="headerlink" href="#accessing-user-space-from-system-calls" title="Permalink to this headline">¶</a></h2>
 <p>As we mentioned earlier, user space must be accessed with special APIs
 (<code class="xref c c-func docutils literal"><span class="pre">get_user()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">put_user()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">copy_from_user()</span></code>,
-<code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>) that check wether the pointer is in user space
+<code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code>) that check whether the pointer is in user space
 and also handle the fault if the pointer is invalid. In case of invalid
-pointers they return a non zero value.</p>
+pointers, they return a non-zero value.</p>
 <div class="admonition-accessing-user-space-from-system-calls highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* OK: return -EFAULT if user_ptr is invalid */</span>
 <span class="k">if</span> <span class="p">(</span><span class="n">copy_from_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">kernel_buffer</span><span class="p">,</span> <span class="n">user_ptr</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
@@ -484,8 +393,8 @@ pointers they return a non zero value.</p>
 <span class="cp">})</span>
 </pre></div>
 </div>
-<p>The implementation uses inline assembly, that allows inserting ASM
-sequences in C code and also handles access to / from variables in the
+<p>The implementation uses inline assembly, which allows inserting ASM
+sequences in C code and also handles access to/from variables in the
 ASM code.</p>
 <p>Based on the type size of the x variable, one of __get_user_1,
 __get_user_2 or __get_user_4 will be called. Also, before executing
@@ -586,7 +495,7 @@ is accessed by the fault handler:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>All it does is to set the return address to the one in the to field of
+<p>All it does is to set the return address to the one in the field of
 the exception table entry which, in case of the get_user exception
 table entry, is bad_get_user which return -EFAULT to the caller.</p>
 </div>
@@ -594,50 +503,33 @@ table entry, is bad_get_user which return -EFAULT to the caller.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="processes.html" class="btn btn-neutral float-right" title="Processes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="processes.html" class="btn btn-neutral float-right" title="Processes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright The kernel development community.
-
-    </p>
+    <p>&#169; Copyright The kernel development community.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,36 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>SO2 Lab 01 - Introduction &mdash; The Linux Kernel  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>SO2 Lab 01 - Introduction &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript">
+      <script>
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
               VERSION:'',
@@ -41,47 +22,27 @@
               SOURCELINK_SUFFIX: '.txt'
           };
       </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="SO2 Lab 02 - Kernel API" href="lab2-kernel-api.html" />
     <link rel="prev" title="SO2 Lecture 12 - Virtualization" href="lec12-virtualization.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> The Linux Kernel
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 5.10.14
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -89,18 +50,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
@@ -141,12 +91,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#printk">2. Printk</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#error">3. Error</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sub-modules">4. Sub-modules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">5. Kernel oops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-oops-1">5. Kernel oops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-parameters">6. Module parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">7. Proc info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#proc-info-1">7. Proc info</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#good-to-know">Good to know</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#good-to-know-1">Good to know</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#source-code-navigation">Source code navigation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#cscope">cscope</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#clangd">clangd</a></li>
@@ -173,12 +123,13 @@
 <li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign-chall-pitix.html">Google Challenge - PITIX Filesystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4.a-pitix.html">Assignment 4.a - PITIX Filesystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4.b-transport-protocol.html">Assignment 4.b - SO2 Transport Protocol</a></li>
 </ul>
 </li>
 </ul>
@@ -222,73 +173,31 @@
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">The Linux Kernel</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
-        
       <li>SO2 Lab 01 - Introduction</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/so2/lab1-intro.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="so2-lab-01-introduction">
 <h1>SO2 Lab 01 - Introduction<a class="headerlink" href="#so2-lab-01-introduction" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
@@ -1358,8 +1267,8 @@ two C source files.</p>
 <p>Compile, copy, boot the VM, load and unload the kernel module. Make sure messages
 are properly displayed on the console.</p>
 </div>
-<div class="section" id="id1">
-<h3>5. Kernel oops<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="kernel-oops-1">
+<h3>5. Kernel oops<a class="headerlink" href="#kernel-oops-1" title="Permalink to this headline">¶</a></h3>
 <p>Enter the directory for the task <strong>5-oops-mod</strong> and inspect the
 C source file. Notice where the problem will occur. Add the compilation flag
 <code class="docutils literal"><span class="pre">-g</span></code> in the Kbuild file.</p>
@@ -1371,7 +1280,7 @@ C source file. Notice where the problem will occur. Add the compilation flag
 address at which the oops appeared.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">Read <a href="#id4"><span class="problematic" id="id5">`Debugging`_</span></a> section of the lab.  To identify the
+<p class="last">Read <a href="#system-message-1"><span class="problematic" id="problematic-1">`Debugging`_</span></a> section of the lab.  To identify the
 address, follow the oops message and extract the value of
 the instructions pointer (<code class="docutils literal"><span class="pre">EIP</span></code>) register.</p>
 </div>
@@ -1404,8 +1313,8 @@ message shown is <code class="docutils literal"><span class="pre">Early</span> <
 the module. Find more information <a class="reference external" href="http://tldp.org/LDP/lkmpg/2.6/html/x323.html">here</a>.</p>
 </div>
 <span class="target" id="proc-info"></span></div>
-<div class="section" id="id2">
-<h3>7. Proc info<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="proc-info-1">
+<h3>7. Proc info<a class="headerlink" href="#proc-info-1" title="Permalink to this headline">¶</a></h3>
 <p>Check the skeleton for the task named <strong>7-list-proc</strong>. Add code to
 display the Process ID (<code class="docutils literal"><span class="pre">PID</span></code>) and the executable name for the current
 process.</p>
@@ -1440,8 +1349,8 @@ when the module is unloaded a process is created from the executable
 <code class="file docutils literal"><span class="pre">/sbin/rmmod</span></code>.</p>
 </div>
 </div>
-<div class="section" id="good-to-know">
-<span id="id3"></span><h2>Good to know<a class="headerlink" href="#good-to-know" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="good-to-know-1">
+<span id="good-to-know"></span><h2>Good to know<a class="headerlink" href="#good-to-know-1" title="Permalink to this headline">¶</a></h2>
 <p>The following sections contain useful information for getitng used to the Linux
 kernel code and debugging techniques.</p>
 </div>
@@ -1773,50 +1682,33 @@ simply done using the function <code class="code docutils literal"><span class="
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="lab2-kernel-api.html" class="btn btn-neutral float-right" title="SO2 Lab 02 - Kernel API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="lec12-virtualization.html" class="btn btn-neutral float-left" title="SO2 Lecture 12 - Virtualization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab2-kernel-api.html" class="btn btn-neutral float-right" title="SO2 Lab 02 - Kernel API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright The kernel development community.
-
-    </p>
+    <p>&#169; Copyright The kernel development community.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

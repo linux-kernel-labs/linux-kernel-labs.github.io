@@ -1,36 +1,17 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html4" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Deferred work &mdash; The Linux Kernel  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Deferred work &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript">
+      <script>
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
               VERSION:'',
@@ -41,47 +22,27 @@
               SOURCELINK_SUFFIX: '.txt'
           };
       </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/asciinema-player.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Block Device Drivers" href="block_device_drivers.html" />
     <link rel="prev" title="I/O access and Interrupts" href="interrupts.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> The Linux Kernel
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 5.10.14
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -89,18 +50,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
 </ul>
@@ -145,7 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#periodic-timer">2. Periodic timer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#timer-control-using-ioctl">3. Timer control using ioctl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#blocking-operations">4. Blocking operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">5. Workqueues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workqueues-1">5. Workqueues</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#kernel-thread">6. Kernel thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#buffer-shared-between-timer-and-process">7. Buffer shared between timer and process</a></li>
 </ul>
@@ -168,71 +118,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">The Linux Kernel</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Deferred work</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/labs/deferred_work.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="deferred-work">
 <h1>Deferred work<a class="headerlink" href="#deferred-work" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
@@ -331,12 +240,12 @@ have the following types defined:</p>
 <li><em>BLOCK_IOPOLL_SOFTIRQ</em> - used by the IO subsystem to increase performance when the iopoll handler is invoked;</li>
 <li><em>SCHED_SOFTIRQ</em> - load balancing</li>
 <li><em>HRTIMER_SOFTIRQ</em> - implementation of high precision timers</li>
-<li><em>RCU_SOFTIRQ</em> - implementation of RCU type mechanisms <a class="footnote-reference" href="#id2" id="id1">[1]</a></li>
+<li><em>RCU_SOFTIRQ</em> - implementation of RCU type mechanisms <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a></li>
 </ul>
-<table class="docutils footnote" frame="void" id="id2" rules="none">
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>RCU is a mechanism by which destructive operations
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td>RCU is a mechanism by which destructive operations
 (e.g. deleting an element from a chained list) are done in two
 steps: (1) removing references to deleted data and (2) freeing
 the memory of the element. The second setup is done only after
@@ -1011,8 +920,8 @@ called in the atomic context (the timer handler runs
 interrupt context).</p>
 </div>
 </div>
-<div class="section" id="id3">
-<h3>5. Workqueues<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="workqueues-1">
+<h3>5. Workqueues<a class="headerlink" href="#workqueues-1" title="Permalink to this headline">¶</a></h3>
 <p>We will modify the module to prevent the error observed in the
 previous task.</p>
 <p>To do so, lets call <code class="xref c c-func docutils literal"><span class="pre">alloc_io()</span></code> using workqueues. Schedule a
@@ -1126,50 +1035,33 @@ we may need to remove an item from the list.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="block_device_drivers.html" class="btn btn-neutral float-right" title="Block Device Drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="interrupts.html" class="btn btn-neutral float-left" title="I/O access and Interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="block_device_drivers.html" class="btn btn-neutral float-right" title="Block Device Drivers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright The kernel development community.
-
-    </p>
+    <p>&#169; Copyright The kernel development community.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
