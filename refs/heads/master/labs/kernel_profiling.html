@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SO2 Lab 12 - Kernel Profiling &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>Kernel Profiling &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
       <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
@@ -29,8 +29,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Collaboration" href="assign-collaboration.html" />
-    <link rel="prev" title="SO2 Lab 11 - Kernel Development on ARM" href="lab11-arm-kernel-development.html" /> 
+    <link rel="next" title="Virtual Machine Setup" href="../info/vm.html" />
+    <link rel="prev" title="Linux Device Model" href="device_model.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,62 +51,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 12 - Kernel Profiling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab Objectives</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#profiling-tools">Profiling Tools</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#perf">perf</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ps">ps</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time">time</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#top">top</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#profiling-methodology">Profiling Methodology</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#demo-profiling-i-o-problems">0. Demo: Profiling I/O Problems</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#investigating-reduced-responsiveness">1. Investigating Reduced Responsiveness</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#launching-new-threads">2. Launching New Threads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#i-o-latency">4. I/O Latency</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#bad-elf">5. Bad ELF</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign4.a-pitix.html">Assignment 4.a - PITIX Filesystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign4.b-transport-protocol.html">Assignment 4.b - SO2 Transport Protocol</a></li>
-</ul>
-</li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Lectures</span></p>
 <ul>
@@ -124,22 +70,43 @@
 <li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Labs</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Kernel Profiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lab-objectives">Lab Objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling-tools">Profiling Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#perf">perf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ps">ps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time">time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#top">top</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling-methodology">Profiling Methodology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#demo-profiling-i-o-problems">0. Demo: Profiling I/O Problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#investigating-reduced-responsiveness">1. Investigating Reduced Responsiveness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#launching-new-threads">2. Launching New Threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-latency">4. I/O Latency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bad-elf">5. Bad ELF</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -162,10 +129,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
-      <li>SO2 Lab 12 - Kernel Profiling</li>
+      <li>Kernel Profiling</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/so2/lab12-kernel-profiling.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/labs/kernel_profiling.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -173,8 +139,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="so2-lab-12-kernel-profiling">
-<h1>SO2 Lab 12 - Kernel Profiling<a class="headerlink" href="#so2-lab-12-kernel-profiling" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="kernel-profiling">
+<h1>Kernel Profiling<a class="headerlink" href="#kernel-profiling" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="lab-objectives">
 <h2>Lab Objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -640,8 +606,8 @@ Find that cause in the <a class="reference external" href="https://linux.die.net
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="lab11-arm-kernel-development.html" class="btn btn-neutral float-left" title="SO2 Lab 11 - Kernel Development on ARM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="assign-collaboration.html" class="btn btn-neutral float-right" title="Collaboration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="device_model.html" class="btn btn-neutral float-left" title="Linux Device Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../info/vm.html" class="btn btn-neutral float-right" title="Virtual Machine Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -84,6 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/memory_mapping.html">Memory mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labs/kernel_profiling.html">Kernel Profiling</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
@@ -899,7 +900,28 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="so2/lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="so2/lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab12-kernel-profiling.html#lab-objectives">Lab Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab12-kernel-profiling.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab12-kernel-profiling.html#profiling-tools">Profiling Tools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#perf">perf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#ps">ps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#time">time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#top">top</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab12-kernel-profiling.html#profiling-methodology">Profiling Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab12-kernel-profiling.html#exercises">Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="so2/lab12-kernel-profiling.html#demo-profiling-i-o-problems">0. Demo: Profiling I/O Problems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#investigating-reduced-responsiveness">1. Investigating Reduced Responsiveness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#launching-new-threads">2. Launching New Threads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#i-o-latency">4. I/O Latency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="so2/lab12-kernel-profiling.html#bad-elf">5. Bad ELF</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="so2/assign-collaboration.html">Collaboration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign-collaboration.html#use-github-gitlab">1. Use Github / Gitlab</a></li>
 <li class="toctree-l3"><a class="reference internal" href="so2/assign-collaboration.html#start-with-a-skeleton-for-the-assignment">2. Start with a skeleton for the assignment</a></li>
@@ -1800,6 +1822,28 @@ tools/labs/docs/Dockerfile for dependencies):</p>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#register-the-bex-misc-driver">4. Register the bex misc driver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#register-misc-device-in-the-bex-misc-probe-function">5. Register misc device in the bex_misc probe function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="labs/device_model.html#monitor-uevent-notifications">6. Monitor uevent notifications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labs/kernel_profiling.html">Kernel Profiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#lab-objectives">Lab Objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-tools">Profiling Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#perf">perf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#ps">ps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#time">time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#top">top</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#profiling-methodology">Profiling Methodology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labs/kernel_profiling.html#demo-profiling-i-o-problems">0. Demo: Profiling I/O Problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#investigating-reduced-responsiveness">1. Investigating Reduced Responsiveness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#launching-new-threads">2. Launching New Threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#i-o-latency">4. I/O Latency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labs/kernel_profiling.html#bad-elf">5. Bad ELF</a></li>
 </ul>
 </li>
 </ul>
