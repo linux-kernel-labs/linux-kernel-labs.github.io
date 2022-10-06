@@ -735,7 +735,7 @@ space, any operation that accesses the userspace being erroneous.</p>
                                      <span class="k">const</span> <span class="k">struct</span> <span class="n">blk_mq_queue_data</span> <span class="o">*</span><span class="n">bd</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">struct</span> <span class="n">request</span> <span class="o">*</span><span class="n">rq</span> <span class="o">=</span> <span class="n">bd</span><span class="o">-&gt;</span><span class="n">rq</span><span class="p">;</span>
-    <span class="k">struct</span> <span class="n">my_block_dev</span> <span class="o">*</span><span class="n">dev</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">queuedata</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">my_block_dev</span> <span class="o">*</span><span class="n">dev</span> <span class="o">=</span> <span class="n">hctx</span><span class="o">-&gt;</span><span class="n">queue</span><span class="o">-&gt;</span><span class="n">queuedata</span><span class="p">;</span>
 
     <span class="n">blk_mq_start_request</span><span class="p">(</span><span class="n">rq</span><span class="p">);</span>
 
