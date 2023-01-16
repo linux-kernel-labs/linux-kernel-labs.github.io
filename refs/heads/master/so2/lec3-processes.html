@@ -178,9 +178,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
-      <li>SO2 Lecture 03 - Processes</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lecture 03 - Processes</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/so2/lec3-processes.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -601,7 +601,7 @@ possible transitions between them:</p>
 <h3>Blocking the current thread<a class="headerlink" href="#blocking-the-current-thread" title="Permalink to this headline">¶</a></h3>
 <p>Blocking the current thread is an important operation we need to
 perform to implement efficient task scheduling - we want to run other
-treads while I/O operations complete.</p>
+threads while I/O operations complete.</p>
 <p>In order to accomplish this the following operations take place:</p>
 <ul class="admonition-blocking-the-current-thread simple">
 <li>Set the current thread state to TASK_UINTERRUPTIBLE or
@@ -965,7 +965,7 @@ needed the scheduler is called to select a new task.</p>
 </div>
 <div class="section" id="process-context">
 <h2>Process context<a class="headerlink" href="#process-context" title="Permalink to this headline">¶</a></h2>
-<p>Now that we have examined the implementation on processed and threads
+<p>Now that we have examined the implementation of processes and threads
 (tasks), how context switching occurs, how we can block, wake-up and
 preempt tasks, we can finally define what the process context is what
 are its properties:</p>

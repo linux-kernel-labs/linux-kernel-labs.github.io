@@ -146,8 +146,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Interrupts</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Interrupts</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/lectures/interrupts.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -600,7 +600,7 @@ reschedules them, they can potentially lead to (temporary) process starvation if
 checks are not put into place. Currently, the Linux kernel does not allow
 running soft irqs for more than <code class="xref c c-macro docutils literal"><span class="pre">MAX_SOFTIRQ_TIME</span></code> or rescheduling for
 more than <code class="xref c c-macro docutils literal"><span class="pre">MAX_SOFTIRQ_RESTART</span></code> consecutive times.</p>
-<p>Once these limits are reached a special kernel thread, <strong>ksoftirqd</strong> is wake-up
+<p>Once these limits are reached a special kernel thread, <strong>ksoftirqd</strong> is woken up
 and all of the rest of pending soft irqs will be run from the context of this
 kernel thread.</p>
 <span class="admonition-ksoftirqd"></span><p>Soft irqs usage is restricted, they are use by a handful of subsystems that have

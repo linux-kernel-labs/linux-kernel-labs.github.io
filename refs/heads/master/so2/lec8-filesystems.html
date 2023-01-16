@@ -164,9 +164,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
-      <li>SO2 Lecture 08 - Filesystem Management</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lecture 08 - Filesystem Management</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/so2/lec8-filesystems.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -228,8 +228,8 @@ abstractions as they used in memory:</p>
 abstractions are depicted.</p>
 <p>Multiple file descriptors can point to the same <em>file</em> because we can
 use the <code class="xref c c-func docutils literal"><span class="pre">dup()</span></code> system call to duplicate a file descriptor.</p>
-<p>Multiple <em>file</em> abstractions can point to the same <em>dentry</em> if we the
-same path multiple times.</p>
+<p>Multiple <em>file</em> abstractions can point to the same <em>dentry</em> if we open
+the same path multiple times.</p>
 <p>Multiple <em>dentries</em> can point to the same <em>inode</em> when hard links are
 used.</p>
 <p>The following diagram shows the relationship of the filesystem

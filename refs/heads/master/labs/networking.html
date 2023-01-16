@@ -136,8 +136,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Networking</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Networking</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/labs/networking.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -908,7 +908,7 @@ hook types are defined in <code class="file docutils literal"><span class="pre">
 <li><code class="docutils literal"><span class="pre">hook</span></code> is the handler called when capturing a network packet (packet sent
 as a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure). The <code class="docutils literal"><span class="pre">private</span></code> field is private information
 handed to the handler. The capture handler prototype is defined by the
-<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">nf_hookfn</span></code> type:</li>
+<code class="xref c c-type docutils literal"><span class="pre">nf_hookfn</span></code> type:</li>
 </ul>
 </div></blockquote>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">nf_hook_state</span> <span class="p">{</span>

@@ -164,9 +164,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Operating Systems 2</a> &raquo;</li>
-      <li>SO2 Lab 05 - Deferred work</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lab 05 - Deferred work</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/so2/lab5-deferred-work.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -336,8 +336,8 @@ schedules, it will run once.  Once the tasklet has run, it can be
 re-scheduled, and will run again at a later timer. Tasklets can be
 re-scheduled from their handlers.</p>
 <p>Tasklets can be masked and the following functions can be used:</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">tasklet_enable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span> <span class="p">);</span>
-<span class="kt">void</span> <span class="nf">tasklet_disable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span> <span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">tasklet_enable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">tasklet_disable</span><span class="p">(</span><span class="k">struct</span> <span class="n">tasklet_struct</span> <span class="o">*</span> <span class="n">tasklet</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Remember that since tasklets are running from softirqs, blocking calls
