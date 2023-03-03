@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing to linux-kernel-labs &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Customizing the Virtual Machine Setup" href="extra-vm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing to linux-kernel-labs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#repository-structure">Repository structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-contribution">Creating a contribution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#forking-the-repository">Forking the repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-pull-request">Creating a pull request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#making-changes-to-a-pull-request">Making changes to a Pull Request</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing to linux-kernel-labs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/info/contributing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="contributing-to-linux-kernel-labs">
+<h1>Contributing to linux-kernel-labs<a class="headerlink" href="#contributing-to-linux-kernel-labs" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">linux-kernel-labs</span></code> is an open platform.
+You can help it get better by contributing to the documentation, exercises or
+the infrastructure.
+All contributions are welcome, no matter if they are just fixes for typos or
+new sections in the documentation.</p>
+<p>All information required for making a contribution can be found in the
+<a class="reference external" href="https://github.com/linux-kernel-labs/linux">linux-kernel-labs Linux repo</a>.
+In order to change anything, you need to create a Pull Request (<code class="docutils literal"><span class="pre">PR</span></code>)
+from your own fork to this repository.
+The PR will be reviewed by the members of the team and will be merged once
+any potential issue is fixed.</p>
+<div class="section" id="repository-structure">
+<h2>Repository structure<a class="headerlink" href="#repository-structure" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/linux-kernel-labs/linux">linux-kernel-labs repo</a> is
+a fork of the Linux kernel repo, with the following additions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">/tools/labs</span></code>: contains the labs and the <a class="reference internal" href="vm.html#vm-link"><span class="std std-ref">virtual machine (VM) infrastructure</span></a><ul>
+<li><code class="docutils literal"><span class="pre">tools/labs/templates</span></code>: contains the skeletons sources</li>
+<li><code class="docutils literal"><span class="pre">tools/labs/qemu</span></code>: contains the qemu VM configuration</li>
+</ul>
+</li>
+<li><code class="docutils literal"><span class="pre">/Documentation/teaching</span></code>: contains the sources used to generate this
+documentation</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="building-the-documentation">
+<h2>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h2>
+<p>To build the documentation, navigate to <code class="docutils literal"><span class="pre">tools/labs</span></code> and run the following
+command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make docs
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The command should install all the required packages.
+In some cases, installing the packages or building the documentation might
+fail, because of broken dependencies versions.</p>
+<p>Instead of struggling to fix the dependencies, the simplest way to build
+the documentation is using a <a class="reference external" href="https://www.docker.com/">Docker</a>.
+First, install <code class="docutils literal"><span class="pre">docker</span></code> and <code class="docutils literal"><span class="pre">docker-compose</span></code> on your host, and then run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make docker-docs
+</pre></div>
+</div>
+<p class="last">The first run might take some time, but subsequent builds will be faster.</p>
+</div>
+</div>
+<div class="section" id="creating-a-contribution">
+<h2>Creating a contribution<a class="headerlink" href="#creating-a-contribution" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="forking-the-repository">
+<h3>Forking the repository<a class="headerlink" href="#forking-the-repository" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">If you haven't done it already, clone the
+<a class="reference external" href="https://github.com/linux-kernel-labs/linux">linux-kernel-labs repo</a>
+repository locally:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ mkdir -p ~/src
+$ git clone git@github.com:linux-kernel-labs/linux.git ~/src/linux
+</pre></div>
+</div>
+</li>
+<li><p class="first">Go to <a class="reference external" href="https://github.com/linux-kernel-labs/linux">https://github.com/linux-kernel-labs/linux</a>, make sure you are logged
+in and click <code class="docutils literal"><span class="pre">Fork</span></code> in the top right of the page.</p>
+</li>
+<li><p class="first">Add the forked repo as a new remote to the local repo:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ git remote add my_fork git@github.com:&lt;your_username&gt;/linux.git
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Now, you can push to your fork by using <code class="docutils literal"><span class="pre">my_fork</span></code> instead of <code class="docutils literal"><span class="pre">origin</span></code>
+(e.g. <code class="docutils literal"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">my_fork</span> <span class="pre">master</span></code>).</p>
+</div>
+<div class="section" id="creating-a-pull-request">
+<h3>Creating a pull request<a class="headerlink" href="#creating-a-pull-request" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Pull requests must be created from their own branches, which are started from
+<code class="docutils literal"><span class="pre">master</span></code>.</p>
+</div>
+<ol class="arabic simple">
+<li>Go to the master branch and make sure you have no local changes:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git checkout master
+student@eg106:~/src/linux$ git status
+On branch master
+Your branch is up-to-date with <span class="s1">&#39;origin/master&#39;</span>.
+nothing to commit, working directory clean
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>Make sure the local master branch is up-to-date with linux-kernel-labs:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git pull origin master
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You can also push the latest master to your forked repo:</p>
+<div class="last highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork master
+</pre></div>
+</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Create a new branch for your change:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git checkout -b &lt;your_branch_name&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>Make some changes and commit them. In this example, we are going to change
+<code class="docutils literal"><span class="pre">Documentation/teaching/index.rst</span></code>:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ vim Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git add Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git commit -m <span class="s2">&quot;&lt;commit message&gt;&quot;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>The commit message must include a relevant description of your change
+and the location of the changed component.</p>
+<p>Examples:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">documentation:</span> <span class="pre">index:</span> <span class="pre">Fix</span> <span class="pre">typo</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">section</span></code></li>
+<li><code class="docutils literal"><span class="pre">labs:</span> <span class="pre">block_devices:</span> <span class="pre">Change</span> <span class="pre">printk</span> <span class="pre">log</span> <span class="pre">level</span></code></li>
+</ul>
+</div></blockquote>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>Push the local branch to your forked repository:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork &lt;your_branch_name&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li>Open the Pull Request</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>Go to <a class="reference external" href="https://github.com">https://github.com</a> and open your forked repository page</li>
+<li>Click <code class="docutils literal"><span class="pre">New</span> <span class="pre">pull</span> <span class="pre">request</span></code>.</li>
+<li>Make sure base repository (left side) is <code class="docutils literal"><span class="pre">linux-kernel-labs/linux</span></code> and the
+base is master.</li>
+<li>Make sure the head repository (right side) is your forked repo and the
+compare branch is your pushed branch.</li>
+<li>Click <code class="docutils literal"><span class="pre">Create</span> <span class="pre">pull</span> <span class="pre">request</span></code>.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="making-changes-to-a-pull-request">
+<h3>Making changes to a Pull Request<a class="headerlink" href="#making-changes-to-a-pull-request" title="Permalink to this headline">¶</a></h3>
+<p>After receiving feedback for your changes, you might need to update the Pull
+Request.
+Your goal is to do a new push on the same branch. For this, follow the next steps:</p>
+<ol class="arabic simple">
+<li>Make sure your branch is still up to date with the <code class="docutils literal"><span class="pre">linux-kernel-labs</span></code> repo
+<code class="docutils literal"><span class="pre">master</span></code> branch.</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git fetch origin master
+student@eg106:~/src/linux$ git rebase FETCH_HEAD
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you are getting conflicts, it means that someone else modified the same
+files/lines as you and already merged the changes since you opened the
+Pull Request.</p>
+<p class="last">In this case, you will need to fix the conflicts by editing the
+conflicting files manually (run <code class="docutils literal"><span class="pre">git</span> <span class="pre">status</span></code> to see these files).
+After fixing the conflicts, add them using <code class="docutils literal"><span class="pre">git</span> <span class="pre">add</span></code> and then run
+<code class="docutils literal"><span class="pre">git</span> <span class="pre">rebase</span> <span class="pre">--continue</span></code>.</p>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>Apply the changes to your local files</li>
+<li>Commit the changes. We want all the changes to be in the same commit, so
+we will amend the changes to the initial commit.</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git add Documentation/teaching/index.rst
+student@eg106:~/src/linux$ git commit --amend
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>Force-push the updated commit:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>student@eg106:~/src/linux$ git push my_fork &lt;your_branch_name&gt; -f
+</pre></div>
+</div>
+<p>After this step, the Pull Request is updated. It is now up to the
+linux-kernel-labs team to review the pull request and integrate your
+contributions in the main project.</p>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="extra-vm.html" class="btn btn-neutral float-left" title="Customizing the Virtual Machine Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
