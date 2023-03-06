@@ -1,0 +1,11 @@
+              Head
+          ^ +---------------+
+skb_push  | |               | | skb_reserve
+            +---------------+ v
+            | Data          | | skb_pull
+          ^ |               | v
+skb_trim  | |          Tail |
+            +---------------+
+            |               | | skb_put
+            +---------------+ v
+                        End
