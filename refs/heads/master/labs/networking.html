@@ -964,8 +964,7 @@ accept a packet and forward it.</p>
 </div>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
-<p>Prior to version 3.11-rc2 of the Linux kernel,
-there are some restrictions related to the use of header extraction functions
+<p>There are some restrictions related to the use of header extraction functions
 from a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">sk_buff</span></code> structure set as a parameter in a netfilter
 hook. While the IP header can be obtained each time using <code class="xref c c-func docutils literal"><span class="pre">ip_hdr()</span></code>,
 the TCP and UDP headers can be obtained with <code class="xref c c-func docutils literal"><span class="pre">tcp_hdr()</span></code> and
