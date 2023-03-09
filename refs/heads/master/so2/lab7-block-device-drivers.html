@@ -671,8 +671,8 @@ structure, as described above.</p>
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">delete_block_device</span><span class="p">(</span><span class="k">struct</span> <span class="n">block_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="c1">//...</span>
-    <span class="n">blk_mq_free_tag_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">);</span>
     <span class="n">blk_cleanup_queue</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">queue</span><span class="p">);</span>
+    <span class="n">blk_mq_free_tag_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">tag_set</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="k">static</span> <span class="kt">void</span> <span class="nf">my_block_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
