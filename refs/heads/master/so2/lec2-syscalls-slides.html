@@ -201,15 +201,17 @@ back to user (e.g. calling IRET)</li>
 <span class="p">};</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sys_restart_syscall</span><span class="p">,</span> <span class="p">)</span>
-<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sys_exit</span><span class="p">,</span> <span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sys_restart_syscall</span><span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sys_exit</span><span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">sys_fork</span><span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">sys_read</span><span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">sys_write</span><span class="p">)</span>
 <span class="cp">#ifdef CONFIG_X86_32</span>
-<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">sys_fork</span><span class="p">,</span> <span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">sys_open</span><span class="p">)</span>
 <span class="cp">#else</span>
-<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">sys_fork</span><span class="p">,</span> <span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">compat_sys_open</span><span class="p">)</span>
 <span class="cp">#endif</span>
-<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">sys_read</span><span class="p">,</span> <span class="p">)</span>
-<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">sys_write</span><span class="p">,</span> <span class="p">)</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">sys_close</span><span class="p">)</span>
 </pre></div>
 </div>
 
