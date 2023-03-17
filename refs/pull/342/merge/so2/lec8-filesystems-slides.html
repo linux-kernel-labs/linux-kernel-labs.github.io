@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SO2 Lecture 08 - Filesystem Management &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="up" title="Operating Systems 2" href="index.html" />
+    <link rel="next" title="SO2 Lecture 09 - Kernel debugging" href="lec9-debugging.html" />
+    <link rel="prev" title="SO2 Lecture 07 - Memory Management" href="lec7-memory-management.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-so2-lecture-08-filesystem-management slide level-1">
+
+<h1>SO2 Lecture 08 - Filesystem Management</h1>
+
+
+
+
+
+</article>
+<article class="admonition-filesystem-management slide level-2">
+
+<h2>Filesystem Management</h2>
+
+<ul class="simple">
+<li>Filesystem abstractions</li>
+<li>Filesystem operations</li>
+<li>Linux VFS</li>
+<li>Overview of Linux I/O Management</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-filesystem-abstractions slide level-2">
+
+<h2>Filesystem Abstractions</h2>
+
+<ul class="simple">
+<li>superblock</li>
+<li>file</li>
+<li>inode</li>
+<li>dentry</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-filesystem-abstractions-in-memory slide level-2">
+
+<h2>Filesystem Abstractions - in memory</h2>
+
+<img alt="../_images/ditaa-29f54aaa1a85b819ff29cb7d101a4d646b3b0b06.png" src="../_images/ditaa-29f54aaa1a85b819ff29cb7d101a4d646b3b0b06.png" />
+
+
+
+
+</article>
+<article class="admonition-filesystem-abstractions-on-storage slide level-2">
+
+<h2>Filesystem Abstractions - on storage</h2>
+
+<img alt="../_images/ditaa-bc662dab7bb3d9ba3a37efbf69b82c513dcaadd4.png" src="../_images/ditaa-bc662dab7bb3d9ba3a37efbf69b82c513dcaadd4.png" />
+
+
+
+
+</article>
+<article class="admonition-simple-filesystem-example slide level-2">
+
+<h2>Simple filesystem example</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-8b59fc3f5245ffb5d7089dc80cf2e306c39a62d8.png" src="../_images/ditaa-8b59fc3f5245ffb5d7089dc80cf2e306c39a62d8.png" />
+
+
+
+
+</article>
+<article class="admonition-overview slide level-2">
+
+<h2>Overview</h2>
+
+<img alt="../_images/ditaa-6d39f541805ae8197b413ec9c79116382abc4dbc.png" src="../_images/ditaa-6d39f541805ae8197b413ec9c79116382abc4dbc.png" />
+
+
+
+
+</article>
+<article class="admonition-filesystem-operations slide level-2">
+
+<h2>Filesystem Operations</h2>
+
+<ul class="simple">
+<li>Mount</li>
+<li>Open a file</li>
+<li>Querying file attributes</li>
+<li>Reading data from a file</li>
+<li>Writing file to a file</li>
+<li>Creating a file</li>
+<li>Deleting a file</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-mounting-a-filesystem slide level-2">
+
+<h2>Mounting a filesystem</h2>
+
+<ul class="simple">
+<li>Input: a storage device (partition)</li>
+<li>Output: dentry pointing to the root directory</li>
+<li>Steps: check device, determine filesystem parameters, locate the root inode</li>
+<li>Example: check magic, determine block size, read the root inode and create dentry</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-opening-a-file slide level-2">
+
+<h2>Opening a file</h2>
+
+<ul class="simple">
+<li>Input: path</li>
+<li>Output: file descriptor</li>
+<li>Steps:<ul>
+<li>Determine the filesystem type</li>
+<li>For each name in the path: lookup parent dentry, load inode,
+load data, find dentry</li>
+<li>Create a new <em>file</em> that points to the last <em>dentry</em></li>
+<li>Find a free entry in the file descriptor table and set it to <em>file</em></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-querying-file-attributes slide level-2">
+
+<h2>Querying file attributes</h2>
+
+<ul class="simple">
+<li>Input: path</li>
+<li>Output: file attributes</li>
+<li>Steps:<ul>
+<li>Access <cite>file-&gt;dentry-&gt;inode</cite></li>
+<li>Read file attributes from the <em>inode</em></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-reading-data-from-a-file slide level-2">
+
+<h2>Reading data from a file</h2>
+
+<ul class="simple">
+<li>Input: file descriptor, offset, length</li>
+<li>Output: data</li>
+<li>Steps:<ul>
+<li>Access <cite>file-&gt;dentry-&gt;inode</cite></li>
+<li>Determine data blocks</li>
+<li>Copy data blocks to memory</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-writing-data-to-a-file slide level-2">
+
+<h2>Writing data to a file</h2>
+
+<ul class="simple">
+<li>Input: file descriptor, offset, length, data</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>Allocate one or more data blocks</li>
+<li>Add the allocated blocks to the inode and update file size</li>
+<li>Copy data from userspace to internal buffers and write them to
+storage</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-closing-a-file slide level-2">
+
+<h2>Closing a file</h2>
+
+<ul class="simple">
+<li>Input: file descriptor</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>set the file descriptor entry to NULL</li>
+<li>Decrement file reference counter</li>
+<li>When the counter reaches 0 free <em>file</em></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-directories slide level-2">
+
+<h2>Directories</h2>
+
+<p>Directories are special files which contain one or more dentries.</p>
+
+
+
+
+</article>
+<article class="admonition-creating-a-file slide level-2">
+
+<h2>Creating a file</h2>
+
+<ul class="simple">
+<li>Input: path</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>Determine the inode directory</li>
+<li>Read data blocks and find space for a new dentry</li>
+<li>Write back the modified inode directory data blocks</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-deleting-a-file slide level-2">
+
+<h2>Deleting a file</h2>
+
+<ul class="simple">
+<li>Input: path</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>determine the parent inode</li>
+<li>read parent inode data blocks</li>
+<li>find and erase the dentry (check for links)</li>
+<li>when last file is closed: deallocate data and inode blocks</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtual-file-system slide level-2">
+
+<h2>Virtual File System</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-e3a27a84dde42de58bcc5c360e1c4b15062507c2.png"><img alt="../_images/ditaa-e3a27a84dde42de58bcc5c360e1c4b15062507c2.png" src="../_images/ditaa-e3a27a84dde42de58bcc5c360e1c4b15062507c2.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-superblock-operations slide level-2">
+
+<h2>Superblock Operations</h2>
+
+<table class="hlist"><tr><td><ul class="simple">
+<li>fill_super</li>
+<li>put_super</li>
+<li>write_super</li>
+<li>read_inode</li>
+</ul>
+</td><td><ul class="simple">
+<li>write_inode</li>
+<li>evict_inode</li>
+<li>statfs</li>
+<li>remount_fs</li>
+</ul>
+</td></tr></table>
+
+
+
+
+</article>
+<article class="admonition-inode-operations slide level-2">
+
+<h2>Inode Operations</h2>
+
+<table class="hlist"><tr><td><ul class="simple">
+<li>create</li>
+<li>lookup</li>
+<li>link</li>
+<li>unlink</li>
+<li>symlink</li>
+<li>mkdir</li>
+</ul>
+</td><td><ul class="simple">
+<li>rmdir</li>
+<li>rename</li>
+<li>readlink</li>
+<li>follow_link</li>
+<li>put_link</li>
+<li>...</li>
+</ul>
+</td></tr></table>
+
+
+
+
+</article>
+<article class="admonition-the-inode-cache slide level-2">
+
+<h2>The Inode Cache</h2>
+
+<ul class="simple">
+<li>Caches inodes into memory to avoid costly storage operations</li>
+<li>An inode is cached until low memory conditions are triggered</li>
+<li>inodes are indexed with a hash table</li>
+<li>The inode hash function takes the superblock and inode number as
+inputs</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-the-dentry-cache slide level-2">
+
+<h2>The Dentry Cache</h2>
+
+<ul class="simple">
+<li>State:<ul>
+<li>Used – <em>d_inode</em> is valid and the <em>dentry</em> object is in use</li>
+<li>Unused – <em>d_inode</em> is valid but the dentry object is not in use</li>
+<li>Negative – <em>d_inode</em> is not valid; the inode was not yet loaded
+or the file was erased</li>
+</ul>
+</li>
+<li>Dentry cache<ul>
+<li>List of used dentries (dentry-&gt;d_state == used)</li>
+<li>List of the most recent used dentries (sorted by access time)</li>
+<li>Hash table to avoid searching the tree</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-the-page-cache slide level-2">
+
+<h2>The Page Cache</h2>
+
+<ul class="simple">
+<li>Caches file data and not block device data</li>
+<li>Uses the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">address_space</span></code> to translate file offsets
+to block offsets</li>
+<li>Used for both <cite>read</cite> / <cite>write</cite> and <cite>mmap</cite></li>
+<li>Uses a radix tree</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-struct-address-space slide level-2">
+
+<h2>struct address_space</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * struct address_space - Contents of a cacheable, mappable object.</span>
+<span class="cm"> * @host: Owner, either the inode or the block_device.</span>
+<span class="cm"> * @i_pages: Cached pages.</span>
+<span class="cm"> * @gfp_mask: Memory allocation flags to use for allocating pages.</span>
+<span class="cm"> * @i_mmap_writable: Number of VM_SHARED mappings.</span>
+<span class="cm"> * @nr_thps: Number of THPs in the pagecache (non-shmem only).</span>
+<span class="cm"> * @i_mmap: Tree of private and shared mappings.</span>
+<span class="cm"> * @i_mmap_rwsem: Protects @i_mmap and @i_mmap_writable.</span>
+<span class="cm"> * @nrpages: Number of page entries, protected by the i_pages lock.</span>
+<span class="cm"> * @nrexceptional: Shadow or DAX entries, protected by the i_pages lock.</span>
+<span class="cm"> * @writeback_index: Writeback starts here.</span>
+<span class="cm"> * @a_ops: Methods.</span>
+<span class="cm"> * @flags: Error bits and flags (AS_*).</span>
+<span class="cm"> * @wb_err: The most recent error which has occurred.</span>
+<span class="cm"> * @private_lock: For use by the owner of the address_space.</span>
+<span class="cm"> * @private_list: For use by the owner of the address_space.</span>
+<span class="cm"> * @private_data: For use by the owner of the address_space.</span>
+<span class="cm"> */</span>
+<span class="k">struct</span> <span class="n">address_space</span> <span class="p">{</span>
+  <span class="k">struct</span> <span class="n">inode</span>            <span class="o">*</span><span class="n">host</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">xarray</span>           <span class="n">i_pages</span><span class="p">;</span>
+  <span class="n">gfp_t</span>                   <span class="n">gfp_mask</span><span class="p">;</span>
+  <span class="n">atomic_t</span>                <span class="n">i_mmap_writable</span><span class="p">;</span>
+<span class="cp">#ifdef CONFIG_READ_ONLY_THP_FOR_FS</span>
+  <span class="cm">/* number of thp, only for non-shmem files */</span>
+  <span class="n">atomic_t</span>                <span class="n">nr_thps</span><span class="p">;</span>
+<span class="cp">#endif</span>
+  <span class="k">struct</span> <span class="n">rb_root_cached</span>   <span class="n">i_mmap</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">rw_semaphore</span>     <span class="n">i_mmap_rwsem</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span>           <span class="n">nrpages</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span>           <span class="n">nrexceptional</span><span class="p">;</span>
+  <span class="n">pgoff_t</span>                 <span class="n">writeback_index</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">struct</span> <span class="n">address_space_operations</span> <span class="o">*</span><span class="n">a_ops</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span>           <span class="n">flags</span><span class="p">;</span>
+  <span class="n">errseq_t</span>                <span class="n">wb_err</span><span class="p">;</span>
+  <span class="n">spinlock_t</span>              <span class="n">private_lock</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">list_head</span>        <span class="n">private_list</span><span class="p">;</span>
+  <span class="kt">void</span>                    <span class="o">*</span><span class="n">private_data</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">__attribute__</span><span class="p">((</span><span class="n">aligned</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">long</span><span class="p">))))</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">address_space_operations</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">writepage</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span><span class="n">wbc</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">readpage</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="cm">/* Write back some dirty pages from this mapping. */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">writepages</span><span class="p">)(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="cm">/* Set a page dirty.  Return true if this dirtied it */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">set_page_dirty</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">);</span>
+
+  <span class="cm">/*</span>
+<span class="cm">   * Reads in the requested pages. Unlike -&gt;readpage(), this is</span>
+<span class="cm">   * PURELY used for read-ahead!.</span>
+<span class="cm">   */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">readpages</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">filp</span><span class="p">,</span> <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">,</span>
+                  <span class="k">struct</span> <span class="n">list_head</span> <span class="o">*</span><span class="n">pages</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">nr_pages</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">readahead</span><span class="p">)(</span><span class="k">struct</span> <span class="n">readahead_control</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write_begin</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">,</span>
+                          <span class="n">loff_t</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">flags</span><span class="p">,</span>
+                          <span class="k">struct</span> <span class="n">page</span> <span class="o">**</span><span class="n">pagep</span><span class="p">,</span> <span class="kt">void</span> <span class="o">**</span><span class="n">fsdata</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write_end</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">,</span>
+                          <span class="n">loff_t</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">copied</span><span class="p">,</span>
+                          <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">fsdata</span><span class="p">);</span>
+
+  <span class="cm">/* Unfortunately this kludge is needed for FIBMAP. Don&#39;t use it */</span>
+  <span class="n">sector_t</span> <span class="p">(</span><span class="o">*</span><span class="n">bmap</span><span class="p">)(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span> <span class="n">sector_t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">invalidatepage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">releasepage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="n">gfp_t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">freepage</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">direct_IO</span><span class="p">)(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iov_iter</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
+  <span class="cm">/*</span>
+<span class="cm">   * migrate the contents of a page to the specified target. If</span>
+<span class="cm">   * migrate_mode is MIGRATE_ASYNC, it must not block.</span>
+<span class="cm">   */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">migratepage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span>
+                  <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="k">enum</span> <span class="n">migrate_mode</span><span class="p">);</span>
+  <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">isolate_page</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="n">isolate_mode_t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">putback_page</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">launder_page</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">is_partially_uptodate</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">,</span>
+                                  <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">is_dirty_writeback</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">bool</span> <span class="o">*</span><span class="p">,</span> <span class="kt">bool</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">error_remove_page</span><span class="p">)(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="cm">/* swapfile support */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">swap_activate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">swap_info_struct</span> <span class="o">*</span><span class="n">sis</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span>
+                          <span class="n">sector_t</span> <span class="o">*</span><span class="n">span</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">swap_deactivate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-reading-data slide level-2">
+
+<h2>Reading data</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * generic_file_read_iter - generic filesystem read routine</span>
+<span class="cm"> * @iocb: kernel I/O control block</span>
+<span class="cm"> * @iter: destination for the data read</span>
+<span class="cm"> *</span>
+<span class="cm"> * This is the &quot;read_iter()&quot; routine for all filesystems</span>
+<span class="cm"> * that can use the page cache directly.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The IOCB_NOWAIT flag in iocb-&gt;ki_flags indicates that -EAGAIN shall</span>
+<span class="cm"> * be returned when no data can be read without waiting for I/O requests</span>
+<span class="cm"> * to complete; it doesn&#39;t prevent readahead.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The IOCB_NOIO flag in iocb-&gt;ki_flags indicates that no new I/O</span>
+<span class="cm"> * requests shall be made for the read or for readahead.  When no data</span>
+<span class="cm"> * can be read, -EAGAIN shall be returned.  When readahead would be</span>
+<span class="cm"> * triggered, a partial, possibly empty read shall be returned.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Return:</span>
+<span class="cm"> * * number of bytes copied, even for partial reads</span>
+<span class="cm"> * * negative error code (or 0 if IOCB_NOIO) if nothing was read</span>
+<span class="cm"> */</span>
+<span class="kt">ssize_t</span>
+<span class="n">generic_file_read_iter</span><span class="p">(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="n">iocb</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iov_iter</span> <span class="o">*</span><span class="n">iter</span><span class="p">)</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Generic &quot;read page&quot; function for block devices that have the normal</span>
+<span class="cm"> * get_block functionality. This is most of the block device filesystems.</span>
+<span class="cm"> * Reads the page asynchronously --- the unlock_buffer() and</span>
+<span class="cm"> * set/clear_buffer_uptodate() functions propagate buffer state into the</span>
+<span class="cm"> * page struct once IO has completed.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">block_read_full_page</span><span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="n">get_block_t</span> <span class="o">*</span><span class="n">get_block</span><span class="p">)</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
