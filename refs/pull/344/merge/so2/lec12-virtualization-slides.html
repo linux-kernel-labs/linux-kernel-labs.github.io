@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SO2 Lecture 12 - Virtualization &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="up" title="Operating Systems 2" href="index.html" />
+    <link rel="next" title="SO2 Lab 01 - Introduction" href="lab1-intro.html" />
+    <link rel="prev" title="SO2 Lecture 11 - Architecture Layer" href="lec11-arch.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-so2-lecture-12-virtualization slide level-1">
+
+<h1>SO2 Lecture 12 - Virtualization</h1>
+
+
+
+
+
+</article>
+<article class="admonition-virtualization slide level-2">
+
+<h2>Virtualization</h2>
+
+<ul class="simple">
+<li>Emulation basics</li>
+<li>Virtualization basics</li>
+<li>Paravirtualization basics</li>
+<li>Hardware support for virtualization</li>
+<li>Overview of the Xen hypervisor</li>
+<li>Overview of the KVM hypervisor</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-emulation-basics slide level-2">
+
+<h2>Emulation basics</h2>
+
+<ul class="simple">
+<li>Instructions are emulated (each time they are executed)</li>
+<li>The other system components are also emulated:<ul>
+<li>MMU</li>
+<li>Physical memory access</li>
+<li>Peripherals</li>
+</ul>
+</li>
+<li>Target architecture - the architecture that it is emulated</li>
+<li>Host architecture - the architecture that the emulator runs on</li>
+<li>For emulation target and host architectures can be different</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtualization-basics slide level-2">
+
+<h2>Virtualization basics</h2>
+
+<ul class="simple">
+<li>Defined in a paper by Popek &amp; Goldberg in 1974</li>
+<li>Fidelity</li>
+<li>Performance</li>
+<li>Security</li>
+</ul>
+<img alt="../_images/ditaa-91f08f7db4b54069e16694eab8d75c06400fc47b.png" src="../_images/ditaa-91f08f7db4b54069e16694eab8d75c06400fc47b.png" />
+
+
+
+
+</article>
+<article class="admonition-classic-virtualization slide level-2">
+
+<h2>Classic virtualization</h2>
+
+<ul class="simple">
+<li>Trap &amp; Emulate</li>
+<li>Same architecture for host and target</li>
+<li>Most of the target instructions are natively executed</li>
+<li>Target OS runs in non-privilege mode on the host</li>
+<li>Privileged instructions are trapped and emulated</li>
+<li>Two machine states: host and guest</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-software-virtualization slide level-2">
+
+<h2>Software virtualization</h2>
+
+<ul class="simple">
+<li>Not all architecture can be virtualized; e.g. x86:<ul>
+<li>CS register encodes the CPL</li>
+<li>Some instructions don't generate a trap (e.g. popf)</li>
+</ul>
+</li>
+<li>Solution: emulate instructions using binary translation</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-mmu-virtualization slide level-2">
+
+<h2>MMU virtualization</h2>
+
+<ul class="simple">
+<li>&quot;Fake&quot; VM physical addresses are translated by the host to actual
+physical addresses</li>
+<li>Guest virtual address -&gt; Guest physical address -&gt; Host Physical Address</li>
+<li>The guest page tables are not directly used by the host hardware</li>
+<li>VM page tables are verified then translated into a new set of page
+tables on the host (shadow page tables)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-shadow-page-tables slide level-2">
+
+<h2>Shadow page tables</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-8632e22c6d89bd18f97c9cef127444486b5077df.png" src="../_images/ditaa-8632e22c6d89bd18f97c9cef127444486b5077df.png" />
+
+
+
+
+</article>
+<article class="admonition-lazy-shadow-sync slide level-2">
+
+<h2>Lazy shadow sync</h2>
+
+<ul class="simple">
+<li>Guest page tables changes are typically batched</li>
+<li>To avoid repeated traps, checks and transformations map guest
+page table entries with write access</li>
+<li>Update the shadow page table when<ul>
+<li>The TLB is flushed</li>
+<li>In the host page fault handler</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-i-o-emulation slide level-2">
+
+<h2>I/O emulation</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-bb69666d75b9670e542682753fb8cc9b77ff8894.png" src="../_images/ditaa-bb69666d75b9670e542682753fb8cc9b77ff8894.png" />
+
+
+
+
+</article>
+<article class="admonition-example-qemu-sifive-uart-emulation slide level-2">
+
+<h2>Example: qemu SiFive UART emulation</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * QEMU model of the UART on the SiFive E300 and U500 series SOCs.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Copyright (c) 2016 Stefan O&#39;Rear</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is free software; you can redistribute it and/or modify it</span>
+<span class="cm"> * under the terms and conditions of the GNU General Public License,</span>
+<span class="cm"> * version 2 or later, as published by the Free Software Foundation.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is distributed in the hope it will be useful, but WITHOUT</span>
+<span class="cm"> * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="cm"> * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for</span>
+<span class="cm"> * more details.</span>
+<span class="cm"> *</span>
+<span class="cm"> * You should have received a copy of the GNU General Public License along with</span>
+<span class="cm"> * this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;qemu/osdep.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;qapi/error.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;qemu/log.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;chardev/char.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;chardev/char-fe.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;hw/irq.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;hw/char/sifive_uart.h&quot;</span><span class="cp"></span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Not yet implemented:</span>
+<span class="cm"> *</span>
+<span class="cm"> * Transmit FIFO using &quot;qemu/fifo8.h&quot;</span>
+<span class="cm"> */</span>
+
+<span class="cm">/* Returns the state of the IP (interrupt pending) register */</span>
+<span class="k">static</span> <span class="kt">uint64_t</span> <span class="nf">uart_ip</span><span class="p">(</span><span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">uint64_t</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="kt">uint64_t</span> <span class="n">txcnt</span> <span class="o">=</span> <span class="n">SIFIVE_UART_GET_TXCNT</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">txctrl</span><span class="p">);</span>
+    <span class="kt">uint64_t</span> <span class="n">rxcnt</span> <span class="o">=</span> <span class="n">SIFIVE_UART_GET_RXCNT</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rxctrl</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">txcnt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ret</span> <span class="o">|=</span> <span class="n">SIFIVE_UART_IP_TXWM</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span> <span class="o">&gt;</span> <span class="n">rxcnt</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ret</span> <span class="o">|=</span> <span class="n">SIFIVE_UART_IP_RXWM</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">update_irq</span><span class="p">(</span><span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">cond</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">ie</span> <span class="o">&amp;</span> <span class="n">SIFIVE_UART_IE_TXWM</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">((</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">ie</span> <span class="o">&amp;</span> <span class="n">SIFIVE_UART_IE_RXWM</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">cond</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">qemu_irq_raise</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">irq</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">qemu_irq_lower</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">irq</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">uint64_t</span>
+<span class="nf">uart_read</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">opaque</span><span class="p">,</span> <span class="n">hwaddr</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">opaque</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">r</span><span class="p">;</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_RXFIFO</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+            <span class="n">memmove</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo</span><span class="p">,</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span><span class="o">--</span><span class="p">;</span>
+            <span class="n">qemu_chr_fe_accept_input</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">chr</span><span class="p">);</span>
+            <span class="n">update_irq</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="mh">0x80000000</span><span class="p">;</span>
+
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_TXFIFO</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="cm">/* Should check tx fifo */</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_IE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">ie</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_IP</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">uart_ip</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_TXCTRL</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">txctrl</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_RXCTRL</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rxctrl</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_DIV</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">div</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">qemu_log_mask</span><span class="p">(</span><span class="n">LOG_GUEST_ERROR</span><span class="p">,</span> <span class="s">&quot;%s: bad read: addr=0x%x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                  <span class="n">__func__</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">addr</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">uart_write</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">opaque</span><span class="p">,</span> <span class="n">hwaddr</span> <span class="n">addr</span><span class="p">,</span>
+           <span class="kt">uint64_t</span> <span class="n">val64</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">opaque</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">value</span> <span class="o">=</span> <span class="n">val64</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">ch</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_TXFIFO</span><span class="p">:</span>
+        <span class="n">qemu_chr_fe_write</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">chr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ch</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="n">update_irq</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_IE</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">-&gt;</span><span class="n">ie</span> <span class="o">=</span> <span class="n">val64</span><span class="p">;</span>
+        <span class="n">update_irq</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_TXCTRL</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">-&gt;</span><span class="n">txctrl</span> <span class="o">=</span> <span class="n">val64</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_RXCTRL</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">-&gt;</span><span class="n">rxctrl</span> <span class="o">=</span> <span class="n">val64</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">case</span> <span class="nl">SIFIVE_UART_DIV</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">-&gt;</span><span class="n">div</span> <span class="o">=</span> <span class="n">val64</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">qemu_log_mask</span><span class="p">(</span><span class="n">LOG_GUEST_ERROR</span><span class="p">,</span> <span class="s">&quot;%s: bad write: addr=0x%x v=0x%x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                  <span class="n">__func__</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">addr</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">const</span> <span class="n">MemoryRegionOps</span> <span class="n">uart_ops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">read</span> <span class="o">=</span> <span class="n">uart_read</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">uart_write</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">endianness</span> <span class="o">=</span> <span class="n">DEVICE_NATIVE_ENDIAN</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">valid</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">.</span><span class="n">min_access_size</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">max_access_size</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">uart_rx</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">opaque</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">opaque</span><span class="p">;</span>
+
+    <span class="cm">/* Got a byte.  */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span> <span class="o">&gt;=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;WARNING: UART dropped char.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo</span><span class="p">[</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="o">*</span><span class="n">buf</span><span class="p">;</span>
+
+    <span class="n">update_irq</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">uart_can_rx</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">opaque</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">opaque</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo_len</span> <span class="o">&lt;</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rx_fifo</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">uart_event</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">opaque</span><span class="p">,</span> <span class="n">QEMUChrEvent</span> <span class="n">event</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">uart_be_change</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">opaque</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">opaque</span><span class="p">;</span>
+
+    <span class="n">qemu_chr_fe_set_handlers</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">chr</span><span class="p">,</span> <span class="n">uart_can_rx</span><span class="p">,</span> <span class="n">uart_rx</span><span class="p">,</span> <span class="n">uart_event</span><span class="p">,</span>
+        <span class="n">uart_be_change</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Create UART device.</span>
+<span class="cm"> */</span>
+<span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="nf">sifive_uart_create</span><span class="p">(</span><span class="n">MemoryRegion</span> <span class="o">*</span><span class="n">address_space</span><span class="p">,</span> <span class="n">hwaddr</span> <span class="n">base</span><span class="p">,</span>
+    <span class="n">Chardev</span> <span class="o">*</span><span class="n">chr</span><span class="p">,</span> <span class="n">qemu_irq</span> <span class="n">irq</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SiFiveUARTState</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">g_malloc0</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">SiFiveUARTState</span><span class="p">));</span>
+    <span class="n">s</span><span class="o">-&gt;</span><span class="n">irq</span> <span class="o">=</span> <span class="n">irq</span><span class="p">;</span>
+    <span class="n">qemu_chr_fe_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">chr</span><span class="p">,</span> <span class="n">chr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">error_abort</span><span class="p">);</span>
+    <span class="n">qemu_chr_fe_set_handlers</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">chr</span><span class="p">,</span> <span class="n">uart_can_rx</span><span class="p">,</span> <span class="n">uart_rx</span><span class="p">,</span> <span class="n">uart_event</span><span class="p">,</span>
+        <span class="n">uart_be_change</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+    <span class="n">memory_region_init_io</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">mmio</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">uart_ops</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span>
+                          <span class="n">TYPE_SIFIVE_UART</span><span class="p">,</span> <span class="n">SIFIVE_UART_MAX</span><span class="p">);</span>
+    <span class="n">memory_region_add_subregion</span><span class="p">(</span><span class="n">address_space</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">mmio</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-paravirtualization slide level-2">
+
+<h2>Paravirtualization</h2>
+
+<ul class="simple">
+<li>Change the guest OS so that it cooperates with the VMM<ul>
+<li>CPU paravirtualization</li>
+<li>MMU paravirtualization</li>
+<li>I/O paravirtualization</li>
+</ul>
+</li>
+<li>VMM exposes hypercalls for:<ul>
+<li>activate / deactivate the interrupts</li>
+<li>changing page tables</li>
+<li>accessing virtualized peripherals</li>
+</ul>
+</li>
+<li>VMM uses events to trigger interrupts in the VM</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-intel-vt-x slide level-2">
+
+<h2>Intel VT-x</h2>
+
+<ul class="simple">
+<li>Hardware extension to transform x86 to the point it can be
+virtualized &quot;classically&quot;</li>
+<li>New execution mode: non-root mode</li>
+<li>Each non-root mode instance uses a Virtual Machine Control
+Structure (VMCS) to store its state</li>
+<li>VMM runs in root mode</li>
+<li>VM-entry and VM-exit are used to transition between the two modes</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-virtual-machine-control-structure slide level-2">
+
+<h2>Virtual Machine Control Structure</h2>
+
+<ul class="simple">
+<li>Guest information: state of the virtual CPU</li>
+<li>Host information: state of the physical CPU</li>
+<li>Saved information:<ul>
+<li>visible state: segment registers, CR3, IDTR, etc.</li>
+<li>internal state</li>
+</ul>
+</li>
+<li>VMCS can not be accessed directly but certain information can be
+accessed with special instructions</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-vm-entry-exit slide level-2">
+
+<h2>VM entry &amp; exit</h2>
+
+<ul class="simple">
+<li>VM entry - new instructions that switches the CPU in non-root
+mode and loads the VM state from a VMCS; host state is saved in
+VMCS</li>
+<li>Allows injecting interrupts and exceptions in the guest</li>
+<li>VM exit will be automatically triggered based on the VMCS
+configuration</li>
+<li>When VM exit occurs host state is loaded from VMCS, guest state
+is saved in VMCS</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-vm-execution-control-fields slide level-2">
+
+<h2>VM execution control fields</h2>
+
+<ul class="simple">
+<li>Selects conditions which triggers a VM exit; examples:<ul>
+<li>If an external interrupt is generated</li>
+<li>If an external interrupt is generated and EFLAGS.IF is set</li>
+<li>If CR0-CR4 registers are modified</li>
+</ul>
+</li>
+<li>Exception bitmap - selects which exceptions will generate a VM
+exit</li>
+<li>IO bitmap - selects which I/O addresses (IN/OUT accesses)
+generates a VM exit</li>
+<li>MSR bitmaps - selects which RDMSR or WRMSR instructions will
+generate a VM exit</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-extend-page-tables slide level-2">
+
+<h2>Extend Page Tables</h2>
+
+<ul class="simple">
+<li>Reduces the complexity of MMU virtualization and improves
+performance</li>
+<li>Access to CR3, INVLPG and page faults do not require VM exit
+anymore</li>
+<li>The EPT page table is controlled by the VMM</li>
+</ul>
+<img alt="../_images/ditaa-cc9a2e995be74ee99646ea4bf0e551d766fa92ef.png" src="../_images/ditaa-cc9a2e995be74ee99646ea4bf0e551d766fa92ef.png" />
+
+
+
+
+</article>
+<article class="admonition-vpid slide level-2">
+
+<h2>VPID</h2>
+
+<ul class="simple">
+<li>VM entry and VM exit forces a TLB flush - loses VMM / VM translations</li>
+<li>To avoid this issue a VPID (Virtual Processor ID) tag is
+associated with each VM (VPID 0 is reserved for the VMM)</li>
+<li>All TLB entries are tagged</li>
+<li>At VM entry and exit just the entries associated with the tags
+are flushed</li>
+<li>When searching the TLB just the current VPID is used</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-i-o-virtualization slide level-2">
+
+<h2>I/O virtualization</h2>
+
+<img alt="../_images/ditaa-3901edd823cdc7a6f429ebc37cbc541e650abc96.png" src="../_images/ditaa-3901edd823cdc7a6f429ebc37cbc541e650abc96.png" />
+
+
+
+
+</article>
+<article class="admonition-i-o-mmu slide level-2">
+
+<h2>I/O MMU</h2>
+
+<p>VT-d protects and translates VM physical addresses using an I/O
+MMU (DMA remaping)</p>
+<img alt="../_images/ditaa-d880751969de8642b2613caaca345d71acea4500.png" src="../_images/ditaa-d880751969de8642b2613caaca345d71acea4500.png" />
+
+
+
+
+</article>
+<article class="admonition-interrupt-posting slide level-2">
+
+<h2>Interrupt posting</h2>
+
+<ul class="simple">
+<li>Messsage Signaled Interrupts (MSI) = DMA writes to the host
+address range of the IRQ controller (e.g. 0xFEExxxxx)</li>
+<li>Low bits of the address and the data indicate which interrupt
+vector to deliver to which CPU</li>
+<li>Interrupt remapping table points to the virtual CPU (VMCS) that
+should receive the interrupt</li>
+<li>I/O MMU will trap the IRQ controller write and look it up in the
+interrupt remmaping table<ul>
+<li>if that virtual CPU is currently running it will take the
+interrupt directly</li>
+<li>otherwise a bit is set in a table (Posted Interrupt Descriptor
+table) and the interrupt will be inject next time that vCPU is
+run</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-i-o-virtualization slide level-2">
+
+<h2>I/O virtualization</h2>
+
+<img alt="../_images/ditaa-2cb0eb0056bb775d1446843d62241fd660662c96.png" src="../_images/ditaa-2cb0eb0056bb775d1446843d62241fd660662c96.png" />
+
+
+
+
+</article>
+<article class="admonition-sr-iov slide level-2">
+
+<h2>SR-IOV</h2>
+
+<ul class="simple">
+<li>Single Root - Input Output Virtualization</li>
+<li>Physical device with multiple Ethernet ports will be shown as
+multiple device on the PCI bus</li>
+<li>Physical Function is used for the control and can be configured<ul>
+<li>to present itself as a new PCI device</li>
+<li>which VLAN to use</li>
+</ul>
+</li>
+<li>The new virtual function is enumerated on the bus and can be
+assigned to a particular guest</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-qemu slide level-2">
+
+<h2>qemu</h2>
+
+<ul class="simple">
+<li>Uses binary translation via Tiny Code Generator (TCG) for
+efficient emulation</li>
+<li>Supports different target and host architectures (e.g. running
+ARM VMs on x86)</li>
+<li>Both process and full system level emulation</li>
+<li>MMU emulation</li>
+<li>I/O emulation</li>
+<li>Can be used with KVM for accelerated virtualization</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-kvm slide level-2">
+
+<h2>KVM</h2>
+
+<img alt="../_images/ditaa-f8fcc760ef5dad50d1038ed3426d0fcce12fd3e6.png" src="../_images/ditaa-f8fcc760ef5dad50d1038ed3426d0fcce12fd3e6.png" />
+
+
+
+
+</article>
+<article class="admonition-kvm slide level-2">
+
+<h2>KVM</h2>
+
+<ul class="simple">
+<li>Linux device driver for hardware virtualization (e.g. Intel VT-x, SVM)</li>
+<li>IOCTL based interface for managing and running virtual CPUs</li>
+<li>VMM components implemented inside the Linux kernel
+(e.g. interrupt controller, timers)</li>
+<li>Shadow page tables or EPT if present</li>
+<li>Uses qemu or virtio for I/O virtualization</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-xen slide level-2">
+
+<h2>Xen</h2>
+
+<ul class="simple">
+<li>Type 1 = Bare Metal Hypervisor</li>
+<li>Type 2 = Hypervisor embedded in an exist kernel / OS</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-xen slide level-2">
+
+<h2>Xen</h2>
+
+<img alt="../_images/xen-overview1.png" src="../_images/xen-overview1.png" />
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
