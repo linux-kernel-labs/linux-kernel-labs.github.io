@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Machine Setup &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Customizing the Virtual Machine Setup" href="extra-vm.html" />
+    <link rel="prev" title="Kernel Profiling" href="../labs/kernel_profiling.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Virtual Machine Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#starting-the-virtual-machine">Starting the Virtual Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connecting-to-the-virtual-machine">Connecting to the Virtual Machine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Virtual Machine Setup</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/info/vm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="virtual-machine-setup">
+<span id="vm-link"></span><h1>Virtual Machine Setup<a class="headerlink" href="#virtual-machine-setup" title="Permalink to this headline">¶</a></h1>
+<p>Practice work is designed to run on a QEMU based virtual machine. Kernel code
+is developed and built on the host machine and then deployed and run on the
+virtual machine.</p>
+<p>In order to run and use the virtual machine the following packages are required
+on a Debian/Ubuntu system:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">flex</span></code></li>
+<li><code class="docutils literal"><span class="pre">bison</span></code></li>
+<li><code class="docutils literal"><span class="pre">build-essential</span></code></li>
+<li><code class="docutils literal"><span class="pre">gcc-multilib</span></code></li>
+<li><code class="docutils literal"><span class="pre">libncurses5-dev</span></code></li>
+<li><code class="docutils literal"><span class="pre">qemu-system-x86</span></code></li>
+<li><code class="docutils literal"><span class="pre">qemu-system-arm</span></code></li>
+<li><code class="docutils literal"><span class="pre">python3</span></code></li>
+<li><code class="docutils literal"><span class="pre">minicom</span></code></li>
+</ul>
+<p>The <code class="docutils literal"><span class="pre">kvm</span></code> package is not strictly required, but will make the virtual machine
+faster by using KVM support (with the <code class="docutils literal"><span class="pre">-enable-kvm</span></code> option to QEMU). If <code class="docutils literal"><span class="pre">kvm</span></code>
+is absent, the virtual machine will still run (albeit slower) using emulation.</p>
+<p>The virtual machine setup uses prebuild Yocto images that it downloads and a
+kernel image that it builds itself. The following images are supported:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">core-image-minimal-qemu</span></code></li>
+<li><code class="docutils literal"><span class="pre">core-image-minimal-dev-qemu</span></code></li>
+<li><code class="docutils literal"><span class="pre">core-image-sato-dev-qemu</span></code></li>
+<li><code class="docutils literal"><span class="pre">core-image-sato-qemu</span></code></li>
+<li><code class="docutils literal"><span class="pre">core-image-sato-sdk-qemu</span></code></li>
+</ul>
+<p>By default, <code class="docutils literal"><span class="pre">core-image-minimal-qemu</span></code> it used. This setting can be changed by
+updating the <code class="docutils literal"><span class="pre">YOCTO_IMAGE</span></code> variable in <code class="docutils literal"><span class="pre">tools/labs/qemu/Makefile</span></code>.</p>
+<div class="section" id="starting-the-virtual-machine">
+<h2>Starting the Virtual Machine<a class="headerlink" href="#starting-the-virtual-machine" title="Permalink to this headline">¶</a></h2>
+<p>You start the virtual machine in the <code class="docutils literal"><span class="pre">tools/labs/</span></code> folder by running <code class="docutils literal"><span class="pre">make</span>
+<span class="pre">boot</span></code>:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ make boot
+</pre></div>
+</div>
+<p>The first run of the <code class="docutils literal"><span class="pre">make</span> <span class="pre">boot</span></code> command will compile the kernel image and it
+will take longer. Subsequent runs will only start the QEMU virtual machine,
+with verbose output provided:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ make boot
+mkdir /tmp/tmp.7rWv63E9Wf
+sudo mount -t ext4 -o loop core-image-minimal-qemux86.ext4 /tmp/tmp.7rWv63E9Wf
+sudo make -C /home/razvan/school/so2/linux.git modules_install <span class="nv">INSTALL_MOD_PATH</span><span class="o">=</span>/tmp/tmp.7rWv63E9Wf
+make: Entering directory <span class="s1">&#39;/home/razvan/school/so2/linux.git&#39;</span>
+  INSTALL crypto/crypto_engine.ko
+  INSTALL drivers/crypto/virtio/virtio_crypto.ko
+  INSTALL drivers/net/netconsole.ko
+  DEPMOD  <span class="m">4</span>.19.0+
+make: Leaving directory <span class="s1">&#39;/home/razvan/school/so2/linux.git&#39;</span>
+sudo umount /tmp/tmp.7rWv63E9Wf
+rmdir /tmp/tmp.7rWv63E9Wf
+sleep <span class="m">1</span> <span class="o">&amp;&amp;</span> touch .modinst
+qemu/create_net.sh tap0
+
+dnsmasq: failed to create listening socket <span class="k">for</span> <span class="m">172</span>.213.0.1: Address already in use
+qemu/create_net.sh tap1
+
+dnsmasq: failed to create listening socket <span class="k">for</span> <span class="m">127</span>.0.0.1: Address already in use
+/home/razvan/school/so2/linux.git/tools/labs/templates/assignments/6-e100/nttcp -v -i <span class="p">&amp;</span>
+nttcp-l: nttcp, version <span class="m">1</span>.47
+nttcp-l: running in inetd mode on port <span class="m">5037</span> - ignoring options beside -v and -p
+bind: Address already in use
+nttcp-l: service-socket: bind:: Address already in use, <span class="nv">errno</span><span class="o">=</span><span class="m">98</span>
+<span class="nv">ARCH</span><span class="o">=</span>x86 qemu/qemu.sh -kernel /home/razvan/school/so2/linux.git/arch/x86/boot/bzImage -device virtio-serial -chardev pty,id<span class="o">=</span>virtiocon0 -device virtconsole,chardev<span class="o">=</span>virtiocon0 -serial pipe:pipe1 -serial pipe:pipe2 -netdev tap,id<span class="o">=</span>tap0,ifname<span class="o">=</span>tap0,script<span class="o">=</span>no,downscript<span class="o">=</span>no -net nic,netdev<span class="o">=</span>tap0,model<span class="o">=</span>virtio -netdev tap,id<span class="o">=</span>tap1,ifname<span class="o">=</span>tap1,script<span class="o">=</span>no,downscript<span class="o">=</span>no -net nic,netdev<span class="o">=</span>tap1,model<span class="o">=</span>i82559er -drive <span class="nv">file</span><span class="o">=</span>core-image-minimal-qemux86.ext4,if<span class="o">=</span>virtio,format<span class="o">=</span>raw -drive <span class="nv">file</span><span class="o">=</span>disk1.img,if<span class="o">=</span>virtio,format<span class="o">=</span>raw -drive <span class="nv">file</span><span class="o">=</span>disk2.img,if<span class="o">=</span>virtio,format<span class="o">=</span>raw --append <span class="s2">&quot;root=/dev/vda loglevel=15 console=hvc0&quot;</span> --display none -s
+qemu-system-i386: -chardev pty,id<span class="o">=</span>virtiocon0: char device redirected to /dev/pts/68 <span class="o">(</span>label virtiocon0<span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To show the QEMU console use</p>
+</div>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ <span class="nv">QEMU_DISPLAY</span><span class="o">=</span>gtk make boot
+
+       This will show the VGA output and will also give
+       access to the standard keyboard.
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The virtual machine setup scripts and configuration files are located
+in <code class="docutils literal"><span class="pre">tools/labs/qemu/</span></code>.</p>
+</div>
+</div>
+<div class="section" id="connecting-to-the-virtual-machine">
+<span id="vm-interaction-link"></span><h2>Connecting to the Virtual Machine<a class="headerlink" href="#connecting-to-the-virtual-machine" title="Permalink to this headline">¶</a></h2>
+<p>Once the virtual machine is started you can connect to it on the serial port. A
+symbolic link named <code class="docutils literal"><span class="pre">serial.pts</span></code> is created to the emulated serial port
+device:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ ls -l serial.pts
+lrwxrwxrwx <span class="m">1</span> razvan razvan <span class="m">11</span> Apr  <span class="m">1</span> <span class="m">08</span>:03 serial.pts -&gt; /dev/pts/68
+</pre></div>
+</div>
+<p>On the host you use the <code class="docutils literal"><span class="pre">minicom</span></code> command to connect to the virtual machine
+via the <code class="docutils literal"><span class="pre">serial.pts</span></code> link:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>.../linux/tools/labs$ minicom -D serial.pts
+<span class="o">[</span>...<span class="o">]</span>
+Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</span> <span class="m">2</span>.3 qemux86 /dev/hvc0
+
+qemux86 login: root
+root@qemux86:~#
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When you connect to the virtual machine, simply enter <code class="docutils literal"><span class="pre">root</span></code> at the
+login prompt and you will get a root console, no password required.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You exit <code class="docutils literal"><span class="pre">minicom</span></code> by pressing <code class="docutils literal"><span class="pre">Ctrl+a</span></code> and then <code class="docutils literal"><span class="pre">x</span></code>. You will
+get a confirmation prompt and then you will exit <code class="docutils literal"><span class="pre">minicom</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../labs/kernel_profiling.html" class="btn btn-neutral float-left" title="Kernel Profiling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="extra-vm.html" class="btn btn-neutral float-right" title="Customizing the Virtual Machine Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
