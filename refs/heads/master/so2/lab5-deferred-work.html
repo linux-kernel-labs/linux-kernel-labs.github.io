@@ -245,7 +245,7 @@ the deferred work.</p>
 queues are implemented on top of kernel threads and tasklets and
 timers on top of softirqs. Bottom-half handlers were the first
 implementation of deferred work in Linux, but in the meantime it was
-replaced by softirqs. That is why some of the functions presented
+replaced by softirqs. That is why some functions presented
 contain <em>bh</em> in their name.</p>
 </div>
 <div class="section" id="softirqs">
@@ -307,7 +307,7 @@ context, just like softirqs. The main difference between sofirqs and tasklets
 is that tasklets can be allocated dynamically and thus they can be used
 by device drivers. A tasklet is represented by <code class="xref c c-type docutils literal"><span class="pre">struct</span>
 <span class="pre">tasklet</span></code> and as many other kernel structures it needs to be
-initialized before being used. A pre-initialized tasklet can defined
+initialized before being used. A pre-initialized tasklet can be defined
 as following:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">handler</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">data</span><span class="p">);</span>
 
@@ -379,7 +379,7 @@ the following formulas are used:</p>
 <span class="n">seconds_value</span> <span class="o">=</span> <span class="n">jiffies_value</span> <span class="o">/</span> <span class="n">HZ</span> <span class="p">;</span>
 </pre></div>
 </div>
-<p>The kernel mantains a counter that contains the number of jiffies
+<p>The kernel maintains a counter that contains the number of jiffies
 since the last boot, which can be accessed via the <code class="xref c c-macro docutils literal"><span class="pre">jiffies</span></code>
 global variable or macro. We can use it to calculate a time in the
 future for timers:</p>
@@ -397,7 +397,7 @@ future for timers:</p>
 <span class="kt">int</span> <span class="nf">del_timer_sync</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">timer</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Thse functions can be called for both a scheduled timer and an
+<p>These functions can be called for both a scheduled timer and an
 unplanned timer. <code class="xref c c-func docutils literal"><span class="pre">del_timer_sync()</span></code> is used to eliminate the
 races that can occur on multiprocessor systems, since at the end of
 the call it is guaranteed that the timer processing function does not
@@ -407,7 +407,7 @@ timers. For example, before removing a module, we must stop the timers
 because if a timer expires after the module is removed, the handler
 function will no longer be loaded into the kernel and a kernel oops
 will be generated.</p>
-<p>The usual sequence used to initialize and schedule a one second
+<p>The usual sequence used to initialize and schedule a one-second
 timeout is:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
 
@@ -863,7 +863,7 @@ console and can also be viewed using dmesg. When scheduling
 the timer we need to use the absolute time of the system (in
 the future) in number of ticks. The current time of the
 system in the number of ticks is given by <code class="xref c c-type docutils literal"><span class="pre">jiffies</span></code>.
-Thus the absolute time we need to pass to the timer is
+Thus, the absolute time we need to pass to the timer is
 <code class="docutils literal"><span class="pre">jiffies</span> <span class="pre">+</span> <span class="pre">TIMER_TIMEOUT</span> <span class="pre">*</span> <span class="pre">HZ</span></code>.</p>
 <p class="last">For more information review the <a class="reference internal" href="#timers">Timers</a> section.</p>
 </div>
@@ -878,7 +878,7 @@ skeleton.</p>
 <h3>3. Timer control using ioctl<a class="headerlink" href="#timer-control-using-ioctl" title="Permalink to this headline">¶</a></h3>
 <p>We plan to display information about the current process after N
 seconds of receiving a ioctl call from user space. N is transmitted as
-ioctl paramereter.</p>
+ioctl parameter.</p>
 <p>Generate the skeleton for the task named <strong>3-4-5-deferred</strong> and
 follow the sections marked with <strong>TODO 1</strong> in the skeleton driver.</p>
 <p>You will need to implement the following ioctl operations.</p>
@@ -1010,7 +1010,7 @@ with unloading</li>
 <div class="section" id="buffer-shared-between-timer-and-process">
 <h3>7. Buffer shared between timer and process<a class="headerlink" href="#buffer-shared-between-timer-and-process" title="Permalink to this headline">¶</a></h3>
 <p>The purpose of this task is to exercise the synchronization between a
-deferrable action (a timer) and process context. Setup a periodic
+deferrable action (a timer) and process context. Set up a periodic
 timer that monitors a list of processes. If one of the processes
 terminate a message is printed. Processes can be dynamically added to
 the list. Use the <em>3-4-5-deferred/kernel/</em> skeleton as a base and
