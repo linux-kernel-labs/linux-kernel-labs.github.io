@@ -326,7 +326,7 @@ assigned by the programmer.</li>
 <li><code class="docutils literal"><span class="pre">f_pos</span></code>, the offset within the file</li>
 </ul>
 </div></blockquote>
-<p>The inode structure contains, among many information, an <code class="docutils literal"><span class="pre">i_cdev</span></code>
+<p>The inode structure contains, among much information, an <code class="docutils literal"><span class="pre">i_cdev</span></code>
 field, which is a pointer to the structure that defines the character
 device (when the inode corresponds to a character device).</p>
 </div>
@@ -476,7 +476,7 @@ calls. Removing a device is done using the <code class="docutils literal"><span 
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">initialization of the struct my_fops used the initialization
+<p class="last">Initialization of the struct my_fops used the initialization
 of members by name, defined in C99 standard (see designated
 initializers and the file_operations structure). Structure
 members who do not explicitly appear in this initialization
@@ -489,7 +489,7 @@ be NULL.</p>
 <span id="access-to-process-address-space"></span><h2>Access to the address space of the process<a class="headerlink" href="#access-to-the-address-space-of-the-process" title="Permalink to this headline">¶</a></h2>
 <p>A driver for a device is the interface between an application and hardware. As
 a result, we often have to access user-space data. Accessing it can not be done
-directly (by de-referencing a user-space pointer). Direct access of a
+directly (by dereferencing a user-space pointer). Direct access of a
 user-space pointer can lead to incorrect behavior (depending on architecture, a
 user-space pointer may not be valid or mapped to kernel-space), a kernel oops
 (the user-mode pointer can refer to a non-resident memory area) or security
@@ -578,7 +578,7 @@ my_open and my_release in the driver. An example of a user-space call:</p>
 <div class="section" id="read-and-write">
 <h2>Read and write<a class="headerlink" href="#read-and-write" title="Permalink to this headline">¶</a></h2>
 <p>The read and write operations are reaching the device driver as a
-result of a userspace program calling the read or write system calls:</p>
+result of an user-space program calling the read or write system calls:</p>
 <div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* handle error */</span>
 <span class="p">}</span>
@@ -639,7 +639,7 @@ into account the internal buffer size, user buffer size and the offset:</p>
 </pre></div>
 </div>
 <p>The images below illustrate the read operation and how data is
-transferred between the userspace and the driver:</p>
+transferred between the user-space and the driver:</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li>when the driver has enough data available (starting with the OFFSET
@@ -650,7 +650,7 @@ position) to accurately transfer the required size (SIZE) to the user.</li>
 <a class="reference internal image-reference" href="../_images/read.png"><img alt="../_images/read.png" src="../_images/read.png" style="width: 49%;" /></a>
 <a class="reference internal image-reference" href="../_images/read2.png"><img alt="../_images/read2.png" src="../_images/read2.png" style="width: 49%;" /></a>
 <p>We can look at the read operation implemented by the driver as a response to a
-userpace read request. In this case, the driver is responsible for advancing
+user-space read request. In this case, the driver is responsible for advancing
 the offset according to how much it reads and returning the read size (which
 may be less than what is required).</p>
 <p>The structure of the write function is similar:</p>
@@ -672,7 +672,7 @@ may be less than what is required).</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The write operation will respond to a write request from userspace. In
+<p>The write operation will respond to a write request from user-space. In
 this case, depending on the maximum driver capacity (MAXSIZ), it can
 write more or less than the required size.</p>
 <a class="reference internal image-reference" href="../_images/write.png"><img alt="../_images/write.png" src="../_images/write.png" style="width: 49%;" /></a>
@@ -695,8 +695,8 @@ value will be a pointer to it, and must be accessed through the <code class="doc
 or <code class="docutils literal"><span class="pre">copy_from_user</span></code>.</p>
 <p>Before implementing the <code class="docutils literal"><span class="pre">ioctl</span></code> function, the numbers corresponding to the
 commands must be chosen. One method is to choose consecutive numbers starting
-at 0, but it is recommended to use <code class="docutils literal"><span class="pre">_IOC(dir,</span> <span class="pre">type,</span> <span class="pre">nr,</span> <span class="pre">size)</span></code> macrodefinition
-to generate ioctl codes. The macrodefinition parameters are as follows:</p>
+at 0, but it is recommended to use <code class="docutils literal"><span class="pre">_IOC(dir,</span> <span class="pre">type,</span> <span class="pre">nr,</span> <span class="pre">size)</span></code> macro definition
+to generate ioctl codes. The macro definition parameters are as follows:</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">dir</span></code> represents the data transfer (<code class="docutils literal"><span class="pre">_IOC_NONE</span></code> , <code class="docutils literal"><span class="pre">_IOC_READ</span></code>,
@@ -748,7 +748,7 @@ driver will be called. An example of such a user-space call:</p>
 but it is desirable that this wait is not busy-waiting. Using waiting
 queues we can block a thread until an event occurs. When the condition
 is satisfied, elsewhere in the kernel, in another process, in an
-interrupt or deferrable work, we will wake-up the process.</p>
+interrupt or deferrable work, we will wake up the process.</p>
 <p>A waiting queue is a list of processes that are waiting for a specific
 event. A queue is defined with the <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> type and can
 be used by the functions/macros:</p>
@@ -1073,7 +1073,7 @@ which is shared between the kernel module and the user-space program.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>The userspace code is compiled automatically at <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code> and
+<p>The user-space code is compiled automatically at <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code> and
 copied at <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code>.</p>
 <p class="last">Because we need to compile the program for qemu machine which is 32 bit,
 if your host is 64 bit then you need to install <code class="docutils literal"><span class="pre">gcc-multilib</span></code> package.</p>
@@ -1122,7 +1122,7 @@ user-space program.</li>
 </div></blockquote>
 <p>When the process is added to the queue, it will remain blocked in execution; To
 run the queue command open a new console in the virtual machine with Alt+F2 ;
-You can return to the previous console with Alt+F1 . If you're connected via
+You can return to the previous console with Alt+F1. If you're connected via
 SSH to the virtual machine, open a new console.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
