@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Network Management &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="next" title="Architecture Layer" href="arch.html" />
+    <link rel="prev" title="Debugging" href="debugging.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-network-management slide level-2">
+
+<h2>Network Management</h2>
+
+<ul class="simple">
+<li>Socket implementation</li>
+<li>Routing implementation</li>
+<li>Network Device Interface</li>
+<li>Hardware and Software Acceleration Techniques</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-network-management-overview slide level-2">
+
+<h2>Network Management Overview</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png"><img alt="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png" src="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-sockets-implementation-overview slide level-2">
+
+<h2>Sockets Implementation Overview</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-79e3734c36891f6c04d684aa5caa39f76915dbaf.png"><img alt="../_images/ditaa-79e3734c36891f6c04d684aa5caa39f76915dbaf.png" src="../_images/ditaa-79e3734c36891f6c04d684aa5caa39f76915dbaf.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-sockets-families-and-protocols slide level-2">
+
+<h2>Sockets Families and Protocols</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-bf1244d1a5c3d99bd8d40148d81cb3e5748c0b94.png"><img alt="../_images/ditaa-bf1244d1a5c3d99bd8d40148d81cb3e5748c0b94.png" src="../_images/ditaa-bf1244d1a5c3d99bd8d40148d81cb3e5748c0b94.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-example-udp-send slide level-2">
+
+<h2>Example: UDP send</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">addr</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">s</span><span class="p">;</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_DGRAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">connect</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">addr</span><span class="p">));</span>
+<span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">close</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-example-udp-send slide level-2">
+
+<h2>Example: UDP send</h2>
+
+<img alt="../_images/ditaa-ee04e3e544de75375b914f7645c79d5ae46fe6f3.png" src="../_images/ditaa-ee04e3e544de75375b914f7645c79d5ae46fe6f3.png" />
+
+
+
+
+</article>
+<article class="admonition-network-processing-phases slide level-2">
+
+<h2>Network processing phases</h2>
+
+<ul class="simple">
+<li>Interrupt handler - device driver fetches data from the RX ring,
+creates a network packet and queues it to the network stack for
+processing</li>
+<li>NET_SOFTIRQ - packet goes through the stack layer and it is
+processed: decapsulate Ethernet frame, check IP packet and route
+it, if local packet decapsulate protocol packet (e.g. TCP) and
+queues it to a socket</li>
+<li>Process context - application fetches data from the socket queue
+or pushes data to the socket queue</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-packet-routing slide level-2">
+
+<h2>Packet Routing</h2>
+
+<img alt="../_images/ditaa-528948c80a3fd78b89fb6f7bd69503a58b93a4ae.png" src="../_images/ditaa-528948c80a3fd78b89fb6f7bd69503a58b93a4ae.png" />
+
+
+
+
+</article>
+<article class="admonition-routing-table slide level-2">
+
+<h2>Routing Table</h2>
+
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tavi@desktop-tavi:~/src/linux$ ip route list table main
+default via <span class="m">172</span>.30.240.1 dev eth0
+<span class="m">172</span>.30.240.0/20 dev eth0 proto kernel scope link src <span class="m">172</span>.30.249.241
+
+tavi@desktop-tavi:~/src/linux$ ip route list table <span class="nb">local</span>
+broadcast <span class="m">127</span>.0.0.0 dev lo proto kernel scope link src <span class="m">127</span>.0.0.1
+<span class="nb">local</span> <span class="m">127</span>.0.0.0/8 dev lo proto kernel scope host src <span class="m">127</span>.0.0.1
+<span class="nb">local</span> <span class="m">127</span>.0.0.1 dev lo proto kernel scope host src <span class="m">127</span>.0.0.1
+broadcast <span class="m">127</span>.255.255.255 dev lo proto kernel scope link src <span class="m">127</span>.0.0.1
+broadcast <span class="m">172</span>.30.240.0 dev eth0 proto kernel scope link src <span class="m">172</span>.30.249.241
+<span class="nb">local</span> <span class="m">172</span>.30.249.241 dev eth0 proto kernel scope host src <span class="m">172</span>.30.249.241
+broadcast <span class="m">172</span>.30.255.255 dev eth0 proto kernel scope link src <span class="m">172</span>.30.249.241
+
+tavi@desktop-tavi:~/src/linux$ ip rule list
+<span class="m">0</span>:      from all lookup <span class="nb">local</span>
+<span class="m">32766</span>:  from all lookup main
+<span class="m">32767</span>:  from all lookup default
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-routing-policy-database slide level-2">
+
+<h2>Routing Policy Database</h2>
+
+<ul class="simple">
+<li>&quot;Regular&quot; routing only uses the destination address</li>
+<li>To increase flexibility a &quot;Routing Policy Database&quot; is used that
+allows different routing based on other fields such as the source
+address, protocol type, transport ports, etc.</li>
+<li>This is encoded as a list of rules that are evaluated based on
+their priority (priority 0 is the highest)</li>
+<li>Each rule has a selector (how to match the packet) and an
+action (what action to take if the packet matches)</li>
+<li>Selectors: source address, destination address, type of service (TOS),
+input interface, output interface, etc.</li>
+<li>Action: lookup / unicast - use given routing table, blackhole -
+drop packet, unreachable - send ICMP unreachable message and drop
+packet, etc.</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-routing-table-processing slide level-2">
+
+<h2>Routing table processing</h2>
+
+<ul class="simple">
+<li>Special table for local addreses -&gt; route packets to sockets
+based on family, type, ports</li>
+<li>Check every routing entry for starting with the most specific
+routes (e.g. 192.168.0.0/24 is checked before 192.168.0.0/16)</li>
+<li>A route matches if the packet destination addreess logical ORed
+with the subnet mask equals the subnet address</li>
+<li>Once a route matches the following information is retrieved:
+interface, link layer next-hop address, network next host address</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-forward-information-database-removed-in-3-6 slide level-2">
+
+<h2>Forward Information Database (removed in 3.6)</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/fidb-overview.png" src="../_images/fidb-overview.png" />
+
+
+
+
+</article>
+<article class="admonition-forward-information-database-removed-in-3-6 slide level-2">
+
+<h2>Forward Information Database (removed in 3.6)</h2>
+
+<img alt="../_images/fidb-details.png" src="../_images/fidb-details.png" />
+
+
+
+
+</article>
+<article class="admonition-routing-cache-removed-in-3-6 slide level-2">
+
+<h2>Routing Cache (removed in 3.6)</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/routing-cache.png" src="../_images/routing-cache.png" />
+
+
+
+
+</article>
+<article class="admonition-fib-trie slide level-2">
+
+<h2>FIB TRIE</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/fib-trie.png" src="../_images/fib-trie.png" />
+
+
+
+
+</article>
+<article class="admonition-compressed-trie slide level-2">
+
+<h2>Compressed Trie</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/fib-trie-compressed.png" src="../_images/fib-trie-compressed.png" />
+
+
+
+
+</article>
+<article class="admonition-netfilter slide level-2">
+
+<h2>Netfilter</h2>
+
+<ul class="simple">
+<li>Framework that implements packet filtering and NAT</li>
+<li>It uses hooks inserted in key places in the packet flow:<ul>
+<li>NF_IP_PRE_ROUTING</li>
+<li>NF_IP_LOCAL_IN</li>
+<li>NF_IP_FORWARD</li>
+<li>NF_IP_LOCAL_OUT</li>
+<li>NF_IP_POST_ROUTING</li>
+<li>NF_IP_NUMHOOKS</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-network-packets-skbs slide level-2">
+
+<h2>Network packets (skbs)</h2>
+
+<img alt="../_images/skb.png" src="../_images/skb.png" />
+
+
+
+
+</article>
+<article class="admonition-struct-sk-buff slide level-2">
+
+<h2>struct sk_buff</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+
+    <span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">;</span>
+    <span class="n">ktime_t</span> <span class="n">tstamp</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">net_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cb</span><span class="p">[</span><span class="mi">48</span><span class="p">];</span>
+
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">,</span>
+    <span class="n">data_len</span><span class="p">;</span>
+    <span class="n">__u16</span> <span class="n">mac_len</span><span class="p">,</span>
+    <span class="n">hdr_len</span><span class="p">;</span>
+
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destructor</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+    <span class="n">sk_buff_data_t</span> <span class="n">transport_header</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">network_header</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">mac_header</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">tail</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">end</span><span class="p">;</span>
+
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">head</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">truesize</span><span class="p">;</span>
+    <span class="n">atomic_t</span> <span class="n">users</span><span class="p">;</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-skb-apis slide level-2">
+
+<h2>skb APIs</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* reserve head room */</span>
+<span class="kt">void</span> <span class="nf">skb_reserve</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* add data to the end */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_put</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* add data to the top */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_push</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* discard data at the top */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_pull</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* discard data at the end */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_trim</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_transport_header</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_reset_transport_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_set_transport_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">);</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_network_header</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_reset_network_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_set_network_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">);</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_mac_header</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">skb_mac_header_was_set</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_reset_mac_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_set_mac_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">);</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-skb-data-management slide level-2">
+
+<h2>skb data management</h2>
+
+<p>&nbsp;</p>
+<a class="reference internal image-reference" href="../_images/ditaa-91073cb05a3f537eb54ab10745c307531e6795a0.png"><img alt="../_images/ditaa-91073cb05a3f537eb54ab10745c307531e6795a0.png" src="../_images/ditaa-91073cb05a3f537eb54ab10745c307531e6795a0.png" style="height: 50%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-network-device-interface slide level-2">
+
+<h2>Network Device Interface</h2>
+
+<img alt="../_images/net-dev-hw.png" src="../_images/net-dev-hw.png" />
+
+
+
+
+</article>
+<article class="admonition-advanced-features slide level-2">
+
+<h2>Advanced features</h2>
+
+<ul class="simple">
+<li>Scatter-Gather</li>
+<li>Checksum offloading: Ethernet, IP, UDP, TCP</li>
+<li>Adaptive interrupt handling (coalescence, adaptive)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-tcp-offload slide level-2">
+
+<h2>TCP offload</h2>
+
+<ul class="simple">
+<li>Full offload - Implement TCP/IP stack in hardware</li>
+<li>Issues:<ul>
+<li>Scaling number of connections</li>
+<li>Security</li>
+<li>Conformance</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-performance-observation slide level-2">
+
+<h2>Performance observation</h2>
+
+<ul class="simple">
+<li>Performance is proportional with the number of packets to be
+processed</li>
+<li>Example: if an end-point can process 60K pps<ul>
+<li>1538 MSS -&gt; 738Mbps</li>
+<li>2038 MSS -&gt; 978Mbps</li>
+<li>9038 MSS -&gt; 4.3Gbps</li>
+<li>20738 MSS -&gt; 9.9Gbps</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-stateless-offload slide level-2">
+
+<h2>Stateless offload</h2>
+
+<ul class="simple">
+<li>The networking stack processes large packets</li>
+<li>TX path: the hardware splits large packets in smaller packets
+(TCP Segmentation Offload)</li>
+<li>RX path: the hardware aggregates small packets into larger
+packets (Large Receive Offload - LRO)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-tcp-segmentation-offload slide level-2">
+
+<h2>TCP Segmentation Offload)</h2>
+
+<img alt="../_images/tso.png" src="../_images/tso.png" />
+
+
+
+
+</article>
+<article class="admonition-large-receive-offload slide level-2">
+
+<h2>Large Receive Offload</h2>
+
+<img alt="../_images/lro.png" src="../_images/lro.png" />
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture Layer &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Virtualization" href="virt.html" />
+    <link rel="prev" title="Network Management" href="networking.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">Network Management</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture Layer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-arch-layer">Overview of the arch layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#boot-strap">Boot strap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#boot-strap-1">Boot strap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-setup">Memory setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mmu-management">MMU management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thread-management">Thread Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-management">Time Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#irqs-and-exception-management">IRQs and exception management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-calls">System calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#platform-drivers">Platform Drivers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#machine-specific-code">Machine specific code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-boot-process">Overview of the boot process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Architecture Layer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/lectures/arch.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="architecture-layer">
+<h1>Architecture Layer<a class="headerlink" href="#architecture-layer" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="arch-slides.html">View slides</a></p>
+<div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-introduction simple">
+<li>Overview of the arch layer</li>
+<li>Overview of the boot process</li>
+</ul>
+</div>
+<div class="section" id="overview-of-the-arch-layer">
+<h2>Overview of the arch layer<a class="headerlink" href="#overview-of-the-arch-layer" title="Permalink to this headline">¶</a></h2>
+<a class="admonition-overview-of-the-arch-layer reference internal image-reference" href="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png"><img alt="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png" class="admonition-overview-of-the-arch-layer" src="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png" style="height: 100%;" /></a>
+<div class="section" id="boot-strap">
+<h3>Boot strap<a class="headerlink" href="#boot-strap" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-bootstrap simple">
+<li>The first kernel code that runs</li>
+<li>Typically runs with the MMU disabled</li>
+<li>Move / Relocate kernel code</li>
+</ul>
+</div>
+<div class="section" id="boot-strap-1">
+<h3>Boot strap<a class="headerlink" href="#boot-strap-1" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-bootstrap simple">
+<li>The first kernel code that runs</li>
+<li>Typically runs with the MMU disabled</li>
+<li>Copy bootloader arguments and determine kernel run location</li>
+<li>Move / relocate kernel code to final location</li>
+<li>Initial MMU setup - map the kernel</li>
+</ul>
+</div>
+<div class="section" id="memory-setup">
+<h3>Memory setup<a class="headerlink" href="#memory-setup" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-memory-setup simple">
+<li>Determine available memory and setup the boot memory allocator</li>
+<li>Manages memory regions before the page allocator is setup</li>
+<li>Bootmem - used a bitmap to track free blocks</li>
+<li>Memblock - deprecates bootmem and adds support for memory ranges<ul>
+<li>Supports both physical and virtual addresses</li>
+<li>support NUMA architectures</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="mmu-management">
+<h3>MMU management<a class="headerlink" href="#mmu-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-mmu-management simple">
+<li>Implements the generic page table manipulation APIs: types,
+accessors, flags</li>
+<li>Implement TLB management APIs: flush, invalidate</li>
+</ul>
+</div>
+<div class="section" id="thread-management">
+<h3>Thread Management<a class="headerlink" href="#thread-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-thread-management simple">
+<li>Defines the thread type (struct thread_info) and implements
+functions for allocating threads (if needed)</li>
+<li>Implement <code class="xref c c-func docutils literal"><span class="pre">copy_thread()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">switch_context()</span></code></li>
+</ul>
+</div>
+<div class="section" id="time-management">
+<h3>Time Management<a class="headerlink" href="#time-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-timer-management simple">
+<li>Setup the timer tick and provide a time source</li>
+<li>Mostly transitioned to platform drivers<ul>
+<li>clock_event_device - for scheduling timers</li>
+<li>clocksource - for reading the time</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="irqs-and-exception-management">
+<h3>IRQs and exception management<a class="headerlink" href="#irqs-and-exception-management" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-irqs-and-exception-management simple">
+<li>Define interrupt and exception handlers / entry points</li>
+<li>Setup priorities</li>
+<li>Platform drivers for interrupt controllers</li>
+</ul>
+</div>
+<div class="section" id="system-calls">
+<h3>System calls<a class="headerlink" href="#system-calls" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-system-calls simple">
+<li>Define system call entry point(s)</li>
+<li>Implement user-space access primitives (e.g. copy_to_user)</li>
+</ul>
+</div>
+<div class="section" id="platform-drivers">
+<h3>Platform Drivers<a class="headerlink" href="#platform-drivers" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-platform-drivers simple">
+<li>Platform and architecture specific drivers</li>
+<li>Bindings to platform device enumeration methods (e.g. device tree
+or ACPI)</li>
+</ul>
+</div>
+<div class="section" id="machine-specific-code">
+<h3>Machine specific code<a class="headerlink" href="#machine-specific-code" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-machine-specific-code simple">
+<li>Some architectures use a &quot;machine&quot; / &quot;platform&quot; abstraction</li>
+<li>Typical for architecture used in embedded systems with a lot of
+variety (e.g. ARM, powerPC)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="overview-of-the-boot-process">
+<h2>Overview of the boot process<a class="headerlink" href="#overview-of-the-boot-process" title="Permalink to this headline">¶</a></h2>
+<asciinema-player src="../_images/boot.cast"></asciinema-player></div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="networking.html" class="btn btn-neutral float-left" title="Network Management" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="virt.html" class="btn btn-neutral float-right" title="Virtualization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
