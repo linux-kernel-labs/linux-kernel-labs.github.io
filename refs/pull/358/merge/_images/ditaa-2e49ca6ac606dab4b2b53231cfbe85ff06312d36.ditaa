@@ -1,0 +1,12 @@
+             +                                    ^     +                 ^
+             |                                    |     |                 |
+             | Syscall                            | IRQi|                 |
+  User Mode  | Exception (e.g. page fault)        |     |                 |
+             |                                    |     |                 |
+             +------------------------------------+-----+-----------------+
+             |                                iret|     | iret^ IRQj| iret|
+             |                                    |     |     |     |     |
+Kernel Mode  v-------+      ^-------+      ^------+     v-----+     v-----+
+                     |      |       |      |
+                 IRQi|  iret|   IRQj|  iret|
+                     v------+       v------+
