@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Memory Management &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="next" title="Filesystem Management" href="fs.html" />
+    <link rel="prev" title="Address Space" href="address-space.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-memory-management slide level-2">
+
+<h2>Memory Management</h2>
+
+<ul class="simple">
+<li>Physical Memory Management<ul>
+<li>Page allocations</li>
+<li>Small allocations</li>
+</ul>
+</li>
+<li>Virtual Memory Management</li>
+<li>Page Fault Handling Overview</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-physical-memory-management slide level-2">
+
+<h2>Physical Memory Management</h2>
+
+<ul class="simple">
+<li>Algorithms and data structure that keep track of physical memory
+pages</li>
+<li>Independent of virtual memory management</li>
+<li>Both virtual and physical memory management is required for complete
+memory management</li>
+<li>Physical pages are being tracked using a special data structure:
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></li>
+<li>All physical pages have an entry reserved in the <code class="xref c c-data docutils literal"><span class="pre">mem_map</span></code>
+vector</li>
+<li>The physical page status may include: a counter for how many
+times is a page used, position in swap or file, buffers for this
+page, position int the page cache, etc.</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-memory-zones slide level-2">
+
+<h2>Memory zones</h2>
+
+<ul class="simple">
+<li>DMA zone</li>
+<li>DMA32 zone</li>
+<li>Normal zone (LowMem)</li>
+<li>HighMem Zone</li>
+<li>Movable Zone</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-non-uniform-memory-access slide level-2">
+
+<h2>Non-Uniform Memory Access</h2>
+
+<ul class="simple">
+<li>Physical memory is split in between multiple nodes, one for each CPU</li>
+<li>There is single physical address space accessible from every node</li>
+<li>Access to the local memory is faster</li>
+<li>Each node maintains is own memory zones (.e. DMA, NORMAL, HIGHMEM, etc.)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-page-allocation slide level-2">
+
+<h2>Page allocation</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Allocates 2^order contiguous pages and returns a pointer to the</span>
+<span class="cm"> * descriptor for the first page</span>
+<span class="cm"> */</span>
+<span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="nf">alloc_pages</span><span class="p">(</span><span class="n">gfp_mask</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span>
+
+<span class="cm">/* allocates a single page */</span>
+<span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="nf">alloc_page</span><span class="p">(</span><span class="n">gfp_mask</span><span class="p">);</span>
+
+
+<span class="cm">/* helper functions that return the kernel virtual address */</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">__get_free_pages</span><span class="p">(</span><span class="n">gfp_mask</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">__get_free_page</span><span class="p">(</span><span class="n">gfp_mask</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">__get_zero_page</span><span class="p">(</span><span class="n">gfp_mask</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">__get_dma_pages</span><span class="p">(</span><span class="n">gfp_mask</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-why-only-allocate-pages-in-chunks-of-power-of-2 slide level-2">
+
+<h2>Why only allocate pages in chunks of power of 2?</h2>
+
+<ul class="simple">
+<li>Typical memory allocation algorithms have linear complexity</li>
+<li>Why not use paging?<ul>
+<li>Sometime we do need contiguous memory allocations (for DMA)</li>
+<li>Allocation would require page table changes and TLB flushes</li>
+<li>Not able to use extended pages</li>
+<li>Some architecture directly (in hardware) linearly maps a part
+of the address space (e.g. MIPS)</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-the-buddy-algorithm slide level-2">
+
+<h2>The buddy algorithm</h2>
+
+<ul class="simple">
+<li>Free blocks are distributed in multiple lists</li>
+<li>Each list contains blocks of the same size</li>
+<li>The block size is a power of two</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-allocating-a-block-of-size-n slide level-2">
+
+<h2>Allocating a block of size N</h2>
+
+<ul class="simple">
+<li>If there is a free block in the N-size list, pick the first</li>
+<li>If not, look for a free block in the 2N-size list</li>
+<li>Split the 2N-size block in two N-size blocks and add them to the
+N-size block</li>
+<li>Now that we have the N-size list populated, pick the first free
+block from that list</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-freeing-a-block-of-size-n slide level-2">
+
+<h2>Freeing a block of size N</h2>
+
+<ul class="simple">
+<li>If the &quot;buddy&quot; is free coalesce into a 2N-size block</li>
+<li>Try until no more free buddy block is found and place the
+resulting block in the respective list</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-the-linux-implementation slide level-2">
+
+<h2>The Linux implementation</h2>
+
+<ul class="simple">
+<li>11 lists for blocks of 1, 2, 4, 8, 16, 32, 64, 128, 256, 512,
+1024 pages</li>
+<li>Each memory zone has its own buddy allocator</li>
+<li>Each zone has a vector of descriptors for free blocks, one entry
+for each size</li>
+<li>The descriptor contains the number of free blocks and the head of
+the list</li>
+<li>Blocks are linked in the list using the <cite>lru</cite> field of
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">page</span></code></li>
+<li>Free pages have the PG_buddy flag set</li>
+<li>The page descriptor keeps a copy of the block size in the private
+field to easily check if the &quot;buddy&quot; is free</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-small-allocations slide level-2">
+
+<h2>Small allocations</h2>
+
+<ul class="simple">
+<li>Buddy is used to allocate pages</li>
+<li>Many of the kernel subsystems need to allocate buffers smaller
+than a page</li>
+<li>Typical solution: variable size buffer allocation<ul>
+<li>Leads to external fragmentation</li>
+</ul>
+</li>
+<li>Alternative solution: fixed size buffer allocation<ul>
+<li>Leads to internal fragmentation</li>
+</ul>
+</li>
+<li>Compromise: fixed size block allocation with multiple sizes, geometrically distributed<ul>
+<li>e.g.: 32, 64, ..., 131056</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-the-slab-allocator slide level-2">
+
+<h2>The SLAB allocator</h2>
+
+<ul class="simple">
+<li>Buffers = objects</li>
+<li>Uses buddy to allocate a pool of pages for object allocations</li>
+<li>Each object (optionally) has a constructor and destructor</li>
+<li>Deallocated objects are cached - avoids subsequent calls for
+constructors and buddy allocation / deallocation</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-why-slab slide level-2">
+
+<h2>Why SLAB?</h2>
+
+<ul class="simple">
+<li>The kernel will typically allocate and deallocate multiple types
+the same data structures over time (e.g. <code class="xref c c-type docutils literal"><span class="pre">struct</span>
+<span class="pre">task_struct</span></code>) effectively using fixed size allocations. Using the
+SLAB reduces the frequency of the more heavy
+allocation/deallocation operations.</li>
+<li>For variable size buffers (which occurs less frequently) a
+geometric distribution of caches with fixed-size can be used</li>
+<li>Reduces the memory allocation foot-print since we are searching a
+much smaller memory area, compared to buddy which can span over a
+larger area</li>
+<li>Employs cache optimization techniques (slab coloring)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-slab-architecture slide level-2">
+
+<h2>Slab architecture</h2>
+
+<img alt="../_images/slab-overview.png" src="../_images/slab-overview.png" />
+
+
+
+
+</article>
+<article class="admonition-cache-descriptors slide level-2">
+
+<h2>Cache descriptors</h2>
+
+<ul class="simple">
+<li>A name to identify the cache for stats</li>
+<li>object constructor and destructor functions</li>
+<li>size of the objects</li>
+<li>Flags</li>
+<li>Size of the slab in power of 2 pages</li>
+<li>GFP masks</li>
+<li>One or mores slabs, grouped by state: full, partially full, empty</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-slab-descriptors slide level-2">
+
+<h2>SLAB descriptors</h2>
+
+<ul class="simple">
+<li>Number of objects</li>
+<li>Memory region where the objects are stored</li>
+<li>Pointer to the first free object</li>
+<li>Descriptor are stored either in<ul>
+<li>the SLAB itself (if the object size is lower the 512 or if
+internal fragmentation leaves enough space for the SLAB
+descriptor)</li>
+<li>in generic caches internally used by the SLAB allocator</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-slab-detailed-architecture slide level-2">
+
+<h2>Slab detailed architecture</h2>
+
+<img alt="../_images/slab-detailed-arch.png" src="../_images/slab-detailed-arch.png" />
+
+
+
+
+</article>
+<article class="admonition-generic-vs-specific-caches slide level-2">
+
+<h2>Generic vs specific caches</h2>
+
+<ul class="simple">
+<li>Generic caches are used internally by the slab allocator<ul>
+<li>allocating memory for cache and slab descriptors</li>
+</ul>
+</li>
+<li>They are also used to implement <code class="xref c c-func docutils literal"><span class="pre">kmalloc()</span></code> by implementing
+20 caches with object sizes geometrically distributed between
+32bytes and 4MB</li>
+<li>Specific cache are created on demand by kernel subsystems</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-object-descriptors slide level-2">
+
+<h2>Object descriptors</h2>
+
+<img alt="../_images/slab-object-descriptors.png" src="../_images/slab-object-descriptors.png" />
+
+
+
+
+</article>
+<article class="admonition-object-descriptors slide level-2">
+
+<h2>Object descriptors</h2>
+
+<ul class="simple">
+<li>Only used for free objects</li>
+<li>An integer that points to the next free object</li>
+<li>The last free object uses a terminator value</li>
+<li>Internal descriptors - stored in the slab</li>
+<li>External descriptors - stored in generic caches</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-slab-coloring slide level-2">
+
+<h2>SLAB coloring</h2>
+
+<img alt="../_images/slab-coloring.png" src="../_images/slab-coloring.png" />
+
+
+
+
+</article>
+<article class="admonition-virtual-memory-management slide level-2">
+
+<h2>Virtual memory management</h2>
+
+<ul class="simple">
+<li>Used in both kernel and user space</li>
+<li>Using virtual memory requires:<ul>
+<li>reserving (allocating) a segment in the <em>virtual</em> address space
+(be it kernel or user)</li>
+<li>allocating one or more physical pages for the buffer</li>
+<li>allocating one or more physical pages for page tables and
+internal structures</li>
+<li>mapping the virtual memory segment to the physical allocated
+pages</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-address-space-descriptors slide level-2">
+
+<h2>Address space descriptors</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-0eda95a3f39dfac448fd07589656b123d3548328.png" src="../_images/ditaa-0eda95a3f39dfac448fd07589656b123d3548328.png" />
+
+
+
+
+</article>
+<article class="admonition-address-space-descriptors slide level-2">
+
+<h2>Address space descriptors</h2>
+
+<ul class="simple">
+<li>Page table is used either by:<ul>
+<li>The CPU's MMU</li>
+<li>The kernel to handle TLB exception (some RISC processors)</li>
+</ul>
+</li>
+<li>The address space descriptor is used by the kernel to maintain
+high level information such as file and file offset (for mmap
+with files), read-only segment, copy-on-write segment, etc.</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-allocating-virtual-memory slide level-2">
+
+<h2>Allocating virtual memory</h2>
+
+<ul class="simple">
+<li>Search a free area in the address space descriptor</li>
+<li>Allocate memory for a new area descriptor</li>
+<li>Insert the new area descriptor in the address space descriptor</li>
+<li>Allocate physical memory for one or more page tables</li>
+<li>Setup the page tables for the newly allocated area in the virtual
+address space</li>
+<li>Allocating (on demand) physical pages and map them in the virtual
+address space by updating the page tables</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-freeing-virtual-memory slide level-2">
+
+<h2>Freeing virtual memory</h2>
+
+<ul class="simple">
+<li>Removing the area descriptor</li>
+<li>Freeing the area descriptor memory</li>
+<li>Updating the page tables to remove the area from the virtual
+address space</li>
+<li>Flushing the TLB for the freed virtual memory area</li>
+<li>Freeing physical memory of the page tables associated with the
+freed area</li>
+<li>Freeing physical memory of the freed virtual memory area</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-linux-virtual-memory-management slide level-2">
+
+<h2>Linux virtual memory management</h2>
+
+<ul class="simple">
+<li>Kernel<ul>
+<li>vmalloc<ul>
+<li>area descriptor: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_struct</span></code></li>
+<li>address space descriptor: simple linked list of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_struct</span></code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Userspace<ul>
+<li>area descriptor: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">vm_area_struct</span></code></li>
+<li>address space descriptor: <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">mm_struct</span></code>, red-black tree</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-linux-virtual-memory-management slide level-2">
+
+<h2>Linux virtual memory management</h2>
+
+<img alt="../_images/page-fault-handling.png" src="../_images/page-fault-handling.png" />
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
