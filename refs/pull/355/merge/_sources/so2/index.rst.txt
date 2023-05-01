@@ -46,5 +46,5 @@ Operating Systems 2
    assign1-kprobe-based-tracer.rst
    assign2-driver-uart.rst
    assign3-software-raid.rst
-   assign4.a-pitix.rst
-   assign4.b-transport-protocol.rst
+   assign4-transport-protocol.rst
+   assign5-pitix.rst
