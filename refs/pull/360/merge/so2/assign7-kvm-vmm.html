@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignment 7 - SO2 Virtual Machine Manager with KVM &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction" href="../lectures/intro.html" />
+    <link rel="prev" title="Assignment 4 - SO2 Transport Protocol" href="assign4-transport-protocol.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 7 - SO2 Virtual Machine Manager with KVM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-virtual-machine-manager">I. Virtual Machine Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#initialize-the-vmm">1. Initialize the VMM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-vm">Running the VM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup-real-mode">Setup real mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setup-long-mode">Setup long mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running">Running</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#guest-code">Guest code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#controller-queues">Controller queues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#device-structures">Device structures</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-skeleton">Using the skeleton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tasks">Tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submitting-the-assigment">Submitting the assigment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tldr">TLDR</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">Assignment 7 - SO2 Virtual Machine Manager with KVM</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/assign7-kvm-vmm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="assignment-7-so2-virtual-machine-manager-with-kvm">
+<h1>Assignment 7 - SO2 Virtual Machine Manager with KVM<a class="headerlink" href="#assignment-7-so2-virtual-machine-manager-with-kvm" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Deadline: <strong class="command">Tuesday, 29 May 2023, 23:00</strong></li>
+<li>This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.</li>
+</ul>
+<p>In this assignment we will work on a simple Virtual Machine Manager (VMM). We will be using the KVM API
+from the Linux kernel.</p>
+<p>The assignment has two components: the VM code and the VMM code. We will be using a very simple protocol
+to enable the communication between the two components. The protocol is called SIMVIRTIO.</p>
+<div class="section" id="i-virtual-machine-manager">
+<h2>I. Virtual Machine Manager<a class="headerlink" href="#i-virtual-machine-manager" title="Permalink to this headline">¶</a></h2>
+<p>In general, to build a VMM from scratch we will have to implement three main functionalities: initialize the VMM, initialize the virtual CPU and run the guest code. We will split the implementation of the VMM in these three phases.</p>
+<div class="section" id="initialize-the-vmm">
+<h3>1. Initialize the VMM<a class="headerlink" href="#initialize-the-vmm" title="Permalink to this headline">¶</a></h3>
+<p>A VM will be represented in general by three elements, a file descriptor used to interact with the KVM API, a file descriptor per VM used to configure it (e.g. set its memory) and a pointer to the VM's memory. We provide you with the following structure to start from when working with a VM.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">vm</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">sys_fd</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">mem</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">virtual_machine</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The first step in initializing the KVM VM is to interract with the [KVM_API](<a class="reference external" href="https://www.kernel.org/doc/html/latest/virt/kvm/api.html">https://www.kernel.org/doc/html/latest/virt/kvm/api.html</a>]. The KVM API is exposed via <code class="docutils literal"><span class="pre">/dev/kvm</span></code>. We will be using ioctl calls to call the API.</p>
+<p>The snippet below shows how one can call <code class="docutils literal"><span class="pre">KVM_GET_API_VERSION</span></code> to get the KVM API Version</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">kvm_fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/dev/kvm&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">kvm_fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&quot;open /dev/kvm&quot;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">api_ver</span> <span class="o">=</span> <span class="n">ioctl</span><span class="p">(</span><span class="n">kvm_fd</span><span class="p">,</span> <span class="n">KVM_GET_API_VERSION</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">api_ver</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&quot;KVM_GET_API_VERSION&quot;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Let us now go briefly through how a VMM initializes a VM. This is only the bare bones, a VMM may do lots of other things during VM initialization.</p>
+<ol class="arabic simple">
+<li>We first use KVM_GET_API_VERSION to check that we are running the expected version of KVM, <code class="docutils literal"><span class="pre">KVM_API_VERSION</span></code>.</li>
+<li>We now create the VM using <code class="docutils literal"><span class="pre">KVM_CREATE_VM</span></code>. Note that calling <code class="docutils literal"><span class="pre">KVM_CREATE_VM</span></code> returns a file descriptor. We will be using this file descriptor for the next phases of the setup.</li>
+<li>(Optional) On Intel based CPUs we will have to call <code class="docutils literal"><span class="pre">KVM_SET_TSS_ADDR</span></code> with address <code class="docutils literal"><span class="pre">0xfffbd000</span></code></li>
+<li>Next, we allocate the memory for the VM, we will be using <code class="docutils literal"><span class="pre">mmap</span></code> for this with <code class="docutils literal"><span class="pre">PROT_WRITE</span></code>, <code class="docutils literal"><span class="pre">MAP_PRIVATE</span></code>, <code class="docutils literal"><span class="pre">MAP_ANONYMOUS</span></code> and <code class="docutils literal"><span class="pre">MAP_NORESERVE</span></code>. We recommend allocating 0x100000 bytes for the VM.</li>
+<li>We flag the memory as <code class="docutils literal"><span class="pre">MADV_MERGEABLE</span></code> using <code class="docutils literal"><span class="pre">madvise</span></code></li>
+<li>Finally, we use <code class="docutils literal"><span class="pre">KVM_SET_USER_MEMORY_REGION</span></code> to assign the memory to the VM.</li>
+</ol>
+<p><strong>Make sure you understand what file descriptor to use and when, we use the KVM fd when calling KVM_CREATE_VM, but when interacting with the vm such as calling KVM_SET_USER_MEMORY_REGION we use the VMs
+file descriptor</strong></p>
+<p>TLDR: API used for VM initialization:</p>
+<ul class="simple">
+<li>KVM_GET_API_VERSION</li>
+<li>KVM_CREATE_VM</li>
+<li>KVM_SET_TSS_ADDR</li>
+<li>KVM_SET_USER_MEMORY_REGION.</li>
+</ul>
+<div class="section" id="initialize-a-virtual-cpu">
+<h4>2. Initialize a virtual CPU<a class="headerlink" href="#initialize-a-virtual-cpu" title="Permalink to this headline">¶</a></h4>
+<p>We need a Virtual CPU (VCPU) to store registers.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">vcpu</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kvm_run</span> <span class="o">*</span><span class="n">kvm_run</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">virtual_cpu</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>To create a virtual CPU we will do the following:
+1. Call <code class="docutils literal"><span class="pre">KVM_CREATE_VCPU</span></code> to create the virtual CPU. This call returns a file descriptor.
+2. Use <code class="docutils literal"><span class="pre">KVM_GET_VCPU_MMAP_SIZE</span></code> to get the size of the shared memory
+3. Allocated the necessary VCPU mem size with <code class="docutils literal"><span class="pre">mmap</span></code>. We will be passing the VCPU file descriptor to the <code class="docutils literal"><span class="pre">mmap</span></code> call. We can store the result in <code class="docutils literal"><span class="pre">kvm_run</span></code>.</p>
+<p>TLDR: API used for VM</p>
+<ul class="simple">
+<li>KVM_CREATE_VCPU</li>
+<li>KVM_GET_VCPU_MMAP_SIZE</li>
+</ul>
+<p><strong>We recommend using 2MB pages to simplify the translation process</strong></p>
+</div>
+</div>
+</div>
+<div class="section" id="running-the-vm">
+<h2>Running the VM<a class="headerlink" href="#running-the-vm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setup-real-mode">
+<h3>Setup real mode<a class="headerlink" href="#setup-real-mode" title="Permalink to this headline">¶</a></h3>
+<p>At first, the CPU will start in Protected mode. To do run any meaningful code, we will switch the CPU to [Real mode](<a class="reference external" href="https://wiki.osdev.org/Real_Mode">https://wiki.osdev.org/Real_Mode</a>). To do this we will
+need to configure several CPU registers.</p>
+<ol class="arabic simple">
+<li>First, we will use <code class="docutils literal"><span class="pre">KVM_GET_SREGS</span></code> to get the registers. We use <code class="docutils literal"><span class="pre">struct</span> <span class="pre">kvm_regs</span></code> for this task.</li>
+<li>We will need to set <code class="docutils literal"><span class="pre">cs.selector</span></code> and <code class="docutils literal"><span class="pre">cs.base</span></code> to 0. We will use <code class="docutils literal"><span class="pre">KVM_SET_SREGS</span></code> to set the registers.</li>
+<li>Next we will clear all <code class="docutils literal"><span class="pre">FLAGS</span></code> bits via the <code class="docutils literal"><span class="pre">rflags</span></code> register, this means setting <code class="docutils literal"><span class="pre">rflags</span></code> to 2 since bit 1 must always be to 1. We alo set the <code class="docutils literal"><span class="pre">RIP</span></code> register to 0.</li>
+</ol>
+</div>
+<div class="section" id="setup-long-mode">
+<h3>Setup long mode<a class="headerlink" href="#setup-long-mode" title="Permalink to this headline">¶</a></h3>
+<p>Read mode is all right for very simple guests, such as the one found in the folder <cite>guest_16_bits</cite>. But,
+most programs nowdays need 64 bits addresses, and such we will need to switch to long mode. The following article from OSDev presents all the necessary information about  [Setting Up Long Mode](<a class="reference external" href="https://wiki.osdev.org/Setting_Up_Long_Mode">https://wiki.osdev.org/Setting_Up_Long_Mode</a>).</p>
+<p>In <code class="docutils literal"><span class="pre">vcpu.h</span></code>, you may found helpful macros such as CR0_PE, CR0_MP, CR0_ET, etc.</p>
+<p>Since we will running a more complex program, we will also create a small stack for our program
+<code class="docutils literal"><span class="pre">regs.rsp</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">20;</span></code>. Don't forget to set the RIP and RFLAGS registers.</p>
+</div>
+<div class="section" id="running">
+<h3>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h3>
+<p>After we setup our VCPU in real or long mode we can finally start running code on the VM.</p>
+<ol class="arabic simple">
+<li>We copy to the vm memory the guest code, <cite>memcpy(vm-&gt;mem, guest_code, guest_code_size)</cite> The guest code will be available in two variables which will be discussed below.</li>
+<li>In a infinite loop we run the following:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>We call <code class="docutils literal"><span class="pre">KVM_RUN</span></code> on the VCPU file descriptor to run the VPCU</li>
+<li>Through the shared memory of the VCPU we check the <code class="docutils literal"><span class="pre">exit_reason</span></code> parameter to see if the guest has made any requests:</li>
+<li>We will handle the following VMEXITs: <cite>KVM_EXIT_MMIO</cite>, <cite>KVM_EXIT_IO</cite> and <code class="docutils literal"><span class="pre">KVM_EXIT_HLT</span></code>. <code class="docutils literal"><span class="pre">KVM_EXIT_MMIO</span></code> is triggered when the VM writes to a MMIO address. <code class="docutils literal"><span class="pre">KVM_EXIT_IO</span></code> is called when the VM calls <code class="docutils literal"><span class="pre">inb</span></code> or <code class="docutils literal"><span class="pre">outb</span></code>. <code class="docutils literal"><span class="pre">KVM_EXIT_HLT</span></code> is called when the user does a <code class="docutils literal"><span class="pre">hlt</span></code> instruction.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="guest-code">
+<h3>Guest code<a class="headerlink" href="#guest-code" title="Permalink to this headline">¶</a></h3>
+<p>The VM that is running is also called guest. We will be using the guest to test our implementation.</p>
+<ol class="arabic simple">
+<li>To test the implementation before implementing SIMVIRTIO. The guest will write at address 400 and the RAX register the value 42.</li>
+<li>To test a more complicated implementation,we will extend the previous program to also write &quot;Hello, world!n&quot; on port <cite>0xE9</cite> using the <cite>outb</cite> instruction.</li>
+<li>To test the implementation of <cite>SIMVIRTIO</cite>, we will</li>
+</ol>
+<p>How do we get the guest code? The guest code is available at the following static pointers guest16, guest16_end-guest16. The linker script is populating them.</p>
+<p>## SIMVIRTIO:
+From the communication between the guest and the VMM we will implement a very simple protocol called <code class="docutils literal"><span class="pre">SIMVIRTIO</span></code>. It's a simplified version of the real protocol used in the real world called virtio.</p>
+<p>Configuration space:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+<col width="17%" />
+<col width="12%" />
+<col width="12%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">u32</th>
+<th class="head">u16</th>
+<th class="head">u8</th>
+<th class="head">u8</th>
+<th class="head">u8</th>
+<th class="head">u8</th>
+<th class="head">u8</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>magic value
+R</td>
+<td>max queue len
+R</td>
+<td>device status
+R</td>
+<td>driver status
+R/W</td>
+<td>queue selector
+R/W</td>
+<td>Q0(TX) CTL
+R/W</td>
+<td>Q1(RX) CTL
+R/w</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="controller-queues">
+<h3>Controller queues<a class="headerlink" href="#controller-queues" title="Permalink to this headline">¶</a></h3>
+<p>We provide you with the following structures and methods for the <code class="docutils literal"><span class="pre">SIMVIRTIO</span></code> implementation.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="kt">uint8_t</span> <span class="n">q_elem_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">queue_control</span> <span class="p">{</span>
+    <span class="c1">// Ptr to current available head/producer index in &#39;buffer&#39;.</span>
+    <span class="kt">unsigned</span> <span class="n">head</span><span class="p">;</span>
+    <span class="c1">// Ptr to last index in &#39;buffer&#39; used by consumer.</span>
+    <span class="kt">unsigned</span> <span class="n">tail</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">queue_control_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">simqueue</span> <span class="p">{</span>
+    <span class="c1">// MMIO queue control.</span>
+    <span class="k">volatile</span> <span class="n">queue_control_t</span> <span class="o">*</span><span class="n">q_ctrl</span><span class="p">;</span>
+    <span class="c1">// Size of the queue buffer/data.</span>
+    <span class="kt">unsigned</span> <span class="n">maxlen</span><span class="p">;</span>
+    <span class="c1">// Queue data buffer.</span>
+    <span class="n">q_elem_t</span> <span class="o">*</span><span class="n">buffer</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">simqueue_t</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">circ_bbuf_push</span><span class="p">(</span><span class="n">simqueue_t</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">q_elem_t</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">circ_bbuf_pop</span><span class="p">(</span><span class="n">simqueue_t</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">q_elem_t</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="device-structures">
+<h3>Device structures<a class="headerlink" href="#device-structures" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define MAGIC_VALUE 0x74726976</span>
+<span class="cp">#define DEVICE_RESET 0x0</span>
+<span class="cp">#define DEVICE_CONFIG 0x2</span>
+<span class="cp">#define DEVICE_READY 0x4</span>
+<span class="cp">#define DRIVER_ACK 0x0</span>
+<span class="cp">#define DRIVER 0x2</span>
+<span class="cp">#define DRIVER_OK 0x4</span>
+<span class="cp">#define DRIVER_RESET 0x8000</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">device</span> <span class="p">{</span>
+    <span class="kt">uint32_t</span> <span class="n">magic</span><span class="p">;</span>
+    <span class="kt">uint8_t</span> <span class="n">device_status</span><span class="p">;</span>
+    <span class="kt">uint8_t</span> <span class="n">driver_status</span><span class="p">;</span>
+    <span class="kt">uint8_t</span> <span class="n">max_queue_len</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">device_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">device_table</span> <span class="p">{</span>
+    <span class="kt">uint16_t</span> <span class="n">count</span><span class="p">;</span>
+    <span class="kt">uint64_t</span> <span class="n">device_addresses</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+ <span class="p">}</span> <span class="n">device_table_t</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>We will be implementing the following handles:
+* MMIO (read/write) VMEXIT
+* PIO (read/write) VMEXIT</p>
+</div>
+</div>
+<div class="section" id="using-the-skeleton">
+<h2>Using the skeleton<a class="headerlink" href="#using-the-skeleton" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="tasks">
+<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>30p Implement a simple VMM that runs the code from <cite>guest_16_bits</cite>. We will be running the VCPU in read mode for this task</li>
+<li>20p Extend the previous implementation to run the VCPU in real mode. We will be running the <cite>guest_32_bits</cite> example</li>
+<li>30p Implement the <cite>SIMVIRTIO</cite> protocol.</li>
+<li>10p Implement pooling as opposed to VMEXIT. We will use the macro <cite>USE_POOLING</cite> to switch this option on and off.</li>
+<li>10p Add profiling code. Measure the number of VMEXITs triggered by the VMM.</li>
+</ol>
+<div class="section" id="submitting-the-assigment">
+<h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
+<p>The assignment archive will be submitted on <strong>Moodle</strong>, according to the rules on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/reguli-notare#reguli_de_trimitere_a_temelor">rules page</a>.</p>
+</div>
+<div class="section" id="tips">
+<h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
+<p>To increase your chances of getting the highest grade, read and follow the Linux kernel coding style described in the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.19.19/source/Documentation/process/coding-style.rst">Coding Style document</a>.</p>
+<p>Also, use the following static analysis tools to verify the code:</p>
+<ul>
+<li><p class="first">checkpatch.pl</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> linux/scripts/checkpatch.pl --no-tree --terse -f /path/to/your/file.c
+</pre></div>
+</div>
+</li>
+<li><p class="first">sparse</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install sparse
+<span class="gp">$</span> <span class="nb">cd</span> linux
+<span class="gp">$</span> make <span class="nv">C</span><span class="o">=</span><span class="m">2</span> /path/to/your/file.c
+</pre></div>
+</div>
+</li>
+<li><p class="first">cppcheck</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install cppcheck
+<span class="gp">$</span> cppcheck /path/to/your/file.c
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="penalties">
+<h3>Penalties<a class="headerlink" href="#penalties" title="Permalink to this headline">¶</a></h3>
+<p>Information about assigments penalties can be found on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/general">General Directions page</a>.</p>
+<p>In exceptional cases (the assigment passes the tests by not complying with the requirements) and if the assigment does not pass all the tests, the grade will may decrease more than mentioned above.</p>
+<p>## References
+We recommend you the following readings before starting to work on the homework:
+* [KVM host in a few lines of code](<a class="reference external" href="https://zserge.com/posts/kvm/">https://zserge.com/posts/kvm/</a>)</p>
+</div>
+<div class="section" id="tldr">
+<h3>TLDR<a class="headerlink" href="#tldr" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>The VMM creates and initializes a virtual machine and a virtual CPU</li>
+<li>We switch to real mode and check run the simple guest code from <cite>guest_16_bits</cite></li>
+<li>We switch to long mode and run the more complex guest from <cite>guest_32_bits</cite></li>
+<li>We implement the SIMVIRTIO protocol. We will describe how it behaves in the following subtasks.</li>
+<li>The guest writes in the TX queue (queue 0) the ascii code for <cite>R</cite> which will result in a <cite>VMEXIT</cite></li>
+</ol>
+<p>6. the VMM will handle the VMEXIT caused by the previous write in the queue. When the guests receiver the
+<cite>R</cite> letter it will initiate the reser procedure of the device and set the device status to <cite>DEVICE_RESET</cite>
+7. After the reset handling, the guest must set the status of the device to <cite>DRIVER_ACK</cite>. After this, the guest will write to the TX queue the letter <cite>C</cite>
+8. In the VMM we will initialize the config process when letter <cite>C</cite> is received.It will set the device status to <cite>DEVICE_CONFIG</cite> and add a new entry in the device_table
+9. After the configuration process is finished, the guest will set the driver status to <cite>DRIVER_OK</cite>
+10. Nex, the VMM will set the device status to <cite>DEVICE_READY</cite>
+11. The guest will write in the TX queue &quot;Ana are mere&quot; and will execute a halt
+12. The VMM will print to the STDOUT the message received and execute the halt request
+13. Finally, the VMM will verify that at address 0x400 and in register RAX is stored the value 42</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="assign4-transport-protocol.html" class="btn btn-neutral float-left" title="Assignment 4 - SO2 Transport Protocol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lectures/intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
