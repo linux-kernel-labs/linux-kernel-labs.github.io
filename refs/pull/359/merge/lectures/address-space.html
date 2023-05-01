@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Address Space &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Memory Management" href="memory-management.html" />
+    <link rel="prev" title="Symmetric Multi-Processing" href="smp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Address Space</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#x86-mmu">x86 MMU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selectors">Selectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#segment-descriptor">Segment descriptor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#segmentation-in-linux">Segmentation in Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspecting-selectors-and-segments">Inspecting selectors and segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#x86-paging">x86 Paging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#page-tables">Page tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-paging">Linux paging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation-look-aside-buffer">Translation Look-aside Buffer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#linux-address-space">Linux address space</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#address-space-options-for-32bit-systems">Address space options for 32bit systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linear-mappings">Linear mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#highmem">Highmem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixed-mapped-linear-addresses">Fixed-mapped linear addresses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#temporary-mappings">Temporary mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#permanent-mappings">Permanent mappings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Address Space</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/lectures/address-space.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="address-space">
+<h1>Address Space<a class="headerlink" href="#address-space" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="address-space-slides.html">View slides</a></p>
+<div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-address-space simple">
+<li>x86 MMU<ul>
+<li>Segmentation</li>
+<li>Paging</li>
+<li>TLB</li>
+</ul>
+</li>
+<li>Linux Address Space<ul>
+<li>User</li>
+<li>Kernel</li>
+<li>High memory</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="x86-mmu">
+<h2>x86 MMU<a class="headerlink" href="#x86-mmu" title="Permalink to this headline">¶</a></h2>
+<p>The x86 MMU has a segmentation and a pagination unit. The segmentation
+unit can be used to define logical memory segments defined by a
+logical (virtual) start address, a base linear (mapped) address and a
+size. A segment can also restrict access based on the access type
+(read, execute, write) or the privilege level (we can define some
+segments to be accessible only by kernel for example).</p>
+<p>When the CPU makes a memory access, it will use the segmentation unit
+to translate the logical address to a linear address, based on the
+information in the segment descriptor.</p>
+<p>If pagination is enabled the linear address will be further
+transformed into a physical address, using the information from the
+page tables.</p>
+<p>Note that the segmentation unit can not be disabled, so if the MMU has
+been enabled, segmentation will always be used.</p>
+<p class="admonition-x86-mmu">&nbsp;</p>
+<img alt="../_images/ditaa-f3703e3f627a948c59f6f960518d5f68eb7becec.png" src="../_images/ditaa-f3703e3f627a948c59f6f960518d5f68eb7becec.png" />
+<div class="section" id="selectors">
+<h3>Selectors<a class="headerlink" href="#selectors" title="Permalink to this headline">¶</a></h3>
+<p>A program can use multiple segments and in order to determine which
+segment to use, special registers (named selectors) are used. The
+basic selectors that are typically used are CS - &quot;Code Selector&quot;, DS -
+&quot;Data Selector&quot; and SS - &quot;Stack Selector&quot;.</p>
+<p>Instruction fetches will by default use CS, while data access will by
+default use DS unless the stack is used (e.g. data access through the
+pop and push instructions) in which case SS will be used by default.</p>
+<p>Selectors have three main fields: the index, the table index and the
+running privilege level:</p>
+<p class="admonition-selectors">&nbsp;</p>
+<img alt="../_images/ditaa-d6845a04f0ec792beec598d2a9f4c5b92c65529e.png" src="../_images/ditaa-d6845a04f0ec792beec598d2a9f4c5b92c65529e.png" />
+<p>The index will be used to determine which entry of the descriptor
+table should be used. <cite>TI</cite> is used to select either the Global
+Descriptor Table (GDT) or the Local Descriptor Table (LDT). The tables
+are effectively arrays that start at the location specified in the
+special registers <cite>GDTR</cite> (for GDT) and <cite>LDTR</cite> (for LDT).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">LDT was designed so that applications can define their own
+particular segments. Although not many applications use this
+feature, Linux (and Windows) provide system calls that
+allows an application to create their own segments.</p>
+</div>
+<p><cite>RPL</cite> is only used for CS and it represents the current privilege
+level. There are 4 privilege levels, the highest level being 0 (and
+typically used by the kernel) and the lowest is 3 (and typically used
+by user applications).</p>
+</div>
+<div class="section" id="segment-descriptor">
+<h3>Segment descriptor<a class="headerlink" href="#segment-descriptor" title="Permalink to this headline">¶</a></h3>
+<p>The CPU will use the <cite>index</cite> field of the selector to access an 8 byte
+descriptor:</p>
+<p class="admonition-segment-descriptor">&nbsp;</p>
+<img alt="../_images/ditaa-5cd4a8fa1ad97cff4bb1f64da13ce9ebfcfc4562.png" src="../_images/ditaa-5cd4a8fa1ad97cff4bb1f64da13ce9ebfcfc4562.png" />
+<ul class="simple">
+<li>Base: linear address for the start of the segment</li>
+<li>Limit: size of the segment</li>
+<li>G: granularity bit: if set the size is in bytes otherwise in 4K pages</li>
+<li>B/D: data/code</li>
+<li>Type: code segment, data/stack, TSS, LDT, GDT</li>
+<li>Protection: the minimum priviledge level required to access the
+segment (RPL is checked against DPL)</li>
+</ul>
+<p>Some of the descriptor fields should be familiar. And that is because
+there is some resemblance with Interrupt Descriptors we looked at
+previously.</p>
+</div>
+<div class="section" id="segmentation-in-linux">
+<h3>Segmentation in Linux<a class="headerlink" href="#segmentation-in-linux" title="Permalink to this headline">¶</a></h3>
+<p>In Linux, segments are not used to define the stack, code or
+data. These will be setup using the paging unit as it allows better
+granularity and more importantly it allows Linux to use a generic
+approach that works on other architectures (that don't have
+segmentation support).</p>
+<p>However, because the segmentation unit can not be disabled Linux must
+create 4 generic 0 - 4GB segments for: kernel code, kernel data, user
+code and user data.</p>
+<p>Besides these, Linux uses segments for implementing Thread Local
+Storage (TLS) together with the <cite>set_thread_area</cite> system call.</p>
+<p>It also uses the TSS segment in order to define the kernel stack to
+use when a change of privilege (e.g. system call, interrupt while
+running in user-space) occurs.</p>
+<div class="admonition-segmentation-in-linux highlight-c"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * The layout of the per-CPU GDT under Linux:</span>
+<span class="cm"> *</span>
+<span class="cm"> *   0 - null                                                             &lt;=== cacheline #1</span>
+<span class="cm"> *   1 - reserved</span>
+<span class="cm"> *   2 - reserved</span>
+<span class="cm"> *   3 - reserved</span>
+<span class="cm"> *</span>
+<span class="cm"> *   4 - unused                                                           &lt;=== cacheline #2</span>
+<span class="cm"> *   5 - unused</span>
+<span class="cm"> *</span>
+<span class="cm"> *  ------- start of TLS (Thread-Local Storage) segments:</span>
+<span class="cm"> *</span>
+<span class="cm"> *   6 - TLS segment #1                   [ glibc&#39;s TLS segment ]</span>
+<span class="cm"> *   7 - TLS segment #2                   [ Wine&#39;s %fs Win32 segment ]</span>
+<span class="cm"> *   8 - TLS segment #3                                                   &lt;=== cacheline #3</span>
+<span class="cm"> *   9 - reserved</span>
+<span class="cm"> *  10 - reserved</span>
+<span class="cm"> *  11 - reserved</span>
+<span class="cm"> *</span>
+<span class="cm"> *  ------- start of kernel segments:</span>
+<span class="cm"> *</span>
+<span class="cm"> *  12 - kernel code segment                                              &lt;=== cacheline #4</span>
+<span class="cm"> *  13 - kernel data segment</span>
+<span class="cm"> *  14 - default user CS</span>
+<span class="cm"> *  15 - default user DS</span>
+<span class="cm"> *  16 - TSS                                                              &lt;=== cacheline #5</span>
+<span class="cm"> *  17 - LDT</span>
+<span class="cm"> *  18 - PNPBIOS support (16-&gt;32 gate)</span>
+<span class="cm"> *  19 - PNPBIOS support</span>
+<span class="cm"> *  20 - PNPBIOS support                                                  &lt;=== cacheline #6</span>
+<span class="cm"> *  21 - PNPBIOS support</span>
+<span class="cm"> *  22 - PNPBIOS support</span>
+<span class="cm"> *  23 - APM BIOS support</span>
+<span class="cm"> *  24 - APM BIOS support                                                 &lt;=== cacheline #7</span>
+<span class="cm"> *  25 - APM BIOS support</span>
+<span class="cm"> *</span>
+<span class="cm"> *  26 - ESPFIX small SS</span>
+<span class="cm"> *  27 - per-cpu                  [ offset to per-cpu data area ]</span>
+<span class="cm"> *  28 - stack_canary-20          [ for stack protector ]                 &lt;=== cacheline #8</span>
+<span class="cm"> *  29 - unused</span>
+<span class="cm"> *  30 - unused</span>
+<span class="cm"> *  31 - TSS for double fault handler</span>
+<span class="cm"> */</span>
+
+ <span class="n">DEFINE_PER_CPU_PAGE_ALIGNED</span><span class="p">(</span><span class="k">struct</span> <span class="n">gdt_page</span><span class="p">,</span> <span class="n">gdt_page</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">gdt</span> <span class="o">=</span> <span class="p">{</span>
+ <span class="cp">#ifdef CONFIG_X86_64</span>
+         <span class="cm">/*</span>
+<span class="cm">          * We need valid kernel segments for data and code in long mode too</span>
+<span class="cm">          * IRET will check the segment types  kkeil 2000/10/28</span>
+<span class="cm">          * Also sysret mandates a special GDT layout</span>
+<span class="cm">          *</span>
+<span class="cm">          * TLS descriptors are currently at a different place compared to i386.</span>
+<span class="cm">          * Hopefully nobody expects them at a fixed place (Wine?)</span>
+<span class="cm">          */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_KERNEL32_CS</span><span class="p">]</span>         <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc09b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_KERNEL_CS</span><span class="p">]</span>           <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xa09b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_KERNEL_DS</span><span class="p">]</span>           <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc093</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_DEFAULT_USER32_CS</span><span class="p">]</span>   <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc0fb</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_DEFAULT_USER_DS</span><span class="p">]</span>     <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc0f3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_DEFAULT_USER_CS</span><span class="p">]</span>     <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xa0fb</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+ <span class="cp">#else</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_KERNEL_CS</span><span class="p">]</span>           <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc09a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_KERNEL_DS</span><span class="p">]</span>           <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_DEFAULT_USER_CS</span><span class="p">]</span>     <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc0fa</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_DEFAULT_USER_DS</span><span class="p">]</span>     <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc0f2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="cm">/*</span>
+<span class="cm">          * Segments used for calling PnP BIOS have byte granularity.</span>
+<span class="cm">          * They code segments and data segments have fixed 64k limits,</span>
+<span class="cm">          * the transfer segment sizes are set at run time.</span>
+<span class="cm">          */</span>
+         <span class="cm">/* 32-bit code */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_PNPBIOS_CS32</span><span class="p">]</span>        <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x409a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffff</span><span class="p">),</span>
+         <span class="cm">/* 16-bit code */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_PNPBIOS_CS16</span><span class="p">]</span>        <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x009a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffff</span><span class="p">),</span>
+         <span class="cm">/* 16-bit data */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_PNPBIOS_DS</span><span class="p">]</span>          <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x0092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffff</span><span class="p">),</span>
+         <span class="cm">/* 16-bit data */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_PNPBIOS_TS1</span><span class="p">]</span>         <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x0092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+         <span class="cm">/* 16-bit data */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_PNPBIOS_TS2</span><span class="p">]</span>         <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x0092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+         <span class="cm">/*</span>
+<span class="cm">          * The APM segments have byte granularity and their bases</span>
+<span class="cm">          * are set at run time.  All have 64k limits.</span>
+<span class="cm">          */</span>
+         <span class="cm">/* 32-bit code */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_APMBIOS_BASE</span><span class="p">]</span>        <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x409a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffff</span><span class="p">),</span>
+         <span class="cm">/* 16-bit code */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_APMBIOS_BASE</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>      <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x009a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffff</span><span class="p">),</span>
+         <span class="cm">/* data */</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_APMBIOS_BASE</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>      <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0x4092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffff</span><span class="p">),</span>
+
+         <span class="p">[</span><span class="n">GDT_ENTRY_ESPFIX_SS</span><span class="p">]</span>           <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="p">[</span><span class="n">GDT_ENTRY_PERCPU</span><span class="p">]</span>              <span class="o">=</span> <span class="n">GDT_ENTRY_INIT</span><span class="p">(</span><span class="mh">0xc092</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xfffff</span><span class="p">),</span>
+         <span class="n">GDT_STACK_CANARY_INIT</span>
+ <span class="cp">#endif</span>
+ <span class="p">}</span> <span class="p">};</span>
+ <span class="n">EXPORT_PER_CPU_SYMBOL_GPL</span><span class="p">(</span><span class="n">gdt_page</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="inspecting-selectors-and-segments">
+<h3>Inspecting selectors and segments<a class="headerlink" href="#inspecting-selectors-and-segments" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-inspecting-selectors-and-segments">&nbsp;</p>
+<asciinema-player src="../_images/selectors-and-segments.cast"></asciinema-player></div>
+<div class="section" id="x86-paging">
+<h3>x86 Paging<a class="headerlink" href="#x86-paging" title="Permalink to this headline">¶</a></h3>
+<p>The x86 paging unit support two types of paging: regular and extended paging.</p>
+<p>Regular paging has 2 levels and a fixed page size of 4KB. The linear
+address is split in three fields:</p>
+<ul class="simple">
+<li>Directory (the 10 most significant bits)</li>
+<li>Table (the next 10 most bits)</li>
+<li>Offset (the least significant 12 bits)</li>
+</ul>
+<p class="admonition-regular-paging">&nbsp;</p>
+<img alt="../_images/ditaa-def299abebe530d760a6c8f16c791bbb016f9238.png" src="../_images/ditaa-def299abebe530d760a6c8f16c791bbb016f9238.png" />
+<p>When extended paging is enabled, a single level is used and pages are
+4MB. The linear address is split in two fields:</p>
+<ul class="simple">
+<li>Directory (10 most significant bits)</li>
+<li>Offset (least significant 22 bits)</li>
+</ul>
+<img alt="../_images/ditaa-709c2e7a68bfcdcfe9c1938d6ef2a0c9b5627931.png" class="admonition-extended-paging" src="../_images/ditaa-709c2e7a68bfcdcfe9c1938d6ef2a0c9b5627931.png" />
+</div>
+<div class="section" id="page-tables">
+<h3>Page tables<a class="headerlink" href="#page-tables" title="Permalink to this headline">¶</a></h3>
+<p>We can mix regular and extended paging, the directory page has a bit
+that specifies if extended or regular paging should be used. The
+special CR3 register points to the base of the page directory and page
+directory entries point to the base of the page table.</p>
+<p>Both page directory and page table have 1024 entries and each entry
+has 4 bytes.</p>
+<p>All tables are stored in memory and the page table addresses are
+physical addresses.</p>
+<span class="admonition-page-tables"></span><p>Page table entry fields:</p>
+<ul class="admonition-page-table-entry-fields simple">
+<li>Present/Absent</li>
+<li>PFN (Page Frame Number): the most 20 significant bits of the physical address</li>
+<li>Accessed - not updated by hardware (can be used by OS for housekeeping)</li>
+<li>Dirty - not updated by hardware (can be used by OS for housekeeping)</li>
+<li>Access rights: Read/Write</li>
+<li>Privilege: User/Supervisor</li>
+<li>Page size - only for page directory; if set extended paging is used</li>
+<li>PCD (page cache disable), PWT (page write through)</li>
+</ul>
+</div>
+<div class="section" id="linux-paging">
+<h3>Linux paging<a class="headerlink" href="#linux-paging" title="Permalink to this headline">¶</a></h3>
+<p>Linux paging uses 4 levels in order to support 64bit
+architectures. The diagram below shows how the various virtual address
+chunks are used to index the page tables and compute the physical
+address.</p>
+<img alt="../_images/ditaa-5e4d73e3fcb24db9d1f8c16daddf98694c063fe6.png" class="admonition-linux-paging" src="../_images/ditaa-5e4d73e3fcb24db9d1f8c16daddf98694c063fe6.png" />
+<p>Linux has a common API for creating and walking page tables. Creating
+and modifying address spaces for kernel and processes is done using
+the same generic code which relies on macros and functions to
+translate these generic operations in code that runs on different
+architectures.</p>
+<p>Here is an example of how we can translate a virtual address to a
+physical address, using the Linux page table APIs:</p>
+<div class="admonition-linux-apis-for-page-table-handling highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="o">*</span> <span class="n">page</span><span class="p">;</span>
+<span class="n">pgd_t</span> <span class="n">pgd</span><span class="p">;</span>
+<span class="n">pmd_t</span> <span class="n">pmd</span><span class="p">;</span>
+<span class="n">pud_t</span> <span class="n">pud</span><span class="p">;</span>
+<span class="n">pte_t</span> <span class="n">pte</span><span class="p">;</span>
+<span class="kt">void</span> <span class="o">*</span><span class="n">laddr</span><span class="p">,</span> <span class="o">*</span><span class="n">paddr</span><span class="p">;</span>
+
+<span class="n">pgd</span> <span class="o">=</span> <span class="n">pgd_offset</span><span class="p">(</span><span class="n">mm</span><span class="p">,</span> <span class="n">vaddr</span><span class="p">);</span>
+<span class="n">pud</span> <span class="o">=</span> <span class="n">pud_offet</span><span class="p">(</span><span class="n">pgd</span><span class="p">,</span> <span class="n">vaddr</span><span class="p">);</span>
+<span class="n">pmd</span> <span class="o">=</span> <span class="n">pmd_offset</span><span class="p">(</span><span class="n">pud</span><span class="p">,</span> <span class="n">vaddr</span><span class="p">);</span>
+<span class="n">pte</span> <span class="o">=</span> <span class="n">pte_offset</span><span class="p">(</span><span class="n">pmd</span><span class="p">,</span> <span class="n">vaddr</span><span class="p">);</span>
+<span class="n">page</span> <span class="o">=</span> <span class="n">pte_page</span><span class="p">(</span><span class="n">pte</span><span class="p">);</span>
+<span class="n">laddr</span> <span class="o">=</span> <span class="n">page_address</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
+<span class="n">paddr</span> <span class="o">=</span> <span class="n">virt_to_phys</span><span class="p">(</span><span class="n">laddr</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In order to support architectures with less than 4 levels of
+pagination (such as for x86 32bits) some macros and / or functions are
+0 / empty:</p>
+<div class="admonition-what-about-platforms-with-less-then-4-levels-of-pagination highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kr">inline</span> <span class="n">pud_t</span> <span class="o">*</span> <span class="nf">pud_offset</span><span class="p">(</span><span class="n">pgd_t</span> <span class="o">*</span> <span class="n">pgd</span><span class="p">,</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">address</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">pud_t</span> <span class="o">*</span><span class="p">)</span><span class="n">pgd</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="n">pmd_t</span> <span class="o">*</span> <span class="nf">pmd_offset</span><span class="p">(</span><span class="n">pud_t</span> <span class="o">*</span> <span class="n">pud</span><span class="p">,</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">address</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">pmd_t</span> <span class="o">*</span><span class="p">)</span><span class="n">pud</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="translation-look-aside-buffer">
+<h3>Translation Look-aside Buffer<a class="headerlink" href="#translation-look-aside-buffer" title="Permalink to this headline">¶</a></h3>
+<p>When using virtual memory, due to the table page organization, we may
+need an extra 1 (x86 extended paging), 2 (x86 regular paging) or 3
+(x86 64bit) memory access(es).</p>
+<p>A special cache, called Translation Look-aside Buffer (TLB) is used to
+speed up translations from virtual address to physical addresses.</p>
+<p>The TLB has the following properties:</p>
+<ul class="admonition-translation-look-aside-buffer simple">
+<li>Caches paging information (PFN, rights, privilege)</li>
+<li>Content Addressable Memory / Associative Memory<ul>
+<li>Very small (64-128)</li>
+<li>Very fast (single cycle due to parallel search implementation)</li>
+</ul>
+</li>
+<li>CPUs usually have two TLBs: i-TLB (code) and d-TLB (data)</li>
+<li>TLB miss penalty: up hundreds of cycles</li>
+</ul>
+<p>As with other caches, we must be careful to not create consistency
+issues.</p>
+<p>For example, when changing the mapping of one page to point to a
+different physical memory location in the page tables, we must
+invalidate the associated TLB entry. Otherwise, the MMU will do the
+translation to the old physical address instead of the new physical
+address.</p>
+<p>The x86 platform supports TLB invalidation through two types of
+operations.</p>
+<p class="admonition-tlb-invalidation">Single address invalidation:</p>
+<div class="highlight-asm"><div class="highlight"><pre><span></span>mov $addr, %eax
+invlpg %(eax)
+</pre></div>
+</div>
+<p>Full invalidation:</p>
+<div class="highlight-asm"><div class="highlight"><pre><span></span><span class="nf">mov</span> <span class="nv">%cr3</span><span class="p">,</span> <span class="nv">%eax</span>
+<span class="nf">mov</span> <span class="nv">%eax</span><span class="p">,</span> <span class="nv">%cr3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="linux-address-space">
+<h2>Linux address space<a class="headerlink" href="#linux-address-space" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="address-space-options-for-32bit-systems">
+<h3>Address space options for 32bit systems<a class="headerlink" href="#address-space-options-for-32bit-systems" title="Permalink to this headline">¶</a></h3>
+<p>There are two main options for implementing kernel and user space:
+either dedicated address spaces for each, or split a shared address
+space.</p>
+<p class="admonition-address-space-options-for-32bit-systems">&nbsp;</p>
+<img alt="../_images/ditaa-d5d1129b0298a2ea5f116c9d4b246eb1b888db6b.png" src="../_images/ditaa-d5d1129b0298a2ea5f116c9d4b246eb1b888db6b.png" />
+<p>Each has advantages and disadvantages:</p>
+<ul class="admonition-advantages-and-disadvantages simple">
+<li>Disadvantages for dedicated kernel space:<ul>
+<li>Fully invalidating the TLB for every system call</li>
+</ul>
+</li>
+<li>Disadvantages for shared address space<ul>
+<li>Less address space for both kernel and user processes</li>
+</ul>
+</li>
+</ul>
+<p>Linux is using a split address space for 32 bit systems, although in
+the past there were options for supporting 4/4s split or dedicated
+kernel address space (on those architecture that supports it,
+e.g. x86). Linux always uses split address space for 64 bit systems.</p>
+<p>On overview of the Linux address space is presented below:</p>
+<p class="admonition-linux-address-space-for-32bit-systems">&nbsp;</p>
+<img alt="../_images/ditaa-3985c420def8f30934a72ea8c738a00ed629c298.png" src="../_images/ditaa-3985c420def8f30934a72ea8c738a00ed629c298.png" />
+</div>
+<div class="section" id="linear-mappings">
+<h3>Linear mappings<a class="headerlink" href="#linear-mappings" title="Permalink to this headline">¶</a></h3>
+<p>Linear mappings refer to particular way of mapping virtual pages to
+physical pages, where virtual page V, V + 1, ... V + n is mapped to
+physical pages P, P + 1, ..., P + n.</p>
+<p>To understand the necessity of linear mappings, we should look at
+common kernel operations that involves using both the virtual and
+physical address of a page such as an I/O transfer:</p>
+<ul class="admonition-virtual-to-physical-address-translations-for-i-o-transfers simple">
+<li>Use the virtual address of a kernel buffer in order to copy to
+data from from user space</li>
+<li>Walk the page tables to transform the kernel buffer virtual
+address to a physical address</li>
+<li>Use the physical address of the kernel buffer to start a DMA
+transfer</li>
+</ul>
+<p>However, if we use linear mappings and the kernel buffers are in the
+linear mapping area, then:</p>
+<ul class="admonition-linear-mappings simple">
+<li>Virtual to physical address space translation is reduced to one
+operation (instead of walking the page tables)</li>
+<li>Less memory is used to create the page tables</li>
+<li>Less TLB entries are used for the kernel memory</li>
+</ul>
+</div>
+<div class="section" id="highmem">
+<h3>Highmem<a class="headerlink" href="#highmem" title="Permalink to this headline">¶</a></h3>
+<p>The &quot;highmem&quot; part of the virtual address space is used to create
+arbitrary mappings (as opposed to linear mappings in lowmem). On 32bit
+systems the highmem area is absolutely required in order to access
+physical memory outside of lowmem. However, highmem is also used on
+64bit systems but the use-case there is mainly to allow arbitrary
+mappings in kernel space.</p>
+<p class="admonition-highmem">&nbsp;</p>
+<img alt="../_images/ditaa-bb8455a43088bf800eece11869f6ff857574605d.png" src="../_images/ditaa-bb8455a43088bf800eece11869f6ff857574605d.png" />
+<p>There are multiple types of mappings in the highmem area:</p>
+<ul class="simple">
+<li>Multi-page permanent mappings (vmalloc, ioremap)</li>
+<li>Temporary 1 page mappings (atomic_kmap)</li>
+<li>Permanent 1 page mappings (kmap, fix-mapped linear addresses)</li>
+</ul>
+<p>Multiple page mappings allows mapping of ranges of physical memory
+into the highmem area. Each such mapping is guarded by a
+non-accessible page to catch buffer overflow and underflow errors.</p>
+<p>The APIs that maps multiple pages into highmem are:</p>
+<div class="admonition-multi-page-permanent-mappings highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="o">*</span> <span class="nf">vmalloc</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">vfree</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">addr</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">ioremap</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">iounmap</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">addr</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="xref c c-func docutils literal"><span class="pre">vmalloc()</span></code> is used to allocate non-contiguous system memory
+pages as a contiguous segment in the kernel virtual address space. It
+is usefully when allocating large buffers because due to fragmentation
+it is unlikely to find free large chunks of physical contiguous memory.</p>
+<p><code class="xref c c-func docutils literal"><span class="pre">ioremap()</span></code> is used to map device memory or device registers
+into the kernel address space. It maps a contiguous physical memory
+range into highmem with page caching disabled.</p>
+</div>
+<div class="section" id="fixed-mapped-linear-addresses">
+<h3>Fixed-mapped linear addresses<a class="headerlink" href="#fixed-mapped-linear-addresses" title="Permalink to this headline">¶</a></h3>
+<p>Fixed-mapped linear addresses are a special class of singular page
+mappings that are used for accessing registers of commonly used
+peripherals such as the APIC or IO APIC.</p>
+<p>Typical I/O access for peripherals is to use a base (the kernel
+virtual address space where the peripheral registers are mapped) +
+offsets for various registers.</p>
+<p>In order to optimize access, the base is reserved at compile time
+(e.g. 0xFFFFF000). Since the base is constant, the various register
+accesses of the form <cite>base + register offset</cite> will also be constant
+and thus the compiler will avoid generating an extra instruction.</p>
+<p>In summary, fixed-mapped linear addresses are:</p>
+<ul class="admonition-fixed-mapped-linear-addresses simple">
+<li>Reserved virtual addresses (constants)</li>
+<li>Mapped to physical addresses during boot</li>
+</ul>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">set_fixmap</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">phys_addr</span><span class="p">)</span>
+<span class="n">set_fixmap_nocache</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">phys_addr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These addresses are architecture defined and, as an example, this is
+the map for x86:</p>
+<div class="admonition-fixed-mapped-linear-addresses highlight-c"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * Here we define all the compile-time &#39;special&#39; virtual</span>
+<span class="cm"> * addresses. The point is to have a constant address at</span>
+<span class="cm"> * compile time, but to set the physical address only</span>
+<span class="cm"> * in the boot process.</span>
+<span class="cm"> * for x86_32: We allocate these special addresses</span>
+<span class="cm"> * from the end of virtual memory (0xfffff000) backwards.</span>
+<span class="cm"> * Also this lets us do fail-safe vmalloc(), we</span>
+<span class="cm"> * can guarantee that these special addresses and</span>
+<span class="cm"> * vmalloc()-ed addresses never overlap.</span>
+<span class="cm"> *</span>
+<span class="cm"> * These &#39;compile-time allocated&#39; memory buffers are</span>
+<span class="cm"> * fixed-size 4k pages (or larger if used with an increment</span>
+<span class="cm"> * higher than 1). Use set_fixmap(idx,phys) to associate</span>
+<span class="cm"> * physical memory with fixmap indices.</span>
+<span class="cm"> *</span>
+<span class="cm"> * TLB entries of such buffers will not be flushed across</span>
+<span class="cm"> * task switches.</span>
+<span class="cm"> */</span>
+
+<span class="k">enum</span> <span class="n">fixed_addresses</span> <span class="p">{</span>
+<span class="cp">#ifdef CONFIG_X86_32</span>
+    <span class="n">FIX_HOLE</span><span class="p">,</span>
+<span class="cp">#else</span>
+<span class="cp">#ifdef CONFIG_X86_VSYSCALL_EMULATION</span>
+    <span class="n">VSYSCALL_PAGE</span> <span class="o">=</span> <span class="p">(</span><span class="n">FIXADDR_TOP</span> <span class="o">-</span> <span class="n">VSYSCALL_ADDR</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">PAGE_SHIFT</span><span class="p">,</span>
+<span class="cp">#endif</span>
+<span class="cp">#endif</span>
+    <span class="n">FIX_DBGP_BASE</span><span class="p">,</span>
+    <span class="n">FIX_EARLYCON_MEM_BASE</span><span class="p">,</span>
+<span class="cp">#ifdef CONFIG_PROVIDE_OHCI1394_DMA_INIT</span>
+    <span class="n">FIX_OHCI1394_BASE</span><span class="p">,</span>
+<span class="cp">#endif</span>
+<span class="cp">#ifdef CONFIG_X86_LOCAL_APIC</span>
+    <span class="n">FIX_APIC_BASE</span><span class="p">,</span>        <span class="cm">/* local (CPU) APIC) -- required for SMP or not */</span>
+<span class="cp">#endif</span>
+<span class="cp">#ifdef CONFIG_X86_IO_APIC</span>
+    <span class="n">FIX_IO_APIC_BASE_0</span><span class="p">,</span>
+    <span class="n">FIX_IO_APIC_BASE_END</span> <span class="o">=</span> <span class="n">FIX_IO_APIC_BASE_0</span> <span class="o">+</span> <span class="n">MAX_IO_APICS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="cp">#endif</span>
+<span class="cp">#ifdef CONFIG_X86_32</span>
+    <span class="n">FIX_KMAP_BEGIN</span><span class="p">,</span>       <span class="cm">/* reserved pte&#39;s for temporary kernel mappings */</span>
+    <span class="n">FIX_KMAP_END</span> <span class="o">=</span> <span class="n">FIX_KMAP_BEGIN</span><span class="o">+</span><span class="p">(</span><span class="n">KM_TYPE_NR</span><span class="o">*</span><span class="n">NR_CPUS</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+<span class="cp">#ifdef CONFIG_PCI_MMCONFIG</span>
+    <span class="n">FIX_PCIE_MCFG</span><span class="p">,</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<p>Notice how easy is to do the conversion between the virtual address
+and the fixed address indexes:</p>
+<div class="admonition-conversion-between-virtual-address-fixed-address-indexes highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define __fix_to_virt(x)  (FIXADDR_TOP - ((x) &lt;&lt; PAGE_SHIFT))</span>
+<span class="cp">#define __virt_to_fix(x)  ((FIXADDR_TOP - ((x)&amp;PAGE_MASK)) &gt;&gt; PAGE_SHIFT)</span>
+
+<span class="cp">#ifndef __ASSEMBLY__</span>
+<span class="cm">/*</span>
+<span class="cm"> * &#39;index to address&#39; translation. If anyone tries to use the idx</span>
+<span class="cm"> * directly without translation, we catch the bug with a NULL-deference</span>
+<span class="cm"> * kernel oops. Illegal ranges of incoming indices are caught too.</span>
+<span class="cm"> */</span>
+ <span class="k">static</span> <span class="n">__always_inline</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">fix_to_virt</span><span class="p">(</span><span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">BUILD_BUG_ON</span><span class="p">(</span><span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">__end_of_fixed_addresses</span><span class="p">);</span>
+     <span class="k">return</span> <span class="n">__fix_to_virt</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="k">static</span> <span class="kr">inline</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">virt_to_fix</span><span class="p">(</span><span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">vaddr</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">BUG_ON</span><span class="p">(</span><span class="n">vaddr</span> <span class="o">&gt;=</span> <span class="n">FIXADDR_TOP</span> <span class="o">||</span> <span class="n">vaddr</span> <span class="o">&lt;</span> <span class="n">FIXADDR_START</span><span class="p">);</span>
+     <span class="k">return</span> <span class="n">__virt_to_fix</span><span class="p">(</span><span class="n">vaddr</span><span class="p">);</span>
+ <span class="p">}</span>
+
+
+ <span class="kr">inline</span> <span class="kt">long</span> <span class="nf">fix_to_virt</span><span class="p">(</span><span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">__end_of_fixed_addresses</span><span class="p">)</span>
+         <span class="n">__this_fixmap_does_not_exist</span><span class="p">();</span>
+     <span class="k">return</span> <span class="p">(</span><span class="mh">0xffffe000UL</span> <span class="o">-</span> <span class="p">(</span><span class="n">idx</span> <span class="o">&lt;&lt;</span> <span class="n">PAGE_SHIFT</span><span class="p">));</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="temporary-mappings">
+<h3>Temporary mappings<a class="headerlink" href="#temporary-mappings" title="Permalink to this headline">¶</a></h3>
+<p>Temporary mappings can be used to map a single physical page, very
+fast, in kernel space. It can be used in interrupt context but the
+atomic kmap section, defined in between the <code class="xref c c-func docutils literal"><span class="pre">kmap_atomic()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">kunmap_atomic()</span></code> can not be preempted. That is why these are
+called temporary mappings, as they can only be used momentarily.</p>
+<span class="admonition-temporary-mappings"></span><p>Temporary mappings are very fast because there is no locking or
+searching required and also there is no full TLB invalidation, just
+the particular virtual page will be TLB invalidated.</p>
+<p>Here are some code snippets that show that temporary mappings are
+implemented:</p>
+<div class="admonition-temporary-mappings-implementation highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define kmap_atomic(page) kmap_atomic_prot(page, kmap_prot)</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">kmap_atomic_high_prot</span><span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="n">pgprot_t</span> <span class="n">prot</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">vaddr</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">idx</span><span class="p">,</span> <span class="n">type</span><span class="p">;</span>
+
+  <span class="n">type</span> <span class="o">=</span> <span class="n">kmap_atomic_idx_push</span><span class="p">();</span>
+  <span class="n">idx</span> <span class="o">=</span> <span class="n">type</span> <span class="o">+</span> <span class="n">KM_TYPE_NR</span><span class="o">*</span><span class="n">smp_processor_id</span><span class="p">();</span>
+  <span class="n">vaddr</span> <span class="o">=</span> <span class="n">__fix_to_virt</span><span class="p">(</span><span class="n">FIX_KMAP_BEGIN</span> <span class="o">+</span> <span class="n">idx</span><span class="p">);</span>
+  <span class="n">BUG_ON</span><span class="p">(</span><span class="o">!</span><span class="n">pte_none</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">kmap_pte</span><span class="o">-</span><span class="n">idx</span><span class="p">)));</span>
+  <span class="n">set_pte</span><span class="p">(</span><span class="n">kmap_pte</span><span class="o">-</span><span class="n">idx</span><span class="p">,</span> <span class="n">mk_pte</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">prot</span><span class="p">));</span>
+  <span class="n">arch_flush_lazy_mmu_mode</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">vaddr</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">EXPORT_SYMBOL</span><span class="p">(</span><span class="n">kmap_atomic_high_prot</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">kmap_atomic_idx_push</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">__this_cpu_inc_return</span><span class="p">(</span><span class="n">__kmap_atomic_idx</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="cp">#ifdef CONFIG_DEBUG_HIGHMEM</span>
+  <span class="n">WARN_ON_ONCE</span><span class="p">(</span><span class="n">in_irq</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">irqs_disabled</span><span class="p">());</span>
+  <span class="n">BUG_ON</span><span class="p">(</span><span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">KM_TYPE_NR</span><span class="p">);</span>
+<span class="cp">#endif</span>
+  <span class="k">return</span> <span class="n">idx</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Notice that fix-mapped linear addresses and a stack like approach is
+used: each CPU has KM_TYPE_NR reserved entries which are used in a
+first code first serve option. This allows using multiple temporary
+mappings at once, for example one in process context, one in an
+interrupt handler, and a few more in tasklets or softirqs.</p>
+<span class="admonition-implementation-of-temporary-mappings"></span></div>
+<div class="section" id="permanent-mappings">
+<h3>Permanent mappings<a class="headerlink" href="#permanent-mappings" title="Permalink to this headline">¶</a></h3>
+<p>Permanent mappings allows users to hold on to a mapping for long
+(undefined) periods of time which means that context switch are
+allowed after a mapping and before releasing it.</p>
+<p>This flexibility comes with a price though. A search operation is
+performed to find a free entry and they can not be used in interrupt
+context - the operation that tries to find a free virtual address page
+may block. There is a limited number of permanent mappings available
+(topically one page is reserved for permanent mappings)</p>
+<span class="admonition-permanent-mappings"></span></div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="smp.html" class="btn btn-neutral float-left" title="Symmetric Multi-Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="memory-management.html" class="btn btn-neutral float-right" title="Memory Management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
