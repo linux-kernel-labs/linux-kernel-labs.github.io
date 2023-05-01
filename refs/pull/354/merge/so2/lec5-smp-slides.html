@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SO2 Lecture 05 - Symmetric Multi-Processing &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="up" title="Operating Systems 2" href="index.html" />
+    <link rel="next" title="SO2 Lecture 06 - Address Space" href="lec6-address-space.html" />
+    <link rel="prev" title="SO2 Lecture 04 - Interrupts" href="lec4-interrupts.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-so2-lecture-05-symmetric-multi-processing slide level-1">
+
+<h1>SO2 Lecture 05 - Symmetric Multi-Processing</h1>
+
+
+
+
+
+</article>
+<article class="admonition-symmetric-multi-processing slide level-2">
+
+<h2>Symmetric Multi-Processing</h2>
+
+<ul class="simple">
+<li>Kernel Concurrency</li>
+<li>Atomic operations</li>
+<li>Spin locks</li>
+<li>Cache thrashing</li>
+<li>Optimized spin locks</li>
+<li>Process and Interrupt Context Synchronization</li>
+<li>Mutexes</li>
+<li>Per CPU data</li>
+<li>Memory Ordering and Barriers</li>
+<li>Read-Copy Update</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-race-conditions slide level-2">
+
+<h2>Race conditions</h2>
+
+<ul class="simple">
+<li>there are at least two execution contexts that run in &quot;parallel&quot;:<ul>
+<li>truly run in parallel (e.g. two system calls running on
+different processors)</li>
+<li>one of the contexts can arbitrary preempt the other (e.g. an
+interrupt preempts a system call)</li>
+</ul>
+</li>
+<li>the execution contexts perform read-write accesses to shared
+memory</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-race-condition-resource-counter-release slide level-2">
+
+<h2>Race condition: resource counter release</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">release_resource</span><span class="p">()</span>
+<span class="p">{</span>
+     <span class="n">counter</span><span class="o">--</span><span class="p">;</span>
+
+     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">counter</span><span class="p">)</span>
+         <span class="n">free_resource</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-race-condition-scenario slide level-2">
+
+<h2>Race condition scenario</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-35f7597b35b83bb0025ac2a5f158c9eae23050c8.png" src="../_images/ditaa-35f7597b35b83bb0025ac2a5f158c9eae23050c8.png" />
+
+
+
+
+</article>
+<article class="admonition-avoiding-race-conditions slide level-2">
+
+<h2>Avoiding race conditions</h2>
+
+<ul class="simple">
+<li>make the critical section <strong>atomic</strong> (e.g. use atomic
+instructions)</li>
+<li><strong>disable preemption</strong> during the critical section (e.g. disable
+interrupts, bottom-half handlers, or thread preemption)</li>
+<li><strong>serialize the access</strong> to the critical section (e.g. use spin
+locks or mutexes to allow only one context or thread in the
+critical section)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-linux-kernel-concurrency-sources slide level-2">
+
+<h2>Linux kernel concurrency sources</h2>
+
+<ul class="simple">
+<li><strong>single core systems</strong>, <strong>non-preemptive kernel</strong>: the current
+process can be preempted by interrupts</li>
+<li><strong>single core systems</strong>, <strong>preemptive kernel</strong>: above + the
+current process can be preempted by other processes</li>
+<li><strong>multi-core systems</strong>: above + the current process can run
+in parallel with another process or with an interrupt running on
+another processor</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-atomic-operations slide level-2">
+
+<h2>Atomic operations</h2>
+
+<ul class="simple">
+<li>integer based:<ul>
+<li>simple: <code class="xref c c-func docutils literal"><span class="pre">atomic_inc()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_dec()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">atomic_add()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_sub()</span></code></li>
+<li>conditional: <code class="xref c c-func docutils literal"><span class="pre">atomic_dec_and_test()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">atomic_sub_and_test()</span></code></li>
+</ul>
+</li>
+<li>bit based:<ul>
+<li>simple: <code class="xref c c-func docutils literal"><span class="pre">test_bit()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">set_bit()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">change_bit()</span></code></li>
+<li>conditional: <code class="xref c c-func docutils literal"><span class="pre">test_and_set_bit()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">test_and_clear_bit()</span></code>,
+<code class="xref c c-func docutils literal"><span class="pre">test_and_change_bit()</span></code></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-using-c-func-atomic-dec-and-test-to-implement-resource-counter-release slide level-2">
+
+<h2>Using <code class="xref c c-func docutils literal"><span class="pre">atomic_dec_and_test()</span></code> to implement resource counter release</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">release_resource</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">atomic_dec_and_test</span><span class="p">(</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">))</span>
+         <span class="n">free_resource</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-atomic-operations-may-not-be-atomic-on-smp-systems slide level-2">
+
+<h2>Atomic operations may not be atomic on SMP systems</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-ddd14be50300088958e86912bc5f396797634a3a.png" src="../_images/ditaa-ddd14be50300088958e86912bc5f396797634a3a.png" />
+
+
+
+
+</article>
+<article class="admonition-fixing-atomic-operations-for-smp-systems-x86 slide level-2">
+
+<h2>Fixing atomic operations for SMP systems (x86)</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-c11fccb956cdf115910f9f72e1dc14cd7ed549ff.png" src="../_images/ditaa-c11fccb956cdf115910f9f72e1dc14cd7ed549ff.png" />
+
+
+
+
+</article>
+<article class="admonition-synchronization-with-interrupts-x86 slide level-2">
+
+<h2>Synchronization with interrupts (x86)</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="cp">#define local_irq_disable() \</span>
+<span class="cp">     asm volatile („cli” : : : „memory”)</span>
+
+<span class="cp">#define local_irq_enable() \</span>
+<span class="cp">    asm volatile („sti” : : : „memory”)</span>
+
+<span class="cp">#define local_irq_save(flags) \</span>
+<span class="cp">    asm volatile (&quot;pushf ; pop %0&quot; :&quot;=g&quot; (flags)</span>
+                  <span class="o">:</span> <span class="cm">/* no input */</span><span class="o">:</span> <span class="s">&quot;memory&quot;</span><span class="p">)</span> \
+    <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&quot;cli&quot;</span><span class="o">:</span> <span class="o">:</span> <span class="o">:</span><span class="s">&quot;memory&quot;</span><span class="p">)</span>
+
+<span class="cp">#define local_irq_restore(flags) \</span>
+<span class="cp">    asm volatile (&quot;push %0 ; popf&quot;</span>
+                  <span class="o">:</span> <span class="cm">/* no output */</span>
+                  <span class="o">:</span> <span class="s">&quot;g&quot;</span> <span class="p">(</span><span class="n">flags</span><span class="p">)</span> <span class="o">:</span><span class="s">&quot;memory&quot;</span><span class="p">,</span> <span class="s">&quot;cc&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-spin-lock-implementation-example-x86 slide level-2">
+
+<h2>Spin Lock Implementation Example (x86)</h2>
+
+<div class="highlight-asm"><div class="highlight"><pre><span></span>spin_lock:
+    lock bts [my_lock], 0
+    jc spin_lock
+
+/* critical section */
+
+spin_unlock:
+    mov [my_lock], 0
+</pre></div>
+</div>
+<p><strong>bts dts, src</strong> - bit test and set; it copies the src bit from the dts
+memory address to the carry flag and then sets it:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">CF</span> <span class="o">&lt;-</span> <span class="n">dts</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+<span class="n">dts</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="mi">1</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-lock-contention slide level-2">
+
+<h2>Lock Contention</h2>
+
+<ul class="simple">
+<li>There is lock contention when at least one core spins trying to
+enter the critical section lock</li>
+<li>Lock contention grows with the critical section size, time spent
+in the critical section and the number of cores in the system</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-cache-thrashing slide level-2">
+
+<h2>Cache Thrashing</h2>
+
+<p>Cache thrashing occurs when multiple cores are trying to read and
+write to the same memory resulting in excessive cache misses.</p>
+<p>Since spin locks continuously access memory during lock contention,
+cache thrashing is a common occurrence due to the way cache
+coherency is implemented.</p>
+
+
+
+
+</article>
+<article class="admonition-synchronized-caches-and-memory slide level-2">
+
+<h2>Synchronized caches and memory</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-4d63c157487ff8291f2a6e93fe680ec38c1a3212.png" src="../_images/ditaa-4d63c157487ff8291f2a6e93fe680ec38c1a3212.png" />
+
+
+
+
+</article>
+<article class="admonition-unsynchronized-caches-and-memory slide level-2">
+
+<h2>Unsynchronized caches and memory</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-7ee0f9bb5f5af586e043afd47cfbad0adcc34888.png" src="../_images/ditaa-7ee0f9bb5f5af586e043afd47cfbad0adcc34888.png" />
+
+
+
+
+</article>
+<article class="admonition-cache-coherency-protocols slide level-2">
+
+<h2>Cache Coherency Protocols</h2>
+
+<ul class="simple">
+<li>Bus snooping (sniffing) based: memory bus transactions are
+monitored by caches and they take actions to preserve
+coherency</li>
+<li>Directory based: there is a separate entity (directory) that
+maintains the state of caches; caches interact with directory
+to preserve coherency</li>
+</ul>
+<p>Bus snooping is simpler but it performs poorly when the number of
+cores goes beyond 32-64.</p>
+<p>Directory based cache coherence protocols scale much better (up
+to thousands of cores) and are usually used in NUMA systems.</p>
+
+
+
+
+</article>
+<article class="admonition-mesi-cache-coherence-protocol slide level-2">
+
+<h2>MESI Cache Coherence Protocol</h2>
+
+<ul class="simple">
+<li>Caching policy: write back</li>
+<li>Cache line states<ul>
+<li>Modified: owned by a single core and dirty</li>
+<li>Exclusive: owned by a single core and clean</li>
+<li>Shared: shared between multiple cores and clean</li>
+<li>Invalid : the line is not cached</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-mesi-state-transitions slide level-2">
+
+<h2>MESI State Transitions</h2>
+
+<ul class="simple">
+<li>Invalid -&gt; Exclusive: read request, all other cores have the line
+in Invalid; line loaded from memory</li>
+<li>Invalid -&gt; Shared: read request, at least one core has the line
+in Shared or Exclusive; line loaded from sibling cache</li>
+<li>Invalid/Shared/Exclusive -&gt; Modified: write request; <strong>all
+other</strong> cores <strong>invalidate</strong> the line</li>
+<li>Modified -&gt; Invalid: write request from other core; line is
+flushed to memory</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-cache-thrashing-due-to-spin-lock-contention slide level-2">
+
+<h2>Cache thrashing due to spin lock contention</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-b26d802c286bda6c559b4dcfa8a7fb27f840463e.png" src="../_images/ditaa-b26d802c286bda6c559b4dcfa8a7fb27f840463e.png" />
+
+
+
+
+</article>
+<article class="admonition-optimized-spin-lock-keacquirespinlock slide level-2">
+
+<h2>Optimized spin lock (KeAcquireSpinLock)</h2>
+
+<p>&nbsp;</p>
+<div class="highlight-asm"><div class="highlight"><pre><span></span><span class="nl">spin_lock:</span>
+    <span class="na">rep</span> <span class="c">; nop</span>
+    <span class="nf">test</span> <span class="no">lock_addr</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="nf">jnz</span> <span class="no">spin_lock</span>
+    <span class="na">lock</span> <span class="nf">bts</span> <span class="no">lock_addr</span>
+    <span class="nf">jc</span> <span class="no">spin_lock</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>we first test the lock read only, using a non atomic
+instructions, to avoid writes and thus invalidate operations
+while we spin</li>
+<li>only when the lock <em>might</em> be free, we try to acquire it</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-queued-spin-locks slide level-2">
+
+<h2>Queued Spin Locks</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-58545831034f050660727be99cede213bc4a53c7.png" src="../_images/ditaa-58545831034f050660727be99cede213bc4a53c7.png" />
+
+
+
+
+</article>
+<article class="admonition-process-and-interrupt-handler-synchronization-deadlock slide level-2">
+
+<h2>Process and Interrupt Handler Synchronization Deadlock</h2>
+
+<ul class="simple">
+<li>In the process context we take the spin lock</li>
+<li>An interrupt occurs and it is scheduled on the same CPU core</li>
+<li>The interrupt handler runs and tries to take the spin lock</li>
+<li>The current CPU will deadlock</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-interrupt-synchronization-for-smp slide level-2">
+
+<h2>Interrupt Synchronization for SMP</h2>
+
+<ul class="simple">
+<li>In process context: disable interrupts and acquire a spin lock;
+this will protect both against interrupt or other CPU cores race
+conditions (<code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">spin_lock_restore()</span></code> combine the two operations)</li>
+<li>In interrupt context: take a spin lock; this will will protect
+against race conditions with other interrupt handlers or process
+context running on different processors</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-bottom-half-synchronization-for-smp slide level-2">
+
+<h2>Bottom-Half Synchronization for SMP</h2>
+
+<ul class="simple">
+<li>In process context use <code class="xref c c-func docutils literal"><span class="pre">spin_lock_bh()</span></code> (which combines
+<code class="xref c c-func docutils literal"><span class="pre">local_bh_disable()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code>) and
+<code class="xref c c-func docutils literal"><span class="pre">spin_unlock_bh()</span></code> (which combines <code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">local_bh_enable()</span></code>)</li>
+<li>In bottom half context use: <code class="xref c c-func docutils literal"><span class="pre">spin_lock()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> (or <code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqsave()</span></code> and
+<code class="xref c c-func docutils literal"><span class="pre">spin_lock_irqrestore()</span></code> if sharing data with interrupt
+handlers)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-preemption slide level-2">
+
+<h2>Preemption</h2>
+
+<p>&nbsp;</p>
+<p>Preemption is configurable: when active it provides better latency
+and response time, while when deactivated it provides better
+throughput.</p>
+<p>Preemption is disabled by spin locks and mutexes but it can be
+manually disabled as well (by core kernel code).</p>
+
+
+
+
+</article>
+<article class="admonition-preemption-and-bottom-half-masking slide level-2">
+
+<h2>Preemption and Bottom-Half Masking</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define PREEMPT_BITS      8</span>
+<span class="cp">#define SOFTIRQ_BITS      8</span>
+<span class="cp">#define HARDIRQ_BITS      4</span>
+<span class="cp">#define NMI_BITS          1</span>
+
+<span class="cp">#define preempt_disable() preempt_count_inc()</span>
+
+<span class="cp">#define local_bh_disable() add_preempt_count(SOFTIRQ_OFFSET)</span>
+
+<span class="cp">#define local_bh_enable() sub_preempt_count(SOFTIRQ_OFFSET)</span>
+
+<span class="cp">#define irq_count() (preempt_count() &amp; (HARDIRQ_MASK | SOFTIRQ_MASK))</span>
+
+<span class="cp">#define in_interrupt() irq_count()</span>
+
+<span class="n">asmlinkage</span> <span class="kt">void</span> <span class="nf">do_softirq</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">in_interrupt</span><span class="p">())</span> <span class="k">return</span><span class="p">;</span>
+    <span class="p">...</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-mutexes slide level-2">
+
+<h2>Mutexes</h2>
+
+<ul class="simple">
+<li>They don't &quot;waste&quot; CPU cycles; system throughput is better than
+spin locks if context switch overhead is lower than medium
+spinning time</li>
+<li>They can't be used in interrupt context</li>
+<li>They have a higher latency than spin locks</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-c-func-mutex-lock-fast-path slide level-2">
+
+<h2><code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> fast path</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">__sched</span> <span class="nf">mutex_lock</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">might_sleep</span><span class="p">();</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">__mutex_trylock_fast</span><span class="p">(</span><span class="n">lock</span><span class="p">))</span>
+    <span class="n">__mutex_lock_slowpath</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">__always_inline</span> <span class="kt">bool</span> <span class="nf">__mutex_trylock_fast</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">curr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">current</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">atomic_long_cmpxchg_acquire</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">owner</span><span class="p">,</span> <span class="mi">0UL</span><span class="p">,</span> <span class="n">curr</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-c-func-mutex-lock-slow-path slide level-2">
+
+<h2><code class="xref c c-func docutils literal"><span class="pre">mutex_lock()</span></code> slow path</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="p">...</span>
+  <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+<span class="p">...</span>
+  <span class="cm">/* add waiting tasks to the end of the waitqueue (FIFO): */</span>
+  <span class="n">list_add_tail</span><span class="p">(</span><span class="o">&amp;</span><span class="n">waiter</span><span class="p">.</span><span class="n">list</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_list</span><span class="p">);</span>
+<span class="p">...</span>
+  <span class="n">waiter</span><span class="p">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+<span class="p">...</span>
+  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">__mutex_trylock</span><span class="p">(</span><span class="n">lock</span><span class="p">))</span>
+      <span class="k">goto</span> <span class="n">acquired</span><span class="p">;</span>
+  <span class="p">...</span>
+    <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+  <span class="p">...</span>
+    <span class="n">set_current_state</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+    <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+<span class="nl">acquired</span><span class="p">:</span>
+  <span class="n">__set_current_state</span><span class="p">(</span><span class="n">TASK_RUNNING</span><span class="p">);</span>
+  <span class="n">mutex_remove_waiter</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">waiter</span><span class="p">,</span> <span class="n">current</span><span class="p">);</span>
+  <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-c-func-mutex-unlock-fast-path slide level-2">
+
+<h2><code class="xref c c-func docutils literal"><span class="pre">mutex_unlock()</span></code> fast path</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">__sched</span> <span class="nf">mutex_unlock</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">__mutex_unlock_fast</span><span class="p">(</span><span class="n">lock</span><span class="p">))</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="n">__mutex_unlock_slowpath</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="n">_RET_IP_</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">__always_inline</span> <span class="kt">bool</span> <span class="nf">__mutex_unlock_fast</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">curr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">current</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">atomic_long_cmpxchg_release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">owner</span><span class="p">,</span> <span class="n">curr</span><span class="p">,</span> <span class="mi">0UL</span><span class="p">)</span> <span class="o">==</span> <span class="n">curr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">__mutex_lock_slowpath</span><span class="p">(</span><span class="k">struct</span> <span class="n">mutex</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">...</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">__mutex_waiter_is_first</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">waiter</span><span class="p">))</span>
+          <span class="n">__mutex_set_flag</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="n">MUTEX_FLAG_WAITERS</span><span class="p">);</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-c-func-mutex-unlock-slow-path slide level-2">
+
+<h2><code class="xref c c-func docutils literal"><span class="pre">mutex_unlock()</span></code> slow path</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_list</span><span class="p">))</span> <span class="p">{</span>
+  <span class="cm">/* get the first entry from the wait-list: */</span>
+  <span class="k">struct</span> <span class="n">mutex_waiter</span> <span class="o">*</span><span class="n">waiter</span><span class="p">;</span>
+  <span class="n">waiter</span> <span class="o">=</span> <span class="n">list_first_entry</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_list</span><span class="p">,</span> <span class="k">struct</span> <span class="n">mutex_waiter</span><span class="p">,</span>
+                            <span class="n">list</span><span class="p">);</span>
+  <span class="n">next</span> <span class="o">=</span> <span class="n">waiter</span><span class="o">-&gt;</span><span class="n">task</span><span class="p">;</span>
+  <span class="n">wake_q_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wake_q</span><span class="p">,</span> <span class="n">next</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">wait_lock</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="n">wake_up_q</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wake_q</span><span class="p">);</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="admonition-per-cpu-data slide level-2">
+
+<h2>Per CPU data</h2>
+
+<ul class="simple">
+<li>No need to synchronize to access the data</li>
+<li>No contention, no performance impact</li>
+<li>Well suited for distributed processing where aggregation is only
+seldom necessary (e.g. statistics counters)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-out-of-order-compiler-generated-code slide level-2">
+
+<h2>Out of Order Compiler Generated Code</h2>
+
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>C code</td>
+<td>Compiler generated code</td>
+</tr>
+<tr class="row-even"><td><div class="first last highlight-c"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</pre></div>
+</div>
+</td>
+<td><div class="first last highlight-asm"><div class="highlight"><pre><span></span><span class="nf">MOV</span> <span class="no">R10</span><span class="p">,</span> <span class="mi">1</span>
+<span class="nf">MOV</span> <span class="no">R11</span><span class="p">,</span> <span class="mi">2</span>
+<span class="nf">STORE</span> <span class="no">R11</span><span class="p">,</span> <span class="no">b</span>
+<span class="nf">STORE</span> <span class="no">R10</span><span class="p">,</span> <span class="no">a</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+</article>
+<article class="admonition-barriers slide level-2">
+
+<h2>Barriers</h2>
+
+<ul class="simple">
+<li>A read barrier (<code class="xref c c-func docutils literal"><span class="pre">rmb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_rmb()</span></code>) is used to
+make sure that no read operation crosses the barrier; that is,
+all read operation before the barrier are complete before
+executing the first instruction after the barrier</li>
+<li>A write barrier (<code class="xref c c-func docutils literal"><span class="pre">wmb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_wmb()</span></code>) is used to
+make sure that no write operation crosses the barrier</li>
+<li>A simple barrier (<code class="xref c c-func docutils literal"><span class="pre">mb()</span></code>, <code class="xref c c-func docutils literal"><span class="pre">smp_mb()</span></code>) is used
+to make sure that no write or read operation crosses the barrier</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-read-copy-update-rcu slide level-2">
+
+<h2>Read Copy Update (RCU)</h2>
+
+<ul class="simple">
+<li><strong>Read-only</strong> lock-less access at the same time with write access</li>
+<li>Write accesses still requires locks in order to avoid races
+between writers</li>
+<li>Requires unidirectional traversal by readers</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-removal-and-reclamation slide level-2">
+
+<h2>Removal and Reclamation</h2>
+
+<ul class="simple">
+<li><strong>Removal</strong>: removes references to elements. Some old readers may
+still see the old reference so we can't free the element.</li>
+<li><strong>Elimination</strong>: free the element. This action is postponed until
+all existing readers finish traversal (quiescent cycle). New
+readers won't affect the quiescent cycle.</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-rcu-list-delete slide level-2">
+
+<h2>RCU List Delete</h2>
+
+<p>&nbsp;</p>
+<img alt="../_images/ditaa-5193a924360bebc83d2f81188cd0b0093ec01e6a.png" src="../_images/ditaa-5193a924360bebc83d2f81188cd0b0093ec01e6a.png" />
+
+
+
+
+</article>
+<article class="admonition-rcu-list-apis-cheat-sheet slide level-2">
+
+<h2>RCU list APIs cheat sheet</h2>
+
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* list traversal */</span>
+<span class="n">rcu_read_lock</span><span class="p">();</span>
+<span class="n">list_for_each_entry_rcu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* no sleeping, blocking calls or context switch allowed */</span>
+<span class="p">}</span>
+<span class="n">rcu_read_unlock</span><span class="p">();</span>
+
+
+<span class="cm">/* list element delete  */</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="n">list_del_rcu</span><span class="p">(</span><span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="n">synchronize_rcu</span><span class="p">();</span>
+<span class="n">kfree</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+
+<span class="cm">/* list element add  */</span>
+<span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="n">list_add_rcu</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">list</span><span class="p">);</span>
+<span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
