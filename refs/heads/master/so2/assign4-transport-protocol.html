@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assignment 4.b - SO2 Transport Protocol &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>Assignment 4 - SO2 Transport Protocol &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
       <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
@@ -29,8 +29,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Introduction" href="../lectures/intro.html" />
-    <link rel="prev" title="Assignment 4.a - PITIX Filesystem" href="assign4.a-pitix.html" /> 
+    <link rel="next" title="Assignment 7 - SO2 Virtual Machine Manager with KVM" href="assign7-kvm-vmm.html" />
+    <link rel="prev" title="Assignment 3 - Software RAID" href="assign3-software-raid.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -86,8 +86,7 @@
 <li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
 <li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="assign4.a-pitix.html">Assignment 4.a - PITIX Filesystem</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 4.b - SO2 Transport Protocol</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 4 - SO2 Transport Protocol</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#assignment-s-objectives">Assignment's Objectives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#statement">Statement</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#implementation-details">Implementation Details</a><ul>
@@ -96,6 +95,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#tcpdump">tcpdump</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#quickstart">QuickStart</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#tips">Tips</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#penalties">Penalties</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#submitting-the-assigment">Submitting the assigment</a></li>
@@ -105,6 +107,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#questions">Questions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
 </ul>
 </li>
 </ul>
@@ -163,9 +166,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
-      <li class="breadcrumb-item active">Assignment 4.b - SO2 Transport Protocol</li>
+      <li class="breadcrumb-item active">Assignment 4 - SO2 Transport Protocol</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/so2/assign4.b-transport-protocol.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/so2/assign4-transport-protocol.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -173,10 +176,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="assignment-4-b-so2-transport-protocol">
-<h1>Assignment 4.b - SO2 Transport Protocol<a class="headerlink" href="#assignment-4-b-so2-transport-protocol" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="assignment-4-so2-transport-protocol">
+<h1>Assignment 4 - SO2 Transport Protocol<a class="headerlink" href="#assignment-4-so2-transport-protocol" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>Deadline: <strong class="command">Tuesday, 24 May 2022, 23:00</strong></li>
+<li>Deadline: <strong class="command">Monday, 29 May 2023, 23:00</strong></li>
 <li>This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.</li>
 </ul>
 <p>Implement a simple datagram transport protocol - STP (<em>SO2 Transport Protocol</em>).</p>
@@ -213,15 +216,15 @@
 </div></blockquote>
 <p>Sockets using this protocol will use the <code class="docutils literal"><span class="pre">AF_STP</span></code> family.</p>
 <p>The protocol must work directly over Ethernet. The ports used are between <code class="docutils literal"><span class="pre">1</span></code> and <code class="docutils literal"><span class="pre">65535</span></code>. Port <code class="docutils literal"><span class="pre">0</span></code> is not used.</p>
-<p>The definition of STP-related structures and macros can be found in the <a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/4-stp/stp.h">assignment support header</a>.</p>
+<p>The definition of STP-related structures and macros can be found in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/src/stp.h">assignment support header</a>.</p>
 </div>
 <div class="section" id="implementation-details">
 <h2>Implementation Details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h2>
 <p>The kernel module will be named <strong>af_stp.ko</strong>.</p>
-<p>You have to define a structure of type <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/include/linux/net.h#L200">net_proto_family</a>, which provides the operation to create STP sockets.
+<p>You have to define a structure of type <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/include/linux/net.h#L211">net_proto_family</a>, which provides the operation to create STP sockets.
 Newly created sockets are not associated with any port or interface and cannot receive / send packets.
-You must initialize the <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/include/linux/net.h#L124">socket ops field</a> with the list of operations specific to the STP family.
-This field refers to a structure <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/include/linux/net.h#L136">proto_ops</a> which must include the following functions:</p>
+You must initialize the <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/include/linux/net.h#L125">socket ops field</a> with the list of operations specific to the STP family.
+This field refers to a structure <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/include/linux/net.h#L139">proto_ops</a> which must include the following functions:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">release</span></code>: releases an STP socket</li>
 <li><code class="docutils literal"><span class="pre">bind</span></code>: associates a socket with a port (possibly also an interface) on which packets will be received / sent:<ul>
@@ -242,7 +245,7 @@ This field refers to a structure <a class="reference external" href="http://elix
 </ul>
 </li>
 <li><code class="docutils literal"><span class="pre">sendmsg</span></code>, <code class="docutils literal"><span class="pre">recvmsg</span></code>: send or receive a datagram on an STP socket:<ul>
-<li>for the <em>receive</em> part, metainformation about the host that sent the packet can be stored in the <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/include/linux/skbuff.h#L650">cb field in sk_buff</a></li>
+<li>for the <em>receive</em> part, metainformation about the host that sent the packet can be stored in the <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/include/linux/skbuff.h#L742">cb field in sk_buff</a></li>
 </ul>
 </li>
 <li><code class="docutils literal"><span class="pre">poll</span></code>: the default function <code class="docutils literal"><span class="pre">datagram_poll</span></code> will have to be used</li>
@@ -274,9 +277,9 @@ This field refers to a structure <a class="reference external" href="http://elix
 For the <em>bind</em> operation, only the port and the index of the interface on which the socket is bind will be considered.
 For the <em>receive</em> operation, only the <code class="docutils literal"><span class="pre">addr</span></code> and <code class="docutils literal"><span class="pre">port</span></code> fields in the structure will be filled in with the MAC address of the host that sent the packet and with the port from which it was sent.
 Also, when sending a packet, the destination host will be obtained from the <code class="docutils literal"><span class="pre">addr</span></code> and <code class="docutils literal"><span class="pre">port</span></code> fields of this structure.</p>
-<p>You need to register a structure <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/include/linux/netdevice.h#L2222">packet_type</a>, using the call <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/core/dev.c#L386">dev_add_pack</a> to be able to receive STP packets from the network layer.</p>
+<p>You need to register a structure <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/include/linux/netdevice.h#L2501">packet_type</a>, using the call <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/core/dev.c#L521">dev_add_pack</a> to be able to receive STP packets from the network layer.</p>
 <p>The protocol will need to provide an interface through the <em>procfs</em> file system for statistics on sent / received packets.
-The file must be named <code class="docutils literal"><span class="pre">/proc/net/stp_stats</span></code>, specified by the <code class="docutils literal"><span class="pre">STP_PROC_FULL_FILENAME</span></code> macro in <a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/4-stp/stp.h">assignment support header</a>.
+The file must be named <code class="docutils literal"><span class="pre">/proc/net/stp_stats</span></code>, specified by the <code class="docutils literal"><span class="pre">STP_PROC_FULL_FILENAME</span></code> macro in <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/src/stp.h">assignment support header</a>.
 The format must be of simple table type with <code class="docutils literal"><span class="pre">2</span></code> rows: on the first row the header of the table, and on the second row the statistics corresponding to the columns.
 The columns of the table must be in order:</p>
 <div class="code highlight-none"><div class="highlight"><pre><span></span>RxPkts HdrErr CsumErr NoSock NoBuffs TxPkts
@@ -291,25 +294,18 @@ The columns of the table must be in order:</p>
 <li><code class="docutils literal"><span class="pre">NoBuffs</span></code> - the number of received packets that could not be received because the socket queue was full</li>
 <li><code class="docutils literal"><span class="pre">TxPkts</span></code> - the number of packets sent</li>
 </ul>
-<p>To create or delete the entry specified by <code class="docutils literal"><span class="pre">STP_PROC_FULL_FILENAME</span></code> we recommend using the functions <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/include/linux/proc_fs.h#L30">proc_create</a> and <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/fs/proc/generic.c#L636">proc_remove</a>.</p>
+<p>To create or delete the entry specified by <code class="docutils literal"><span class="pre">STP_PROC_FULL_FILENAME</span></code> we recommend using the functions <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/include/linux/proc_fs.h#L108">proc_create</a> and <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/fs/proc/generic.c#L772">proc_remove</a>.</p>
 <div class="section" id="sample-protocol-implementations">
 <h3>Sample Protocol Implementations<a class="headerlink" href="#sample-protocol-implementations" title="Permalink to this headline">¶</a></h3>
-<p>For examples of protocol implementation, we recommend the implementation of <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/packet/af_packet.c">PF_PACKET</a> sockets and the various functions in <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/ipv4/udp.c">UDP implementation</a> or <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/ipv4/af_inet.c">IP implementation</a>.</p>
+<p>For examples of protocol implementation, we recommend the implementation of <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/packet/af_packet.c">PF_PACKET</a> sockets and the various functions in <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/ipv4/udp.c">UDP implementation</a> or <a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/ipv4/af_inet.c">IP implementation</a>.</p>
 </div>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
-<p>In order to simplify the assignment evaluation process, but also to reduce the mistakes of the submitted assignments, the assignment evaluation will be done automatically with with the help of public tests that are in the new infrastructure.
-For local testing, use the following commands:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/linux-kernel-labs/linux.git
-<span class="gp">$</span> <span class="nb">cd</span> linux/tools/labs
-<span class="gp">$</span> <span class="nv">LABS</span><span class="o">=</span>assignments/4-stp make skels
-<span class="gp">$</span> <span class="c1">#the development of the assignment will be written in the 4-stp directory</span>
-<span class="gp">$</span> make build
-<span class="gp">$</span> make copy
-<span class="gp">$</span> make boot
-</pre></div>
-</div>
+<p>In order to simplify the assignment evaluation process, but also to reduce the mistakes of the submitted assignments,
+the assignment evaluation will be done automatically with the help of a
+<a class="reference external" href="https://gitlab.cs.pub.ro/so2/3-raid/-/blob/master/checker/4-stp-checker/_checker">test script</a> called <cite>_checker</cite>.
+The test script assumes that the kernel module is called <cite>af_stp.ko</cite>.</p>
 <div class="section" id="tcpdump">
 <h3>tcpdump<a class="headerlink" href="#tcpdump" title="Permalink to this headline">¶</a></h3>
 <p>You can use the <code class="docutils literal"><span class="pre">tcpdump</span></code> utility to troubleshoot sent packets.
@@ -318,18 +314,26 @@ The tests use the loopback interface; to track sent packets you can use a comman
 </pre></div>
 </div>
 <p>You can use a static version of <a class="reference external" href="http://elf.cs.pub.ro/so2/res/teme/tcpdump">tcpdump</a>.
-To add to the <code class="docutils literal"><span class="pre">PATH</span></code> environment variable in the virtual machine, copy this file to <code class="docutils literal"><span class="pre">qemu-so2/fsimg/bin</span></code>.
+To add to the <code class="docutils literal"><span class="pre">PATH</span></code> environment variable in the virtual machine, copy this file to <code class="docutils literal"><span class="pre">/linux/tools/labs/rootfs/bin</span></code>.
 Create the directory if it does not exist. Remember to give the <code class="docutils literal"><span class="pre">tcpdump</span></code> file execution permissions:</p>
-<div class="code console highlight-none"><div class="highlight"><pre><span></span># In the qemu-so2 directory
-mkdir fsimg / bin
-wget http://elf.cs.pub.ro/so2/res/teme/tcpdump -O fsimg / bin / tcpdump
-chmod 755 fsimg / bin / tcpdump
+<div class="code console highlight-none"><div class="highlight"><pre><span></span># Connect to the docker using ./local.sh docker interactive
+cd /linux/tools/labs/rootfs/bin
+wget http://elf.cs.pub.ro/so2/res/teme/tcpdump
+chmod +x tcpdump
 </pre></div>
 </div>
 </div>
+</div>
+<div class="section" id="quickstart">
+<h2>QuickStart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>It is mandatory to start the implementation of the assignment from the code skeleton found in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/tree/master/src">src</a> directory.
+There is only one header in the skeleton called <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/src/stp.h">stp.h</a>.
+You will provide the rest of the implementation. You can add as many <cite>*.c`</cite> sources and additional <cite>*.h`</cite> headers.
+You should also provide a Kbuild file that will compile the kernel module called <cite>af_stp.ko</cite>.
+Follow the instructions in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/README.md">README.md file</a> of the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp">assignment's repo</a>.</p>
 <div class="section" id="tips">
 <h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
-<p>To increase your chances of getting the highest grade, read and follow the Linux kernel coding style described in the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.19.19/source/Documentation/process/coding-style.rst">Coding Style document</a>.</p>
+<p>To increase your chances of getting the highest grade, read and follow the Linux kernel coding style described in the <a class="reference external" href="https://elixir.bootlin.com/linux/v5.10/source/Documentation/process/coding-style.rst">Coding Style document</a>.</p>
 <p>Also, use the following static analysis tools to verify the code:</p>
 <ul>
 <li><p class="first">checkpatch.pl</p>
@@ -359,8 +363,9 @@ chmod 755 fsimg / bin / tcpdump
 </div>
 <div class="section" id="submitting-the-assigment">
 <h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
-<p>The assignment archive will be submitted to vmchecker, according to the rules on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/reguli-notare#reguli_de_trimitere_a_temelor">rules page</a>.</p>
-<p>From the vmchecker interface choose the <cite>Transport Protocol</cite> option for this assigment.</p>
+<p>The assignment will be graded automatically using the <a class="reference external" href="https://github.com/systems-cs-pub-ro/vmchecker-next/wiki/Student-Handbook">vmchecker-next</a> infrastructure.
+The submission will be made on moodle on the <a class="reference external" href="https://curs.upb.ro/2022/course/view.php?id=5121">course's page</a> to the related assignment.
+You will find the submission details in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/README.md">README.md file</a> of the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp">repo</a>.</p>
 </div>
 </div>
 <div class="section" id="resources">
@@ -369,32 +374,31 @@ chmod 755 fsimg / bin / tcpdump
 <li><a class="reference external" href="https://linux-kernel-labs.github.io/refs/heads/master/so2/lec10-networking.html">Lecture 10 - Networking</a></li>
 <li><a class="reference external" href="https://linux-kernel-labs.github.io/refs/heads/master/so2/lab10-networking.html">Lab 10 - Networking</a></li>
 <li>Linux kernel sources<ul>
-<li><a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/packet/af_packet.c">Implementing PF_PACKET sockets</a></li>
-<li><a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/ipv4/udp.c">Implementation of the UDP protocol</a></li>
-<li><a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9.11/source/net/ipv4/af_inet.c">Implementation of the IP protocol</a></li>
+<li><a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/packet/af_packet.c">Implementing PF_PACKET sockets</a></li>
+<li><a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/ipv4/udp.c">Implementation of the UDP protocol</a></li>
+<li><a class="reference external" href="http://elixir.free-electrons.com/linux/v5.10/source/net/ipv4/af_inet.c">Implementation of the IP protocol</a></li>
 </ul>
 </li>
 <li>Understanding Linux Network Internals<ul>
 <li>chapters 8-13</li>
 </ul>
 </li>
-<li><a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/4-stp/stp.h">assignment support header</a></li>
+<li><a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/src/stp.h">assignment support header</a></li>
 </ul>
-<p>We recommend that you use GitLab to store your homework. Follow the directions in <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/README.md">README</a> and on the dedicated <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/folosire-gitlab">git wiki page</a>.</p>
-<p>The resources for the assignment can also be found in the <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments">so2-assignments</a> repo on GitHub.
-The repo contains a <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/so2-create-repo.sh">Bash script</a> that helps you create a private repository on the faculty <a class="reference external" href="https://gitlab.cs.pub.ro/users/sign_in">GitLab</a> instance.
-Follow the tips from the <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/README.md">README</a> and on the dedicated <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/folosire-gitlab">Wiki page</a>.</p>
+<p>We recommend that you use gitlab to store your homework. Follow the directions in <a class="reference external" href="https://gitlab.cs.pub.ro/so2/4-stp/-/blob/master/README.md">README</a>.</p>
 </div>
 <div class="section" id="questions">
 <h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
-<p>For questions about the assigment, you can consult the mailing <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">list archives</a> or send an e-mail (you must be <a class="reference external" href="http://cursuri.cs.pub.ro/cgi-bin/mailman/listinfo/so2">registered</a>).
-Please follow and follow <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/resurse/lista-discutii#mailing-list-guidelines">the tips for use of the list</a>.</p>
+<p>For questions about the topic, you can consult the mailing <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">list archives</a>
+or you can write a question on the dedicated Teams channel.</p>
 <p>Before you ask a question, make sure that:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>you have read the statement of the assigment well</li>
 <li>the question is not already presented on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/tema2/faq">FAQ page</a></li>
 <li>the answer cannot be found in the <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">mailing list archives</a></li>
 </ul>
+</div></blockquote>
 </div>
 </div>
 
@@ -402,8 +406,8 @@ Please follow and follow <a class="reference external" href="https://ocw.cs.pub.
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="assign4.a-pitix.html" class="btn btn-neutral float-left" title="Assignment 4.a - PITIX Filesystem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../lectures/intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="assign3-software-raid.html" class="btn btn-neutral float-left" title="Assignment 3 - Software RAID" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="assign7-kvm-vmm.html" class="btn btn-neutral float-right" title="Assignment 7 - SO2 Virtual Machine Manager with KVM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
