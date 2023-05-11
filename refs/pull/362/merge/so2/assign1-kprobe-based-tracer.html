@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignment 1 - Kprobe based tracer &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Assignment 2 - Driver UART" href="assign2-driver-uart.html" />
+    <link rel="prev" title="Assignment 0 - Kernel API" href="assign0-kernel-api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 1 - Kprobe based tracer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statement">Statement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#implementation-details">Implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quickstart">QuickStart</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#questions">Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">Assignment 1 - Kprobe based tracer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/assign1-kprobe-based-tracer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="assignment-1-kprobe-based-tracer">
+<h1>Assignment 1 - Kprobe based tracer<a class="headerlink" href="#assignment-1-kprobe-based-tracer" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Deadline: <strong class="command">Monday, 10 April 2023, 23:00</strong></li>
+</ul>
+<div class="section" id="assignment-s-objectives">
+<h2>Assignment's Objectives<a class="headerlink" href="#assignment-s-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>gaining knowledge related to the instrumentation of functions in the Linux kernel (<code class="docutils literal"><span class="pre">kretprobes</span></code> mechanism)</li>
+<li>gaining knowledge regarding the <code class="docutils literal"><span class="pre">/proc</span></code> file system from the Linux kernel</li>
+<li>get familiar with data structures specific to the Linux kernel (<code class="docutils literal"><span class="pre">hash</span> <span class="pre">table</span></code> and <code class="docutils literal"><span class="pre">list</span></code>)</li>
+</ul>
+</div>
+<div class="section" id="statement">
+<h2>Statement<a class="headerlink" href="#statement" title="Permalink to this headline">¶</a></h2>
+<p>Build a kernel operations surveillant.</p>
+<p>With this surveillant, we aim to intercept:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">kmalloc</span></code> and <code class="docutils literal"><span class="pre">kfree</span></code> calls</li>
+<li><code class="docutils literal"><span class="pre">schedule</span></code> calls</li>
+<li><code class="docutils literal"><span class="pre">up</span></code> and <code class="docutils literal"><span class="pre">down_interruptible</span></code> calls</li>
+<li><code class="docutils literal"><span class="pre">mutex_lock</span></code> and <code class="docutils literal"><span class="pre">mutex_unlock</span></code> calls</li>
+</ul>
+<p>The surveillant will hold, at the process level, the number of calls for each of the above functions.
+For the <code class="docutils literal"><span class="pre">kmalloc</span></code> and <code class="docutils literal"><span class="pre">kfree</span></code> calls the total quantity of allocated and deallocated memory will be
+shown.</p>
+<p>The surveillant will be implemented as a kernel module with the name <code class="docutils literal"><span class="pre">tracer.ko</span></code>.</p>
+<div class="section" id="implementation-details">
+<h3>Implementation details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h3>
+<p>The interception will be done by recording a sample (<code class="docutils literal"><span class="pre">kretprobe</span></code>) for each of the above functions. The
+surveillant will retain a list/hashtable with the monitored processes and will account for
+the above information for these processes.</p>
+<p>For the control of the list/hashtable with the monitored processes, a char device called <code class="docutils literal"><span class="pre">/dev/tracer</span></code>
+will be used, with major <cite>10</cite> and minor <cite>42</cite>. It will expose an <code class="docutils literal"><span class="pre">ioctl</span></code> interface with two arguments:</p>
+<ul>
+<li><p class="first">the first argument is the request to the monitoring subsystem:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">TRACER_ADD_PROCESS</span></code></li>
+<li><code class="docutils literal"><span class="pre">TRACER_REMOVE_PROCESS</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">the second argument is the PID of the process for which the monitoring request will be executed</p>
+</li>
+</ul>
+<p>In order to create a char device with major <cite>10</cite> you will need to use the <a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/include/linux/miscdevice.h">miscdevice</a> interface in the kernel.
+Definitions of related macros can be found in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer/-/blob/master/src/tracer.h">tracer.h header</a>.</p>
+<p>Since the <code class="docutils literal"><span class="pre">kmalloc</span></code> function is inline for instrumenting the allocated amount of memory, the <code class="docutils literal"><span class="pre">__kmalloc</span></code>
+function will be inspected as follows:</p>
+<ul class="simple">
+<li>a <code class="docutils literal"><span class="pre">kretprobe</span></code> will be used, which will retain the amount of memory allocated and the address of the allocated memory area.</li>
+<li>the <code class="docutils literal"><span class="pre">.entry_handler</span></code> and <code class="docutils literal"><span class="pre">.handler</span></code> fields in the <code class="docutils literal"><span class="pre">kretprobe</span></code> structure will be used to retain information about the amount of memory allocated and the address from which the allocated memory starts.</li>
+</ul>
+<div class="highlight-C"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">kretprobe</span> <span class="n">kmalloc_probe</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="p">.</span><span class="n">entry_handler</span> <span class="o">=</span> <span class="n">kmalloc_probe_entry_handler</span><span class="p">,</span> <span class="cm">/* entry handler */</span>
+   <span class="p">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">kmalloc_probe_handler</span><span class="p">,</span> <span class="cm">/* return probe handler */</span>
+   <span class="p">.</span><span class="n">maxactive</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Since the <code class="docutils literal"><span class="pre">kfree</span></code> function only receives the address of the memory area to be freed, in order to determine
+the total amount of memory freed, we will need to determine its size based on the address of the area.
+This is possible because there is an address-size association made when inspecting the <code class="docutils literal"><span class="pre">__kmalloc</span></code> function.</p>
+<p>For the rest of the instrumentation functions it is enough to use a <code class="docutils literal"><span class="pre">kretprobe</span></code>.</p>
+<div class="highlight-C"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">kretprobe</span> <span class="n">up_probe</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="p">.</span><span class="n">entry_handler</span> <span class="o">=</span> <span class="n">up_probe_handler</span><span class="p">,</span>
+   <span class="p">.</span><span class="n">maxactive</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The virtual machine kernel has the <code class="docutils literal"><span class="pre">CONFIG_DEBUG_LOCK_ALLOC</span></code> option enabled where the <code class="docutils literal"><span class="pre">mutex_lock</span></code> symbol
+is a macro that expands to <code class="docutils literal"><span class="pre">mutex_lock_nested</span></code>. Thus, in order to obtain information about the <code class="docutils literal"><span class="pre">mutex_lock</span></code>
+function you will have to instrument the <code class="docutils literal"><span class="pre">mutex_lock_nested</span></code> function.</p>
+<p>Processes that have been added to the list/hashtable and that end their execution will be removed
+from the list/hashtable. Also, a process will be removed from the dispatch list/hashtable following
+the <code class="docutils literal"><span class="pre">TRACER_REMOVE_PROCESS</span></code> operation.</p>
+<p>The information retained by the surveillant will be displayed via the procfs file system, in the <code class="docutils literal"><span class="pre">/proc/tracer</span></code> file.
+For each monitored process an entry is created in the <code class="docutils literal"><span class="pre">/proc/tracer</span></code> file having as first field the process PID.
+The entry will be read-only, and a read operation on it will display the retained results. An example of
+displaying the contents of the entry is:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span>cat /proc/tracer
+<span class="go">PID   kmalloc kfree kmalloc_mem kfree_mem  sched   up     down  lock   unlock</span>
+<span class="go">42    12      12    2048        2048        124    2      2     9      9</span>
+<span class="go">1099  0       0     0           0           1984   0      0     0      0</span>
+<span class="go">1244  0       0     0           0           1221   100   1023   1023   1002</span>
+<span class="go">1337  123     99    125952      101376      193821 992   81921  7421   6392</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>In order to simplify the assignment evaluation process, but also to reduce the mistakes of the submitted assignments,
+the assignment evaluation will be done automatically with the help of a
+<a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/1-tracer/checker/_checker">test script</a> called <cite>_checker</cite>.
+The test script assumes that the kernel module is called <cite>tracer.ko</cite>.</p>
+</div>
+<div class="section" id="quickstart">
+<h2>QuickStart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>It is mandatory to start the implementation of the assignment from the code skeleton found in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer/-/tree/master/src">src</a> directory.
+There is only one header in the skeleton called <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer/-/blob/master/src/tracer.h">tracer.h</a>.
+You will provide the rest of the implementation. You can add as many <cite>*.c`</cite> sources and additional <cite>*.h`</cite> headers.
+You should also provide a Kbuild file that will compile the kernel module called <cite>tracer.ko</cite>.
+Follow the instructions in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer/-/blob/master/README.md">README.md file</a> of the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer">assignment's repo</a>.</p>
+<div class="section" id="tips">
+<h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
+<p>To increase your chances of getting the highest grade, read and follow the Linux kernel
+coding style described in the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.19.19/source/Documentation/process/coding-style.rst">Coding Style document</a>.</p>
+<p>Also, use the following static analysis tools to verify the code:</p>
+<ul class="simple">
+<li>checkpatch.pl</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> linux/scripts/checkpatch.pl --no-tree --terse -f /path/to/your/tracer.c
+</pre></div>
+</div>
+<ul class="simple">
+<li>sparse</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install sparse
+<span class="gp">$</span> <span class="nb">cd</span> linux
+<span class="gp">$</span> make <span class="nv">C</span><span class="o">=</span><span class="m">2</span> /path/to/your/tracer.c
+</pre></div>
+</div>
+<ul class="simple">
+<li>cppcheck</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install cppcheck
+<span class="gp">$</span> cppcheck /path/to/your/tracer.c
+</pre></div>
+</div>
+</div>
+<div class="section" id="penalties">
+<h3>Penalties<a class="headerlink" href="#penalties" title="Permalink to this headline">¶</a></h3>
+<p>Information about assigments penalties can be found on the
+<a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/general">General Directions page</a>. In addition, the following
+elements will be taken into account:</p>
+<ul class="simple">
+<li><em>-2</em>: missing of proper disposal of resources (<code class="docutils literal"><span class="pre">kretprobes</span></code>, entries in <code class="docutils literal"><span class="pre">/proc</span></code>)</li>
+<li><em>-2</em>: data synchronization issues for data used by multiple executing instances (e.g. the list/hashtable)</li>
+</ul>
+<p>In exceptional cases (the assigment passes the tests but it is not complying with the requirements)
+and if the assigment does not pass all the tests, the grade may decrease more than mentioned above.</p>
+</div>
+<div class="section" id="submitting-the-assigment">
+<h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
+<p>The assignment will be graded automatically using the <a class="reference external" href="https://github.com/systems-cs-pub-ro/vmchecker-next/wiki/Student-Handbook">vmchecker-next</a> infrastructure.
+The submission will be made on moodle on the <a class="reference external" href="https://curs.upb.ro/2022/course/view.php?id=5121">course's page</a> to the related assignment.
+You will find the submission details in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer/-/blob/master/README.md">README.md file</a> of the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer">repo</a>.</p>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://www.kernel.org/doc/Documentation/kprobes.txt">Documentation/kprobes.txt</a> - description of the <code class="docutils literal"><span class="pre">kprobes</span></code> subsystem from Linux kernel sources.</li>
+<li><a class="reference external" href="https://elixir.bootlin.com/linux/latest/source/samples/kprobes">samples/kprobes/</a> - some examples of using <code class="docutils literal"><span class="pre">kprobes</span></code> from Linux kernel sources.</li>
+</ul>
+<p>We recommend that you use gitlab to store your homework. Follow the directions in
+<a class="reference external" href="https://gitlab.cs.pub.ro/so2/1-tracer/-/blob/master/README.md">README</a>.</p>
+</div>
+<div class="section" id="questions">
+<h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>For questions about the topic, you can consult the mailing <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">list archives</a>
+or you can write a question on the dedicated Teams channel.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="assign0-kernel-api.html" class="btn btn-neutral float-left" title="Assignment 0 - Kernel API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="assign2-driver-uart.html" class="btn btn-neutral float-right" title="Assignment 2 - Driver UART" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
