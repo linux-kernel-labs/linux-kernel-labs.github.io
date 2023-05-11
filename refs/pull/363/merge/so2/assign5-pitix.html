@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignment 5 - PITIX Filesystem &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Assignment 5 - PITIX Filesystem</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/assign5-pitix.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="assignment-5-pitix-filesystem">
+<h1>Assignment 5 - PITIX Filesystem<a class="headerlink" href="#assignment-5-pitix-filesystem" title="Permalink to this headline">¶</a></h1>
+<p>Deadline: <strong class="command">Tuesday, 24 May 2022, 23:00</strong></p>
+<div class="section" id="statement">
+<h2>Statement<a class="headerlink" href="#statement" title="Permalink to this headline">¶</a></h2>
+<p>Write a kernel module to implement the <strong>PITIX</strong> file system, version 2.
+This file system will only support files and directories.
+Support operations for hard or symbolic links will not be implemented.
+Also, support operations for special files (pipes, character devices, or blocks) will not be implemented.
+Basically you need to implement the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li>for directories: <code class="docutils literal"><span class="pre">lookup</span></code>, <code class="docutils literal"><span class="pre">unlink</span></code>, <code class="docutils literal"><span class="pre">mkdir</span></code>, <code class="docutils literal"><span class="pre">rmdir</span></code>, <code class="docutils literal"><span class="pre">iterate</span></code></li>
+<li>for files: <code class="docutils literal"><span class="pre">create</span></code>, <code class="docutils literal"><span class="pre">truncate</span></code>, bitmap functions, see <a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/fs/minix/inode.c#L375">minix_get_block</a>.</li>
+</ul>
+</div></blockquote>
+<p>The rest of the functions either have generic kernel implementations, or you don't have to implement them.</p>
+<p>The disk structure of the file system is:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">+--------------+-----------+-----------+------------+-----------------------+</span>
+<span class="go">|              |           |           |            |                       |</span>
+<span class="go">|  superblock  |   imap    |   dmap    |    izone   |         dzone         |</span>
+<span class="go">+--------------+-----------+-----------+------------+-----------------------+</span>
+<span class="go">   4096 bytes     1 block     1 block     32 blocks    8*block_size blocks</span>
+</pre></div>
+</div>
+<p>where:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Superblock</span></code> is the superblock (<code class="docutils literal"><span class="pre">4096</span></code> bytes)</li>
+<li><code class="docutils literal"><span class="pre">Imap</span></code> contains the bitmap of the blocks occupied by the inodes (<code class="docutils literal"><span class="pre">1</span></code> block)</li>
+<li><code class="docutils literal"><span class="pre">Dmap</span></code> contains the bitmap of the blocks occupied by the data (<code class="docutils literal"><span class="pre">1</span></code> block)</li>
+<li><code class="docutils literal"><span class="pre">Izone</span></code> contains inodes (<code class="docutils literal"><span class="pre">32</span></code> blocks)</li>
+<li><code class="docutils literal"><span class="pre">Dzone</span></code> contains the data (the actual contents of the files) (<code class="docutils literal"><span class="pre">8</span> <span class="pre">*</span> <span class="pre">block_size</span></code> blocks)</li>
+</ul>
+<p>The superblock (<strong>on disk</strong>) is described by the following structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">pitix_super_block</span> <span class="p">{</span>
+        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">magic</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">version</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">block_size_bits</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">imap_block</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">dmap_block</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">izone_block</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">dzone_block</span><span class="p">;</span>
+        <span class="n">__u16</span> <span class="n">bfree</span><span class="p">;</span>
+        <span class="n">__u16</span> <span class="n">ffree</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>where:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">magic</span></code> must be initialized with <code class="docutils literal"><span class="pre">PITIX_MAGIC</span></code></li>
+<li><code class="docutils literal"><span class="pre">version</span></code> must be initialized with <code class="docutils literal"><span class="pre">2</span></code> (<code class="docutils literal"><span class="pre">PITIX_VERSION</span></code>)</li>
+<li><code class="docutils literal"><span class="pre">block_size_bits</span></code> is the block size of two; the block size can be <code class="docutils literal"><span class="pre">512</span></code>, <code class="docutils literal"><span class="pre">1024</span></code>, <code class="docutils literal"><span class="pre">2048</span></code>, or <code class="docutils literal"><span class="pre">4096</span></code></li>
+<li><code class="docutils literal"><span class="pre">Imap_block</span></code> is the block number (relative to the device) to the bit vector used for the allocation / release sites inode</li>
+<li><code class="docutils literal"><span class="pre">dmap_block</span></code> is the block number (relative to the device) for the bit vector used to allocate / release data blocks</li>
+<li><code class="docutils literal"><span class="pre">izone_block</span></code> is the number of the first block (relative to the device) of the inode area</li>
+<li><code class="docutils literal"><span class="pre">dzone_block</span></code> is the number of the first block (relative to the device) of the data area</li>
+<li><code class="docutils literal"><span class="pre">bfree</span></code> is the number of free blocks (unallocated)</li>
+<li><code class="docutils literal"><span class="pre">ffree</span></code> is the number of free (unallocated) inodes</li>
+</ul>
+<p>The inodes will be stored in the inode area and are described by the following structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">pitix_inode</span> <span class="p">{</span>
+        <span class="n">__u32</span> <span class="n">mode</span><span class="p">;</span>
+        <span class="kt">uid_t</span> <span class="n">uid</span><span class="p">;</span>
+        <span class="kt">gid_t</span> <span class="n">gid</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">size</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">time</span><span class="p">;</span>
+        <span class="n">__u16</span> <span class="n">direct_data_blocks</span> <span class="p">[</span><span class="n">INODE_DIRECT_DATA_BLOCKS</span><span class="p">];</span>
+        <span class="n">__u16</span> <span class="n">indirect_data_block</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>where:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">mode</span></code> represents the access rights and inode type (file or directory) as represented in the kernel</li>
+<li><code class="docutils literal"><span class="pre">uid</span></code> represents the UID as it is represented in the kernel</li>
+<li><code class="docutils literal"><span class="pre">gid</span></code> represents the GID as it is represented in the kernel</li>
+<li><code class="docutils literal"><span class="pre">size</span></code> is the size of the file / directory</li>
+<li><code class="docutils literal"><span class="pre">time</span></code> represents the modification time as it is represented in the kernel</li>
+<li><code class="docutils literal"><span class="pre">direct_data_blocks</span></code> is a vector (size <code class="docutils literal"><span class="pre">INODE_DIRECT_DATA_BLOCKS</span></code> ) that contains indexes of direct data blocks</li>
+<li><code class="docutils literal"><span class="pre">indirect_data_block</span></code> is the index of a data block that contains the indexes of indirect data blocks</li>
+</ul>
+<p>The index of a data block (direct or indirect) indicates the number of that data block relative to the data area (<code class="docutils literal"><span class="pre">Dzone</span></code>).
+The size of an index is <code class="docutils literal"><span class="pre">2</span></code> bytes.</p>
+<p>As can be seen from its structure, the inode uses a simple routing scheme for data blocks.
+Blocks in the range <code class="docutils literal"><span class="pre">[0,</span> <span class="pre">INODE_DIRECT_DATA_BLOCKS)</span></code> are blocks of direct data and are referenced by elements of the vector <code class="docutils literal"><span class="pre">direct_data_blocks</span></code> and blocks in the range <code class="docutils literal"><span class="pre">[INODE_DIRECT_DATA_BLOCKS,</span> <span class="pre">INODE_DIRECT_DATA_BL)</span></code> are indirect data blocks and are referred to by indices within the data block indicated by <code class="docutils literal"><span class="pre">indirect_data_block</span></code>.</p>
+<p>The data block indicated by <code class="docutils literal"><span class="pre">indirect_data_block</span></code> must be allocated when we have to refer to a first block of indirect data and must be released when there are no more blocks of indirect data.</p>
+<p>Unused indexes must be set to <code class="docutils literal"><span class="pre">0</span></code>.
+The first block, the one with index <code class="docutils literal"><span class="pre">0</span></code>, is always allocated when formatting. This block cannot be used and, consequently, the value <code class="docutils literal"><span class="pre">0</span></code>:</p>
+<ul class="simple">
+<li>in an element of the vector, <code class="docutils literal"><span class="pre">direct_data_blocks</span></code> means free slot (that element does not refer to a block of data directly)</li>
+<li><code class="docutils literal"><span class="pre">indirect_data_block</span></code> means that no data block is allocated to keep track of indirect data blocks (when no indirect data blocks are needed)</li>
+<li>an index within the data block referred to as <code class="docutils literal"><span class="pre">indirect_data_block</span></code> means free slot (that index does not refer to an indirect data block)</li>
+</ul>
+<p>It is guaranteed that the number of bytes occupied by an inode on the disk is a divisor of the block size.</p>
+<p>Directories have associated a single block of data (referred to as <code class="docutils literal"><span class="pre">direct_data_block</span> <span class="pre">[0]</span></code>) in which directory entries will be stored. These are described by the following structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">pitix_dir_entry</span> <span class="p">{</span>
+        <span class="n">__u32</span> <span class="n">ino</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">name</span> <span class="p">[</span><span class="n">PITIX_NAME_LEN</span><span class="p">];</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>where</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">inoi</span></code> is the inode number of the file or directory; this number is an index in the inode area</li>
+<li><code class="docutils literal"><span class="pre">name</span></code> is the name of the file or directory; maximum name length is <code class="docutils literal"><span class="pre">16</span></code> bytes (<code class="docutils literal"><span class="pre">PITIX_NAME_LEN</span></code>); if the name length is less than 16 bytes, then the name will end with the ASCII character that has the code <code class="docutils literal"><span class="pre">0</span></code> (same as for strings)</li>
+</ul>
+<p>The root directory will be assigned inode <code class="docutils literal"><span class="pre">0</span></code> and data block <code class="docutils literal"><span class="pre">0</span></code>.</p>
+<p>For simplicity, at <code class="docutils literal"><span class="pre">mkdir</span></code> it is not necessary to create the entries <code class="docutils literal"><span class="pre">.</span></code> (<em>dot</em>) and <code class="docutils literal"><span class="pre">..</span></code> (<em>dot dot</em>) in the new directory; the checker uses this assumption.</p>
+<p>All numeric values are stored on disk in byte-order CPU.</p>
+<p>In the <a href="#system-message-1"><span class="problematic" id="problematic-1">`assignment header &lt;https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/5-pitix/pitix.h`__</span></a> you will find the structures described above together with useful macros and statements of the main functions to be implemented.</p>
+<p>The kernel module will be named <code class="docutils literal"><span class="pre">pitix.ko</span></code>.</p>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Enable <code class="docutils literal"><span class="pre">Loop</span> <span class="pre">Devices</span></code> support using <code class="docutils literal"><span class="pre">make</span> <span class="pre">menuconfig</span></code>. <code class="docutils literal"><span class="pre">Device</span> <span class="pre">drivers</span> <span class="pre">-&gt;</span> <span class="pre">Block</span> <span class="pre">devices</span> <span class="pre">-&gt;</span> <span class="pre">Loopback</span> <span class="pre">device</span> <span class="pre">support</span></code></p>
+</div>
+<p>In order to simplify the assignment evaluation process, but also to reduce the mistakes of the submitted assignments, the assignment evaluation will be done automatically with with the help of public tests that are in the new infrastructure.</p>
+<p>For local testing, use the following commands:</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/linux-kernel-labs/linux.git
+<span class="gp">$</span> <span class="nb">cd</span> linux/tools/labs
+<span class="gp">$</span> <span class="nv">LABS</span><span class="o">=</span>assignments/5-pitix make skels
+<span class="gp">$</span> <span class="c1">#the development of the assignment will be written in the 5-pitix directory</span>
+<span class="gp">$</span> make build
+<span class="gp">$</span> make copy
+<span class="gp">$</span> make boot
+</pre></div>
+</div>
+<p>Instructions for using the test suite can be found in the <code class="docutils literal"><span class="pre">README</span></code> file.</p>
+<div class="section" id="tips">
+<h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
+<p>To increase your chances of getting the highest grade, read and follow the Linux kernel coding style described in the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.19.19/source/Documentation/process/coding-style.rst">Coding Style document</a>.</p>
+<p>Also, use the following static analysis tools to verify the code:</p>
+<ul class="simple">
+<li>checkpatch.pl</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> linux/scripts/checkpatch.pl --no-tree --terse -f /path/to/your/file.c
+</pre></div>
+</div>
+<ul class="simple">
+<li>sparse</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install sparse
+<span class="gp">$</span> <span class="nb">cd</span> linux
+<span class="gp">$</span> make <span class="nv">C</span><span class="o">=</span><span class="m">2</span> /path/to/your/file.c
+</pre></div>
+</div>
+<ul class="simple">
+<li>cppcheck</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install cppcheck
+<span class="gp">$</span> cppcheck /path/to/your/file.c
+</pre></div>
+</div>
+</div>
+<div class="section" id="penalties">
+<h3>Penalties<a class="headerlink" href="#penalties" title="Permalink to this headline">¶</a></h3>
+<p>As a more difficult assignment, it is worth 2 points.</p>
+<p>Information about assigments penalties can be found on the
+<a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/general">General Directions page</a>.</p>
+<p>In exceptional cases (the assigment passes the tests by not complying with the requirements)
+and if the assigment does not pass all the tests, the grade will may decrease more than mentioned above.</p>
+</div>
+<div class="section" id="submitting-the-assigment">
+<h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
+<p>The assignment archive will be submitted to vmchecker, according to the rules on the
+<a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/reguli-notare#reguli_de_trimitere_a_temelor">rules page</a>.</p>
+<p>In the vmchecker interface choose the <code class="docutils literal"><span class="pre">Google</span> <span class="pre">Challenge</span> <span class="pre">-</span> <span class="pre">Sistem</span> <span class="pre">de</span> <span class="pre">fișiere</span></code> option for this assignment.</p>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/5-pitix/pitix.h">assignment header</a></li>
+<li><a class="reference external" href="https://linux-kernel-labs.github.io/refs/heads/master/so2/lab8-filesystems-part1.html">Lab 08: File system drivers (Part 1)</a></li>
+<li><a class="reference external" href="https://linux-kernel-labs.github.io/refs/heads/master/so2/lab9-filesystems-part2.html">Lab 09: File system drivers (Part 2)</a></li>
+<li><a class="reference external" href="https://elixir.bootlin.com/linux/v4.15/source/fs/minix">Minix filesystem source code</a></li>
+</ul>
+<p>We recommend that you use GitLab to store your homework. Follow the directions in
+<a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/README.md">README</a>
+and on the dedicated <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/folosire-gitlab">Git wiki page</a>.</p>
+<p>The resources for the assignment can also be found in the <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments">so2-assignments</a> repo on GitHub.
+The repo contains a <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/so2-create-repo.sh">Bash script</a>
+that helps you create a private repository on the faculty <a class="reference external" href="https://gitlab.cs.pub.ro/users/sign_in">GitLab</a> instance.
+Follow the tips from the <a class="reference external" href="https://github.com/systems-cs-pub-ro/so2-assignments/blob/master/README.md">README</a> and
+on the dedicated <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/folosire-gitlab">Wiki page</a>.</p>
+</div>
+<div class="section" id="questions">
+<h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>For questions about the assigment, you can consult the mailing <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">list archives</a>
+or send an e-mail (you must be <a class="reference external" href="http://cursuri.cs.pub.ro/cgi-bin/mailman/listinfo/so2">registered</a>).
+Please follow and follow <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/resurse/lista-discutii#mailing-list-guidelines">the tips for use of the list</a>.</p>
+<p>Before you ask a question, make sure that:</p>
+<ul class="simple">
+<li>you have read the statement of the assigment well</li>
+<li>the question is not already presented on the <a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/tema2/faq">FAQ page</a></li>
+<li>the answer cannot be found in the <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">mailing list archives</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

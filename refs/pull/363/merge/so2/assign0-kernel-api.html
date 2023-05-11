@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignment 0 - Kernel API &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Assignment 1 - Kprobe based tracer" href="assign1-kprobe-based-tracer.html" />
+    <link rel="prev" title="Collaboration" href="assign-collaboration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assignment 0 - Kernel API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#assignment-s-objectives">Assignment's Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statement">Statement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quickstart">QuickStart</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#penalties">Penalties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submitting-the-assigment">Submitting the assigment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#resources">Resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#questions">Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">Assignment 0 - Kernel API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/assign0-kernel-api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="assignment-0-kernel-api">
+<h1>Assignment 0 - Kernel API<a class="headerlink" href="#assignment-0-kernel-api" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Deadline: <strong class="command">Sunday, 26 March 2023, 23:00</strong></li>
+</ul>
+<div class="section" id="assignment-s-objectives">
+<h2>Assignment's Objectives<a class="headerlink" href="#assignment-s-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>getting familiar with the qemu setup</li>
+<li>loading/unloading kernel modules</li>
+<li>getting familiar with the list API implemented in the kernel</li>
+<li>have fun :)</li>
+</ul>
+</div>
+<div class="section" id="statement">
+<h2>Statement<a class="headerlink" href="#statement" title="Permalink to this headline">¶</a></h2>
+<p>Write a kernel module called <cite>list</cite> (the resulting file must be called <cite>list.ko</cite>) which stores data (strings)
+in an internal list.</p>
+<p>It is mandatory to use <a class="reference external" href="https://github.com/torvalds/linux/blob/master/include/linux/list.h">the list API</a>
+implemented in the kernel.
+For details you can take a look at <a class="reference external" href="https://linux-kernel-labs.github.io/refs/heads/master/so2/lab2-kernel-api.html">the laboratory 2</a>.</p>
+<p>The module exports a directory named <strong class="command">list</strong> to procfs. The directory contains two files:</p>
+<ul class="simple">
+<li><strong class="command">management</strong>: with write-only access; is the interface for transmitting commands to the kernel module</li>
+<li><strong class="command">preview</strong>: with read-only access; is the interface through which the internal contents of the kernel list can be viewed.</li>
+</ul>
+<p><a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/0-list/list.c">The code skeleton</a> implements the two procfs files.
+You will need to create a list and implement support for <cite>adding</cite> and <cite>reading</cite> data. Follow the TODOs in the code for details.</p>
+<p>To interact with the kernel list, you must write commands (using the <cite>echo</cite> command) in the <cite>/proc/list/management</cite> file:</p>
+<ul class="simple">
+<li><cite>addf name</cite>: adds the <cite>name</cite> element to the top of the list</li>
+<li><cite>adde name</cite>: adds the <cite>name</cite> element to the end of the list</li>
+<li><cite>delf name</cite>: deletes the first appearance of the <cite>name</cite> item from the list</li>
+<li><cite>dela name</cite>: deletes all occurrences of the <cite>name</cite> element in the list</li>
+</ul>
+<p>Viewing the contents of the list is done by viewing the contents of the <cite>/proc/list/preview</cite> file (use the` cat` command).
+The format contains one element on each line.</p>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>In order to simplify the assignment evaluation process, but also to reduce the mistakes of the submitted assignments,
+the assignment evaluation will be done automatically with the help of a
+<a class="reference external" href="https://github.com/linux-kernel-labs/linux/blob/master/tools/labs/templates/assignments/0-list/checker/_checker">test script</a> called <cite>_checker</cite>.
+The test script assumes that the kernel module is called <cite>list.ko</cite>.</p>
+</div>
+<div class="section" id="quickstart">
+<h2>QuickStart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>It is mandatory to start the implementation of the assignment from the code skeleton found in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/0-list/-/blob/master/src/list.c">list.c</a> file.
+You should follow the instructions in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/0-list/-/blob/master/README.md">README.md file</a> of the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/0-list">assignment's repo</a>.</p>
+<div class="section" id="tips">
+<h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
+<p>To increase your chances of getting the highest grade, read and follow the Linux kernel
+coding style described in the <a class="reference external" href="https://elixir.bootlin.com/linux/v4.19.19/source/Documentation/process/coding-style.rst">Coding Style document</a>.</p>
+<p>Also, use the following static analysis tools to verify the code:</p>
+<ul class="simple">
+<li>checkpatch.pl</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> linux/scripts/checkpatch.pl --no-tree --terse -f /path/to/your/list.c
+</pre></div>
+</div>
+<ul class="simple">
+<li>sparse</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install sparse
+<span class="gp">$</span> <span class="nb">cd</span> linux
+<span class="gp">$</span> make <span class="nv">C</span><span class="o">=</span><span class="m">2</span> /path/to/your/list.c
+</pre></div>
+</div>
+<ul class="simple">
+<li>cppcheck</li>
+</ul>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install cppcheck
+<span class="gp">$</span> cppcheck /path/to/your/list.c
+</pre></div>
+</div>
+</div>
+<div class="section" id="penalties">
+<h3>Penalties<a class="headerlink" href="#penalties" title="Permalink to this headline">¶</a></h3>
+<p>Information about assigments penalties can be found on the
+<a class="reference external" href="https://ocw.cs.pub.ro/courses/so2/teme/general">General Directions page</a>.</p>
+<p>In exceptional cases (the assigment passes the tests by not complying with the requirements)
+and if the assigment does not pass all the tests, the grade will may decrease more than mentioned above.</p>
+</div>
+<div class="section" id="submitting-the-assigment">
+<h3>Submitting the assigment<a class="headerlink" href="#submitting-the-assigment" title="Permalink to this headline">¶</a></h3>
+<p>The assignment will be graded automatically using the <a class="reference external" href="https://github.com/systems-cs-pub-ro/vmchecker-next/wiki/Student-Handbook">vmchecker-next</a> infrastructure.
+The submission will be made on moodle on the <a class="reference external" href="https://curs.upb.ro/2022/course/view.php?id=5121">course's page</a> to the related assignment.
+You will find the submission details in the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/0-list/-/blob/master/README.md">README.md file</a> of the <a class="reference external" href="https://gitlab.cs.pub.ro/so2/0-list/-/blob/master">repo</a>.</p>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<p>We recommend that you use gitlab to store your homework. Follow the directions in
+<a class="reference external" href="https://gitlab.cs.pub.ro/so2/0-list/-/blob/master/README.md">README.md file</a>.</p>
+</div>
+<div class="section" id="questions">
+<h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>For questions about the topic, you can consult the mailing <a class="reference external" href="http://cursuri.cs.pub.ro/pipermail/so2/">list archives</a>
+or you can write a question on the dedicated Teams channel.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="assign-collaboration.html" class="btn btn-neutral float-left" title="Collaboration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="assign1-kprobe-based-tracer.html" class="btn btn-neutral float-right" title="Assignment 1 - Kprobe based tracer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
