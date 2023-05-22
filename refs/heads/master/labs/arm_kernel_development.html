@@ -513,7 +513,7 @@ $ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 <div class="section" id="i-o-memory">
 <h3>3. I/O memory<a class="headerlink" href="#i-o-memory" title="Permalink to this headline">¶</a></h3>
 <p>Inspect I/O space configuration for <code class="docutils literal"><span class="pre">NXP</span> <span class="pre">i.MX6UL</span></code> board. Start with <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dts</span></code> and identify each device mentioned below.</p>
-<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ cat /proc/iomem
   00900000-0091ffff : 900000.sram sram@900000
   0209c000-0209ffff : 209c000.gpio gpio@209c000
   021a0000-021a3fff : 21a0000.i2c i2c@21a0000
