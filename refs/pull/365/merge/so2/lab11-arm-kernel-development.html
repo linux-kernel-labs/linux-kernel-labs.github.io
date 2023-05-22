@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SO2 Lab 11 - Kernel Development on ARM &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SO2 Lab 12 - Kernel Profiling" href="lab12-kernel-profiling.html" />
+    <link rel="prev" title="SO2 Lab 10 - Networking" href="lab10-networking.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 11 - Kernel Development on ARM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-on-a-chip">System on a Chip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#board-support-package">Board Support package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toolchain">Toolchain</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-kernel-image">Linux kernel image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rootfs">Rootfs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#device-tree">Device tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qemu">Qemu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#intro">0. Intro</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boot">1. Boot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cpu-information">2. CPU information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#i-o-memory">3. I/O memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hello-world">4. Hello World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simple-device">5. Simple device</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lab 11 - Kernel Development on ARM</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/lab11-arm-kernel-development.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="so2-lab-11-kernel-development-on-arm">
+<h1>SO2 Lab 11 - Kernel Development on ARM<a class="headerlink" href="#so2-lab-11-kernel-development-on-arm" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lab-objectives">
+<h2>Lab objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>get a feeling of what System on a Chip (SoC) means</li>
+<li>get familiar with embedded world using ARM as a supported architecture</li>
+<li>understand what a Board Support Package means (BSP)</li>
+<li>compile and boot an ARM kernel with Qemu using i.MX6UL platform as an example</li>
+<li>get familiar with hardware description using Device Trees</li>
+</ul>
+</div>
+<div class="section" id="system-on-a-chip">
+<h2>System on a Chip<a class="headerlink" href="#system-on-a-chip" title="Permalink to this headline">¶</a></h2>
+<p>A System on a Chip (<strong>SoC</strong>) is an integrated circuit (<strong>IC</strong>) that integrates an entire system onto it. The components
+that can be usually found on an SoC include a central processing unit (<strong>CPU</strong>), memory, input/output ports, storage devices
+together with more sophisticated modules like audio digital interfaces, neural processing units (<strong>NPU</strong>) or graphical
+processing units (<strong>GPU</strong>).</p>
+<dl class="docutils">
+<dt>SoCs can be used in various applications most common are:</dt>
+<dd><ul class="first last simple">
+<li>consumer electronics (TV sets, mobile phones, video game consoles)</li>
+<li>industrial computers (medical imaging, etc)</li>
+<li>automotive</li>
+<li>home appliances</li>
+</ul>
+</dd>
+</dl>
+<p>The leading architecture for SoCs is <strong>ARM</strong>. Worth mentioning here is that there are also x86-based SoCs platforms. Another thing
+we need to keep an eye on is <strong>RISC-V</strong> an open standard instruction set architecture.</p>
+<p>A simplified view of an <strong>ARM</strong> platform is shown in the image below:</p>
+<img alt="../_images/schematic1.png" class="align-center" src="../_images/schematic1.png" />
+<p>We will refer as a reference platform at NXP's <a class="reference external" href="imx6ul">i.MX6UL</a> platform, but in general all SoC's contain the following building blocks:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li>one or more CPU cores</li>
+<li>a system bus</li>
+<li>clock and reset module<ul>
+<li>PLL</li>
+<li>OSC</li>
+<li>reset controller</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>interrupt controller</li>
+<li>timers</li>
+<li>memory controller</li>
+<li>peripheral controllers<ul>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/I%C2%B2C">I2C</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface">SPI</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/General-purpose_input/output">GPIO</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Network_interface_controller">Ethernet</a> (for network)</li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/MultiMediaCard">uSDHC</a> (for storage)</li>
+<li>USB</li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter">UART</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/I%C2%B2S">I2S</a> (for sound)</li>
+<li>eLCDIF (for LCD Panel)</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>Here is the complete block diagram for i.MX6UL platform:</p>
+<a class="reference internal image-reference" href="https://www.nxp.com/assets/images/en/block-diagrams/IMX6UL-BD.jpg"><img alt="IMX6UL-BD" class="align-center" src="https://www.nxp.com/assets/images/en/block-diagrams/IMX6UL-BD.jpg" style="width: 60%;" /></a>
+<p>i.MX6UL Evaluation Kit board looks like this:</p>
+<a class="reference internal image-reference" href="https://www.compulab.com/wp-content/gallery/sbc-imx6ul/compulab_sbc-imx6ul_single-board-computer.jpg"><img alt="imx6ul-evk" class="align-center" src="https://www.compulab.com/wp-content/gallery/sbc-imx6ul/compulab_sbc-imx6ul_single-board-computer.jpg" style="width: 60%;" /></a>
+<p>Other popular SoC boards:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Raspberry_Pi">Broadcom Raspberry Pi</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/BeagleBoard">Texas Instruments Beagle board</a></li>
+<li><a class="reference external" href="https://wiki.odroid.com/odroid-xu4/odroid-xu4">Odroid Xu4</a></li>
+<li><a class="reference external" href="https://developer.nvidia.com/embedded/jetson-nano-developer-kit">Nvidia Jetson Nano</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="board-support-package">
+<h2>Board Support package<a class="headerlink" href="#board-support-package" title="Permalink to this headline">¶</a></h2>
+<p>A board support package (<strong>BSP</strong>) is the minimal set of software packages that allow to demonstrate the capabilities of a certain hardware platform. This includes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>toolchain</li>
+<li>bootloader</li>
+<li>Linux kernel image, device tree files and drivers</li>
+<li>root filesystem</li>
+</ul>
+</div></blockquote>
+<p>Semiconductor manufacturers usually provide a <strong>BSP</strong> together with an evaluation board. BSP is typically bundled using <a class="reference external" href="https://www.yoctoproject.org/">Yocto</a></p>
+</div>
+<div class="section" id="toolchain">
+<h2>Toolchain<a class="headerlink" href="#toolchain" title="Permalink to this headline">¶</a></h2>
+<p>Because our development machines are mostly x86-based we need a cross compiler that can produce executable
+code for ARM platform.</p>
+<p>We can build our own cross compiler from scratch using <a class="reference external" href="https://crosstool-ng.github.io/">https://crosstool-ng.github.io/</a> or we can install one</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf <span class="c1"># for arm32</span>
+$ sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu     <span class="c1"># for arm64</span>
+</pre></div>
+</div>
+<p>There are several of toolchain binaries depending on the configuration:</p>
+<blockquote>
+<div><ul class="simple">
+<li>With &quot;arm-eabi-gcc&quot; you have the Linux system C library which will make calls into the kernel IOCTLs, e.g. for allocating memory pages to the process.</li>
+<li>With &quot;arm-eabi-none-gcc&quot; you are running on platform which doesn't have an operating system at all - so the C library is different to cope with that.</li>
+</ul>
+</div></blockquote>
+<div class="section" id="compiling-the-linux-kernel-on-arm">
+<h3>Compiling the Linux kernel on ARM<a class="headerlink" href="#compiling-the-linux-kernel-on-arm" title="Permalink to this headline">¶</a></h3>
+<p>Compile the kernel for 32bit ARM boards:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># select defconfig based on your platform</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make imx_v6_v7_defconfig
+<span class="c1"># compile the kernel</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+<p>Compile the kernel for 64bit ARM boards:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># for 64bit ARM there is a single config for all supported boards</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make defconfig
+<span class="c1"># compile the kernel</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm64 <span class="nv">CROSS_COMPILE</span><span class="o">=</span>aarch64-linux-gnu- make -j8
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="linux-kernel-image">
+<h2>Linux kernel image<a class="headerlink" href="#linux-kernel-image" title="Permalink to this headline">¶</a></h2>
+<p>The kernel image binary is named <code class="docutils literal"><span class="pre">vmlinux</span></code> and it can be found in the root of the kernel tree. Compressed image used for booting can be found under:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">arch/arm/boot/Image</span></code>, for arm32</li>
+<li><code class="docutils literal"><span class="pre">arch/arm64/boot/Image</span></code>, for arm64</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ file vmlinux
+  vmlinux: ELF <span class="m">32</span>-bit LSB executable, ARM, EABI5 version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
+
+$ file vmlinux
+  vmlinux: ELF <span class="m">64</span>-bit LSB shared object, ARM aarch64, version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
+</pre></div>
+</div>
+</div>
+<div class="section" id="rootfs">
+<h2>Rootfs<a class="headerlink" href="#rootfs" title="Permalink to this headline">¶</a></h2>
+<p>The root filesystem (<code class="docutils literal"><span class="pre">rootfs</span></code>) is the filesystem mounted at the top of files hierarchy (<code class="docutils literal"><span class="pre">/</span></code>). It should contain at least
+the critical files allowing the system to boot to a shell.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@so2$ tree -d -L <span class="m">2</span>
+├── bin
+├── boot
+├── dev
+├── etc
+├── home
+│   └── root
+├── lib
+│   └── udev
+├── mnt
+├── proc
+├── sbin
+│   └── init
+├── sys
+├── usr
+│   ├── bin
+│   ├── include
+│   ├── lib
+└── var
+</pre></div>
+</div>
+<p>As for <code class="docutils literal"><span class="pre">x86</span></code> we will make use of Yocto rootfs images. In order to download an <code class="docutils literal"><span class="pre">ext4</span></code> rootfs image for <code class="docutils literal"><span class="pre">arm32</span></code> one needs to run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> tools/labs/
+$ <span class="nv">ARCH</span><span class="o">=</span>arm make core-image-minimal-qemuarm.ext4
+</pre></div>
+</div>
+</div>
+<div class="section" id="device-tree">
+<h2>Device tree<a class="headerlink" href="#device-tree" title="Permalink to this headline">¶</a></h2>
+<p>Device tree (<strong>DT</strong>) is a tree structure used to describe the hardware devices in a system. Each node in the tree describes a device hence it is called <strong>device node</strong>. DT was introduced
+to provide a way to discover non-discoverable hardware (e.g a device on an I2C bus). This information was previously stored inside the source code for the Linux kernel. This meant that
+each time we needed to modify a node for a device the kernel needed to be recompiled. This no longer holds true as device tree and kernel image are separate binaries now.</p>
+<p>Device trees are stored inside device tree sources (<em>.dts</em>) and compiled into device tree blobs (<em>.dtb</em>).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># compile dtbs</span>
+$ make dtbs
+
+<span class="c1"># location for DT sources on arm32</span>
+$ ls arch/arm/boot/dts/
+  imx6ul-14x14-evk.dtb imx6ull-14x14-evk.dtb bcm2835-rpi-a-plus.dts
+
+<span class="c1"># location for DT source on arm64</span>
+$ ls arch/arm64/boot/dts/&lt;vendor&gt;
+  imx8mm-evk.dts imx8mp-evk.dts
+</pre></div>
+</div>
+<p>The following image is a represantation of a simple device tree, describing board type, cpu and memory.</p>
+<img alt="../_images/dts_node1.png" class="align-center" src="../_images/dts_node1.png" />
+<p>Notice that a device tree node can be defined using <code class="docutils literal"><span class="pre">label:</span> <span class="pre">name&#64;address</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">label</span></code>, is an identifier used to reference the node from other places</li>
+<li><code class="docutils literal"><span class="pre">name</span></code>, node identifier</li>
+<li><code class="docutils literal"><span class="pre">address</span></code>, used to differentiate nodes with the same name.</li>
+</ul>
+</div></blockquote>
+<p>A node might contain several properties arranged in the <code class="docutils literal"><span class="pre">name</span> <span class="pre">=</span> <span class="pre">value</span></code> format. The name is a string
+and the value can be bytes, strings, array of strings.</p>
+<p>Here is an example:</p>
+<div class="code c highlight-none"><div class="highlight"><pre><span></span>/ {
+     node@0 {
+          empty-property;
+          string-property = &quot;string value&quot;;
+          string-list-property = &quot;string value 1&quot;, &quot;string value 2&quot;;
+          int-list-property = &lt;value1 value2&gt;;
+
+          child-node@0 {
+                  child-empty-property;
+                  child-string-property = &quot;string value&quot;;
+                  child-node-reference = &lt;&amp;child-node1&gt;;
+          };
+
+          child-node1: child-node@1 {
+                  child-empty-property;
+                  child-string-property = &quot;string value&quot;;
+          };
+   };
+};
+</pre></div>
+</div>
+</div>
+<div class="section" id="qemu">
+<h2>Qemu<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+<p>We will use <code class="docutils literal"><span class="pre">qemu-system-arm</span></code> to boot 32bit ARM platforms. Although, this can be installed from official distro repos, for example:</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>sudo apt-get install -y qemu-system-arm
+</pre></div>
+</div>
+<p>We strongly recommend using latest version of <code class="docutils literal"><span class="pre">qemu-system-arm</span></code> build from sources:</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ git clone https://gitlab.com/qemu-project/qemu.git
+$ ./configure --target-list=arm-softmmu --disable-docs
+$ make -j8
+$ ./build/qemu-system-arm
+</pre></div>
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>To solve exercises, you need to perform these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>prepare skeletons from templates</li>
+<li>build modules</li>
+<li>copy modules to the VM</li>
+<li>start the VM and test the module in the VM.</li>
+</ul>
+</div></blockquote>
+<p>The current lab name is arm_kernel_development. See the exercises for the task name.</p>
+<p>The skeleton code is generated from full source examples located in
+<code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
+the skeleton code for a complete lab:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
+</pre></div>
+</div>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+</pre></div>
+</div>
+<p>Then, copy the modules and start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+tools/labs $ make boot
+</pre></div>
+</div>
+<p>The modules are placed in /home/root/skels/arm_kernel_development/&lt;task_name&gt;.</p>
+<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
+For additional details about connecting to the VM via the network, please check <a class="reference internal" href="../info/vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the Virtual Machine</span></a>.</p>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Before starting the exercises or generating the skeletons, please run <strong>git pull</strong> inside the Linux repo,
+to make sure you have the latest version of the exercises.</p>
+<p>If you have local changes, the pull command will fail. Check for local changes using <code class="docutils literal"><span class="pre">git</span> <span class="pre">status</span></code>.
+If you want to keep them, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span></code> before <code class="docutils literal"><span class="pre">pull</span></code> and <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span> <span class="pre">pop</span></code> after.
+To discard the changes, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">reset</span> <span class="pre">--hard</span> <span class="pre">master</span></code>.</p>
+<p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>The rules for working with the virtual machine for <code class="docutils literal"><span class="pre">ARM</span></code> are modified as follows</p>
+<div class="last highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># modules build</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make build
+<span class="c1"># modules copy</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm make copy
+<span class="c1"># kernel build</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+</div>
+<div class="section" id="intro">
+<h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
+<p>Inspect the following locations in the Linux kernel code and identify platforms and vendors using
+ARM architecture:</p>
+<blockquote>
+<div><ul class="simple">
+<li>32-bit: <code class="docutils literal"><span class="pre">arch/arm/boot/dts</span></code></li>
+<li>64-bit: <code class="docutils literal"><span class="pre">arch/arm64/boot/dts</span></code></li>
+</ul>
+</div></blockquote>
+<p>Use <code class="docutils literal"><span class="pre">qemu</span></code> and look at the supported platforms:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>../qemu/build/arm-softmmu/qemu-system-arm -M ?
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We used our own compiled version of <code class="docutils literal"><span class="pre">Qemu</span></code> for <code class="docutils literal"><span class="pre">arm32</span></code>. See <a class="reference internal" href="#qemu">Qemu</a> section for more details.</p>
+</div>
+</div>
+<div class="section" id="boot">
+<h3>1. Boot<a class="headerlink" href="#boot" title="Permalink to this headline">¶</a></h3>
+<p>Use <code class="docutils literal"><span class="pre">qemu</span></code> to boot <code class="docutils literal"><span class="pre">i.MX6UL</span></code> platform. In order to boot, we first need to compile the kernel.
+Review <a class="reference internal" href="#compiling-the-linux-kernel-on-arm">Compiling the Linux kernel on ARM</a> section.</p>
+<p>Successful compilation will result in the following binaries:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">arch/arm/boot/Image</span></code>, kernel image compiled for ARM</li>
+<li><code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dtb</span></code>, device tree blob for <code class="docutils literal"><span class="pre">i.MX6UL</span></code> board</li>
+</ul>
+</div></blockquote>
+<p>Review <a class="reference internal" href="#rootfs">Rootfs</a> section and download <code class="docutils literal"><span class="pre">core-image-minimal-qemuarm.ext4</span></code> rootfs.
+Run <code class="docutils literal"><span class="pre">qemu</span></code> using then following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>../qemu/build/arm-softmmu/qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M <span class="se">\</span>
+  -kernel arch/arm/boot/zImage -nographic  -dtb arch/arm/boot/dts/imx6ul-14x14-evk.dtb <span class="se">\</span>
+  -append <span class="s2">&quot;root=/dev/mmcblk0 rw console=ttymxc0 loglevel=8 earlycon printk&quot;</span> -sd tools/labs/core-image-minimal-qemuarm.ext4
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">LCDIF and ASRC devices are not well supported with <code class="docutils literal"><span class="pre">Qemu</span></code>. Remove them from compilation.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make menuconfig
+<span class="c1"># set FSL_ASRC=n and DRM_MXSFB=n</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+<p>Once the kernel is booted check kernel version and cpu info:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ cat /proc/cpuinfo
+$ cat /proc/version
+</pre></div>
+</div>
+</div>
+<div class="section" id="cpu-information">
+<h3>2. CPU information<a class="headerlink" href="#cpu-information" title="Permalink to this headline">¶</a></h3>
+<p>Inspect the CPU configuration for <code class="docutils literal"><span class="pre">NXP</span> <span class="pre">i.MX6UL</span></code> board. Start with <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dts</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>find <code class="docutils literal"><span class="pre">cpu&#64;0</span></code> device tree node and look for <code class="docutils literal"><span class="pre">operating-points</span></code> property.</li>
+<li>read the maximum and minimum operating frequency the processor can run</li>
+</ul>
+<blockquote>
+<div><div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="i-o-memory">
+<h3>3. I/O memory<a class="headerlink" href="#i-o-memory" title="Permalink to this headline">¶</a></h3>
+<p>Inspect I/O space configuration for <code class="docutils literal"><span class="pre">NXP</span> <span class="pre">i.MX6UL</span></code> board. Start with <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dts</span></code> and identify each device mentioned below.</p>
+<div class="code bash highlight-none"><div class="highlight"><pre><span></span>$ cat /proc/iomem
+  00900000-0091ffff : 900000.sram sram@900000
+  0209c000-0209ffff : 209c000.gpio gpio@209c000
+  021a0000-021a3fff : 21a0000.i2c i2c@21a0000
+  80000000-9fffffff : System RAM
+</pre></div>
+</div>
+<p>Identify device tree nodes corresponding to:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">System</span> <span class="pre">RAM</span></code>, look for <code class="docutils literal"><span class="pre">memory&#64;80000000</span></code> node in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul-14x14-evk.dtsi</span></code>. What's the size of the System RAM?</li>
+<li><code class="docutils literal"><span class="pre">GPIO1</span></code>, look for <code class="docutils literal"><span class="pre">gpio&#64;209c000</span></code> node in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul.dtsi</span></code>. What's the size of the I/O space for this device?</li>
+<li><code class="docutils literal"><span class="pre">I2C1</span></code>,  look for <code class="docutils literal"><span class="pre">i2c&#64;21a0000</span></code> node in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul.dtsi</span></code>. What's the size of the I/O spaces for this device?</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="hello-world">
+<h3>4. Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h3>
+<p>Implement a simple kernel module that prints a message at load/unload time. Compile it and load it on <code class="docutils literal"><span class="pre">i.MX6UL</span></code> emulated platform.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="c1"># modules build</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make build
+<span class="c1"># modules copy</span>
+tools/labs $ <span class="nv">ARCH</span><span class="o">=</span>arm make copy
+<span class="c1"># kernel build</span>
+$ <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- make -j8
+</pre></div>
+</div>
+</div>
+<div class="section" id="simple-device">
+<h3>5. Simple device<a class="headerlink" href="#simple-device" title="Permalink to this headline">¶</a></h3>
+<p>Implement a driver for a simple platform device. Find <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">1</span></code> and notice how <code class="docutils literal"><span class="pre">simple_driver</span></code> is declared and register as a platform driver.
+Follow <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">2</span></code> and add the <code class="docutils literal"><span class="pre">so2,simple-device-v1</span></code> and <code class="docutils literal"><span class="pre">so2,simple-device-v2</span></code> compatible strings in the simple_device_ids array.</p>
+<p>Create two device tree nodes in <code class="docutils literal"><span class="pre">arch/arm/boot/dts/imx6ul.dtsi</span></code> under <code class="docutils literal"><span class="pre">soc</span></code> node with compatible strings <code class="docutils literal"><span class="pre">so2,simple-device-v1</span></code> and
+<code class="docutils literal"><span class="pre">so2,simple-device-v2</span></code> respectively. Then notice the behavior when loading <code class="docutils literal"><span class="pre">simple_driver</span></code> module.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lab10-networking.html" class="btn btn-neutral float-left" title="SO2 Lab 10 - Networking" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lab12-kernel-profiling.html" class="btn btn-neutral float-right" title="SO2 Lab 12 - Kernel Profiling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
