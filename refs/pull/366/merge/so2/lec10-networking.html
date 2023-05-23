@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SO2 Lecture 10 - Networking &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SO2 Lecture 11 - Architecture Layer" href="lec11-arch.html" />
+    <link rel="prev" title="SO2 Lecture 09 - Kernel debugging" href="lec9-debugging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lecture 10 - Networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#network-management-overview">Network Management Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sockets-implementation-overview">Sockets Implementation Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sockets-families-and-protocols">Sockets Families and Protocols</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-udp-send">Example: UDP send</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#network-processing-phases">Network processing phases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#packet-routing">Packet Routing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#routing-table-s">Routing Table(s)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#routing-policy-database">Routing Policy Database</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#routing-table-processing">Routing table processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#forwarding-information-database">Forwarding Information Database</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#netfilter">Netfilter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#network-packets-skbs-struct-sk-buff">Network packets / skbs (struct sk_buff)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#network-device">Network Device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hardware-and-software-acceleration-techniques">Hardware and Software Acceleration Techniques</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lecture 10 - Networking</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/lec10-networking.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="so2-lecture-10-networking">
+<h1>SO2 Lecture 10 - Networking<a class="headerlink" href="#so2-lecture-10-networking" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="lec10-networking-slides.html">View slides</a></p>
+<span class="admonition-so2-lecture-10-networking"></span><div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-network-management simple">
+<li>Socket implementation</li>
+<li>Routing implementation</li>
+<li>Network Device Interface</li>
+<li>Hardware and Software Acceleration Techniques</li>
+</ul>
+</div>
+<div class="section" id="network-management-overview">
+<h2>Network Management Overview<a class="headerlink" href="#network-management-overview" title="Permalink to this headline">¶</a></h2>
+<a class="admonition-network-management-overview reference internal image-reference" href="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png"><img alt="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png" class="admonition-network-management-overview" src="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png" style="height: 100%;" /></a>
+</div>
+<div class="section" id="sockets-implementation-overview">
+<h2>Sockets Implementation Overview<a class="headerlink" href="#sockets-implementation-overview" title="Permalink to this headline">¶</a></h2>
+<a class="admonition-sockets-implementation-overview reference internal image-reference" href="../_images/ditaa-79e3734c36891f6c04d684aa5caa39f76915dbaf.png"><img alt="../_images/ditaa-79e3734c36891f6c04d684aa5caa39f76915dbaf.png" class="admonition-sockets-implementation-overview" src="../_images/ditaa-79e3734c36891f6c04d684aa5caa39f76915dbaf.png" style="height: 100%;" /></a>
+</div>
+<div class="section" id="sockets-families-and-protocols">
+<h2>Sockets Families and Protocols<a class="headerlink" href="#sockets-families-and-protocols" title="Permalink to this headline">¶</a></h2>
+<a class="admonition-sockets-families-and-protocols reference internal image-reference" href="../_images/ditaa-bf1244d1a5c3d99bd8d40148d81cb3e5748c0b94.png"><img alt="../_images/ditaa-bf1244d1a5c3d99bd8d40148d81cb3e5748c0b94.png" class="admonition-sockets-families-and-protocols" src="../_images/ditaa-bf1244d1a5c3d99bd8d40148d81cb3e5748c0b94.png" style="height: 100%;" /></a>
+<div class="section" id="example-udp-send">
+<h3>Example: UDP send<a class="headerlink" href="#example-udp-send" title="Permalink to this headline">¶</a></h3>
+<div class="admonition-example-udp-send highlight-c"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">addr</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">s</span><span class="p">;</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_DGRAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">connect</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">addr</span><span class="p">));</span>
+<span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">close</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="../_images/ditaa-ee04e3e544de75375b914f7645c79d5ae46fe6f3.png" class="admonition-example-udp-send" src="../_images/ditaa-ee04e3e544de75375b914f7645c79d5ae46fe6f3.png" />
+</div>
+</div>
+<div class="section" id="network-processing-phases">
+<h2>Network processing phases<a class="headerlink" href="#network-processing-phases" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-network-processing-phases simple">
+<li>Interrupt handler - device driver fetches data from the RX ring,
+creates a network packet and queues it to the network stack for
+processing</li>
+<li>NET_SOFTIRQ - packet goes through the stack layer and it is
+processed: decapsulate Ethernet frame, check IP packet and route
+it, if local packet decapsulate protocol packet (e.g. TCP) and
+queues it to a socket</li>
+<li>Process context - application fetches data from the socket queue
+or pushes data to the socket queue</li>
+</ul>
+</div>
+<div class="section" id="packet-routing">
+<h2>Packet Routing<a class="headerlink" href="#packet-routing" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/ditaa-528948c80a3fd78b89fb6f7bd69503a58b93a4ae.png" class="admonition-packet-routing" src="../_images/ditaa-528948c80a3fd78b89fb6f7bd69503a58b93a4ae.png" />
+<div class="section" id="routing-table-s">
+<h3>Routing Table(s)<a class="headerlink" href="#routing-table-s" title="Permalink to this headline">¶</a></h3>
+<div class="admonition-routing-table highlight-shell"><div class="highlight"><pre><span></span>tavi@desktop-tavi:~/src/linux$ ip route list table main
+default via <span class="m">172</span>.30.240.1 dev eth0
+<span class="m">172</span>.30.240.0/20 dev eth0 proto kernel scope link src <span class="m">172</span>.30.249.241
+
+tavi@desktop-tavi:~/src/linux$ ip route list table <span class="nb">local</span>
+broadcast <span class="m">127</span>.0.0.0 dev lo proto kernel scope link src <span class="m">127</span>.0.0.1
+<span class="nb">local</span> <span class="m">127</span>.0.0.0/8 dev lo proto kernel scope host src <span class="m">127</span>.0.0.1
+<span class="nb">local</span> <span class="m">127</span>.0.0.1 dev lo proto kernel scope host src <span class="m">127</span>.0.0.1
+broadcast <span class="m">127</span>.255.255.255 dev lo proto kernel scope link src <span class="m">127</span>.0.0.1
+broadcast <span class="m">172</span>.30.240.0 dev eth0 proto kernel scope link src <span class="m">172</span>.30.249.241
+<span class="nb">local</span> <span class="m">172</span>.30.249.241 dev eth0 proto kernel scope host src <span class="m">172</span>.30.249.241
+broadcast <span class="m">172</span>.30.255.255 dev eth0 proto kernel scope link src <span class="m">172</span>.30.249.241
+
+tavi@desktop-tavi:~/src/linux$ ip rule list
+<span class="m">0</span>:      from all lookup <span class="nb">local</span>
+<span class="m">32766</span>:  from all lookup main
+<span class="m">32767</span>:  from all lookup default
+</pre></div>
+</div>
+</div>
+<div class="section" id="routing-policy-database">
+<h3>Routing Policy Database<a class="headerlink" href="#routing-policy-database" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-routing-policy-database simple">
+<li>&quot;Regular&quot; routing only uses the destination address</li>
+<li>To increase flexibility a &quot;Routing Policy Database&quot; is used that
+allows different routing based on other fields such as the source
+address, protocol type, transport ports, etc.</li>
+<li>This is encoded as a list of rules that are evaluated based on
+their priority (priority 0 is the highest)</li>
+<li>Each rule has a selector (how to match the packet) and an
+action (what action to take if the packet matches)</li>
+<li>Selectors: source address, destination address, type of service (TOS),
+input interface, output interface, etc.</li>
+<li>Action: lookup / unicast - use given routing table, blackhole -
+drop packet, unreachable - send ICMP unreachable message and drop
+packet, etc.</li>
+</ul>
+</div>
+<div class="section" id="routing-table-processing">
+<h3>Routing table processing<a class="headerlink" href="#routing-table-processing" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-routing-table-processing simple">
+<li>Special table for local addreses -&gt; route packets to sockets
+based on family, type, ports</li>
+<li>Check every routing entry for starting with the most specific
+routes (e.g. 192.168.0.0/24 is checked before 192.168.0.0/16)</li>
+<li>A route matches if the packet destination addreess logical ORed
+with the subnet mask equals the subnet address</li>
+<li>Once a route matches the following information is retrieved:
+interface, link layer next-hop address, network next host address</li>
+</ul>
+</div>
+<div class="section" id="forwarding-information-database">
+<h3>Forwarding Information Database<a class="headerlink" href="#forwarding-information-database" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-forward-information-database-removed-in-3-6">&nbsp;</p>
+<img alt="../_images/fidb-overview1.png" src="../_images/fidb-overview1.png" />
+<img alt="../_images/fidb-details1.png" class="admonition-forward-information-database-removed-in-3-6" src="../_images/fidb-details1.png" />
+<p class="admonition-routing-cache-removed-in-3-6">&nbsp;</p>
+<img alt="../_images/routing-cache1.png" src="../_images/routing-cache1.png" />
+<p class="admonition-fib-trie">&nbsp;</p>
+<img alt="../_images/fib-trie1.png" src="../_images/fib-trie1.png" />
+<p class="admonition-compressed-trie">&nbsp;</p>
+<img alt="../_images/fib-trie-compressed1.png" src="../_images/fib-trie-compressed1.png" />
+</div>
+</div>
+<div class="section" id="netfilter">
+<h2>Netfilter<a class="headerlink" href="#netfilter" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-netfilter simple">
+<li>Framework that implements packet filtering and NAT</li>
+<li>It uses hooks inserted in key places in the packet flow:<ul>
+<li>NF_IP_PRE_ROUTING</li>
+<li>NF_IP_LOCAL_IN</li>
+<li>NF_IP_FORWARD</li>
+<li>NF_IP_LOCAL_OUT</li>
+<li>NF_IP_POST_ROUTING</li>
+<li>NF_IP_NUMHOOKS</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="network-packets-skbs-struct-sk-buff">
+<h2>Network packets / skbs (struct sk_buff)<a class="headerlink" href="#network-packets-skbs-struct-sk-buff" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/skb1.png" class="admonition-network-packets-skbs" src="../_images/skb1.png" />
+<div class="admonition-struct-sk-buff highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+
+    <span class="k">struct</span> <span class="n">sock</span> <span class="o">*</span><span class="n">sk</span><span class="p">;</span>
+    <span class="n">ktime_t</span> <span class="n">tstamp</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">net_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cb</span><span class="p">[</span><span class="mi">48</span><span class="p">];</span>
+
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">,</span>
+    <span class="n">data_len</span><span class="p">;</span>
+    <span class="n">__u16</span> <span class="n">mac_len</span><span class="p">,</span>
+    <span class="n">hdr_len</span><span class="p">;</span>
+
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destructor</span><span class="p">)(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+    <span class="n">sk_buff_data_t</span> <span class="n">transport_header</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">network_header</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">mac_header</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">tail</span><span class="p">;</span>
+    <span class="n">sk_buff_data_t</span> <span class="n">end</span><span class="p">;</span>
+
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">head</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">truesize</span><span class="p">;</span>
+    <span class="n">atomic_t</span> <span class="n">users</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition-skb-apis highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* reserve head room */</span>
+<span class="kt">void</span> <span class="nf">skb_reserve</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* add data to the end */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_put</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* add data to the top */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_push</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* discard data at the top */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_pull</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* discard data at the end */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_trim</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_transport_header</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_reset_transport_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_set_transport_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">);</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_network_header</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_reset_network_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_set_network_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">);</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">skb_mac_header</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">skb_mac_header_was_set</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_reset_mac_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">skb_set_mac_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">);</span>
+</pre></div>
+</div>
+<p class="admonition-skb-data-management">&nbsp;</p>
+<a class="reference internal image-reference" href="../_images/ditaa-91073cb05a3f537eb54ab10745c307531e6795a0.png"><img alt="../_images/ditaa-91073cb05a3f537eb54ab10745c307531e6795a0.png" src="../_images/ditaa-91073cb05a3f537eb54ab10745c307531e6795a0.png" style="height: 50%;" /></a>
+</div>
+<div class="section" id="network-device">
+<h2>Network Device<a class="headerlink" href="#network-device" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/net-dev-hw1.png" class="admonition-network-device-interface" src="../_images/net-dev-hw1.png" />
+<ul class="admonition-advanced-features simple">
+<li>Scatter-Gather</li>
+<li>Checksum offloading: Ethernet, IP, UDP, TCP</li>
+<li>Adaptive interrupt handling (coalescence, adaptive)</li>
+</ul>
+</div>
+<div class="section" id="hardware-and-software-acceleration-techniques">
+<h2>Hardware and Software Acceleration Techniques<a class="headerlink" href="#hardware-and-software-acceleration-techniques" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-tcp-offload simple">
+<li>Full offload - Implement TCP/IP stack in hardware</li>
+<li>Issues:<ul>
+<li>Scaling number of connections</li>
+<li>Security</li>
+<li>Conformance</li>
+</ul>
+</li>
+</ul>
+<ul class="admonition-performance-observation simple">
+<li>Performance is proportional with the number of packets to be
+processed</li>
+<li>Example: if an end-point can process 60K pps<ul>
+<li>1538 MSS -&gt; 738Mbps</li>
+<li>2038 MSS -&gt; 978Mbps</li>
+<li>9038 MSS -&gt; 4.3Gbps</li>
+<li>20738 MSS -&gt; 9.9Gbps</li>
+</ul>
+</li>
+</ul>
+<ul class="admonition-stateless-offload simple">
+<li>The networking stack processes large packets</li>
+<li>TX path: the hardware splits large packets in smaller packets
+(TCP Segmentation Offload)</li>
+<li>RX path: the hardware aggregates small packets into larger
+packets (Large Receive Offload - LRO)</li>
+</ul>
+<img alt="../_images/tso1.png" class="admonition-tcp-segmentation-offload" src="../_images/tso1.png" />
+<img alt="../_images/lro1.png" class="admonition-large-receive-offload" src="../_images/lro1.png" />
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lec9-debugging.html" class="btn btn-neutral float-left" title="SO2 Lecture 09 - Kernel debugging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lec11-arch.html" class="btn btn-neutral float-right" title="SO2 Lecture 11 - Architecture Layer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

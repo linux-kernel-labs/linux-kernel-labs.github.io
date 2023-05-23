@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SO2 Lecture 08 - Filesystem Management &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SO2 Lecture 09 - Kernel debugging" href="lec9-debugging.html" />
+    <link rel="prev" title="SO2 Lecture 07 - Memory Management" href="lec7-memory-management.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lecture 08 - Filesystem Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filesystem-abstractions">Filesystem Abstractions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filesystem-operations">Filesystem Operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mounting-a-filesystem">Mounting a filesystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opening-a-file">Opening a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#querying-file-attributes">Querying file attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reading-data-from-a-file">Reading data from a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#writing-data-to-a-file">Writing data to a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#closing-a-file">Closing a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#directories">Directories</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-file">Creating a file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deleting-a-file">Deleting a file</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-virtual-file-system">Linux Virtual File System</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#superblock-operations">Superblock Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inode-operations">Inode Operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-inode-cache">The Inode Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-dentry-cache">The Dentry Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-page-cache">The Page Cache</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lecture 08 - Filesystem Management</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/lec8-filesystems.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="so2-lecture-08-filesystem-management">
+<h1>SO2 Lecture 08 - Filesystem Management<a class="headerlink" href="#so2-lecture-08-filesystem-management" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="lec8-filesystems-slides.html">View slides</a></p>
+<span class="admonition-so2-lecture-08-filesystem-management"></span><div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-filesystem-management simple">
+<li>Filesystem abstractions</li>
+<li>Filesystem operations</li>
+<li>Linux VFS</li>
+<li>Overview of Linux I/O Management</li>
+</ul>
+</div>
+<div class="section" id="filesystem-abstractions">
+<h2>Filesystem Abstractions<a class="headerlink" href="#filesystem-abstractions" title="Permalink to this headline">¶</a></h2>
+<p>A fileystem is a way to organize files and directories on storage
+devices such as hard disks, SSDs or flash memory. There are many types
+of filesystems (e.g. FAT, ext4, btrfs, ntfs) and on one running system
+we can have multiple instances of the same filesystem type in use.</p>
+<p>While filesystems use different data structures to organizing the
+files, directories, user data and meta (internal) data on storage
+devices there are a few common abstractions that are used in almost
+all filesystems:</p>
+<ul class="admonition-filesystem-abstractions simple">
+<li>superblock</li>
+<li>file</li>
+<li>inode</li>
+<li>dentry</li>
+</ul>
+<p>Some of these abstractions are present both on disk and in memory
+while some are only present in memory.</p>
+<p>The <em>superblock</em> abstraction contains information about the filesystem
+instance such as the block size, the root inode, filesystem size. It
+is present both on storage and in memory (for caching purposes).</p>
+<p>The <em>file</em> abstraction contains information about an opened file such
+as the current file pointer. It only exists in memory.</p>
+<p>The <em>inode</em> is identifying a file on disk. It exists both on storage
+and in memory (for caching purposes). An inode identifies a file in a
+unique way and has various properties such as the file size, access
+rights, file type, etc.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The file name is not a property of the file.</p>
+</div>
+<p>The <em>dentry</em> associates a name with an inode. It exists both on
+storage and in memory (for caching purposes).</p>
+<p>The following diagram shows the relationship between the various filesystem
+abstractions as they used in memory:</p>
+<img alt="../_images/ditaa-29f54aaa1a85b819ff29cb7d101a4d646b3b0b06.png" class="admonition-filesystem-abstractions-in-memory" src="../_images/ditaa-29f54aaa1a85b819ff29cb7d101a4d646b3b0b06.png" />
+<p>Note that not all of the one to many relationships between the various
+abstractions are depicted.</p>
+<p>Multiple file descriptors can point to the same <em>file</em> because we can
+use the <code class="xref c c-func docutils literal"><span class="pre">dup()</span></code> system call to duplicate a file descriptor.</p>
+<p>Multiple <em>file</em> abstractions can point to the same <em>dentry</em> if we open
+the same path multiple times.</p>
+<p>Multiple <em>dentries</em> can point to the same <em>inode</em> when hard links are
+used.</p>
+<p>The following diagram shows the relationship of the filesystem
+abstraction on storage:</p>
+<img alt="../_images/ditaa-bc662dab7bb3d9ba3a37efbf69b82c513dcaadd4.png" class="admonition-filesystem-abstractions-on-storage" src="../_images/ditaa-bc662dab7bb3d9ba3a37efbf69b82c513dcaadd4.png" />
+<p>The diagram shows that the <em>superblock</em> is typically stored at the
+beginning of the fileystem and that various blocks are used with
+different purposes: some to store dentries, some to store inodes and
+some to store user data blocks. There are also blocks used to manage
+the available free blocks (e.g. bitmaps for the simple filesystems).</p>
+<p>The next diagram show a very simple filesystem where blocks are
+grouped together by function:</p>
+<ul class="simple">
+<li>the superblock contains information about the block size as well as
+the IMAP, DMAP, IZONE and DZONE areas.</li>
+<li>the IMAP area is comprised of multiple blocks which contains a
+bitmap for inode allocation; it maintains the allocated/free state
+for all inodes in the IZONE area</li>
+<li>the DMAP area is comprised of multiple blocks which contains a
+bitmap for data blocks; it maintains the allocated/free state for
+all blocks the DZONE area</li>
+</ul>
+<p class="admonition-simple-filesystem-example">&nbsp;</p>
+<img alt="../_images/ditaa-8b59fc3f5245ffb5d7089dc80cf2e306c39a62d8.png" src="../_images/ditaa-8b59fc3f5245ffb5d7089dc80cf2e306c39a62d8.png" />
+</div>
+<div class="section" id="filesystem-operations">
+<h2>Filesystem Operations<a class="headerlink" href="#filesystem-operations" title="Permalink to this headline">¶</a></h2>
+<p>The following diagram shows a high level overview of how the file
+system drivers interact with the rest of the file system &quot;stack&quot;. In
+order to support multiple filesystem types and instances Linux
+implements a large and complex subsystem that deals with filesystem
+management. This is called Virtual File System (or sometimes Virtual
+File Switch) and it is abbreviated with VFS.</p>
+<img alt="../_images/ditaa-6d39f541805ae8197b413ec9c79116382abc4dbc.png" class="admonition-overview" src="../_images/ditaa-6d39f541805ae8197b413ec9c79116382abc4dbc.png" />
+<p>VFS translates the complex file management related system calls to
+simpler operations that are implemented by the device drivers. These
+are some of the operations that a file system must implement:</p>
+<ul class="admonition-filesystem-operations simple">
+<li>Mount</li>
+<li>Open a file</li>
+<li>Querying file attributes</li>
+<li>Reading data from a file</li>
+<li>Writing file to a file</li>
+<li>Creating a file</li>
+<li>Deleting a file</li>
+</ul>
+<p>The next sections will look in-depth at some of these operations.</p>
+<div class="section" id="mounting-a-filesystem">
+<h3>Mounting a filesystem<a class="headerlink" href="#mounting-a-filesystem" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-mounting-a-filesystem simple">
+<li>Input: a storage device (partition)</li>
+<li>Output: dentry pointing to the root directory</li>
+<li>Steps: check device, determine filesystem parameters, locate the root inode</li>
+<li>Example: check magic, determine block size, read the root inode and create dentry</li>
+</ul>
+</div>
+<div class="section" id="opening-a-file">
+<h3>Opening a file<a class="headerlink" href="#opening-a-file" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-opening-a-file simple">
+<li>Input: path</li>
+<li>Output: file descriptor</li>
+<li>Steps:<ul>
+<li>Determine the filesystem type</li>
+<li>For each name in the path: lookup parent dentry, load inode,
+load data, find dentry</li>
+<li>Create a new <em>file</em> that points to the last <em>dentry</em></li>
+<li>Find a free entry in the file descriptor table and set it to <em>file</em></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="querying-file-attributes">
+<h3>Querying file attributes<a class="headerlink" href="#querying-file-attributes" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-querying-file-attributes simple">
+<li>Input: path</li>
+<li>Output: file attributes</li>
+<li>Steps:<ul>
+<li>Access <cite>file-&gt;dentry-&gt;inode</cite></li>
+<li>Read file attributes from the <em>inode</em></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="reading-data-from-a-file">
+<h3>Reading data from a file<a class="headerlink" href="#reading-data-from-a-file" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-reading-data-from-a-file simple">
+<li>Input: file descriptor, offset, length</li>
+<li>Output: data</li>
+<li>Steps:<ul>
+<li>Access <cite>file-&gt;dentry-&gt;inode</cite></li>
+<li>Determine data blocks</li>
+<li>Copy data blocks to memory</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="writing-data-to-a-file">
+<h3>Writing data to a file<a class="headerlink" href="#writing-data-to-a-file" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-writing-data-to-a-file simple">
+<li>Input: file descriptor, offset, length, data</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>Allocate one or more data blocks</li>
+<li>Add the allocated blocks to the inode and update file size</li>
+<li>Copy data from userspace to internal buffers and write them to
+storage</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="closing-a-file">
+<h3>Closing a file<a class="headerlink" href="#closing-a-file" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-closing-a-file simple">
+<li>Input: file descriptor</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>set the file descriptor entry to NULL</li>
+<li>Decrement file reference counter</li>
+<li>When the counter reaches 0 free <em>file</em></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="directories">
+<h3>Directories<a class="headerlink" href="#directories" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-directories">Directories are special files which contain one or more dentries.</p>
+</div>
+<div class="section" id="creating-a-file">
+<h3>Creating a file<a class="headerlink" href="#creating-a-file" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-creating-a-file simple">
+<li>Input: path</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>Determine the inode directory</li>
+<li>Read data blocks and find space for a new dentry</li>
+<li>Write back the modified inode directory data blocks</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="deleting-a-file">
+<h3>Deleting a file<a class="headerlink" href="#deleting-a-file" title="Permalink to this headline">¶</a></h3>
+<p>A summary of a typical implementation is presented below:</p>
+<ul class="admonition-deleting-a-file simple">
+<li>Input: path</li>
+<li>Output:</li>
+<li>Steps:<ul>
+<li>determine the parent inode</li>
+<li>read parent inode data blocks</li>
+<li>find and erase the dentry (check for links)</li>
+<li>when last file is closed: deallocate data and inode blocks</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="linux-virtual-file-system">
+<h2>Linux Virtual File System<a class="headerlink" href="#linux-virtual-file-system" title="Permalink to this headline">¶</a></h2>
+<p>Although the main purpose for the original introduction of VFS in UNIX
+kernels was to support multiple filesystem types and instances, a side
+effect was that it simplified fileystem device driver development
+since command parts are now implement in the VFS. Almost all of the
+caching and buffer management is dealt with VFS, leaving just
+efficient data storage management to the filesystem device driver.</p>
+<p>In order to deal with multiple filesystem types, VFS introduced the
+common filesystem abstractions previously presented. Note that the
+filesystem driver can also use its own particular fileystem
+abstractions in memory (e.g. ext4 inode or dentry) and that there
+might be a different abstraction on storage as well. Thus we may end
+up with three slightly different filesystem abstractions: one for
+VFS - always in memory, and two for a particular filesystem - one in
+memory used by the filesystem driver, and one on storage.</p>
+<a class="admonition-virtual-file-system reference internal image-reference" href="../_images/ditaa-e3a27a84dde42de58bcc5c360e1c4b15062507c2.png"><img alt="../_images/ditaa-e3a27a84dde42de58bcc5c360e1c4b15062507c2.png" class="admonition-virtual-file-system" src="../_images/ditaa-e3a27a84dde42de58bcc5c360e1c4b15062507c2.png" style="height: 100%;" /></a>
+<div class="section" id="superblock-operations">
+<h3>Superblock Operations<a class="headerlink" href="#superblock-operations" title="Permalink to this headline">¶</a></h3>
+<p>VFS requires that all filesystem implement a set of &quot;superblock
+operations&quot;.</p>
+<p>They deal with initializing, updating and freeing the VFS superblock:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="xref c c-func docutils literal"><span class="pre">fill_super()</span></code>) - reads the filesystem statistics (e.g. total
+number of inode, free number of inodes, total number of blocks, free
+number of blocks)</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">write_super()</span></code> - updates the superblock information on storage
+(e.g. updating the number of free inode or data blocks)</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">put_super()</span></code> - free any data associated with the filsystem
+instance, called when unmounting a filesystem</li>
+</ul>
+</div></blockquote>
+<p>The next class of operations are dealing with manipulating fileystem
+inodes. These operations will receive VFS inodes as parameters but the
+filesystem driver may use its own inode structures internally and, if
+so, they will convert in between them as necessary.</p>
+<p>A summary of the superblock operations are presented below:</p>
+<table class="hlist"><tr><td><ul class="simple">
+<li>fill_super</li>
+<li>put_super</li>
+<li>write_super</li>
+<li>read_inode</li>
+</ul>
+</td><td><ul class="simple">
+<li>write_inode</li>
+<li>evict_inode</li>
+<li>statfs</li>
+<li>remount_fs</li>
+</ul>
+</td></tr></table>
+</div>
+<div class="section" id="inode-operations">
+<h3>Inode Operations<a class="headerlink" href="#inode-operations" title="Permalink to this headline">¶</a></h3>
+<p>The next set of operations that VFS calls when interacting with
+filesystem device drivers are the &quot;inode operations&quot;. Non-intuitively
+these mostly deal with manipulating dentries - looking up a file name,
+creating, linking and removing files, dealing with symbolic links,
+creating and removing directories.</p>
+<p>This is the list of the most important inode operations:</p>
+<table class="hlist"><tr><td><ul class="simple">
+<li>create</li>
+<li>lookup</li>
+<li>link</li>
+<li>unlink</li>
+<li>symlink</li>
+<li>mkdir</li>
+</ul>
+</td><td><ul class="simple">
+<li>rmdir</li>
+<li>rename</li>
+<li>readlink</li>
+<li>follow_link</li>
+<li>put_link</li>
+<li>...</li>
+</ul>
+</td></tr></table>
+</div>
+<div class="section" id="the-inode-cache">
+<h3>The Inode Cache<a class="headerlink" href="#the-inode-cache" title="Permalink to this headline">¶</a></h3>
+<p>The inode cache is used to avoid reading and writing inodes to and
+from storage every time we need to read or update them. The cache uses
+a hash table and inodes are indexed with a hash function which takes
+as parameters the superblock (of a particular filesystem instance) and
+the inode number associated with an inode.</p>
+<p>inodes are cached until either the filesystem is unmounted, the inode
+deleted or the system enters a memory pressure state. When this
+happens the Linux memory management system will (among other things)
+free inodes from the inode cache based on how often they were
+accessed.</p>
+<ul class="admonition-the-inode-cache simple">
+<li>Caches inodes into memory to avoid costly storage operations</li>
+<li>An inode is cached until low memory conditions are triggered</li>
+<li>inodes are indexed with a hash table</li>
+<li>The inode hash function takes the superblock and inode number as
+inputs</li>
+</ul>
+</div>
+<div class="section" id="the-dentry-cache">
+<h3>The Dentry Cache<a class="headerlink" href="#the-dentry-cache" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-the-dentry-cache simple">
+<li>State:<ul>
+<li>Used – <em>d_inode</em> is valid and the <em>dentry</em> object is in use</li>
+<li>Unused – <em>d_inode</em> is valid but the dentry object is not in use</li>
+<li>Negative – <em>d_inode</em> is not valid; the inode was not yet loaded
+or the file was erased</li>
+</ul>
+</li>
+<li>Dentry cache<ul>
+<li>List of used dentries (dentry-&gt;d_state == used)</li>
+<li>List of the most recent used dentries (sorted by access time)</li>
+<li>Hash table to avoid searching the tree</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="the-page-cache">
+<h3>The Page Cache<a class="headerlink" href="#the-page-cache" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-the-page-cache simple">
+<li>Caches file data and not block device data</li>
+<li>Uses the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">address_space</span></code> to translate file offsets
+to block offsets</li>
+<li>Used for both <cite>read</cite> / <cite>write</cite> and <cite>mmap</cite></li>
+<li>Uses a radix tree</li>
+</ul>
+<div class="admonition-struct-address-space highlight-c"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * struct address_space - Contents of a cacheable, mappable object.</span>
+<span class="cm"> * @host: Owner, either the inode or the block_device.</span>
+<span class="cm"> * @i_pages: Cached pages.</span>
+<span class="cm"> * @gfp_mask: Memory allocation flags to use for allocating pages.</span>
+<span class="cm"> * @i_mmap_writable: Number of VM_SHARED mappings.</span>
+<span class="cm"> * @nr_thps: Number of THPs in the pagecache (non-shmem only).</span>
+<span class="cm"> * @i_mmap: Tree of private and shared mappings.</span>
+<span class="cm"> * @i_mmap_rwsem: Protects @i_mmap and @i_mmap_writable.</span>
+<span class="cm"> * @nrpages: Number of page entries, protected by the i_pages lock.</span>
+<span class="cm"> * @nrexceptional: Shadow or DAX entries, protected by the i_pages lock.</span>
+<span class="cm"> * @writeback_index: Writeback starts here.</span>
+<span class="cm"> * @a_ops: Methods.</span>
+<span class="cm"> * @flags: Error bits and flags (AS_*).</span>
+<span class="cm"> * @wb_err: The most recent error which has occurred.</span>
+<span class="cm"> * @private_lock: For use by the owner of the address_space.</span>
+<span class="cm"> * @private_list: For use by the owner of the address_space.</span>
+<span class="cm"> * @private_data: For use by the owner of the address_space.</span>
+<span class="cm"> */</span>
+<span class="k">struct</span> <span class="n">address_space</span> <span class="p">{</span>
+  <span class="k">struct</span> <span class="n">inode</span>            <span class="o">*</span><span class="n">host</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">xarray</span>           <span class="n">i_pages</span><span class="p">;</span>
+  <span class="n">gfp_t</span>                   <span class="n">gfp_mask</span><span class="p">;</span>
+  <span class="n">atomic_t</span>                <span class="n">i_mmap_writable</span><span class="p">;</span>
+<span class="cp">#ifdef CONFIG_READ_ONLY_THP_FOR_FS</span>
+  <span class="cm">/* number of thp, only for non-shmem files */</span>
+  <span class="n">atomic_t</span>                <span class="n">nr_thps</span><span class="p">;</span>
+<span class="cp">#endif</span>
+  <span class="k">struct</span> <span class="n">rb_root_cached</span>   <span class="n">i_mmap</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">rw_semaphore</span>     <span class="n">i_mmap_rwsem</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span>           <span class="n">nrpages</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span>           <span class="n">nrexceptional</span><span class="p">;</span>
+  <span class="n">pgoff_t</span>                 <span class="n">writeback_index</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">struct</span> <span class="n">address_space_operations</span> <span class="o">*</span><span class="n">a_ops</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span>           <span class="n">flags</span><span class="p">;</span>
+  <span class="n">errseq_t</span>                <span class="n">wb_err</span><span class="p">;</span>
+  <span class="n">spinlock_t</span>              <span class="n">private_lock</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">list_head</span>        <span class="n">private_list</span><span class="p">;</span>
+  <span class="kt">void</span>                    <span class="o">*</span><span class="n">private_data</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">__attribute__</span><span class="p">((</span><span class="n">aligned</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">long</span><span class="p">))))</span> <span class="n">__randomize_layout</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">address_space_operations</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">writepage</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span><span class="n">wbc</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">readpage</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="cm">/* Write back some dirty pages from this mapping. */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">writepages</span><span class="p">)(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">writeback_control</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="cm">/* Set a page dirty.  Return true if this dirtied it */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">set_page_dirty</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">);</span>
+
+  <span class="cm">/*</span>
+<span class="cm">   * Reads in the requested pages. Unlike -&gt;readpage(), this is</span>
+<span class="cm">   * PURELY used for read-ahead!.</span>
+<span class="cm">   */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">readpages</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">filp</span><span class="p">,</span> <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">,</span>
+                  <span class="k">struct</span> <span class="n">list_head</span> <span class="o">*</span><span class="n">pages</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">nr_pages</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">readahead</span><span class="p">)(</span><span class="k">struct</span> <span class="n">readahead_control</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write_begin</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">,</span>
+                          <span class="n">loff_t</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">flags</span><span class="p">,</span>
+                          <span class="k">struct</span> <span class="n">page</span> <span class="o">**</span><span class="n">pagep</span><span class="p">,</span> <span class="kt">void</span> <span class="o">**</span><span class="n">fsdata</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write_end</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="n">mapping</span><span class="p">,</span>
+                          <span class="n">loff_t</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">copied</span><span class="p">,</span>
+                          <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">fsdata</span><span class="p">);</span>
+
+  <span class="cm">/* Unfortunately this kludge is needed for FIBMAP. Don&#39;t use it */</span>
+  <span class="n">sector_t</span> <span class="p">(</span><span class="o">*</span><span class="n">bmap</span><span class="p">)(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span> <span class="n">sector_t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">invalidatepage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">releasepage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="n">gfp_t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">freepage</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">direct_IO</span><span class="p">)(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iov_iter</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
+  <span class="cm">/*</span>
+<span class="cm">   * migrate the contents of a page to the specified target. If</span>
+<span class="cm">   * migrate_mode is MIGRATE_ASYNC, it must not block.</span>
+<span class="cm">   */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">migratepage</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span>
+                  <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="k">enum</span> <span class="n">migrate_mode</span><span class="p">);</span>
+  <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">isolate_page</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="n">isolate_mode_t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">putback_page</span><span class="p">)(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">launder_page</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">is_partially_uptodate</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">,</span>
+                                  <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">is_dirty_writeback</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">,</span> <span class="kt">bool</span> <span class="o">*</span><span class="p">,</span> <span class="kt">bool</span> <span class="o">*</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">error_remove_page</span><span class="p">)(</span><span class="k">struct</span> <span class="n">address_space</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="p">);</span>
+
+  <span class="cm">/* swapfile support */</span>
+  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">swap_activate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">swap_info_struct</span> <span class="o">*</span><span class="n">sis</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span>
+                          <span class="n">sector_t</span> <span class="o">*</span><span class="n">span</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">swap_deactivate</span><span class="p">)(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<div class="admonition-reading-data highlight-c"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * generic_file_read_iter - generic filesystem read routine</span>
+<span class="cm"> * @iocb: kernel I/O control block</span>
+<span class="cm"> * @iter: destination for the data read</span>
+<span class="cm"> *</span>
+<span class="cm"> * This is the &quot;read_iter()&quot; routine for all filesystems</span>
+<span class="cm"> * that can use the page cache directly.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The IOCB_NOWAIT flag in iocb-&gt;ki_flags indicates that -EAGAIN shall</span>
+<span class="cm"> * be returned when no data can be read without waiting for I/O requests</span>
+<span class="cm"> * to complete; it doesn&#39;t prevent readahead.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The IOCB_NOIO flag in iocb-&gt;ki_flags indicates that no new I/O</span>
+<span class="cm"> * requests shall be made for the read or for readahead.  When no data</span>
+<span class="cm"> * can be read, -EAGAIN shall be returned.  When readahead would be</span>
+<span class="cm"> * triggered, a partial, possibly empty read shall be returned.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Return:</span>
+<span class="cm"> * * number of bytes copied, even for partial reads</span>
+<span class="cm"> * * negative error code (or 0 if IOCB_NOIO) if nothing was read</span>
+<span class="cm"> */</span>
+<span class="kt">ssize_t</span>
+<span class="n">generic_file_read_iter</span><span class="p">(</span><span class="k">struct</span> <span class="n">kiocb</span> <span class="o">*</span><span class="n">iocb</span><span class="p">,</span> <span class="k">struct</span> <span class="n">iov_iter</span> <span class="o">*</span><span class="n">iter</span><span class="p">)</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Generic &quot;read page&quot; function for block devices that have the normal</span>
+<span class="cm"> * get_block functionality. This is most of the block device filesystems.</span>
+<span class="cm"> * Reads the page asynchronously --- the unlock_buffer() and</span>
+<span class="cm"> * set/clear_buffer_uptodate() functions propagate buffer state into the</span>
+<span class="cm"> * page struct once IO has completed.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">block_read_full_page</span><span class="p">(</span><span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span><span class="p">,</span> <span class="n">get_block_t</span> <span class="o">*</span><span class="n">get_block</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lec7-memory-management.html" class="btn btn-neutral float-left" title="SO2 Lecture 07 - Memory Management" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lec9-debugging.html" class="btn btn-neutral float-right" title="SO2 Lecture 09 - Kernel debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

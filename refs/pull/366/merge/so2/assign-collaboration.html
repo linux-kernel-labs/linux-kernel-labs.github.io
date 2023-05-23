@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collaboration &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Assignment 0 - Kernel API" href="assign0-kernel-api.html" />
+    <link rel="prev" title="SO2 Lab 12 - Kernel Profiling" href="lab12-kernel-profiling.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Collaboration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-github-gitlab">1. Use Github / Gitlab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#start-with-a-skeleton-for-the-assignment">2. Start with a skeleton for the assignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-a-commit-for-each-individual-change">3. Add a commit for each individual change</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#split-the-work-inside-the-team">4. Split the work inside the team</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#do-reviews">5. Do reviews</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#merge-the-work">6. Merge the work</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">Collaboration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/assign-collaboration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="collaboration">
+<h1>Collaboration<a class="headerlink" href="#collaboration" title="Permalink to this headline">¶</a></h1>
+<p>Collaboration is essential in open source world and we encourage you
+to pick a team partner to work on selected assignments.</p>
+<p>Here is a simple guide to get you started:</p>
+<div class="section" id="use-github-gitlab">
+<h2>1. Use Github / Gitlab<a class="headerlink" href="#use-github-gitlab" title="Permalink to this headline">¶</a></h2>
+<p>Best way to share your work inside the team is to use a version control system (VCS)
+in order to track each change. Mind that you must make your repo private and only allow
+read/write access rights to team members.</p>
+</div>
+<div class="section" id="start-with-a-skeleton-for-the-assignment">
+<h2>2. Start with a skeleton for the assignment<a class="headerlink" href="#start-with-a-skeleton-for-the-assignment" title="Permalink to this headline">¶</a></h2>
+<p>Add <cite>init</cite>/<cite>exit</cite> functions, driver operations and global structures that you driver might need.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="c1">// SPDX-License-Identifier: GPL-2.0</span>
+<span class="cm">/*</span>
+<span class="cm"> * uart16550.c - UART16550 driver</span>
+<span class="cm"> *</span>
+<span class="cm"> * Author: John Doe &lt;john.doe@mail.com&gt;</span>
+<span class="cm"> * Author: Ionut Popescu &lt;ionut.popescu@mail.com&gt;</span>
+<span class="cm"> */</span>
+<span class="k">struct</span> <span class="n">uart16550_dev</span> <span class="p">{</span>
+   <span class="k">struct</span> <span class="n">cdev</span> <span class="n">cdev</span><span class="p">;</span>
+   <span class="cm">/*TODO */</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">uart16550_dev</span> <span class="n">devs</span><span class="p">[</span><span class="n">MAX_NUMBER_DEVICES</span><span class="p">];</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">uart16550_open</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="cm">/*TODO */</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">uart16550_release</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">)</span>
+<span class="p">{</span>
+   <span class="cm">/*TODO */</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">ssize_t</span> <span class="nf">uart16550_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span>  <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
+                              <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span>
+<span class="p">{</span>
+      <span class="cm">/*TODO */</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">ssize_t</span> <span class="nf">uart16550_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span>
+                               <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
+                               <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span>
+<span class="p">{</span>
+     <span class="cm">/*TODO */</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">long</span>
+<span class="nf">uart16550_ioctl</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+      <span class="cm">/*TODO */</span>
+      <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="n">uart16550_fops</span> <span class="o">=</span> <span class="p">{</span>
+       <span class="p">.</span><span class="n">owner</span>          <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+       <span class="p">.</span><span class="n">open</span>           <span class="o">=</span> <span class="n">uart16550_open</span><span class="p">,</span>
+       <span class="p">.</span><span class="n">release</span>        <span class="o">=</span> <span class="n">uart16550_release</span><span class="p">,</span>
+       <span class="p">.</span><span class="n">read</span>           <span class="o">=</span> <span class="n">uart16550_read</span><span class="p">,</span>
+       <span class="p">.</span><span class="n">write</span>          <span class="o">=</span> <span class="n">uart16550_write</span><span class="p">,</span>
+       <span class="p">.</span><span class="n">unlocked_ioctl</span> <span class="o">=</span> <span class="n">uart16550_ioctl</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">uart16550_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="cm">/* TODO: */</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">uart16550_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+   <span class="cm">/* TODO: */</span>
+<span class="p">}</span>
+
+<span class="n">module_init</span><span class="p">(</span><span class="n">uart16550_init</span><span class="p">);</span>
+<span class="n">module_exit</span><span class="p">(</span><span class="n">uart16550_exit</span><span class="p">);</span>
+
+<span class="n">MODULE_DESCRIPTION</span><span class="p">(</span><span class="s">&quot;UART16550 Driver&quot;</span><span class="p">);</span>
+<span class="n">MODULE_AUTHOR</span><span class="p">(</span><span class="s">&quot;John Doe &lt;john.doe@mail.com&quot;</span><span class="p">);</span>
+<span class="n">MODULE_AUTHOR</span><span class="p">(</span><span class="s">&quot;Ionut Popescu &lt;ionut.popescu@mail.com&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-a-commit-for-each-individual-change">
+<h2>3. Add a commit for each individual change<a class="headerlink" href="#add-a-commit-for-each-individual-change" title="Permalink to this headline">¶</a></h2>
+<p>First commit must always be the skeleton file. And the rest of the code should be on top of skeleton file.
+Please write a good commit mesage. Explain briefly what the commit does and <em>why</em> it is necessary.</p>
+<p>Follow the seven rules of writing a good commit message: <a class="reference external" href="https://cbea.ms/git-commit/#seven-rules">https://cbea.ms/git-commit/#seven-rules</a></p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">Commit 3c92a02cc52700d2cd7c50a20297eef8553c207a (HEAD -&gt; tema2)</span>
+<span class="go">Author: John Doe &lt;john.doe@mail.com&gt;</span>
+<span class="go">Date:   Mon Apr 4 11:54:39 2022 +0300</span>
+
+<span class="go">  uart16550: Add initial skeleton for ssignment #2</span>
+
+<span class="go">  This adds simple skeleton file for uart16550 assignment. Notice</span>
+<span class="go">  module init/exit callbacks and file_operations dummy implementation</span>
+<span class="go">  for open/release/read/write/ioctl.</span>
+
+<span class="go">  Signed-off-by: John Doe &lt;john.doe@mail.com&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="split-the-work-inside-the-team">
+<h2>4. Split the work inside the team<a class="headerlink" href="#split-the-work-inside-the-team" title="Permalink to this headline">¶</a></h2>
+<p>Add <cite>TODOs</cite> with each team member tasks. Try to split the work evenly.</p>
+<p>Before starting to code, make a plan. On top of your skeleton file, add TODOs with each member tasks. Agree on global
+structures and the overlall driver design. Then start coding.</p>
+</div>
+<div class="section" id="do-reviews">
+<h2>5. Do reviews<a class="headerlink" href="#do-reviews" title="Permalink to this headline">¶</a></h2>
+<p>Create Pull Requests with your commits and go through review rounds with your team members. You can follow <cite>How to create a PR</cite> <a class="reference external" href="https://www.youtube.com/watch?v=YvoHJJWvn98">video</a>.</p>
+</div>
+<div class="section" id="merge-the-work">
+<h2>6. Merge the work<a class="headerlink" href="#merge-the-work" title="Permalink to this headline">¶</a></h2>
+<p>The final work is the result of merging all the pull requests. Following the commit messages
+one should clearly understand the progress of the code and how the work was managed inside the team.</p>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">f5118b873294 uart16550: Add uart16550_interrupt implementation</span>
+<span class="go">2115503fc3e3 uart16550: Add uart16550_ioctl implementation</span>
+<span class="go">b31a257fd8b8 uart16550: Add uart16550_write implementation</span>
+<span class="go">ac1af6d88a25 uart16550: Add uart16550_read implementation</span>
+<span class="go">9f680e8136bf uart16550: Add uart16550_open/release implementation</span>
+<span class="go">3c92a02cc527 uart16550: Add skeleton for SO2 assignment #2</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lab12-kernel-profiling.html" class="btn btn-neutral float-left" title="SO2 Lab 12 - Kernel Profiling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="assign0-kernel-api.html" class="btn btn-neutral float-right" title="Assignment 0 - Kernel API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
