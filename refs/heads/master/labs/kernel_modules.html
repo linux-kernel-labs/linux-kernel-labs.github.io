@@ -485,7 +485,7 @@ In our case this is an invalid access to memory.</p>
 <p>Tells us that it's the first oops (#1). This is important in the context that
 an oops can lead to other oopses. Usually only the first oops is relevant.
 Furthermore, the oops code (<code class="docutils literal"><span class="pre">0002</span></code>) provides information about the error type
-(see <code class="file docutils literal"><span class="pre">arch/x86/include/asm/traps.h</span></code>):</p>
+(see <code class="file docutils literal"><span class="pre">arch/x86/include/asm/trap_pf.h</span></code>):</p>
 <blockquote>
 <div><ul class="simple">
 <li>Bit 0 == 0 means no page found, 1 means protection fault</li>
@@ -645,7 +645,7 @@ each line in the source code interleaved with the assembly language code.</p>
 </pre></div>
 </div>
 <p>Where <code class="docutils literal"><span class="pre">0x5</span></code> is the value of the program counter (<code class="docutils literal"><span class="pre">EIP</span> <span class="pre">=</span> <span class="pre">c89d4005</span></code>) that
-generated the oops, minus the base address of the module (<code class="docutils literal"><span class="pre">0xc89c4000</span></code>)
+generated the oops, minus the base address of the module (<code class="docutils literal"><span class="pre">0xc89d4000</span></code>)
 according to <code class="file docutils literal"><span class="pre">/proc/modules</span></code></p>
 </div>
 <div class="section" id="minicom">
