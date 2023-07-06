@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SO2 Lab 12 - Kernel Profiling &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Collaboration" href="assign-collaboration.html" />
+    <link rel="prev" title="SO2 Lab 11 - Kernel Development on ARM" href="lab11-arm-kernel-development.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec9-debugging.html">SO2 Lecture 09 - Kernel debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lab 12 - Kernel Profiling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-objectives">Lab Objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#profiling-tools">Profiling Tools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#perf">perf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ps">ps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time">time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#top">top</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#profiling-methodology">Profiling Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#demo-profiling-i-o-problems">0. Demo: Profiling I/O Problems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#investigating-reduced-responsiveness">1. Investigating Reduced Responsiveness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#launching-new-threads">2. Launching New Threads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tuning-cp">3. Tuning <code class="docutils literal"><span class="pre">cp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#i-o-latency">4. I/O Latency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bad-elf">5. Bad ELF</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lab 12 - Kernel Profiling</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/lab12-kernel-profiling.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="so2-lab-12-kernel-profiling">
+<h1>SO2 Lab 12 - Kernel Profiling<a class="headerlink" href="#so2-lab-12-kernel-profiling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lab-objectives">
+<h2>Lab Objectives<a class="headerlink" href="#lab-objectives" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Familiarize yourself with the basics of Linux kernel profiling</li>
+<li>Understanding basic profiling tools</li>
+<li>Learning profiling methodologies and good practices</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Up until now we have studied how the different components of the Linux kernel
+work, and how to write drivers that interface with them in order to provide
+support for devices or protocols. This has helped us understand how the Linux
+kernel works, but most people will not get to write kernel drivers.</p>
+<p>Nonetheless, the skills learned will help us to write applications that better
+integrate with the whole operating system. In order to do this, one has to have
+a good view of both the user space and the kernel space.</p>
+<p>This session aims to merge the work we have done up until now in the kernel
+space with real world use cases where we do not write kernel space code, but we
+look through the kernel using profiling tools, in order to debug issues that
+we're having when writing regular, low-level, applications.</p>
+<p>Another focus of this session will be learning a general methodology for
+debugging software issues, and we will approach some tools that give us insight
+from the kernel on the way our application runs.</p>
+</div>
+<div class="section" id="profiling-tools">
+<h2>Profiling Tools<a class="headerlink" href="#profiling-tools" title="Permalink to this headline">¶</a></h2>
+<p>The main tool that we will focus our attention on is <code class="docutils literal"><span class="pre">perf</span></code>, which offers
+support for tracing applications, and also inspecting general aspects of the
+system. We will also be using debugging tools that most people have used in
+their day to day life, such as <code class="docutils literal"><span class="pre">htop</span></code>, <code class="docutils literal"><span class="pre">ps</span></code>, <code class="docutils literal"><span class="pre">lsof</span></code> and others.</p>
+<div class="section" id="perf">
+<h3>perf<a class="headerlink" href="#perf" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">perf</span></code> is a tool that instruments the CPU using
+tracepoints, kprobes and uprobes. This tool allows us to take a look at what
+functions are being called at a given point. This allows us to take a peak at
+where the kernel is pending the most time, print out call stacks of functions,
+and in general log what the CPU is running.</p>
+<p><code class="docutils literal"><span class="pre">perf</span></code> integrates modules such as:
+* static tracing
+* dynamic tracing
+* resource monitoring</p>
+<p>The tracing interface that is offered by perf can be used by itself, using the
+<code class="docutils literal"><span class="pre">perf</span></code> command together with its subcommands.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~# ./skels/kernel_profiling/perf
+
+ usage: perf [--version] [--help] [OPTIONS] COMMAND [ARGS]
+
+ The most commonly used perf commands are:
+   annotate        Read perf.data (created by perf record) and display annotated code
+   archive         Create archive with object files with build-ids found in perf.data file
+   bench           General framework for benchmark suites
+   buildid-cache   Manage build-id cache.
+   buildid-list    List the buildids in a perf.data file
+   c2c             Shared Data C2C/HITM Analyzer.
+   config          Get and set variables in a configuration file.
+   data            Data file related processing
+   diff            Read perf.data files and display the differential profile
+   evlist          List the event names in a perf.data file
+   ftrace          simple wrapper for kernel&#39;s ftrace functionality
+   inject          Filter to augment the events stream with additional information
+   kallsyms        Searches running kernel for symbols
+   kmem            Tool to trace/measure kernel memory properties
+   kvm             Tool to trace/measure kvm guest os
+   list            List all symbolic event types
+   lock            Analyze lock events
+   mem             Profile memory accesses
+   record          Run a command and record its profile into perf.data
+   report          Read perf.data (created by perf record) and display the profile
+   sched           Tool to trace/measure scheduler properties (latencies)
+   script          Read perf.data (created by perf record) and display trace output
+   stat            Run a command and gather performance counter statistics
+   test            Runs sanity tests.
+   timechart       Tool to visualize total system behavior during a workload
+   top             System profiling tool.
+   version         display the version of perf binary
+   probe           Define new dynamic tracepoints
+
+ See &#39;perf help COMMAND&#39; for more information on a specific command.
+</pre></div>
+</div>
+<p>In the output above we can see all of perf's subcommands together with a
+description of their functionality, the most significant of which are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">stat</span></code> - displays statistics such as the number of context switches and page
+faults;</li>
+<li><code class="docutils literal"><span class="pre">top</span></code> - an interactive interface where we can inspect the most frequent
+function calls and their caller. This interface allows us direct feedback
+while profiling;</li>
+<li><code class="docutils literal"><span class="pre">list</span></code> - lists the static trace point that we can instrument inside the
+kernel. These are useful when trying to get an insight from inside the kernel;</li>
+<li><code class="docutils literal"><span class="pre">probe</span></code> - add a dynamic trace point that instruments a function call in
+order to be recorded by perf;</li>
+<li><code class="docutils literal"><span class="pre">record</span></code> - records function calls and stack traces based on tracing points
+defined by the user; It can also record specific function calls and their
+stack traces. The record is saved in a file, named <code class="docutils literal"><span class="pre">perf.data</span></code> by default;</li>
+<li><code class="docutils literal"><span class="pre">report</span></code> - displays the information saved in a perf recording.</li>
+</ul>
+<p>Another way to use perf's interface is through scripts that wrap over perf that
+offer a higher level way of looking at events or data, without needing to know
+the intricacies of the command. An example of this is the <code class="docutils literal"><span class="pre">iosnoop.sh</span></code> script,
+which displays what I/O transfers are taking place.</p>
+</div>
+<div class="section" id="ps">
+<h3>ps<a class="headerlink" href="#ps" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">ps</span></code> is the Linux tool that allows us to monitor the processes that are
+running at a given time on the machine, including the kernel threads. This is a
+simple and easy to use way of checking at a glance what processes are running on
+the CPU, and what is their CPU and memory usage.</p>
+<p>In order to list all the processes running, we use to <code class="docutils literal"><span class="pre">ps</span> <span class="pre">aux</span></code> command in the
+following way:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span>TODO
+root@qemux86:~/skels/kernel_profiling/0-demo# cd
+ root@qemux86:~# ps aux
+ USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+ root         1  0.0  0.5   2004  1256 ?        Ss   12:06   0:12 init [5]
+ root         2  0.0  0.0      0     0 ?        S    12:06   0:00 [kthreadd]
+ [...]
+ root       350  4.5  4.4  11132 10688 hvc0     T    12:07  17:21 ./io-app
+ root      1358  0.0  0.0      0     0 ?        I    14:30   0:00 [kworker/u2:1-e
+ root      2293  0.1  1.5   5516  3704 ?        Ss   18:18   0:00 sshd: root@pts/
+ root      2295  0.0  1.3   3968  3232 pts/0    Ss+  18:19   0:00 -sh
+ root      2307  0.0  0.0      0     0 ?        I    18:19   0:00 [kworker/u2:2-e
+ root      2350  0.0  0.7   3032  1792 hvc0     R+   18:26   0:00 ps aux
+ root      2392  2.6  0.0      0     0 ?        D    18:31   0:00 test-script
+</pre></div>
+</div>
+<p>One information of note is that the 7th column represents the that of the
+process, <code class="docutils literal"><span class="pre">S</span></code> meaning suspended, <code class="docutils literal"><span class="pre">D</span></code> suspended due to I/O, and <code class="docutils literal"><span class="pre">R</span></code> meaning
+running.</p>
+</div>
+<div class="section" id="time">
+<h3>time<a class="headerlink" href="#time" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">time</span></code> command allows us to inspect the amount of time spent by a
+process in I/O, running the application code, or running code in kernel space.
+This can be useful in order to find out whether an application's issue comes
+from running too much in kernel space, so it has some overhead when it does
+system calls, or the issue is in the user code.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span>root@qemux86:~# time dd if=/dev/urandom of=./test-file bs=1K count=10
+10+0 records in
+10+0 records out
+10240 bytes (10 kB, 10 KiB) copied, 0.00299749 s, 3.4 MB/s
+
+real        0m0.020s
+user        0m0.001s
+sys 0m0.015s
+</pre></div>
+</div>
+<p>In the output above we timed the generation of a file using <code class="docutils literal"><span class="pre">dd</span></code>. The result
+of the timing is displayed at the bottom of output. The values outputted by the
+tool are the following:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">real</span></code> - the amount of time has passed from the start of the application to
+its finishing;</li>
+<li><code class="docutils literal"><span class="pre">user</span></code> - time spent running the <code class="docutils literal"><span class="pre">dd</span></code> code;</li>
+<li><code class="docutils literal"><span class="pre">sys</span></code> - time spent running kernel code on behalf of the process.</li>
+</ul>
+<p>We see that the sum of the <code class="docutils literal"><span class="pre">user</span></code> and <code class="docutils literal"><span class="pre">sys</span></code> values doesn't add up to the
+<code class="docutils literal"><span class="pre">real</span></code> value. This happens either when the application runs on multiple cores,
+in which case the sum might be higher, or the application sleeps, in which case
+the sum is lower.</p>
+</div>
+<div class="section" id="top">
+<h3>top<a class="headerlink" href="#top" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">top</span></code> is an application that is found on most systems which lists in real time
+the applications that are running on the system. <code class="docutils literal"><span class="pre">top</span></code> runs interactively, and
+it auto-refreshes its output, as opposed to <code class="docutils literal"><span class="pre">ps</span></code>. We use this tool when we
+want a high level of continuous monitoring.</p>
+</div>
+</div>
+<div class="section" id="profiling-methodology">
+<h2>Profiling Methodology<a class="headerlink" href="#profiling-methodology" title="Permalink to this headline">¶</a></h2>
+<p>When doing profiling, our goal is to identify the cause of a problem. Usually
+this problem is observed by someone when their application doesn't work as
+expected. When we say that an application did not work as expected, this can
+mean different things for different people. For example, one person might
+complain that the application has a slowdown, while another might say that the
+application runs on the CPU, but it doesn't output anything.</p>
+<p>The first step in any problem solving context is to understand the default
+behaviour of the application we're trying to debug, and to make sure that it is
+now not running in the expected parameters.</p>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>To solve exercises, you need to perform these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>prepare skeletons from templates</li>
+<li>build modules</li>
+<li>copy modules to the VM</li>
+<li>start the VM and test the module in the VM.</li>
+</ul>
+</div></blockquote>
+<p>The current lab name is kernel_profiling. See the exercises for the task name.</p>
+<p>The skeleton code is generated from full source examples located in
+<code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
+the skeleton code for a complete lab:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
+</pre></div>
+</div>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+</pre></div>
+</div>
+<p>Then, copy the modules and start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+tools/labs $ make boot
+</pre></div>
+</div>
+<p>The modules are placed in /home/root/skels/kernel_profiling/&lt;task_name&gt;.</p>
+<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
+For additional details about connecting to the VM via the network, please check <a class="reference internal" href="../info/vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the Virtual Machine</span></a>.</p>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Before starting the exercises or generating the skeletons, please run <strong>git pull</strong> inside the Linux repo,
+to make sure you have the latest version of the exercises.</p>
+<p>If you have local changes, the pull command will fail. Check for local changes using <code class="docutils literal"><span class="pre">git</span> <span class="pre">status</span></code>.
+If you want to keep them, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span></code> before <code class="docutils literal"><span class="pre">pull</span></code> and <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span> <span class="pre">pop</span></code> after.
+To discard the changes, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">reset</span> <span class="pre">--hard</span> <span class="pre">master</span></code>.</p>
+<p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This session will require us to use the <code class="docutils literal"><span class="pre">perf</span></code> tracing tool. When running
+natively on our systems, we have to install the
+<code class="docutils literal"><span class="pre">linux-tools-&lt;version&gt;-generic</span></code> package using a package manager in order
+to run it. Because in our visual machine we don't have access to a package
+manager, we will be downloading the <code class="docutils literal"><span class="pre">perf</span></code> binary from <a class="reference external" href="http://swarm.cs.pub.ro/~sweisz/perf">this</a> link. Download the application in
+the <code class="docutils literal"><span class="pre">skels/kernel_profiling</span></code> directory, and grant in execution
+permissions.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">When running <code class="docutils literal"><span class="pre">perf</span></code>, make sure that you're running the downloaded version,
+not the version in the <code class="docutils literal"><span class="pre">PATH</span></code> variable.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When going through this session's exercises, we will have to run command in
+parallel. In order to do this, we will have to connect to the virtual machine
+using SSH. We recommend using the <code class="docutils literal"><span class="pre">core-image-sato-sdk-qemu</span></code> image, since it
+has the tools that we need. To run the virtual machine using the
+<code class="docutils literal"><span class="pre">core-image-sato-sdk-qemu</span></code> file system, uncomment line 16 in the
+<code class="docutils literal"><span class="pre">qemu/Makefile</span></code> file.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you wish to run the <code class="docutils literal"><span class="pre">perf-tools</span></code> based scripts that we have included in
+the repository, such as <code class="docutils literal"><span class="pre">iosnoop.sh</span></code>, you will have to grant it execution
+privilleges, in order to be copied to the virtual machine file system.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>In order to improve the course of SO2, its components and the way it is
+conducted, your opinions are very useful to us. Please fill the feedback form
+on <a class="reference external" href="https://curs.upb.ro/2022/mod/feedbackadm/view.php?id=15292">curs.upb.ro platform</a>.</p>
+<p>The form is anonymous and is active between May 22 and June 2, 2023. The
+results will be visible to the SO2 team after all the grades have been
+marked.</p>
+<p>We invite you to evaluate the activity of the SO2 team and specify its
+strengths and weaknesses and your suggestions for improving the subject.
+Your feedback is very important to us to increase the quality of the subject
+in the coming years.</p>
+<p>We are particularly interested in:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>What did you not like and what do you think did not go well?</li>
+<li>Why didn't you like it and why do you think it didn't go well?</li>
+<li>What should we do to make things better?</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="demo-profiling-i-o-problems">
+<h2>0. Demo: Profiling I/O Problems<a class="headerlink" href="#demo-profiling-i-o-problems" title="Permalink to this headline">¶</a></h2>
+<p>When working with I/O, we have to keep in mind that it is one of the slowest
+systems in the operating system, compared to memory, which is an order of
+magnitude faster, and scheduling, which deals with what is currently running on
+the CPU.</p>
+<p>Because of this, I/O operations have do be thought out, because you might starve
+you application by saturating the system with requests. Another issue that you
+might face is that the I/O's slow speed might affect your application's
+responsiveness, if it waits for the I/O operations to finish.</p>
+<p>Let's take a look at an application and debug its issues.</p>
+<p>We are going to run the <code class="docutils literal"><span class="pre">io-app</span></code> application, from the <code class="docutils literal"><span class="pre">0-demo</span></code> directory.</p>
+<p>In order to inspect what is running on the CPU, and look at the stack of the
+process, we can use the <code class="docutils literal"><span class="pre">perf</span> <span class="pre">record</span></code> subcommand in the following way:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~# ./perf record -a -g
+Couldn&#39;t synthesize bpf events.
+^C[ perf record: Woken up 7 times to write data ]
+[ perf record: Captured and wrote 1.724 MB perf.data (8376 samples) ]
+</pre></div>
+</div>
+<p>perf will record values indefinitely, but we can close it using the <code class="docutils literal"><span class="pre">Ctrl+c</span></code>
+hotkey. We used the <code class="docutils literal"><span class="pre">-a</span></code> option in order to probe all CPUs, and <code class="docutils literal"><span class="pre">-g</span></code> option,
+which record the whole call stack.</p>
+<p>To visualize the recorded information, we will use the <code class="docutils literal"><span class="pre">perf</span> <span class="pre">report</span></code> command,
+which will bring up a pager which will display the most frequent function calls
+that were found on the CPU, and their call stack.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~# ./perf report --header -F overhead,comm,parent
+<span class="c1"># Total Lost Samples: 0</span>
+<span class="c1">#</span>
+<span class="c1"># Samples: 8K of event &#39;cpu-clock:pppH&#39;</span>
+<span class="c1"># Event count (approx.): 2094000000</span>
+<span class="c1">#</span>
+<span class="c1"># Overhead  Command          Parent symbol</span>
+<span class="c1"># ........  ...............  .............</span>
+<span class="c1">#</span>
+    <span class="m">58</span>.63%  io-app           <span class="o">[</span>other<span class="o">]</span>
+            <span class="p">|</span>
+             --58.62%--__libc_start_main
+                       main
+                       __kernel_vsyscall
+                       <span class="p">|</span>
+                        --58.61%--__irqentry_text_end
+                                  do_SYSENTER_32
+                                  do_fast_syscall_32
+                                  __noinstr_text_start
+                                  __ia32_sys_write
+                                  ksys_write
+                                  vfs_write
+                                  <span class="p">|</span>
+                                   --58.60%--ext4_file_write_iter
+                                             ext4_buffered_write_iter
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>We have used the <code class="docutils literal"><span class="pre">--header</span></code> in order to print the table header, and <code class="docutils literal"><span class="pre">-F</span>
+<span class="pre">overhead,comm,parent</span></code>, in order to print the percentage of time where the call
+stack, the command and the caller.</p>
+<p>We can see that the <code class="docutils literal"><span class="pre">io-app</span></code> command is doing some writes in the file system,
+and this contributes to much of the load on the system.</p>
+<p>Armed with this information, we know that there are many I/O calls being done by
+the application. In order to look at the size of these requests, we can use the
+<code class="docutils literal"><span class="pre">iosnoop.sh</span></code> script in order to see how big these requests are.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/kernel_profiling# ./iosnoop.sh <span class="m">1</span>
+Tracing block I/O. Ctrl-C to end.
+COMM         PID    TYPE DEV      BLOCK        BYTES     LATms
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4800512</span>      <span class="m">1310720</span>     <span class="m">2</span>.10
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4803072</span>      <span class="m">1310720</span>     <span class="m">2</span>.04
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4805632</span>      <span class="m">1310720</span>     <span class="m">2</span>.03
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4808192</span>      <span class="m">1310720</span>     <span class="m">2</span>.43
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4810752</span>      <span class="m">1310720</span>     <span class="m">3</span>.48
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4813312</span>      <span class="m">1310720</span>     <span class="m">3</span>.46
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4815872</span>      <span class="m">524288</span>     <span class="m">1</span>.03
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">5029888</span>      <span class="m">1310720</span>     <span class="m">5</span>.82
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">5032448</span>      <span class="m">786432</span>     <span class="m">5</span>.80
+jbd2/vda-43  <span class="m">43</span>     WS   <span class="m">254</span>,0    <span class="m">2702392</span>      <span class="m">8192</span>       <span class="m">0</span>.22
+kworker/0:1H <span class="m">34</span>     WS   <span class="m">254</span>,0    <span class="m">2702408</span>      <span class="m">4096</span>       <span class="m">0</span>.40
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4800512</span>      <span class="m">1310720</span>     <span class="m">2</span>.60
+io-app       <span class="m">889</span>    WS   <span class="m">254</span>,0    <span class="m">4803072</span>      <span class="m">1310720</span>     <span class="m">2</span>.58
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>From this output we see that the <code class="docutils literal"><span class="pre">io-app</span></code> is reading in a loop from the fact
+that the first block <code class="docutils literal"><span class="pre">4800512</span></code> is repeating, and that it is doing big reads,
+since it is reading one megabyte fer request. This constant looping adds the
+load to the system that we're experiencing.</p>
+<div class="section" id="investigating-reduced-responsiveness">
+<h3>1. Investigating Reduced Responsiveness<a class="headerlink" href="#investigating-reduced-responsiveness" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">io.ko</span></code> module, located in the <code class="docutils literal"><span class="pre">kernel_profiling/1-io</span></code> directory,
+decreases the system's responsiveness when inserted. We see that the command
+line stutters when typing commands, but when running top, we see that the
+system's load is not high, and there aren't any processes that are hogging
+resources.</p>
+<p>Find out what the <code class="docutils literal"><span class="pre">io.ko</span></code> module is doing and why is it leading to the
+stuttering effect that we experience.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Trace all the functions being called and check where the CPU is
+spending most of its time. In order to do this, you can run either <code class="docutils literal"><span class="pre">perf</span>
+<span class="pre">record</span></code> and <code class="docutils literal"><span class="pre">perf</span> <span class="pre">report</span></code> to view the output, or <code class="docutils literal"><span class="pre">perf</span> <span class="pre">top</span></code>.</p>
+</div>
+</div>
+<div class="section" id="launching-new-threads">
+<h3>2. Launching New Threads<a class="headerlink" href="#launching-new-threads" title="Permalink to this headline">¶</a></h3>
+<p>We want to run the same function in a loop 100 times in parallel. We have
+implemented two solutions inside the <code class="docutils literal"><span class="pre">scheduling</span></code> binary file, located in the
+<code class="docutils literal"><span class="pre">kernel_profiling/2-scheduling</span></code> directory.</p>
+<p>When executing the <code class="docutils literal"><span class="pre">scheduling</span></code> binary, it prints a message in parallel from
+100 running instances. We can tune this execution by running the application
+either with the first parameter <code class="docutils literal"><span class="pre">0</span></code> or <code class="docutils literal"><span class="pre">1</span></code>.</p>
+<p>Find out which solution is better, and why.</p>
+</div>
+<div class="section" id="tuning-cp">
+<h3>3. Tuning <code class="docutils literal"><span class="pre">cp</span></code><a class="headerlink" href="#tuning-cp" title="Permalink to this headline">¶</a></h3>
+<p>Our goal is to write a copy of the <code class="docutils literal"><span class="pre">cp</span></code> tool integrated in Linux, which has
+been implemented by the <code class="docutils literal"><span class="pre">memory</span></code> binary, in the <code class="docutils literal"><span class="pre">kernel_profiling/3-memory</span></code>
+directory. It implements two approaches that we can take for the copy operation:</p>
+<ul class="simple">
+<li>reading the contents of the source file in a buffer in memory using the
+<code class="docutils literal"><span class="pre">read()</span></code> system call, and writing that buffer to the destination file using
+the <code class="docutils literal"><span class="pre">write()</span></code> system call;</li>
+<li>mapping the source and destination files to memory using the <code class="docutils literal"><span class="pre">mmap</span></code> system
+call, and copying the contents of the source file to the destination in
+memory.</li>
+</ul>
+<p>Another tunable parameter that we're going to use is the block size of to copies
+that we're going to make, either through reads/writes or in memory.</p>
+<p>1) Investigate which of the two copying mechanisms is faster. For this step, you
+will use the 1024 block size.</p>
+<p>2) Once you have found which copying mechanism is faster, change the block size
+parameter and see which value gives you the best copies. Why?</p>
+</div>
+<div class="section" id="i-o-latency">
+<h3>4. I/O Latency<a class="headerlink" href="#i-o-latency" title="Permalink to this headline">¶</a></h3>
+<p>We have written a module that reads the content of a disk. Insert the <code class="docutils literal"><span class="pre">bio.ko</span></code>
+module, located in the <code class="docutils literal"><span class="pre">4-bio</span></code> module, we see a large spike in the system's
+load, as can be seen in the <code class="docutils literal"><span class="pre">top</span></code> command, but we see that the system is still
+responsive.</p>
+<p>Investigate what is causing the increased load to the system. Is it an I/O issue,
+or is it a scheduling issue?</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Try to trace the I/O operations using <code class="docutils literal"><span class="pre">perf</span></code>, or use the
+<code class="docutils literal"><span class="pre">iosnoop.sh</span></code> script in order to inspect what I/O is happening at a
+certain point.</p>
+</div>
+</div>
+<div class="section" id="bad-elf">
+<h3>5. Bad ELF<a class="headerlink" href="#bad-elf" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is a bonus exercise that has been tested on a native Linux system.
+It may run under the QEMU virtual machine, but the behavior was weird in our testing.
+We recommend you used a native (or VirtualBox or VMware) Linux system.</p>
+</div>
+<p>We managed to build (as part of a <a class="reference external" href="https://github.com/unikraft/unikraft">Unikraft</a> build) an ELF file that is valid when doing static analysis, but that can't be executed.
+The file is <code class="docutils literal"><span class="pre">bad_elf</span></code>, located in the <code class="docutils literal"><span class="pre">5-bad-elf/</span></code> folder.</p>
+<p>Running it triggers a <em>segmentation fault</em> message.
+Running it using <code class="docutils literal"><span class="pre">strace</span></code> show an error with <code class="docutils literal"><span class="pre">execve()</span></code>.</p>
+<div class="code highlight-none"><div class="highlight"><pre><span></span>... skels/kernel_profiling/5-bad-elf$ ./bad_elf
+Segmentation fault
+
+... skels/kernel_profiling/5-bad-elf$ strace ./bad_elf
+execve(&quot;./bad_elf&quot;, [&quot;./bad_elf&quot;], 0x7ffc3349ba50 /* 70 vars \*/) = -1 EINVAL (Invalid argument)
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SI_KERNEL, si_addr=NULL} ---
++++ killed by SIGSEGV +++
+Segmentation fault (core dumped)
+</pre></div>
+</div>
+<p>The ELF file itself is valid:</p>
+<div class="code highlight-none"><div class="highlight"><pre><span></span>... skels/kernel_profiling/5-bad-elf$ readelf -a bad_elf
+</pre></div>
+</div>
+<p>The issue is to be detected in the kernel.</p>
+<p>Use either <code class="docutils literal"><span class="pre">perf</span></code>, or, better yet <a class="reference external" href="https://jvns.ca/blog/2017/03/19/getting-started-with-ftrace/">ftrace</a> to inspect the kernel function calls done by the program.
+Identify the function call that sends out the <code class="docutils literal"><span class="pre">SIGSEGV</span></code> signal.
+Identify the cause of the issue.
+Find that cause in the <a class="reference external" href="https://linux.die.net/man/5/elf">manual page elf(5)</a>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lab11-arm-kernel-development.html" class="btn btn-neutral float-left" title="SO2 Lab 11 - Kernel Development on ARM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="assign-collaboration.html" class="btn btn-neutral float-right" title="Collaboration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

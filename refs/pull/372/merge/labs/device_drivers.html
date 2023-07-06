@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character device drivers &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="I/O access and Interrupts" href="interrupts.html" />
+    <link rel="prev" title="Kernel API" href="kernel_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Character device drivers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#laboratory-objectives">Laboratory objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#majors-and-minors">Majors and minors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-structures-for-a-character-device">Data structures for a character device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#struct-file-operations"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inode-and-file-structures"><code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">file</span></code> structures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation-of-operations">Implementation of operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#registration-and-unregistration-of-character-devices">Registration and unregistration of character devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#access-to-the-address-space-of-the-process">Access to the address space of the process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-and-release">Open and release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-and-write">Read and write</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ioctl-1">ioctl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#waiting-queues">Waiting queues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#intro">0. Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-unregister">1. Register/unregister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-an-already-registered-major">2. Register an already registered major</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#open-and-close">3. Open and close</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#access-restriction">4. Access restriction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#read-operation">5. Read operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-operation">6. Write operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ioctl-operation">7. ioctl operation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-exercises">Extra Exercises</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ioctl-with-messaging">Ioctl with messaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ioctl-with-waiting-queues">Ioctl with waiting queues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#o-nonblock-implementation">O_NONBLOCK implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Character device drivers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/labs/device_drivers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="character-device-drivers">
+<h1>Character device drivers<a class="headerlink" href="#character-device-drivers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="laboratory-objectives">
+<h2>Laboratory objectives<a class="headerlink" href="#laboratory-objectives" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>understand the concepts behind character device driver</li>
+<li>understand the various operations that can be performed on character devices</li>
+<li>working with waiting queues</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>In UNIX, hardware devices are accessed by the user through special device
+files. These files are grouped into the /dev directory, and system calls
+<code class="docutils literal"><span class="pre">open</span></code>, <code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code>, <code class="docutils literal"><span class="pre">close</span></code>, <code class="docutils literal"><span class="pre">lseek</span></code>, <code class="docutils literal"><span class="pre">mmap</span></code> etc. are
+redirected by the operating system to the device driver associated with the
+physical device. The device driver is a kernel component (usually a module)
+that interacts with a hardware device.</p>
+<p>In the UNIX world there are two categories of device files and thus
+device drivers: character and block. This division is done by the speed,
+volume and way of organizing the data to be transferred from the device to the
+system and vice versa. In the first category, there are slow devices, which
+manage a small amount of data, and access to data does not require frequent
+seek queries. Examples are devices such as keyboard, mouse, serial ports,
+sound card, joystick. In general, operations with these devices (read, write)
+are performed sequentially byte by byte. The second category includes devices
+where data volume is large, data is organized on blocks, and search is common.
+Examples of devices that fall into this category are hard drives, cdroms, ram
+disks, magnetic tape drives. For these devices, reading and writing is done at
+the data block level.</p>
+<p>For the two types of device drivers, the Linux kernel offers different APIs.
+If for character devices system calls go directly to device drivers, in case of
+block devices, the drivers do not work directly with system calls. In
+the case of block devices, communication between the user-space and the block
+device driver is mediated by the file management subsystem and the block device
+subsystem. The role of these subsystems is to prepare the device driver's
+necessary resources (buffers), to keep the recently read data in the cache
+buffer, and to order the read and write operations for performance reasons.</p>
+</div>
+<div class="section" id="majors-and-minors">
+<h2>Majors and minors<a class="headerlink" href="#majors-and-minors" title="Permalink to this headline">¶</a></h2>
+<p>In UNIX, the devices traditionally had a unique, fixed identifier associated
+with them. This tradition is preserved in Linux, although identifiers can be
+dynamically allocated (for compatibility reasons, most drivers still use static
+identifiers). The identifier consists of two parts: major and minor. The first
+part identifies the device type (IDE disk, SCSI disk, serial port, etc.)
+and the second one identifies the device (first disk, second serial port,
+etc.). Most times, the major identifies the driver, while the minor identifies
+each physical device served by the driver. In general, a driver will have a
+major associate and will be responsible for all minors associated with that
+major.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ ls -la /dev/hda? /dev/ttyS?
+brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">1</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda1
+brw-rw----  <span class="m">1</span> root disk    <span class="m">3</span>,  <span class="m">2</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:51 /dev/hda2
+crw-rw----  <span class="m">1</span> root dialout <span class="m">4</span>, <span class="m">64</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:52 /dev/ttyS0
+crw-rw----  <span class="m">1</span> root dialout <span class="m">4</span>, <span class="m">65</span> <span class="m">2004</span>-09-18 <span class="m">14</span>:52 /dev/ttyS1
+</pre></div>
+</div>
+<p>As can be seen from the example above, device-type information can be found
+using the ls command. The special character files are identified by the <code class="docutils literal"><span class="pre">c</span></code>
+character in the first column of the command output, and the block type by the
+character <code class="docutils literal"><span class="pre">b</span></code>. In columns <code class="docutils literal"><span class="pre">5</span></code> and <code class="docutils literal"><span class="pre">6</span></code> of the result  you can see the
+major, respectively the minor for each device.</p>
+<p>Certain major identifiers are statically assigned to devices (in the
+<code class="docutils literal"><span class="pre">Documentation/admin-guide/devices.txt</span></code> file from the kernel sources). When choosing the
+identifier for a new device, you can use two methods: static (choose a number
+that does not seem to be used already) or dynamically. In /proc/devices are the
+loaded devices, along with the major identifier.</p>
+<p>To create a device type file, use the <code class="docutils literal"><span class="pre">mknod</span></code> command; the command receives the
+type (<code class="docutils literal"><span class="pre">block</span></code> or <code class="docutils literal"><span class="pre">character</span></code>), <code class="docutils literal"><span class="pre">major</span></code> and <code class="docutils literal"><span class="pre">minor</span></code> of the device
+(<code class="docutils literal"><span class="pre">mknod</span> <span class="pre">name</span> <span class="pre">type</span> <span class="pre">major</span> <span class="pre">minor</span></code>). Thus, if you want to create a character device
+named <code class="docutils literal"><span class="pre">mycdev</span></code> with the major <code class="docutils literal"><span class="pre">42</span></code> and minor <code class="docutils literal"><span class="pre">0</span></code>, use the command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mycdev c 42 0</span>
+</pre></div>
+</div>
+<p>To create the block device with the name <code class="docutils literal"><span class="pre">mybdev</span></code> with the major 240 and minor 0
+the command will be:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># mknod /dev/mybdev b 240 0</span>
+</pre></div>
+</div>
+<p>Next, we'll refer to character devices as drivers.</p>
+</div>
+<div class="section" id="data-structures-for-a-character-device">
+<h2>Data structures for a character device<a class="headerlink" href="#data-structures-for-a-character-device" title="Permalink to this headline">¶</a></h2>
+<p>In the kernel, a character-type device is represented by
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">cdev</span></code>, a structure used to register it in the
+system. Most driver operations use three important structures:
+<code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code>, <code class="docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code> and <code class="docutils literal"><span class="pre">struct</span> <span class="pre">inode</span></code>.</p>
+<div class="section" id="struct-file-operations">
+<h3><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code><a class="headerlink" href="#struct-file-operations" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned above, the character device drivers receive unaltered system calls
+made by users over device-type files. Consequently, implementation of a character
+device driver means implementing the system calls specific to files: <code class="docutils literal"><span class="pre">open</span></code>,
+<code class="docutils literal"><span class="pre">close</span></code>, <code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code>, <code class="docutils literal"><span class="pre">lseek</span></code>, <code class="docutils literal"><span class="pre">mmap</span></code>, etc. These operations are
+described in the fields of the <code class="docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code> structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">file_operations</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">module</span> <span class="o">*</span><span class="n">owner</span><span class="p">;</span>
+    <span class="n">loff_t</span> <span class="p">(</span><span class="o">*</span><span class="n">llseek</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">loff_t</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+    <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
+    <span class="kt">ssize_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="p">);</span>
+    <span class="p">[...]</span>
+    <span class="kt">long</span> <span class="p">(</span><span class="o">*</span><span class="n">unlocked_ioctl</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span><span class="p">);</span>
+    <span class="p">[...]</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">flush</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">,</span> <span class="n">fl_owner_t</span> <span class="n">id</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="p">);</span>
+    <span class="p">[...]</span>
+</pre></div>
+</div>
+<p>It can be noticed that the signature of the function differs from the system
+call that the user uses. The operating system sits between the user and
+the device driver to simplify implementation in the device driver.</p>
+<p><code class="docutils literal"><span class="pre">open</span></code> does not receive the parameter path or the various parameters that control
+the file opening mode. Similarly, <code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code>, <code class="docutils literal"><span class="pre">release</span></code>, <code class="docutils literal"><span class="pre">ioctl</span></code>, <code class="docutils literal"><span class="pre">lseek</span></code>
+do not receive as a parameter a file descriptor. Instead, these routines receive as
+parameters two structures: <code class="docutils literal"><span class="pre">file</span></code> and <code class="docutils literal"><span class="pre">inode</span></code>. Both structures represent a file,
+but from different perspectives.</p>
+<dl class="docutils">
+<dt>Most parameters for the presented operations have a direct meaning:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">file</span></code> and <code class="docutils literal"><span class="pre">inode</span></code> identifies the device type file;</li>
+<li><code class="docutils literal"><span class="pre">size</span></code> is the number of bytes to be read or written;</li>
+<li><code class="docutils literal"><span class="pre">offset</span></code> is the displacement to be read or written (to be updated
+accordingly);</li>
+<li><code class="docutils literal"><span class="pre">user_buffer</span></code> user buffer from which it reads / writes;</li>
+<li><code class="docutils literal"><span class="pre">whence</span></code> is the way to seek (the position where the search operation starts);</li>
+<li><code class="docutils literal"><span class="pre">cmd</span></code> and <code class="docutils literal"><span class="pre">arg</span></code> are the parameters sent by the users to the ioctl call (IO
+control).</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="inode-and-file-structures">
+<h3><code class="docutils literal"><span class="pre">inode</span></code> and <code class="docutils literal"><span class="pre">file</span></code> structures<a class="headerlink" href="#inode-and-file-structures" title="Permalink to this headline">¶</a></h3>
+<p>An <code class="docutils literal"><span class="pre">inode</span></code> represents a file from the point of view of the file system. Attributes
+of an inode are the size, rights, times associated with the file. An inode uniquely
+identifies a file in a file system.</p>
+<p>The <code class="docutils literal"><span class="pre">file</span></code> structure is still a file, but closer to the user's point of view.
+From the attributes of the file structure we list: the inode, the file name,
+the file opening attributes, the file position. All open files at a given time
+have associated a <code class="docutils literal"><span class="pre">file</span></code> structure.</p>
+<p>To understand the differences between inode and file, we will use an analogy
+from object-oriented programming: if we consider a class inode, then the files
+are objects, that is, instances of the inode class. Inode represents the static
+image of the file (the inode has no state), while the file represents the
+dynamic image of the file (the file has state).</p>
+<p>Returning to device drivers, the two entities have almost always standard ways
+of using: the inode is used to determine the major and minor of the device on
+which the operation is performed, and the file is used to determine the flags
+with which the file was opened, but also to save and access (later) private
+data.</p>
+<p>The file structure contains, among many fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">f_mode</span></code>, which specifies read (<code class="docutils literal"><span class="pre">FMODE_READ</span></code>) or write
+(<code class="docutils literal"><span class="pre">FMODE_WRITE</span></code>);</li>
+<li><code class="docutils literal"><span class="pre">f_flags</span></code>, which specifies the file opening flags (<code class="docutils literal"><span class="pre">O_RDONLY</span></code>,
+<code class="docutils literal"><span class="pre">O_NONBLOCK</span></code>, <code class="docutils literal"><span class="pre">O_SYNC</span></code>, <code class="docutils literal"><span class="pre">O_APPEND</span></code>, <code class="docutils literal"><span class="pre">O_TRUNC</span></code>, etc.);</li>
+<li><code class="docutils literal"><span class="pre">f_op</span></code>, which specifies the operations associated with the file (pointer to
+the <code class="docutils literal"><span class="pre">file_operations</span></code> structure );</li>
+<li><code class="docutils literal"><span class="pre">private_data</span></code>, a pointer that can be used by the programmer to store
+device-specific data; The pointer will be initialized to a memory location
+assigned by the programmer.</li>
+<li><code class="docutils literal"><span class="pre">f_pos</span></code>, the offset within the file</li>
+</ul>
+</div></blockquote>
+<p>The inode structure contains, among much information, an <code class="docutils literal"><span class="pre">i_cdev</span></code>
+field, which is a pointer to the structure that defines the character
+device (when the inode corresponds to a character device).</p>
+</div>
+</div>
+<div class="section" id="implementation-of-operations">
+<h2>Implementation of operations<a class="headerlink" href="#implementation-of-operations" title="Permalink to this headline">¶</a></h2>
+<p>To implement a device driver, it is recommended that you create a structure
+that contains information about the device, information used in the module. In
+the case of a driver for a character device, the structure will contain a cdev
+structure field to refer to the device. The following example uses the struct
+my_device_data:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">cdev</span> <span class="n">cdev</span><span class="p">;</span>
+    <span class="cm">/* my data starts here */</span>
+    <span class="c1">//...</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_open</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span><span class="p">;</span>
+
+    <span class="n">my_data</span> <span class="o">=</span> <span class="n">container_of</span><span class="p">(</span><span class="n">inode</span><span class="o">-&gt;</span><span class="n">i_cdev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">my_device_data</span><span class="p">,</span> <span class="n">cdev</span><span class="p">);</span>
+
+    <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span> <span class="o">=</span> <span class="n">my_data</span><span class="p">;</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">my_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span><span class="p">;</span>
+
+    <span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
+
+    <span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A structure like <code class="docutils literal"><span class="pre">my_device_data</span></code> will contain the data associated with a device.
+The <code class="docutils literal"><span class="pre">cdev</span></code> field (<code class="docutils literal"><span class="pre">cdev</span></code> type) is a character-type device and is used to record it
+in the system and identify the device. The pointer to the <code class="docutils literal"><span class="pre">cdev</span></code> member can be
+found using the <code class="docutils literal"><span class="pre">i_cdev</span></code> field of the <code class="docutils literal"><span class="pre">inode</span></code> structure (using the <code class="docutils literal"><span class="pre">container_of</span></code>
+macro). In the private_data field of the file structure, information can be
+stored at open which is then available in the <code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">write</span></code>, <code class="docutils literal"><span class="pre">release</span></code>, etc.
+routines.</p>
+</div>
+<div class="section" id="registration-and-unregistration-of-character-devices">
+<h2>Registration and unregistration of character devices<a class="headerlink" href="#registration-and-unregistration-of-character-devices" title="Permalink to this headline">¶</a></h2>
+<p>The registration/unregistration of a device is made by specifying the major and
+minor. The <code class="docutils literal"><span class="pre">dev_t</span></code> type is used to keep the identifiers of a device (both major
+and minor) and can be obtained using the <code class="docutils literal"><span class="pre">MKDEV</span></code> macro.</p>
+<p>For the static assignment and unallocation of device identifiers, the
+<code class="docutils literal"><span class="pre">register_chrdev_region</span></code> and <code class="docutils literal"><span class="pre">unregister_chrdev_region</span></code> functions are used:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">register_chrdev_region</span><span class="p">(</span><span class="kt">dev_t</span> <span class="n">first</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">unregister_chrdev_region</span><span class="p">(</span><span class="kt">dev_t</span> <span class="n">first</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>It is recommended that device identifiers be dynamically assigned to the
+<code class="docutils literal"><span class="pre">alloc_chrdev_region</span></code> function.</p>
+<p>Below sequence reserves <code class="docutils literal"><span class="pre">my_minor_count</span></code> devices, starting with <code class="docutils literal"><span class="pre">my_major</span></code>
+major and <code class="docutils literal"><span class="pre">my_first_minor</span></code> minor (if the max value for minor is exceeded,
+move to the next major):</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<span class="p">...</span>
+
+<span class="n">err</span> <span class="o">=</span> <span class="n">register_chrdev_region</span><span class="p">(</span><span class="n">MKDEV</span><span class="p">(</span><span class="n">my_major</span><span class="p">,</span> <span class="n">my_first_minor</span><span class="p">),</span> <span class="n">my_minor_count</span><span class="p">,</span>
+                             <span class="s">&quot;my_device_driver&quot;</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* report error */</span>
+    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+<p>After assigning the identifiers, the character device will have to be
+initialized (<code class="docutils literal"><span class="pre">cdev_init</span></code>) and the kernel will have to be notified(<code class="docutils literal"><span class="pre">cdev_add</span></code>). The
+<code class="docutils literal"><span class="pre">cdev_add</span></code> function must be called only after the device is ready to receive
+calls. Removing a device is done using the <code class="docutils literal"><span class="pre">cdev_del</span></code> function.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">cdev_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">cdev</span> <span class="o">*</span><span class="n">cdev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="o">*</span><span class="n">fops</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">cdev_add</span><span class="p">(</span><span class="k">struct</span> <span class="n">cdev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="kt">dev_t</span> <span class="n">num</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">cdev_del</span><span class="p">(</span><span class="k">struct</span> <span class="n">cdev</span> <span class="o">*</span><span class="n">dev</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The following sequence registers and initializes MY_MAX_MINORS devices:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/fs.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;linux/cdev.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define MY_MAJOR       42</span>
+<span class="cp">#define MY_MAX_MINORS  5</span>
+
+<span class="k">struct</span> <span class="n">my_device_data</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">cdev</span> <span class="n">cdev</span><span class="p">;</span>
+    <span class="cm">/* my data starts here */</span>
+    <span class="c1">//...</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">my_device_data</span> <span class="n">devs</span><span class="p">[</span><span class="n">MY_MAX_MINORS</span><span class="p">];</span>
+
+<span class="k">const</span> <span class="k">struct</span> <span class="n">file_operations</span> <span class="n">my_fops</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">open</span> <span class="o">=</span> <span class="n">my_open</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">read</span> <span class="o">=</span> <span class="n">my_read</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">my_write</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">release</span> <span class="o">=</span> <span class="n">my_release</span><span class="p">,</span>
+    <span class="p">.</span><span class="n">unlocked_ioctl</span> <span class="o">=</span> <span class="n">my_ioctl</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">init_module</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span><span class="p">;</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">register_chrdev_region</span><span class="p">(</span><span class="n">MKDEV</span><span class="p">(</span><span class="n">MY_MAJOR</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">MY_MAX_MINORS</span><span class="p">,</span>
+                                 <span class="s">&quot;my_device_driver&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* report error */</span>
+        <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MY_MAX_MINORS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* initialize devs[i] fields */</span>
+        <span class="n">cdev_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">devs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">cdev</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">my_fops</span><span class="p">);</span>
+        <span class="n">cdev_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">devs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">cdev</span><span class="p">,</span> <span class="n">MKDEV</span><span class="p">(</span><span class="n">MY_MAJOR</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>While the following sequence deletes and unregisters them:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">cleanup_module</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MY_MAX_MINORS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* release devs[i] fields */</span>
+        <span class="n">cdev_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">devs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">cdev</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">unregister_chrdev_region</span><span class="p">(</span><span class="n">MKDEV</span><span class="p">(</span><span class="n">MY_MAJOR</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">MY_MAX_MINORS</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Initialization of the struct my_fops used the initialization
+of members by name, defined in C99 standard (see designated
+initializers and the file_operations structure). Structure
+members who do not explicitly appear in this initialization
+will be set to the default value for their type. For
+example, after the initialization above, <code class="docutils literal"><span class="pre">my_fops.mmap</span></code> will
+be NULL.</p>
+</div>
+</div>
+<div class="section" id="access-to-the-address-space-of-the-process">
+<span id="access-to-process-address-space"></span><h2>Access to the address space of the process<a class="headerlink" href="#access-to-the-address-space-of-the-process" title="Permalink to this headline">¶</a></h2>
+<p>A driver for a device is the interface between an application and hardware. As
+a result, we often have to access user-space data. Accessing it can not be done
+directly (by dereferencing a user-space pointer). Direct access of a
+user-space pointer can lead to incorrect behavior (depending on architecture, a
+user-space pointer may not be valid or mapped to kernel-space), a kernel oops
+(the user-mode pointer can refer to a non-resident memory area) or security
+issues. Proper access to user-space data is done by calling the macros /
+functions below:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
+
+<span class="n">put_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
+<span class="n">get_user</span><span class="p">(</span><span class="n">type</span> <span class="n">val</span><span class="p">,</span> <span class="n">type</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">copy_to_user</span><span class="p">(</span><span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">copy_from_user</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="n">__user</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>All macros / functions return 0 in case of success and another value in case of
+error and have the following roles:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">put_user</span></code> store the value <code class="docutils literal"><span class="pre">val</span></code> to user-space address <code class="docutils literal"><span class="pre">address</span></code>;
+Type can be one on 8, 16, 32, 64 bit (the maximum supported type depends on the
+hardware platform);</li>
+<li><code class="docutils literal"><span class="pre">get_user</span></code> analogue to the previous function, only that val will be set to a
+value identical to the value at the user-space address given by address;</li>
+<li><code class="docutils literal"><span class="pre">copy_to_user</span></code> copies <code class="docutils literal"><span class="pre">n</span></code> bytes from the kernel-space, from the address
+referenced by <code class="docutils literal"><span class="pre">from</span></code> in user-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>;</li>
+<li><code class="docutils literal"><span class="pre">copy_from_user</span></code> copies <code class="docutils literal"><span class="pre">n</span></code> bytes from user-space from the address
+referenced by <code class="docutils literal"><span class="pre">from</span></code> in kernel-space to the address referenced by <code class="docutils literal"><span class="pre">to</span></code>.</li>
+</ul>
+</div></blockquote>
+<p>A common section of code that works with these functions is:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/uaccess.h&gt;</span><span class="cp"></span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Copy at most size bytes to user space.</span>
+<span class="cm"> * Return &#39;&#39;0&#39;&#39; on success and some other value on error.</span>
+<span class="cm"> */</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">copy_to_user</span><span class="p">(</span><span class="n">user_buffer</span><span class="p">,</span> <span class="n">kernel_buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
+<span class="k">else</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="open-and-release">
+<h2>Open and release<a class="headerlink" href="#open-and-release" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">open</span></code> function performs the initialization of a device. In most cases,
+these operations refer to initializing the device and filling in specific data
+(if it is the first open call). The release function is about releasing
+device-specific resources: unlocking specific data and closing the device if
+the last call is close.</p>
+<p>In most cases, the open function will have the following structure:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_open</span><span class="p">(</span><span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">inode</span><span class="p">,</span> <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span>
+             <span class="n">container_of</span><span class="p">(</span><span class="n">inode</span><span class="o">-&gt;</span><span class="n">i_cdev</span><span class="p">,</span> <span class="k">struct</span> <span class="n">my_device_data</span><span class="p">,</span> <span class="n">cdev</span><span class="p">);</span>
+
+    <span class="cm">/* validate access to device */</span>
+    <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span> <span class="o">=</span> <span class="n">my_data</span><span class="p">;</span>
+
+    <span class="cm">/* initialize device */</span>
+    <span class="p">...</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A problem that occurs when implementing the <code class="docutils literal"><span class="pre">open</span></code> function is access control.
+Sometimes a device needs to be opened once at a time; More specifically, do not
+allow the second open before the release. To implement this restriction, you
+choose a way to handle an open call for an already open device: it can return
+an error (<code class="docutils literal"><span class="pre">-EBUSY</span></code>), block open calls until a release operation, or shut down
+the device before do the open.</p>
+<p>At the user-space call of the open and close functions on the device, call
+my_open and my_release in the driver. An example of a user-space call:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/dev/my_device&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* handle error */</span>
+<span class="p">}</span>
+
+<span class="cm">/* do work */</span>
+<span class="c1">//..</span>
+
+<span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="read-and-write">
+<h2>Read and write<a class="headerlink" href="#read-and-write" title="Permalink to this headline">¶</a></h2>
+<p>The read and write operations are reaching the device driver as a
+result of an user-space program calling the read or write system calls:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* handle error */</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* handle error */</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">read</span></code> and <code class="docutils literal"><span class="pre">write</span></code> functions transfer data between the device and the
+user-space: the read function reads the data from the device and transfers it
+to the user-space, while writing reads the user-space data and writes it to the
+device. The buffer received as a parameter is a user-space pointer, which is
+why it is necessary to use the <code class="docutils literal"><span class="pre">copy_to_user</span></code> or <code class="docutils literal"><span class="pre">copy_from_user</span></code> functions.</p>
+<p>The value returned by read or write can be:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the number of bytes transferred; if the returned value is less than the size
+parameter (the number of bytes requested), then it means that a partial
+transfer was made. Most of the time, the user-space app calls the system call
+(read or write) function until the required data number is transferred.</li>
+<li>0 to mark the end of the file in the case of read ; if write returns the
+value 0 then it means that no byte has been written and that no error has
+occurred; In this case, the user-space application retries the write call.</li>
+<li>a negative value indicating an error code.</li>
+</ul>
+</div></blockquote>
+<p>To perform a data transfer consisting of several partial transfers, the
+following operations should be performed:</p>
+<blockquote>
+<div><ul class="simple">
+<li>transfer the maximum number of possible bytes between the buffer received
+as a parameter and the device (writing to the device/reading from the device
+will be done from the offset received as a parameter);</li>
+<li>update the offset received as a parameter to the position from which the
+next read / write data will begin;</li>
+<li>return the number of bytes transferred.</li>
+</ul>
+</div></blockquote>
+<p>The sequence below shows an example for the read function that takes
+into account the internal buffer size, user buffer size and the offset:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
+                   <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
+    <span class="kt">ssize_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">my_data</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">-</span> <span class="o">*</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="cm">/* read data from my_data-&gt;buffer to user buffer */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">copy_to_user</span><span class="p">(</span><span class="n">user_buffer</span><span class="p">,</span> <span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span> <span class="o">+</span> <span class="o">*</span><span class="n">offset</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
+
+    <span class="o">*</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">len</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The images below illustrate the read operation and how data is
+transferred between the user-space and the driver:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>when the driver has enough data available (starting with the OFFSET
+position) to accurately transfer the required size (SIZE) to the user.</li>
+<li>when a smaller amount is transferred than required.</li>
+</ol>
+</div></blockquote>
+<a class="reference internal image-reference" href="../_images/read.png"><img alt="../_images/read.png" src="../_images/read.png" style="width: 49%;" /></a>
+<a class="reference internal image-reference" href="../_images/read2.png"><img alt="../_images/read2.png" src="../_images/read2.png" style="width: 49%;" /></a>
+<p>We can look at the read operation implemented by the driver as a response to a
+user-space read request. In this case, the driver is responsible for advancing
+the offset according to how much it reads and returning the read size (which
+may be less than what is required).</p>
+<p>The structure of the write function is similar:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">my_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">__user</span> <span class="o">*</span><span class="n">user_buffer</span><span class="p">,</span>
+                    <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">loff_t</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
+    <span class="kt">ssize_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">my_data</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">-</span> <span class="o">*</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="cm">/* read data from user buffer to my_data-&gt;buffer */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">copy_from_user</span><span class="p">(</span><span class="n">my_data</span><span class="o">-&gt;</span><span class="n">buffer</span> <span class="o">+</span> <span class="o">*</span><span class="n">offset</span><span class="p">,</span> <span class="n">user_buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">))</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
+
+    <span class="o">*</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">len</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The write operation will respond to a write request from user-space. In
+this case, depending on the maximum driver capacity (MAXSIZ), it can
+write more or less than the required size.</p>
+<a class="reference internal image-reference" href="../_images/write.png"><img alt="../_images/write.png" src="../_images/write.png" style="width: 49%;" /></a>
+<a class="reference internal image-reference" href="../_images/write2.png"><img alt="../_images/write2.png" src="../_images/write2.png" style="width: 49%;" /></a>
+</div>
+<div class="section" id="ioctl-1">
+<span id="ioctl"></span><h2>ioctl<a class="headerlink" href="#ioctl-1" title="Permalink to this headline">¶</a></h2>
+<p>In addition to read and write operations, a driver needs the ability to perform
+certain physical device control tasks. These operations are accomplished by
+implementing a <code class="docutils literal"><span class="pre">ioctl</span></code> function. Initially, the ioctl system call used Big Kernel
+Lock. That's why the call was gradually replaced with its unlocked version
+called <code class="docutils literal"><span class="pre">unlocked_ioctl</span></code>. You can read more on LWN:
+<a class="reference external" href="http://lwn.net/Articles/119652/">http://lwn.net/Articles/119652/</a></p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">cmd</span></code> is the command sent from user-space. If a value is being sent from the
+user-space call, it can be accessed directly. If a buffer is fetched, the arg
+value will be a pointer to it, and must be accessed through the <code class="docutils literal"><span class="pre">copy_to_user</span></code>
+or <code class="docutils literal"><span class="pre">copy_from_user</span></code>.</p>
+<p>Before implementing the <code class="docutils literal"><span class="pre">ioctl</span></code> function, the numbers corresponding to the
+commands must be chosen. One method is to choose consecutive numbers starting
+at 0, but it is recommended to use <code class="docutils literal"><span class="pre">_IOC(dir,</span> <span class="pre">type,</span> <span class="pre">nr,</span> <span class="pre">size)</span></code> macro definition
+to generate ioctl codes. The macro definition parameters are as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">dir</span></code> represents the data transfer (<code class="docutils literal"><span class="pre">_IOC_NONE</span></code> , <code class="docutils literal"><span class="pre">_IOC_READ</span></code>,
+<code class="docutils literal"><span class="pre">_IOC_WRITE</span></code>).</li>
+<li><code class="docutils literal"><span class="pre">type</span></code> represents the magic number (<code class="docutils literal"><span class="pre">Documentation/ioctl/ioctl-number.txt</span></code>);</li>
+<li><code class="docutils literal"><span class="pre">nr</span></code> is the ioctl code for the device;</li>
+<li><code class="docutils literal"><span class="pre">size</span></code> is the size of the transferred data.</li>
+</ul>
+</div></blockquote>
+<p>The following example shows an implementation for a <code class="docutils literal"><span class="pre">ioctl</span></code> function:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;asm/ioctl.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define MY_IOCTL_IN _IOC(_IOC_WRITE, &#39;k&#39;, 1, sizeof(my_ioctl_data))</span>
+
+<span class="k">static</span> <span class="kt">long</span> <span class="nf">my_ioctl</span> <span class="p">(</span><span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">my_device_data</span> <span class="o">*</span><span class="n">my_data</span> <span class="o">=</span>
+         <span class="p">(</span><span class="k">struct</span> <span class="n">my_device_data</span><span class="o">*</span><span class="p">)</span> <span class="n">file</span><span class="o">-&gt;</span><span class="n">private_data</span><span class="p">;</span>
+    <span class="n">my_ioctl_data</span> <span class="n">mid</span><span class="p">;</span>
+
+    <span class="k">switch</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nl">MY_IOCTL_IN</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">copy_from_user</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mid</span><span class="p">,</span> <span class="p">(</span><span class="n">my_ioctl_data</span> <span class="o">*</span><span class="p">)</span> <span class="n">arg</span><span class="p">,</span>
+                           <span class="k">sizeof</span><span class="p">(</span><span class="n">my_ioctl_data</span><span class="p">))</span> <span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
+
+        <span class="cm">/* process data and execute command */</span>
+
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">default</span><span class="o">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">ENOTTY</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>At the user-space call for the ioctl function, the my_ioctl function of the
+driver will be called. An example of such a user-space call:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">ioctl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">MY_IOCTL_IN</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* handle error */</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="waiting-queues">
+<h2>Waiting queues<a class="headerlink" href="#waiting-queues" title="Permalink to this headline">¶</a></h2>
+<p>It is often necessary for a thread to wait for an operation to finish,
+but it is desirable that this wait is not busy-waiting. Using waiting
+queues we can block a thread until an event occurs. When the condition
+is satisfied, elsewhere in the kernel, in another process, in an
+interrupt or deferrable work, we will wake up the process.</p>
+<p>A waiting queue is a list of processes that are waiting for a specific
+event. A queue is defined with the <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> type and can
+be used by the functions/macros:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/wait.h&gt;</span><span class="cp"></span>
+
+<span class="n">DECLARE_WAIT_QUEUE_HEAD</span><span class="p">(</span><span class="n">wq_name</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">init_waitqueue_head</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="o">*</span><span class="n">q</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">wait_event</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="n">q</span><span class="p">,</span> <span class="kt">int</span> <span class="n">condition</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">wait_event_interruptible</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="n">q</span><span class="p">,</span> <span class="kt">int</span> <span class="n">condition</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">wait_event_timeout</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="n">q</span><span class="p">,</span> <span class="kt">int</span> <span class="n">condition</span><span class="p">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">wait_event_interruptible_timeout</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="n">q</span><span class="p">,</span> <span class="kt">int</span> <span class="n">condition</span><span class="p">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">wake_up</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="o">*</span><span class="n">q</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">wake_up_interruptible</span><span class="p">(</span><span class="n">wait_queue_head_t</span> <span class="o">*</span><span class="n">q</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The roles of the macros / functions above are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="xref c c-func docutils literal"><span class="pre">init_waitqueue_head()</span></code> initializes the queue; to initialize the
+queue at compile time, you can use the <code class="xref c c-macro docutils literal"><span class="pre">DECLARE_WAIT_QUEUE_HEAD</span></code> macro;</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">wait_event()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">wait_event_interruptible()</span></code> adds the current thread to the
+queue while the condition is false, sets it to TASK_UNINTERRUPTIBLE or
+TASK_INTERRUPTIBLE and calls the scheduler to schedule a new thread; Waiting
+will be interrupted when another thread will call the wake_up function;</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">wait_event_timeout()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">wait_event_interruptible_timeout()</span></code> have the same
+effect as the above functions, only waiting can be interrupted at the end of
+the timeout received as a parameter;</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">wake_up()</span></code> puts all threads off from state TASK_INTERRUPTIBLE and
+TASK_UNINTERRUPTIBLE in TASK_RUNNING status; Remove these threads from the
+queue;</li>
+<li><code class="xref c c-func docutils literal"><span class="pre">wake_up_interruptible()</span></code> same action, but only threads with TASK_INTERRUPTIBLE
+status are woken up.</li>
+</ul>
+</div></blockquote>
+<p>A simple example is that of a thread waiting to change the value of a flag. The
+initializations are done by the sequence:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/sched.h&gt;</span><span class="cp"></span>
+
+<span class="n">wait_queue_head_t</span> <span class="n">wq</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="n">init_waitqueue_head</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A thread will wait for the flag to be changed to a value other than zero:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">wait_event_interruptible</span><span class="p">(</span><span class="n">wq</span><span class="p">,</span> <span class="n">flag</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>While another thread will change the flag value and wake up the waiting threads:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">flag</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">wake_up_interruptible</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">wq</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>To solve exercises, you need to perform these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li>prepare skeletons from templates</li>
+<li>build modules</li>
+<li>copy modules to the VM</li>
+<li>start the VM and test the module in the VM.</li>
+</ul>
+</div></blockquote>
+<p>The current lab name is device_drivers. See the exercises for the task name.</p>
+<p>The skeleton code is generated from full source examples located in
+<code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
+the skeleton code for a complete lab:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make clean
+tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt; make skels
+</pre></div>
+</div>
+<p>You can also generate the skeleton for a single task, using</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt;/&lt;task name&gt; make skels
+</pre></div>
+</div>
+<p>Once the skeleton drivers are generated, build the source:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
+</pre></div>
+</div>
+<p>Then, copy the modules and start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
+tools/labs $ make boot
+</pre></div>
+</div>
+<p>The modules are placed in /home/root/skels/device_drivers/&lt;task_name&gt;.</p>
+<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
+For additional details about connecting to the VM via the network, please check <a class="reference internal" href="../info/vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the Virtual Machine</span></a>.</p>
+<p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Before starting the exercises or generating the skeletons, please run <strong>git pull</strong> inside the Linux repo,
+to make sure you have the latest version of the exercises.</p>
+<p>If you have local changes, the pull command will fail. Check for local changes using <code class="docutils literal"><span class="pre">git</span> <span class="pre">status</span></code>.
+If you want to keep them, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span></code> before <code class="docutils literal"><span class="pre">pull</span></code> and <code class="docutils literal"><span class="pre">git</span> <span class="pre">stash</span> <span class="pre">pop</span></code> after.
+To discard the changes, run <code class="docutils literal"><span class="pre">git</span> <span class="pre">reset</span> <span class="pre">--hard</span> <span class="pre">master</span></code>.</p>
+<p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
+</div>
+<div class="section" id="intro">
+<h3>0. Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h3>
+<p>Using <a class="reference external" href="http://elixir.free-electrons.com/linux/latest/source">LXR</a> find the definitions
+of the following symbols in the Linux kernel:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file</span></code></li>
+<li><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">file_operations</span></code></li>
+<li><code class="xref c c-type docutils literal"><span class="pre">generic_ro_fops</span></code></li>
+<li><code class="xref c c-func docutils literal"><span class="pre">vfs_read()</span></code></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="register-unregister">
+<h3>1. Register/unregister<a class="headerlink" href="#register-unregister" title="Permalink to this headline">¶</a></h3>
+<p>The driver will control a single device with the <code class="docutils literal"><span class="pre">MY_MAJOR</span></code> major and
+<code class="docutils literal"><span class="pre">MY_MINOR</span></code> minor (the macros defined in the kernel/so2_cdev.c file).</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">Create <strong>/dev/so2_cdev</strong> character device node using <strong>mknod</strong>.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Read <a class="reference internal" href="#majors-and-minors">Majors and minors</a> section in the lab.</p>
+</div>
+</li>
+<li><p class="first">Implement the registration and deregistration of the device with the name
+<code class="docutils literal"><span class="pre">so2_cdev</span></code>, respectively in the init and exit module functions. Implement <strong>TODO 1</strong>.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Read the section <a class="reference internal" href="#registration-and-unregistration-of-character-devices">Registration and unregistration of character devices</a></p>
+</div>
+</li>
+<li><p class="first">Display, using <code class="docutils literal"><span class="pre">pr_info</span></code>, a message after the registration and unregistration
+operations to confirm that they were successful. Then load the module into the kernel:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ insmod so2_cdev.ko
+</pre></div>
+</div>
+<p>And see character devices in <code class="docutils literal"><span class="pre">/proc/devices</span></code>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ cat /proc/devices <span class="p">|</span> less
+</pre></div>
+</div>
+<p>Identify the device type registered with major 42 . Note that <code class="docutils literal"><span class="pre">/proc/devices</span></code>
+contains only the device types (major) but not the actual devices (i.e. minors).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Entries in /dev are not created by loading the module. These can be created
+in two ways:</p>
+<ul class="last simple">
+<li>manually, using the <code class="docutils literal"><span class="pre">mknod</span></code> command as we did above.</li>
+<li>automatically using udev daemon</li>
+</ul>
+</div>
+</li>
+<li><p class="first">Unload the kernel module</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>rmmod so2_cdev
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="register-an-already-registered-major">
+<h3>2. Register an already registered major<a class="headerlink" href="#register-an-already-registered-major" title="Permalink to this headline">¶</a></h3>
+<p>Modify <strong>MY_MAJOR</strong> so that it points to an already used major number.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">See <code class="docutils literal"><span class="pre">/proc/devices</span></code> to get an already assigned major.</p>
+</div>
+<p>See <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9/source/include/uapi/asm-generic/errno-base.h">errno-base.h</a>
+and figure out what does the error code mean.
+Return to the initial configuration of the module.</p>
+</div>
+<div class="section" id="open-and-close">
+<h3>3. Open and close<a class="headerlink" href="#open-and-close" title="Permalink to this headline">¶</a></h3>
+<p>Run <code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/so2_cdev</span></code> to read data from our char device.
+Reading does not work because the driver does not have the open function implemented.
+Follow comments marked with TODO 2 and implement them.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Initialize your device<ul>
+<li>add a cdev struct field to <code class="docutils literal"><span class="pre">so2_device_data</span></code> structure.</li>
+<li>Read the section <a class="reference internal" href="#registration-and-unregistration-of-character-devices">Registration and unregistration of character devices</a> in the lab.</li>
+</ul>
+</li>
+<li>Implement the open and release functions in the driver.</li>
+<li>Display a message in the open and release functions.</li>
+<li>Read again <code class="docutils literal"><span class="pre">/dev/so2_cdev</span></code> file. Follow the messages displayed by the kernel.
+We still get an error because <code class="docutils literal"><span class="pre">read</span></code> function is not yet implemented.</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The prototype of a device driver's operations is in the <code class="docutils literal"><span class="pre">file_operations</span></code>
+structure. Read <a class="reference internal" href="#open-and-release">Open and release</a> section.</p>
+</div>
+</div>
+<div class="section" id="access-restriction">
+<h3>4. Access restriction<a class="headerlink" href="#access-restriction" title="Permalink to this headline">¶</a></h3>
+<p>Restrict access to the device with atomic variables, so that a single process
+can open the device at a time. The rest will receive the &quot;device busy&quot; error
+(<code class="docutils literal"><span class="pre">-EBUSY</span></code>). Restricting access will be done in the open function displayed by
+the driver. Follow comments marked with <strong>TODO 3</strong> and implement them.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add an <code class="docutils literal"><span class="pre">atomic_t</span></code> variable to the device structure.</li>
+<li>Initialize the variable at module initialization.</li>
+<li>Use the variable in the open function to restrict access to the device. We
+recommend using <code class="xref c c-func docutils literal"><span class="pre">atomic_cmpxchg()</span></code>.</li>
+<li>Reset the variable in the release function to retrieve access to the device.</li>
+<li>To test your deployment, you'll need to simulate a long-term use of your
+device. To simulate a sleep, call the scheduler at the end of the device opening:</li>
+</ol>
+</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>set_current_state<span class="o">(</span>TASK_INTERRUPTIBLE<span class="o">)</span><span class="p">;</span>
+schedule_timeout<span class="o">(</span><span class="m">1000</span><span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The advantage of the atomic_cmpxchg function is that it can check the
+old value of the variable and set it up to a new value, all in one
+atomic operation. Read more details about <a class="reference external" href="https://www.khronos.org/registry/OpenCL/sdk/1.1/docs/man/xhtml/atomic_cmpxchg.html">atomic_cmpxchg</a>
+An example of use is <a class="reference external" href="http://elixir.free-electrons.com/linux/v4.9/source/lib/dump_stack.c#L24">here</a>.</p>
+</div>
+</div>
+<div class="section" id="read-operation">
+<h3>5. Read operation<a class="headerlink" href="#read-operation" title="Permalink to this headline">¶</a></h3>
+<p>Implement the read function in the driver. Follow comments marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">4</span></code> and implement them.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Keep a buffer in <code class="docutils literal"><span class="pre">so2_device_data</span></code> structure initialized with the value of <code class="docutils literal"><span class="pre">MESSAGE</span></code> macro.
+Initializing this buffer will be done in module <code class="docutils literal"><span class="pre">init</span></code> function.</li>
+<li>At a read call, copy the contents of the kernel space buffer into the user
+space buffer.<ul>
+<li>Use the <code class="xref c c-func docutils literal"><span class="pre">copy_to_user()</span></code> function to copy information from kernel space to
+user space.</li>
+<li>Ignore the size and offset parameters at this time. You can assume that
+the buffer in user space is large enough. You do not need to check the
+validity of the size argument of the read function.</li>
+<li>The value returned by the read call is the number of bytes transmitted
+from the kernel space buffer to the user space buffer.</li>
+</ul>
+</li>
+<li>After implementation, test using <code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/so2_cdev</span></code>.</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The command <code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/so2_cdev</span></code> does not end (use Ctrl+C).
+Read the <a class="reference internal" href="#read-and-write">read and write</a> sections and <a class="reference internal" href="#access-to-the-address-space-of-the-process">Access to the address space of the process</a>
+If you want to display the offset value use a construction of the form:
+<code class="docutils literal"><span class="pre">pr_info(&quot;Offset:</span> <span class="pre">%lld</span> <span class="pre">\n&quot;,</span> <span class="pre">*offset)</span></code>; The data type loff_t (used by offset ) is a typedef for long long int.</p>
+</div>
+<p>The <code class="docutils literal"><span class="pre">cat</span></code> command reads to the end of the file, and the end of the file is
+signaled by returning the value 0 in the read. Thus, for a correct implementation,
+you will need to update and use the offset received as a parameter in the read
+function and return the value 0 when the user has reached the end of the buffer.</p>
+<p>Modify the driver so that the <code class="docutils literal"><span class="pre">cat</span></code> commands ends:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Use the size parameter.</li>
+<li>For every read, update the offset parameter accordingly.</li>
+<li>Ensure that the read function returns the number of bytes that were copied
+into the user buffer.</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">By dereferencing the offset parameter it is possible to read and move the current
+position in the file. Its value needs to be updated every time a read is done
+successfully.</p>
+</div>
+</div>
+<div class="section" id="write-operation">
+<h3>6. Write operation<a class="headerlink" href="#write-operation" title="Permalink to this headline">¶</a></h3>
+<p>Add the ability to write a message into kernel buffer to replace the predefined message. Implement
+the write function in the driver. Follow comments marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">5</span></code></p>
+<p>Ignore the offset parameter at this time. You can assume that the driver buffer is
+large enough. You do not need to check the validity of the write function size
+argument.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The prototype of a device driver's operations is in the file_operations
+structure.
+Test using commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;arpeggio&quot;</span>&gt; /dev/so2_cdev
+cat /dev/so2_cdev
+</pre></div>
+</div>
+<p class="last">Read the <a class="reference internal" href="#read-and-write">read and write</a> sections and <a class="reference internal" href="#access-to-the-address-space-of-the-process">Access to the address space of the process</a></p>
+</div>
+</div>
+<div class="section" id="ioctl-operation">
+<h3>7. ioctl operation<a class="headerlink" href="#ioctl-operation" title="Permalink to this headline">¶</a></h3>
+<p>For this exercise, we want to add the ioctl <code class="docutils literal"><span class="pre">MY_IOCTL_PRINT</span></code> to display the
+message from the <code class="docutils literal"><span class="pre">IOCTL_MESSAGE</span></code> macro in the driver.
+Follow the comments marked with <code class="docutils literal"><span class="pre">TODO</span> <span class="pre">6</span></code></p>
+<p>For this:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Implement the ioctl function in the driver.</li>
+<li>We need to use <code class="docutils literal"><span class="pre">user/so2_cdev_test.c</span></code> to call the
+ioctl function with the appropriate parameters.</li>
+<li>To test, we will use an user-space program (<code class="docutils literal"><span class="pre">user/so2_cdev_test.c</span></code>)
+which will call the <code class="docutils literal"><span class="pre">ioctl</span></code> function with the required arguments.</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The macro <code class="docutils literal"><span class="pre">MY_IOCTL_PRINT</span></code> is defined in the file <code class="docutils literal"><span class="pre">include/so2_cdev.h</span></code>,
+which is shared between the kernel module and the user-space program.</p>
+<p class="last">Read the <a class="reference internal" href="#ioctl">ioctl</a> section in the lab.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The user-space code is compiled automatically at <code class="docutils literal"><span class="pre">make</span> <span class="pre">build</span></code> and
+copied at <code class="docutils literal"><span class="pre">make</span> <span class="pre">copy</span></code>.</p>
+<p class="last">Because we need to compile the program for qemu machine which is 32 bit,
+if your host is 64 bit then you need to install <code class="docutils literal"><span class="pre">gcc-multilib</span></code> package.</p>
+</div>
+</div>
+</div>
+<div class="section" id="extra-exercises">
+<h2>Extra Exercises<a class="headerlink" href="#extra-exercises" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ioctl-with-messaging">
+<h3>Ioctl with messaging<a class="headerlink" href="#ioctl-with-messaging" title="Permalink to this headline">¶</a></h3>
+<p>Add two ioctl operations to modify the message associated with the
+driver. Use fixed-length buffer ( BUFFER_SIZE ).</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:<ul>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_SET_BUFFER</span></code> for writing a message to the device;</li>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_GET_BUFFER</span></code> to read a message from your device.</li>
+</ul>
+</li>
+<li>For testing, pass the required command line arguments to the
+user-space program.</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Read the <a class="reference internal" href="#ioctl">ioctl</a> and <a class="reference internal" href="#access-to-the-address-space-of-the-process">Access to the address space of the process</a>
+sections of the lab.</p>
+</div>
+</div>
+<div class="section" id="ioctl-with-waiting-queues">
+<h3>Ioctl with waiting queues<a class="headerlink" href="#ioctl-with-waiting-queues" title="Permalink to this headline">¶</a></h3>
+<p>Add two ioctl operations to the device driver for queuing.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Add the <code class="docutils literal"><span class="pre">ioctl</span></code> function from the driver the following operations:<ul>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_DOWN</span></code> to add the process to a queue;</li>
+<li><code class="docutils literal"><span class="pre">MY_IOCTL_UP</span></code> to remove the process from a queue.</li>
+</ul>
+</li>
+<li>Fill the device structure with a <code class="docutils literal"><span class="pre">wait_queue_head_t</span></code> field and a flag.</li>
+<li>Do not forget to initialize the wait queue and flag.</li>
+<li>Remove exclusive access condition from previous exercise</li>
+<li>For testing, pass the required command line arguments to the
+user-space program.</li>
+</ol>
+</div></blockquote>
+<p>When the process is added to the queue, it will remain blocked in execution; To
+run the queue command open a new console in the virtual machine with Alt+F2 ;
+You can return to the previous console with Alt+F1. If you're connected via
+SSH to the virtual machine, open a new console.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Read the <a class="reference internal" href="#ioctl">ioctl</a> and <a class="reference internal" href="#waiting-queues">Waiting queues</a> sections in the lab.</p>
+</div>
+</div>
+<div class="section" id="o-nonblock-implementation">
+<h3>O_NONBLOCK implementation<a class="headerlink" href="#o-nonblock-implementation" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If a file is open with the <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code> flag, then its
+operations will be non-blocking.</p>
+<p>In case data is not available when performing a read, the following
+happens:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>if the file has been open with <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code>, the read call
+will return <code class="docutils literal"><span class="pre">-EWOULDBLOCK</span></code>.</li>
+<li>otherwise, the current task (process) will be placed in a waiting
+queue and will be unblocked as soon as data becomes available
+(in our case, at write).</li>
+</ul>
+</div></blockquote>
+</div>
+<ul class="simple">
+<li>To allow unblocking the read operation, remove the exclusive access
+condition from previous exercises.</li>
+<li>You can use the queue defined for the previous exercise.</li>
+<li>You can ignore the file offset.</li>
+<li>Modify the initial size of data to <code class="docutils literal"><span class="pre">0</span></code>, to allow testing.</li>
+<li>For testing, pass the required command line arguments to the
+user-space program.<ul>
+<li>when using the <code class="docutils literal"><span class="pre">n</span></code> option, the test program will change the open flags
+to <code class="docutils literal"><span class="pre">O_NONBLOCK</span></code> and then perform a <code class="docutils literal"><span class="pre">read</span></code>.</li>
+</ul>
+</li>
+<li>What are the flags used to open the file when running <code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/so2_dev</span></code>?</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="kernel_api.html" class="btn btn-neutral float-left" title="Kernel API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interrupts.html" class="btn btn-neutral float-right" title="I/O access and Interrupts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

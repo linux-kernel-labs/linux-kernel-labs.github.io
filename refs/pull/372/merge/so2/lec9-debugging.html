@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SO2 Lecture 09 - Kernel debugging &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SO2 Lecture 10 - Networking" href="lec10-networking.html" />
+    <link rel="prev" title="SO2 Lecture 08 - Filesystem Management" href="lec8-filesystems.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Operating Systems 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lec1-intro.html">SO2 Lecture 01 - Course overview and Linux kernel introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec2-syscalls.html">SO2 Lecture 02 - System calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec3-processes.html">SO2 Lecture 03 - Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec4-interrupts.html">SO2 Lecture 04 - Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec5-smp.html">SO2 Lecture 05 - Symmetric Multi-Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec6-address-space.html">SO2 Lecture 06 - Address Space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec7-memory-management.html">SO2 Lecture 07 - Memory Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec8-filesystems.html">SO2 Lecture 08 - Filesystem Management</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SO2 Lecture 09 - Kernel debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lecture-objectives">Lecture objectives:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#decoding-an-oops-panic">Decoding an oops/panic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#decoding-an-oops">Decoding an oops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addr2line">addr2line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#objdump">objdump</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gdb">gdb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-panic">Kernel panic</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#list-debugging">List debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-debugging">Memory debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#slab-debugging">Slab debugging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debug-pagealloc">DEBUG_PAGEALLOC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kasan">KASan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kmemleak">Kmemleak</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#lockdep-checker">Lockdep checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perf">perf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-tools">Other tools</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lec10-networking.html">SO2 Lecture 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec11-arch.html">SO2 Lecture 11 - Architecture Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lec12-virtualization.html">SO2 Lecture 12 - Virtualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab1-intro.html">SO2 Lab 01 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab2-kernel-api.html">SO2 Lab 02 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab3-device-drivers.html">SO2 Lab 03 - Character device drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab4-interrupts.html">SO2 Lab 04 - I/O access and Interrupts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab5-deferred-work.html">SO2 Lab 05 - Deferred work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab6-memory-mapping.html">SO2 Lab 06 - Memory Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab7-block-device-drivers.html">SO2 Lab 07 - Block Device Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab8-filesystems-part1.html">SO2 Lab 08 - File system drivers (Part 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab9-filesystems-part2.html">SO2 Lab 09 - File system drivers (Part 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab10-networking.html">SO2 Lab 10 - Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab11-arm-kernel-development.html">SO2 Lab 11 - Kernel Development on ARM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lab12-kernel-profiling.html">SO2 Lab 12 - Kernel Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign-collaboration.html">Collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign0-kernel-api.html">Assignment 0 - Kernel API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign1-kprobe-based-tracer.html">Assignment 1 - Kprobe based tracer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign2-driver-uart.html">Assignment 2 - Driver UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign3-software-raid.html">Assignment 3 - Software RAID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign4-transport-protocol.html">Assignment 4 - SO2 Transport Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assign7-kvm-vmm.html">Assignment 7 - SO2 Virtual Machine Manager with KVM</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/syscalls.html">System Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/processes.html">Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lectures/virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operating Systems 2</a></li>
+      <li class="breadcrumb-item active">SO2 Lecture 09 - Kernel debugging</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/so2/lec9-debugging.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="so2-lecture-09-kernel-debugging">
+<h1>SO2 Lecture 09 - Kernel debugging<a class="headerlink" href="#so2-lecture-09-kernel-debugging" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="lec9-debugging-slides.html">View slides</a></p>
+<span class="admonition-so2-lecture-09-kernel-debugging"></span><div class="section" id="lecture-objectives">
+<h2>Lecture objectives:<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<p>One essential part of Linux kernel development is debugging. In user space we had
+the support of the kernel so we could easily stop processes and use gdb to inspect
+their behavior. In the kernel, in order to use gdb we need to use hypervisor like
+QEMU or JTAG based hardware interfaces which are not always available. The Linux
+kernel provides a set of tools and debug options useful for investigating abnormal
+behavior.</p>
+<p>In this lecture we will learn about:</p>
+<ul class="admonition-debugging simple">
+<li>decoding an oops/panic</li>
+<li>list debugging</li>
+<li>memory debugging</li>
+<li>locking debugging</li>
+<li>profiling</li>
+</ul>
+</div>
+<div class="section" id="decoding-an-oops-panic">
+<h2>Decoding an oops/panic<a class="headerlink" href="#decoding-an-oops-panic" title="Permalink to this headline">¶</a></h2>
+<p>An oops is an inconsistent state that the kernel detects inside itself.
+Upon detecting an oops the Linux kernel kills the offending process,
+prints information that can help debug the problem and continues execution
+but with limited reliability.</p>
+<p>Lets consider the following Linux kernel module:</p>
+<div class="admonition-oops-module highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">noinline</span> <span class="kt">void</span> <span class="nf">do_oops</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="o">*</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="mh">0x42</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">so2_oops_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;oops_init</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="n">do_oops</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">so2_oops_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;oops exit</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">module_init</span><span class="p">(</span><span class="n">so2_oops_init</span><span class="p">);</span>
+<span class="n">module_exit</span><span class="p">(</span><span class="n">so2_oops_exit</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Notice that ''do_oops'' function tries to write at an invalid memory address. Because the kernel
+cannot find a suitable physical page were to write, it kills the insmod task in the context of
+which ''do_oops'' runs. Then it prints the following oops message:</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/debugging/oops# insmod oops.ko
+BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000042</span>
+IP: do_oops+0x8/0x10 <span class="o">[</span>oops<span class="o">]</span>
+*pde <span class="o">=</span> <span class="m">00000000</span>
+Oops: <span class="m">0002</span> <span class="o">[</span><span class="c1">#1] SMP</span>
+Modules linked in: oops<span class="o">(</span>O+<span class="o">)</span>
+CPU: <span class="m">0</span> PID: <span class="m">234</span> Comm: insmod Tainted: G           O     <span class="m">4</span>.15.0+ <span class="c1">#3</span>
+Hardware name: QEMU Standard PC <span class="o">(</span>i440FX + PIIX, <span class="m">1996</span><span class="o">)</span>, BIOS Ubuntu-1.8.2-1ubuntu1 <span class="m">04</span>/01/2014
+EIP: do_oops+0x8/0x10 <span class="o">[</span>oops<span class="o">]</span>
+EFLAGS: <span class="m">00000292</span> CPU: <span class="m">0</span>
+EAX: <span class="m">00000061</span> EBX: <span class="m">00000000</span> ECX: c7ed3584 EDX: c7ece8dc
+ESI: c716c908 EDI: c8816010 EBP: c7257df0 ESP: c7257df0
+DS: 007b ES: 007b FS: 00d8 GS: <span class="m">0033</span> SS: <span class="m">0068</span>
+CR0: <span class="m">80050033</span> CR2: <span class="m">00000042</span> CR3: 0785f000 CR4: <span class="m">00000690</span>
+Call Trace:
+so2_oops_init+0x17/0x20 <span class="o">[</span>oops<span class="o">]</span>
+do_one_initcall+0x37/0x170
+? cache_alloc_debugcheck_after.isra.19+0x15f/0x2f0
+? __might_sleep+0x32/0x90
+? trace_hardirqs_on_caller+0x11c/0x1a0
+? do_init_module+0x17/0x1c2
+? kmem_cache_alloc+0xa4/0x1e0
+? do_init_module+0x17/0x1c2
+do_init_module+0x46/0x1c2
+load_module+0x1f45/0x2380
+SyS_init_module+0xe5/0x100
+do_int80_syscall_32+0x61/0x190
+entry_INT80_32+0x2f/0x2f
+EIP: 0x44902cc2
+EFLAGS: <span class="m">00000206</span> CPU: <span class="m">0</span>
+EAX: ffffffda EBX: 08afb050 ECX: 0000eef4 EDX: 08afb008
+ESI: <span class="m">00000000</span> EDI: bf914dbc EBP: <span class="m">00000000</span> ESP: bf914c1c
+DS: 007b ES: 007b FS: <span class="m">0000</span> GS: <span class="m">0033</span> SS: 007b
+Code: &lt;a3&gt; <span class="m">42</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 5d c3 <span class="m">90</span> <span class="m">55</span> <span class="m">89</span> e5 <span class="m">83</span> ec <span class="m">04</span> c7 <span class="m">04</span> <span class="m">24</span> <span class="m">24</span> <span class="m">70</span> <span class="m">81</span> c8 e8
+EIP: do_oops+0x8/0x10 <span class="o">[</span>oops<span class="o">]</span> SS:ESP: <span class="m">0068</span>:c7257df0
+CR2: <span class="m">0000000000000042</span>
+---<span class="o">[</span> end trace 011848be72f8bb42 <span class="o">]</span>---
+Killed
+</pre></div>
+</div>
+</div></blockquote>
+<p>An oops contains information about the IP which caused the fault, register status, process,
+CPU on which the fault happend like below:</p>
+<div class="admonition-oops-information highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/debugging/oops# insmod oops.ko
+BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000042</span>
+IP: do_oops+0x8/0x10 <span class="o">[</span>oops<span class="o">]</span>
+*pde <span class="o">=</span> <span class="m">00000000</span>
+Oops: <span class="m">0002</span> <span class="o">[</span><span class="c1">#1] SMP</span>
+Modules linked in: oops<span class="o">(</span>O+<span class="o">)</span>
+CPU: <span class="m">0</span> PID: <span class="m">234</span> Comm: insmod Tainted: G           O     <span class="m">4</span>.15.0+ <span class="c1">#3</span>
+Hardware name: QEMU Standard PC <span class="o">(</span>i440FX + PIIX, <span class="m">1996</span><span class="o">)</span>, BIOS Ubuntu-1.8.2-1ubuntu1 <span class="m">04</span>/01/2014
+EIP: do_oops+0x8/0x10 <span class="o">[</span>oops<span class="o">]</span>
+CR0: <span class="m">80050033</span> CR2: <span class="m">00000042</span> CR3: 0785f000 CR4: <span class="m">00000690</span>
+EIP: 0x44902cc2
+EFLAGS: <span class="m">00000206</span> CPU: <span class="m">0</span>
+EAX: ffffffda EBX: 08afb050 ECX: 0000eef4 EDX: 08afb008
+ESI: <span class="m">00000000</span> EDI: bf914dbc EBP: <span class="m">00000000</span> ESP: bf914c1c
+DS: 007b ES: 007b FS: <span class="m">0000</span> GS: <span class="m">0033</span> SS: 007b
+Code: &lt;a3&gt; <span class="m">42</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 5d c3 <span class="m">90</span> <span class="m">55</span> <span class="m">89</span> e5 <span class="m">83</span> ec <span class="m">04</span> c7 <span class="m">04</span> <span class="m">24</span> <span class="m">24</span> <span class="m">70</span> <span class="m">81</span> c8 e8
+Killed
+</pre></div>
+</div>
+<p>Another important thing that an oops can provide is the stack trace of functions called before
+the fault happend:</p>
+<div class="admonition-oops-stacktrace highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/debugging/oops# insmod oops.ko
+BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000042</span>
+Call Trace:
+so2_oops_init+0x17/0x20 <span class="o">[</span>oops<span class="o">]</span>
+do_one_initcall+0x37/0x170
+? cache_alloc_debugcheck_after.isra.19+0x15f/0x2f0
+? __might_sleep+0x32/0x90
+? trace_hardirqs_on_caller+0x11c/0x1a0
+? do_init_module+0x17/0x1c2
+? kmem_cache_alloc+0xa4/0x1e0
+? do_init_module+0x17/0x1c2
+do_init_module+0x46/0x1c2
+load_module+0x1f45/0x2380
+SyS_init_module+0xe5/0x100
+do_int80_syscall_32+0x61/0x190
+entry_INT80_32+0x2f/0x2f
+Killed
+</pre></div>
+</div>
+<div class="section" id="decoding-an-oops">
+<h3>Decoding an oops<a class="headerlink" href="#decoding-an-oops" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-debugging simple">
+<li>CONFIG_DEBUG_INFO</li>
+<li>addr2line</li>
+<li>gdb</li>
+<li>objdump -dSr</li>
+</ul>
+</div>
+<div class="section" id="addr2line">
+<h3>addr2line<a class="headerlink" href="#addr2line" title="Permalink to this headline">¶</a></h3>
+<p><em>addr2line</em> translates addresses into file names and line numbers. Given
+an address in an executable it uses the debugging information to figure out
+which file name and line number are associated with it.</p>
+<p>Modules are loaded at dynamic addresses but are compiled starting with 0 as
+a base address. So, in order to find the line number for a given dynamic address
+we need to know module's load address.</p>
+<div class="admonition-addr2line highlight-bash"><div class="highlight"><pre><span></span>$ addr2line -e oops.o  0x08
+$ skels/debugging/oops/oops.c:5
+$ <span class="c1"># 0x08 is the offset of the offending instruction inside the oops.ko module</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="objdump">
+<h3>objdump<a class="headerlink" href="#objdump" title="Permalink to this headline">¶</a></h3>
+<p>Similar we can determine the offending line using objdump:</p>
+<div class="admonition-objdump highlight-bash"><div class="highlight"><pre><span></span>$ cat /proc/modules
+oops <span class="m">20480</span> <span class="m">1</span> - Loading 0xc8816000 <span class="o">(</span>O+<span class="o">)</span>
+
+$ objdump -dS --adjust-vma<span class="o">=</span>0xc8816000 oops.ko
+c8816000:       b8 <span class="m">61</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          mov    <span class="nv">$0</span>x61,%eax
+
+static noinline void do_oops<span class="o">(</span>void<span class="o">)</span>
+<span class="o">{</span>
+c8816005:       <span class="m">55</span>                      push   %ebp
+c8816006:       <span class="m">89</span> e5                   mov    %esp,%ebp
+*<span class="o">(</span>int*<span class="o">)</span><span class="nv">0x42</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">;</span>
+c8816008:       a3 <span class="m">42</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          mov    %eax,0x42
+</pre></div>
+</div>
+</div>
+<div class="section" id="gdb">
+<h3>gdb<a class="headerlink" href="#gdb" title="Permalink to this headline">¶</a></h3>
+<div class="admonition-gdb highlight-bash"><div class="highlight"><pre><span></span>$ gdb ./vmlinux
+
+<span class="o">(</span>gdb<span class="o">)</span> list *<span class="o">(</span>do_panic+0x8<span class="o">)</span>
+0xc1244138 is in do_panic <span class="o">(</span>lib/test_panic.c:8<span class="o">)</span>.
+<span class="m">3</span>
+<span class="m">4</span> static struct timer_list panic_timer<span class="p">;</span>
+<span class="m">5</span>
+<span class="m">6</span> static void do_panic<span class="o">(</span>struct timer_list *unused<span class="o">)</span>
+<span class="m">7</span> <span class="o">{</span>
+<span class="m">8</span>         *<span class="o">(</span>int*<span class="o">)</span><span class="nv">0x42</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">;</span>
+<span class="m">9</span> <span class="o">}</span>
+<span class="m">10</span>
+<span class="m">11</span>        static int so2_panic_init<span class="o">(</span>void<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="kernel-panic">
+<h3>Kernel panic<a class="headerlink" href="#kernel-panic" title="Permalink to this headline">¶</a></h3>
+<p>A kernel panic is a special type of oops where the kernel cannot continue execution. For example
+if the function do_oops from above was called in the interrupt context, the kernel wouldn't know how to kill
+and it will decide that it is better to crash the kernel and stop execution.</p>
+<p>Here is a sample code that will generate a kernel panic:</p>
+<div class="admonition-kernel-panic highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">timer_list</span> <span class="n">panic_timer</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">do_panic</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">unused</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="o">*</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="mh">0x42</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">so2_panic_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;panic_init</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+    <span class="n">timer_setup</span><span class="p">(</span><span class="o">&amp;</span><span class="n">panic_timer</span><span class="p">,</span>  <span class="n">do_panic</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">mod_timer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">panic_timer</span><span class="p">,</span> <span class="n">jiffies</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">HZ</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Loading the module will generate the following kernel panic message:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>root@qemux86:~/skels/debugging/panic# insmod panic.ko
+panic: loading out-of-tree module taints kernel.
+panic_init
+root@qemux86:~/skels/debugging/panic# BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000042</span>
+IP: do_panic+0x8/0x10 <span class="o">[</span>panic<span class="o">]</span>
+*pde <span class="o">=</span> <span class="m">00000000</span>
+Oops: <span class="m">0002</span> <span class="o">[</span><span class="c1">#1] SMP</span>
+Modules linked in: panic<span class="o">(</span>O<span class="o">)</span>
+CPU: <span class="m">0</span> PID: <span class="m">0</span> Comm: swapper/0 Tainted: G           O     <span class="m">4</span>.15.0+ <span class="c1">#19</span>
+Hardware name: QEMU Standard PC <span class="o">(</span>i440FX + PIIX, <span class="m">1996</span><span class="o">)</span>, BIOS Ubuntu-1.8.2-1ubuntu1 <span class="m">04</span>/01/2014
+EIP: do_panic+0x8/0x10 <span class="o">[</span>panic<span class="o">]</span>
+EFLAGS: <span class="m">00010246</span> CPU: <span class="m">0</span>
+EAX: <span class="m">00000061</span> EBX: <span class="m">00000101</span> ECX: 000002d8 EDX: <span class="m">00000000</span>
+ESI: c8817000 EDI: c8819200 EBP: c780ff34 ESP: c780ff34
+DS: 007b ES: 007b FS: 00d8 GS: <span class="m">0000</span> SS: <span class="m">0068</span>
+CR0: <span class="m">80050033</span> CR2: <span class="m">00000042</span> CR3: 0716b000 CR4: <span class="m">00000690</span>
+Call Trace:
+&lt;SOFTIRQ&gt;
+call_timer_fn+0x63/0xf0
+? process_timeout+0x10/0x10
+run_timer_softirq+0x14f/0x170
+? 0xc8817000
+? trace_hardirqs_on_caller+0x9b/0x1a0
+__do_softirq+0xde/0x1f2
+? __irqentry_text_end+0x6/0x6
+do_softirq_own_stack+0x57/0x70
+&lt;/SOFTIRQ&gt;
+irq_exit+0x7d/0x90
+smp_apic_timer_interrupt+0x4f/0x90
+? trace_hardirqs_off_thunk+0xc/0x1d
+apic_timer_interrupt+0x3a/0x40
+EIP: default_idle+0xa/0x10
+EFLAGS: <span class="m">00000246</span> CPU: <span class="m">0</span>
+EAX: c15c97c0 EBX: <span class="m">00000000</span> ECX: <span class="m">00000000</span> EDX: <span class="m">00000001</span>
+ESI: <span class="m">00000000</span> EDI: <span class="m">00000000</span> EBP: c15c3f48 ESP: c15c3f48
+DS: 007b ES: 007b FS: 00d8 GS: <span class="m">0000</span> SS: <span class="m">0068</span>
+arch_cpu_idle+0x9/0x10
+default_idle_call+0x19/0x30
+do_idle+0x105/0x180
+cpu_startup_entry+0x25/0x30
+rest_init+0x1e3/0x1f0
+start_kernel+0x305/0x30a
+i386_start_kernel+0x95/0x99
+startup_32_smp+0x15f/0x164
+Code: &lt;a3&gt; <span class="m">42</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 5d c3 <span class="m">90</span> <span class="m">55</span> <span class="m">89</span> e5 <span class="m">83</span> ec <span class="m">08</span> c7 <span class="m">04</span> <span class="m">24</span> <span class="m">24</span> <span class="m">80</span> <span class="m">81</span> c8 e8
+EIP: do_panic+0x8/0x10 <span class="o">[</span>panic<span class="o">]</span> SS:ESP: <span class="m">0068</span>:c780ff34
+CR2: <span class="m">0000000000000042</span>
+---<span class="o">[</span> end trace 77f49f83f2e42f91 <span class="o">]</span>---
+Kernel panic - not syncing: Fatal exception in interrupt
+Kernel Offset: disabled
+---<span class="o">[</span> end Kernel panic - not syncing: Fatal exception in interrupt
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="list-debugging">
+<h2>List debugging<a class="headerlink" href="#list-debugging" title="Permalink to this headline">¶</a></h2>
+<p>In order to catch access to uninitialized elements the kernel uses poison
+magic values.</p>
+<div class="admonition-list-debugging highlight-bash"><div class="highlight"><pre><span></span>static inline void list_del<span class="o">(</span>struct list_head *entry<span class="o">)</span>
+<span class="o">{</span>
+        __list_del<span class="o">(</span>entry-&gt;prev, entry-&gt;next<span class="o">)</span><span class="p">;</span>
+        entry-&gt;next <span class="o">=</span> <span class="o">(</span>struct list_head*<span class="o">)</span>LIST_POISON1<span class="p">;</span>
+        entry-&gt;prev <span class="o">=</span> <span class="o">(</span>struct list_head*<span class="o">)</span>LIST_POISON2<span class="p">;</span>
+<span class="o">}</span>
+
+BUG: unable to handle kernel NULL pointer dereference at <span class="m">00000100</span>
+IP: crush+0x80/0xb0 <span class="o">[</span>list<span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="memory-debugging">
+<h2>Memory debugging<a class="headerlink" href="#memory-debugging" title="Permalink to this headline">¶</a></h2>
+<p>There are several tools for memory debugging:</p>
+<ul class="admonition-memory-debugging simple">
+<li>SLAB/SLUB debugging</li>
+<li>KASAN</li>
+<li>kmemcheck</li>
+<li>DEBUG_PAGEALLOC</li>
+</ul>
+<div class="section" id="slab-debugging">
+<h3>Slab debugging<a class="headerlink" href="#slab-debugging" title="Permalink to this headline">¶</a></h3>
+<p>Slab debugging uses a memory poison technique to detect several types of memory
+bugs in the SLAB/SUB allocators.</p>
+<p>The allocated buffers are guarded with memory that has been filled in with
+special markers. Any adjacent writes to the buffer will be detected at a later
+time when other memory management operations on that buffer are performed
+(e.g. when the buffer is freed).</p>
+<p>Upon allocation of the buffer, the buffer it is also filled in with a special
+value to potentially detect buffer access before initialization (e.g. if the
+buffer holds pointers). The value is selected in such a way that it is unlikely
+to be a valid address and as such to trigger kernel bugs at the access time.</p>
+<p>A similar technique is used when freeing the buffer: the buffer is filled with
+another special value that will cause kernel bugs if pointers are accessed after
+the memory is freed. In this case, the allocator also checks the next time the
+buffer is allocated that the buffer was not modified.</p>
+<p>The diagram bellow shows a summary of the way SLAB/SLUB poisoning works:</p>
+<ul class="admonition-slab-debugging simple">
+<li>CONFIG_DEBUG_SLAB</li>
+<li>poisoned based memory debuggers</li>
+</ul>
+<img alt="../_images/ditaa-5e6f93e563d6e94c14fe3d483f988e0579b05b38.png" src="../_images/ditaa-5e6f93e563d6e94c14fe3d483f988e0579b05b38.png" />
+<p>Example of an use before initialize bug:</p>
+<div class="admonition-use-before-initialize-bugs highlight-none"><div class="highlight"><pre><span></span>BUG: unable to handle kernel paging request at 5a5a5a5a
+IP: [&lt;c1225063&gt;] __list_del_entry+0x37/0x71
+…
+Call Trace:
+[&lt;c12250a8&gt;] list_del+0xb/0x1b
+[&lt;f1de81a2&gt;] use_before_init+0x31/0x38 [crusher]
+[&lt;f1de8265&gt;] crush_it+0x38/0xa9 [crusher]
+[&lt;f1de82de&gt;] init_module+0x8/0xa [crusher]
+[&lt;c1001072&gt;] do_one_initcall+0x72/0x119
+[&lt;f1de82d6&gt;] ? crush_it+0xa9/0xa9 [crusher]
+[&lt;c106b8ae&gt;] sys_init_module+0xc8d/0xe77
+[&lt;c14d7d18&gt;] syscall_call+0x7/0xb
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">noinline</span> <span class="kt">void</span> <span class="nf">use_before_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+     <span class="k">struct</span> <span class="n">list_m</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">m</span><span class="p">),</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+
+     <span class="n">printk</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+     <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Example of an use after free bug:</p>
+<div class="admonition-use-after-free-bug highlight-none"><div class="highlight"><pre><span></span>BUG: unable to handle kernel paging request at 6b6b6b6b
+IP: [&lt;c1225063&gt;] __list_del_entry+0x37/0x71
+…
+Call Trace:
+[&lt;c12250a8&gt;] list_del+0xb/0x1b
+[&lt;f4c6816a&gt;] use_after_free+0x38/0x3f [crusher]
+[&lt;f4c6827f&gt;] crush_it+0x52/0xa9 [crusher]
+[&lt;f4c682de&gt;] init_module+0x8/0xa [crusher]
+[&lt;c1001072&gt;] do_one_initcall+0x72/0x119
+[&lt;f4c682d6&gt;] ? crush_it+0xa9/0xa9 [crusher]
+[&lt;c106b8ae&gt;] sys_init_module+0xc8d/0xe77
+[&lt;c14d7d18&gt;] syscall_call+0x7/0xb
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">noinline</span> <span class="kt">void</span> <span class="nf">use_after_free</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">list_m</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">m</span><span class="p">),</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+
+    <span class="n">printk</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+    <span class="n">kfree</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+    <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">lh</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Another example of an use after free bug is shown below. Note that this time the
+bug is detected at the next allocation.</p>
+<div class="admonition-use-after-free-bug highlight-none"><div class="highlight"><pre><span></span># insmod /system/lib/modules/crusher.ko test=use_before_init
+Slab corruption: size-4096 start=ed612000, len=4096
+000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6b 6b
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">noinline</span> <span class="kt">void</span> <span class="nf">use_after_free2</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+    <span class="n">kfree</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">);</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+    <span class="n">kfree</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally this is an example of a buffer overflow bug:</p>
+<div class="admonition-buffer-overflow-bugs highlight-none"><div class="highlight"><pre><span></span>slab error in verify_redzone_free(): cache `dummy&#39;: memory outside object was overwritten
+Pid: 1282, comm: insmod Not tainted 3.0.16-mid10-00007-ga4a6b62-dirty #70
+Call Trace:
+[&lt;c10cc1de&gt;] __slab_error+0x17/0x1c
+[&lt;c10cc7ca&gt;] __cache_free+0x12c/0x317
+[&lt;c10ccaba&gt;] kmem_cache_free+0x2b/0xaf
+[&lt;f27f1138&gt;] buffer_overflow+0x4c/0x57 [crusher]
+[&lt;f27f12aa&gt;] crush_it+0x6c/0xa9 [crusher]
+[&lt;f27f12ef&gt;] init_module+0x8/0xd [crusher]
+[&lt;c1001072&gt;] do_one_initcall+0x72/0x119
+[&lt;c106b8ae&gt;] sys_init_module+0xc8d/0xe77
+[&lt;c14d7d18&gt;] syscall_call+0x7/0xb
+eb002bf8: redzone 1:0xd84156c5635688c0, redzone 2:0x0
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">noinline</span> <span class="kt">void</span> <span class="nf">buffer_overflow</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">kmem_cache</span> <span class="o">*</span><span class="n">km</span> <span class="o">=</span> <span class="n">kmem_cache_create</span><span class="p">(</span><span class="s">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="n">kmem_cache_alloc</span><span class="p">(</span><span class="n">km</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+
+    <span class="n">printk</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3016</span><span class="p">);</span>
+    <span class="n">kmem_cache_free</span><span class="p">(</span><span class="n">km</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="debug-pagealloc">
+<h3>DEBUG_PAGEALLOC<a class="headerlink" href="#debug-pagealloc" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-debug-pagealloc simple">
+<li>Memory debugger that works at a page level</li>
+<li>Detects invalid accesses either by:<ul>
+<li>Filling pages with poison byte patterns and checking the pattern at
+reallocation</li>
+<li>Unmapping the dellocated pages from kernel space (just a few
+architectures)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="kasan">
+<h3>KASan<a class="headerlink" href="#kasan" title="Permalink to this headline">¶</a></h3>
+<p>KASan is a dynamic memory error detector designed to find use-after-free
+and out-of-bounds bugs.</p>
+<p>The main idea of KASAN is to use shadow memory to record whether each byte
+of memory is safe to access or not, and use compiler's instrumentation to
+check the shadow memory on each memory access.</p>
+<p>Address sanitizer uses 1 byte of shadow memory to track 8 bytes of kernel
+address space. It uses 0-7 to encode the number of consecutive bytes at
+the beginning of the eigh-byte region that are valid.</p>
+<p>See <cite>The Kernel Address Sanitizer (KASAN)</cite> for more information and have a look
+at lib/test_kasan.c for an example of problems that KASan can detect.</p>
+<ul class="admonition-kasan simple">
+<li>dynamic memory error detector</li>
+<li>finds user-after-free or out-of-bound bugs</li>
+<li>uses shadow memory to track memory operations</li>
+<li>lib/test_kasan.c</li>
+</ul>
+<div class="section" id="kasan-vs-debug-pagealloc">
+<h4>KASan vs DEBUG_PAGEALLOC<a class="headerlink" href="#kasan-vs-debug-pagealloc" title="Permalink to this headline">¶</a></h4>
+<p class="admonition-kasan-vs-debug-pagealloc">KASan is slower than DEBUG_PAGEALLOC, but KASan works on sub-page granularity
+level, so it able to find more bugs.</p>
+</div>
+<div class="section" id="kasan-vs-slub-debug">
+<h4>KASan vs SLUB_DEBUG<a class="headerlink" href="#kasan-vs-slub-debug" title="Permalink to this headline">¶</a></h4>
+<ul class="admonition-kasan-vs-slub-debug simple">
+<li>SLUB_DEBUG has lower overhead than KASan.</li>
+<li>SLUB_DEBUG in most cases are not able to detect bad reads, KASan able to
+detect both reads and writes.</li>
+<li>In some cases (e.g. redzone overwritten) SLUB_DEBUG detect bugs only on
+allocation/freeing of object. KASan catch bugs right before it will happen,
+so we always know exact place of first bad read/write.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="kmemleak">
+<h3>Kmemleak<a class="headerlink" href="#kmemleak" title="Permalink to this headline">¶</a></h3>
+<p>Kmemleak provides a way of detecting kernel memory leaks in a way similar to a
+tracing garbage collector. Since tracing pointers is not possible in C, kmemleak
+scans the kernel stacks as well as dynamically and statically kernel memory for
+pointers to allocated buffers. A buffer for which there is no pointer is
+considered as leaked. The basic steps to use kmemleak are presented bellow, for
+more information see <cite>Kernel Memory Leak Detector</cite></p>
+<ul class="admonition-kmemleak simple">
+<li>enable kernel config: <cite>CONFIG_DEBUG_KMEMLEAK</cite></li>
+<li>setup: <cite>mount -t debugfs nodev /sys/kernel/debug</cite></li>
+<li>trigger a memory scan: <cite>echo scan &gt; /sys/kernel/debug/kmemleak</cite></li>
+<li>show memory leaks: <cite>cat /sys/kernel/debug/kmemleak</cite></li>
+<li>clear all possible leaks: <cite>echo clear &gt; /sys/kernel/debug/kmemleak</cite></li>
+</ul>
+<p>As an example, lets look at the following simple module:</p>
+<div class="admonition-kmemleak-example highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">leak_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+
+    <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">kmalloc</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="s">&quot;GPL v2&quot;</span><span class="p">);</span>
+<span class="n">module_init</span><span class="p">(</span><span class="n">leak_init</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Loading the module and triggering a kmemleak scan will issue the
+following report:</p>
+<div class="admonition-kmemleak-report highlight-none"><div class="highlight"><pre><span></span>root@qemux86:~# insmod skels/debugging/leak/leak.ko
+leak: loading out-of-tree module taints kernel.
+leak_init
+root@qemux86:~# echo scan &gt; /sys/kernel/debug/kmemleak
+root@qemux86:~# echo scan &gt; /sys/kernel/debug/kmemleak
+kmemleak: 1 new suspected memory leaks (see /sys/kernel/debug/kmemleak)
+root@qemux86:~# cat /sys/kernel/debug/kmemleak
+unreferenced object 0xd7871500 (size 32):
+comm &quot;insmod&quot;, pid 237, jiffies 4294902108 (age 24.628s)
+hex dump (first 32 bytes):
+5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a a5  ZZZZZZZZZZZZZZZ.
+backtrace:
+[&lt;(ptrval)&gt;] kmem_cache_alloc_trace+0x163/0x310
+[&lt;(ptrval)&gt;] leak_init+0x2f/0x1000 [leak]
+[&lt;(ptrval)&gt;] do_one_initcall+0x57/0x2e0
+[&lt;(ptrval)&gt;] do_init_module+0x4b/0x1be
+[&lt;(ptrval)&gt;] load_module+0x201a/0x2590
+[&lt;(ptrval)&gt;] sys_init_module+0xfd/0x120
+[&lt;(ptrval)&gt;] do_int80_syscall_32+0x6a/0x1a0
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Notice that we did not had to unload the module to detect the memory
+leak since kmemleak detects that the allocated buffer is not
+reachable anymore.</p>
+</div>
+</div>
+</div>
+<div class="section" id="lockdep-checker">
+<h2>Lockdep checker<a class="headerlink" href="#lockdep-checker" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-lockdep-checker simple">
+<li>CONFIG_DEBUG_LOCKDEP</li>
+<li>Detects lock inversio, circular dependencies, incorrect usage of locks
+(including interrupt context)</li>
+<li>Maintains dependency between classes of locks not individual locks</li>
+<li>Each scenario is only checked once and hashed</li>
+</ul>
+<p>Lets take for example the following kernel module that runs two kernel threads:</p>
+<div class="admonition-ab-ba-deadlock-example highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">noinline</span> <span class="kt">int</span> <span class="nf">thread_a</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">unused</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span> <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquired A</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="n">mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span> <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquired B</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+
+  <span class="n">mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+  <span class="n">mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">noinline</span> <span class="kt">int</span> <span class="nf">thread_b</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">unused</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span> <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquired B</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="n">mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span> <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquired A</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+
+  <span class="n">mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+  <span class="n">mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Loading this module with lockdep checker active will produce the following
+kernel log:</p>
+<div class="admonition-ab-ba-deadlock-report highlight-none"><div class="highlight"><pre><span></span>thread_a acquired A
+thread_a acquired B
+thread_b acquired B
+
+======================================================
+WARNING: possible circular locking dependency detected
+4.19.0+ #4 Tainted: G           O
+------------------------------------------------------
+thread_b/238 is trying to acquire lock:
+(ptrval) (a){+.+.}, at: thread_b+0x48/0x90 [locking]
+
+but task is already holding lock:
+(ptrval) (b){+.+.}, at: thread_b+0x27/0x90 [locking]
+
+which lock already depends on the new lock.
+</pre></div>
+</div>
+<p>As you can see, although the deadlock condition did not trigger (because thread
+A did not complete execution before thread B started execution) the lockdep
+checker identified a potential deadlock scenario.</p>
+<p>Lockdep checker will provide even more information to help determine what caused
+the deadlock, like the dependency chain:</p>
+<div class="admonition-ab-ba-deadlock-report-dependency-chain highlight-none"><div class="highlight"><pre><span></span>the existing dependency chain (in reverse order) is:
+
+-&gt; #1 (b){+.+.}:
+      __mutex_lock+0x60/0x830
+      mutex_lock_nested+0x20/0x30
+      thread_a+0x48/0x90 [locking]
+      kthread+0xeb/0x100
+      ret_from_fork+0x2e/0x38
+
+-&gt; #0 (a){+.+.}:
+      lock_acquire+0x93/0x190
+      __mutex_lock+0x60/0x830
+      mutex_lock_nested+0x20/0x30
+      thread_b+0x48/0x90 [locking]
+      kthread+0xeb/0x100
+      ret_from_fork+0x2e/0x38
+</pre></div>
+</div>
+<p>and even an unsafe locking scenario:</p>
+<div class="admonition-ab-ba-deadlock-report-unsafe-locking-scenario highlight-none"><div class="highlight"><pre><span></span>other info that might help us debug this:
+
+Possible unsafe locking scenario:
+
+CPU0                    CPU1
+----                    ----
+lock(b);
+                        lock(a);
+                        lock(b);
+lock(a);
+
+*** DEADLOCK ***
+</pre></div>
+</div>
+<p>Another example of unsafe locking issues that lockdep checker detects
+is unsafe locking from interrupt context. Lets consider the following
+kernel module:</p>
+<div class="admonition-irq-deadlock-example highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="nf">DEFINE_SPINLOCK</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">timerfn</span><span class="p">(</span><span class="k">struct</span> <span class="n">timer_list</span> <span class="o">*</span><span class="n">unused</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquiring lock</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>   <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquired lock</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span> <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s released lock</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="nf">DEFINE_TIMER</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">timerfn</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">init_module</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">mod_timer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">jiffies</span><span class="p">);</span>
+
+  <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquiring lock</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="n">spin_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>   <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s acquired lock</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="n">spin_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span> <span class="n">pr_info</span><span class="p">(</span><span class="s">&quot;%s released lock</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As in the previous case, loading the module will trigger a lockdep
+warning:</p>
+<div class="admonition-irq-deadlock-report highlight-none"><div class="highlight"><pre><span></span>init_module acquiring lock
+init_module acquired lock
+init_module released lock
+timerfn acquiring lock
+
+================================
+WARNING: inconsistent lock state
+4.19.0+ #4 Tainted: G           O
+--------------------------------
+inconsistent {SOFTIRQ-ON-W} -&gt; {IN-SOFTIRQ-W} usage.
+ksoftirqd/0/9 [HC0[0]:SC1[1]:HE1:SE0] takes:
+(ptrval) (lock#4){+.?.}, at: timerfn+0x25/0x60 [locking2]
+{SOFTIRQ-ON-W} state was registered at:
+lock_acquire+0x93/0x190
+_raw_spin_lock+0x39/0x50
+init_module+0x35/0x70 [locking2]
+do_one_initcall+0x57/0x2e0
+do_init_module+0x4b/0x1be
+load_module+0x201a/0x2590
+sys_init_module+0xfd/0x120
+do_int80_syscall_32+0x6a/0x1a0
+restore_all+0x0/0x8d
+</pre></div>
+</div>
+<p>The warning will also provide additional information and a potential unsafe
+locking scenario:</p>
+<div class="admonition-irq-deadlock-report highlight-none"><div class="highlight"><pre><span></span>Possible unsafe locking scenario:
+
+       CPU0
+       ----
+       lock(lock#4);
+       &lt;Interrupt&gt;
+       lock(lock#4);
+
+       *** DEADLOCK ***
+
+1 lock held by ksoftirqd/0/9:
+#0: (ptrval) (/home/tavi/src/linux/tools/labs/skels/./debugging/locking2/locking2.c:13){+.-.}, at: call_timer_f0
+stack backtrace:
+CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G           O      4.19.0+ #4
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+Call Trace:
+dump_stack+0x66/0x96
+print_usage_bug.part.26+0x1ee/0x200
+mark_lock+0x5ea/0x640
+__lock_acquire+0x4b4/0x17a0
+lock_acquire+0x93/0x190
+_raw_spin_lock+0x39/0x50
+timerfn+0x25/0x60 [locking2]
+</pre></div>
+</div>
+</div>
+<div class="section" id="perf">
+<h2>perf<a class="headerlink" href="#perf" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-perf simple">
+<li>performance counters, tracepoints, kprobes, uprobes</li>
+<li>hardware events: CPU cycles, TLB misses, cache misses</li>
+<li>software events: page fauls , context switches</li>
+<li>collects backtraces (user + kernel)</li>
+</ul>
+</div>
+<div class="section" id="other-tools">
+<h2>Other tools<a class="headerlink" href="#other-tools" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-other-tools simple">
+<li>ftrace</li>
+<li>kprobes</li>
+<li>sparse</li>
+<li>coccinelle</li>
+<li>checkpatch.pl</li>
+<li>printk</li>
+<li>dump_stack()</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lec8-filesystems.html" class="btn btn-neutral float-left" title="SO2 Lecture 08 - Filesystem Management" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lec10-networking.html" class="btn btn-neutral float-right" title="SO2 Lecture 10 - Networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
