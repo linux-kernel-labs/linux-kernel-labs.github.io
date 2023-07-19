@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processes &mdash; The Linux Kernel  documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+      <script>
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/asciinema-player.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interrupts" href="interrupts.html" />
+    <link rel="prev" title="System Calls" href="syscalls.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            The Linux Kernel
+          </a>
+              <div class="version">
+                5.10.14
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../so2/index.html">Operating Systems 2</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lectures</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syscalls.html">System Calls</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lecture-objectives">Lecture objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#processes-and-threads">Processes and threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-process-resources">Overview of process resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#struct-task-struct"><code class="docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspecting-task-struct">Inspecting task_struct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quiz-inspect-a-task-to-determine-opened-files">Quiz: Inspect a task to determine opened files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threads">Threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-clone-system-call">The clone system call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#namespaces-and-containers">Namespaces and &quot;containers&quot;</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-current-process">Accessing the current process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quiz-previous-implementation-for-current-x86">Quiz: previous implementation for current (x86)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#context-switching">Context switching</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quiz-context-switch">Quiz: context switch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#blocking-and-waking-up-tasks">Blocking and waking up tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-states">Task states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#blocking-the-current-thread">Blocking the current thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#waking-up-a-task">Waking up a task</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#preempting-tasks">Preempting tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#non-preemptive-kernel">Non preemptive kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preemptive-kernel">Preemptive kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#process-context">Process context</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#kernel-threads">Kernel threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-gdb-scripts-for-kernel-inspection">Using gdb scripts for kernel inspection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quiz-kernel-gdb-scripts">Quiz: Kernel gdb scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interrupts.html">Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smp.html">Symmetric Multi-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="address-space.html">Address Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory-management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fs.html">Filesystem Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">Network Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arch.html">Architecture Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="virt.html">Virtualization</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../labs/infrastructure.html">Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_modules.html">Kernel modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_api.html">Kernel API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_drivers.html">Character device drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/interrupts.html">I/O access and Interrupts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/deferred_work.html">Deferred work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/block_device_drivers.html">Block Device Drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part1.html">File system drivers (Part 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/filesystems_part2.html">File system drivers (Part 2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/networking.html">Networking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/arm_kernel_development.html">Kernel Development on ARM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/memory_mapping.html">Memory mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/device_model.html">Linux Device Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/kernel_profiling.html">Kernel Profiling</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Useful info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">The Linux Kernel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Processes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/lectures/processes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="processes">
+<h1>Processes<a class="headerlink" href="#processes" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="processes-slides.html">View slides</a></p>
+<div class="section" id="lecture-objectives">
+<h2>Lecture objectives<a class="headerlink" href="#lecture-objectives" title="Permalink to this headline">¶</a></h2>
+<ul class="admonition-processes-and-threads simple">
+<li>Process and threads</li>
+<li>Context switching</li>
+<li>Blocking and waking up</li>
+<li>Process context</li>
+</ul>
+</div>
+<div class="section" id="processes-and-threads">
+<h2>Processes and threads<a class="headerlink" href="#processes-and-threads" title="Permalink to this headline">¶</a></h2>
+<p>A process is an operating system abstraction that groups together
+multiple resources:</p>
+<table class="hlist"><tr><td><ul class="simple">
+<li>An address space</li>
+<li>One or more threads</li>
+<li>Opened files</li>
+<li>Sockets</li>
+<li>Semaphores</li>
+</ul>
+</td><td><ul class="simple">
+<li>Shared memory regions</li>
+<li>Timers</li>
+<li>Signal handlers</li>
+<li>Many other resources and status information</li>
+</ul>
+</td></tr></table>
+<p>All this information is grouped in the Process Control Group
+(PCB). In Linux this is <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>.</p>
+<div class="section" id="overview-of-process-resources">
+<h3>Overview of process resources<a class="headerlink" href="#overview-of-process-resources" title="Permalink to this headline">¶</a></h3>
+<p>A summary of the resources a process has can be obtain from the
+<cite>/proc/&lt;pid&gt;</cite> directory, where <cite>&lt;pid&gt;</cite> is the process id for the
+process we want to look at.</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>                +-------------------------------------------------------------------+
+                | dr-x------    2 tavi tavi 0  2021 03 14 12:34 .                   |
+                | dr-xr-xr-x    6 tavi tavi 0  2021 03 14 12:34 ..                  |
+                | lrwx------    1 tavi tavi 64 2021 03 14 12:34 0 -&gt; /dev/pts/4     |
+           +---&gt;| lrwx------    1 tavi tavi 64 2021 03 14 12:34 1 -&gt; /dev/pts/4     |
+           |    | lrwx------    1 tavi tavi 64 2021 03 14 12:34 2 -&gt; /dev/pts/4     |
+           |    | lr-x------    1 tavi tavi 64 2021 03 14 12:34 3 -&gt; /proc/18312/fd |
+           |    +-------------------------------------------------------------------+
+           |                 +----------------------------------------------------------------+
+           |                 | 08048000-0804c000 r-xp 00000000 08:02 16875609 /bin/cat        |
+$ ls -1 /proc/self/          | 0804c000-0804d000 rw-p 00003000 08:02 16875609 /bin/cat        |
+cmdline    |                 | 0804d000-0806e000 rw-p 0804d000 00:00 0 [heap]                 |
+cwd        |                 | ...                                                            |
+environ    |    +-----------&gt;| b7f46000-b7f49000 rw-p b7f46000 00:00 0                        |
+exe        |    |            | b7f59000-b7f5b000 rw-p b7f59000 00:00 0                        |
+fd --------+    |            | b7f5b000-b7f77000 r-xp 00000000 08:02 11601524 /lib/ld-2.7.so  |
+fdinfo          |            | b7f77000-b7f79000 rw-p 0001b000 08:02 11601524 /lib/ld-2.7.so  |
+maps -----------+            | bfa05000-bfa1a000 rw-p bffeb000 00:00 0 [stack]                |
+mem                          | ffffe000-fffff000 r-xp 00000000 00:00 0 [vdso]                 |
+root                         +----------------------------------------------------------------+
+stat                 +----------------------------+
+statm                |  Name: cat                 |
+status ------+       |  State: R (running)        |
+task         |       |  Tgid: 18205               |
+wchan        +------&gt;|  Pid: 18205                |
+                     |  PPid: 18133               |
+                     |  Uid: 1000 1000 1000 1000  |
+                     |  Gid: 1000 1000 1000 1000  |
+                     +----------------------------+
+</pre></div>
+</div>
+</div>
+<div class="section" id="struct-task-struct">
+<h3><code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code><a class="headerlink" href="#struct-task-struct" title="Permalink to this headline">¶</a></h3>
+<p>Lets take a close look at <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>. For that we
+could just look at the source code, but here we will use a tool called
+<cite>pahole</cite> (part of the dwarves install package) in order to get
+some insights about this structure:</p>
+<div class="admonition-struct-task-struct highlight-c"><div class="highlight"><pre><span></span>$ pahole -C task_struct vmlinux
+
+struct task_struct {
+    struct thread_info thread_info;                  /*     0     8 */
+    volatile long int          state;                /*     8     4 */
+    void *                     stack;                /*    12     4 */
+
+    ...
+
+    /* --- cacheline 45 boundary (2880 bytes) --- */
+    struct thread_struct thread __attribute__((__aligned__(64))); /*  2880  4288 */
+
+    /* size: 7168, cachelines: 112, members: 155 */
+    /* sum members: 7148, holes: 2, sum holes: 12 */
+    /* sum bitfield members: 7 bits, bit holes: 2, sum bit holes: 57 bits */
+    /* paddings: 1, sum paddings: 2 */
+    /* forced alignments: 6, forced holes: 2, sum forced holes: 12 */
+} __attribute__((__aligned__(64)));
+</pre></div>
+</div>
+<p>As you can see it is a pretty large data structure: almost 8KB in size
+and 155 fields.</p>
+</div>
+<div class="section" id="inspecting-task-struct">
+<h3>Inspecting task_struct<a class="headerlink" href="#inspecting-task-struct" title="Permalink to this headline">¶</a></h3>
+<p>The following screencast is going to demonstrate how we can inspect
+the process control block (<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>) by connecting
+the debugger to the running virtual machine. We are going to use a
+helper gdb command <cite>lx-ps</cite> to list the processes and the address of
+the task_struct for each process.</p>
+<p class="admonition-inspecting-task-struct">&nbsp;</p>
+<asciinema-player src="../_images/inspect_task_struct.cast"></asciinema-player></div>
+<div class="section" id="quiz-inspect-a-task-to-determine-opened-files">
+<h3>Quiz: Inspect a task to determine opened files<a class="headerlink" href="#quiz-inspect-a-task-to-determine-opened-files" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-quiz-inspect-opened-files">Use the debugger to inspect the process named syslogd.</p>
+<ul class="simple">
+<li>What command should we use to list the opened file descriptors?</li>
+<li>How many file descriptors are opened?</li>
+<li>What command should we use the determine the file name for opened file descriptor 3?</li>
+<li>What is the filename for file descriptor 3?</li>
+</ul>
+</div>
+<div class="section" id="threads">
+<h3>Threads<a class="headerlink" href="#threads" title="Permalink to this headline">¶</a></h3>
+<p>A thread is the basic unit that the kernel process scheduler uses to
+allow applications to run the CPU. A thread has the following
+characteristics:</p>
+<ul class="admonition-threads simple">
+<li>Each thread has its own stack and together with the register
+values it determines the thread execution state</li>
+<li>A thread runs in the context of a process and all threads in the
+same process share the resources</li>
+<li>The kernel schedules threads not processes and user-level threads
+(e.g. fibers, coroutines, etc.) are not visible at the kernel level</li>
+</ul>
+<p>The typical thread implementation is one where the threads is
+implemented as a separate data structure which is then linked to the
+process data structure. For example, the Windows kernel uses such an
+implementation:</p>
+<p class="admonition-classic-implementation-windows">&nbsp;</p>
+<img alt="../_images/ditaa-4b5c1874d3924d9716f26d4893a3e4f313bf1c43.png" src="../_images/ditaa-4b5c1874d3924d9716f26d4893a3e4f313bf1c43.png" />
+<p>Linux uses a different implementation for threads. The basic unit is
+called a task (hence the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>) and it is used
+for both tasks and processes. Instead of embedding resources in the
+task structure it has pointers to these resources.</p>
+<p>Thus, if two threads are the same process will point to the same
+resource structure instance. If two threads are in different processes
+they will point to different resource structure instances.</p>
+<p class="admonition-linux-implementation">&nbsp;</p>
+<img alt="../_images/ditaa-fd771038e88b95def30ae9bd4df0b7bd6b7b3503.png" src="../_images/ditaa-fd771038e88b95def30ae9bd4df0b7bd6b7b3503.png" />
+</div>
+<div class="section" id="the-clone-system-call">
+<h3>The clone system call<a class="headerlink" href="#the-clone-system-call" title="Permalink to this headline">¶</a></h3>
+<p>In Linux a new thread or process is create with the <code class="xref c c-func docutils literal"><span class="pre">clone()</span></code>
+system call. Both the <code class="xref c c-func docutils literal"><span class="pre">fork()</span></code> system call and the
+<code class="xref c c-func docutils literal"><span class="pre">pthread_create()</span></code> function uses the <code class="xref c c-func docutils literal"><span class="pre">clone()</span></code>
+implementation.</p>
+<p>It allows the caller to decide what resources should be shared with
+the parent and which should be copied or isolated:</p>
+<ul class="admonition-the-clone-system-call simple">
+<li>CLONE_FILES - shares the file descriptor table with the parent</li>
+<li>CLONE_VM - shares the address space with the parent</li>
+<li>CLONE_FS - shares the filesystem information (root directory,
+current directory) with the parent</li>
+<li>CLONE_NEWNS - does not share the mount namespace with the parent</li>
+<li>CLONE_NEWIPC - does not share the IPC namespace (System V IPC
+objects, POSIX message queues) with the parent</li>
+<li>CLONE_NEWNET - does not share the networking namespaces (network
+interfaces, routing table) with the parent</li>
+</ul>
+<p>For example, if <cite>CLONE_FILES | CLONE_VM | CLONE_FS</cite> is used by the
+caller than effectively a new thread is created. If these flags are
+not used than a new process is created.</p>
+</div>
+<div class="section" id="namespaces-and-containers">
+<h3>Namespaces and &quot;containers&quot;<a class="headerlink" href="#namespaces-and-containers" title="Permalink to this headline">¶</a></h3>
+<p>&quot;Containers&quot; are a form of lightweight virtual machines that share the
+same kernel instance, as opposed to normal virtualization where a
+hypervisor runs multiple VMs, each with its one kernel
+instance.</p>
+<p>Examples of container technologies are LXC - that allows running
+lightweight &quot;VM&quot; and docker - a specialized container for running a
+single application.</p>
+<p>Containers are built on top of a few kernel features, one of which is
+namespaces. They allow isolation of different resources that would
+otherwise be globally visible. For example, without containers, all
+processes would be visible in /proc. With containers, processes in one
+container will not be visible (in /proc or be killable) to other
+containers.</p>
+<p>To achieve this partitioning, the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">nsproxy</span></code> structure
+is used to group types of resources that we want to partition. It
+currently supports IPC, networking, cgroup, mount, networking, PID,
+time namespaces. For example, instead of having a global list for
+networking interfaces, the list is part of a <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">net</span></code>. The
+system initializes with a default namespace (<code class="xref c c-data docutils literal"><span class="pre">init_net</span></code>) and by
+default all processes will share this namespace. When a new namespace
+is created a new net namespace is created and then new processes can
+point to that new namespace instead of the default one.</p>
+<span class="admonition-namespaces-and-containers"></span></div>
+<div class="section" id="accessing-the-current-process">
+<h3>Accessing the current process<a class="headerlink" href="#accessing-the-current-process" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-accessing-the-current-process">Accessing the current process is a frequent operation:</p>
+<ul class="simple">
+<li>opening a file needs access to <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>'s
+file field</li>
+<li>mapping a new file needs access to <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>'s
+mm field</li>
+<li>Over 90% of the system calls needs to access the current process
+structure so it needs to be fast</li>
+<li>The <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> macro is available to access to current
+process's <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code></li>
+</ul>
+<p>In order to support fast access in multi processor configurations a
+per CPU variable is used to store and retrieve the pointer to the
+current <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>:</p>
+<p class="admonition-accessing-the-current-process-on-x86">&nbsp;</p>
+<img alt="../_images/ditaa-019489e686a2f60f1594e37458cfcb10320eae0f.png" src="../_images/ditaa-019489e686a2f60f1594e37458cfcb10320eae0f.png" />
+<p>Previously the following sequence was used as the implementation for
+the <code class="xref c c-macro docutils literal"><span class="pre">current</span></code> macro:</p>
+<div class="admonition-previous-implementation-for-current-x86 highlight-c"><div class="highlight"><pre><span></span>/* how to get the current stack pointer from C */
+register unsigned long current_stack_pointer asm(&quot;esp&quot;) __attribute_used__;
+
+/* how to get the thread information struct from C */
+static inline struct thread_info *current_thread_info(void)
+{
+   return (struct thread_info *)(current_stack_pointer &amp; ~(THREAD_SIZE – 1));
+}
+
+#define current current_thread_info()-&gt;task
+</pre></div>
+</div>
+</div>
+<div class="section" id="quiz-previous-implementation-for-current-x86">
+<h3>Quiz: previous implementation for current (x86)<a class="headerlink" href="#quiz-previous-implementation-for-current-x86" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-quiz-previous-implementation-for-current-x86">What is the size of <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">thread_info</span></code>?</p>
+<p>Which of the following are potential valid sizes for
+<code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">thread_info</span></code>: 4095, 4096, 4097?</p>
+</div>
+</div>
+<div class="section" id="context-switching">
+<h2>Context switching<a class="headerlink" href="#context-switching" title="Permalink to this headline">¶</a></h2>
+<p>The following diagram shows an overview of the Linux kernel context
+switch process:</p>
+<img alt="../_images/ditaa-f6b228332baf165f498d8a1bb0bc0bdb91ae50c5.png" class="admonition-overview-the-context-switching-processes" src="../_images/ditaa-f6b228332baf165f498d8a1bb0bc0bdb91ae50c5.png" />
+<p>Note that before a context switch can occur we must do a kernel
+transition, either with a system call or with an interrupt. At that
+point the user space registers are saved on the kernel stack. At some
+point the <code class="xref c c-func docutils literal"><span class="pre">schedule()</span></code> function will be called which can decide
+that a context switch must occur from T0 to T1 (e.g. because the
+current thread is blocking waiting for an I/O operation to complete or
+because it's allocated time slice has expired).</p>
+<p>At that point <code class="xref c c-func docutils literal"><span class="pre">context_switch()</span></code> will perform architecture
+specific operations and will switch the address space if needed:</p>
+<div class="admonition-context-switch highlight-c"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">__always_inline</span> <span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span>
+<span class="nf">context_switch</span><span class="p">(</span><span class="k">struct</span> <span class="n">rq</span> <span class="o">*</span><span class="n">rq</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">prev</span><span class="p">,</span>
+         <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">next</span><span class="p">,</span> <span class="k">struct</span> <span class="n">rq_flags</span> <span class="o">*</span><span class="n">rf</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">prepare_task_switch</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="n">prev</span><span class="p">,</span> <span class="n">next</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * For paravirt, this is coupled with an exit in switch_to to</span>
+<span class="cm">     * combine the page table reload and the switch backend into</span>
+<span class="cm">     * one hypercall.</span>
+<span class="cm">     */</span>
+    <span class="n">arch_start_context_switch</span><span class="p">(</span><span class="n">prev</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * kernel -&gt; kernel   lazy + transfer active</span>
+<span class="cm">     *   user -&gt; kernel   lazy + mmgrab() active</span>
+<span class="cm">     *</span>
+<span class="cm">     * kernel -&gt;   user   switch + mmdrop() active</span>
+<span class="cm">     *   user -&gt;   user   switch</span>
+<span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">)</span> <span class="p">{</span>                                <span class="c1">// to kernel</span>
+        <span class="n">enter_lazy_tlb</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span><span class="p">,</span> <span class="n">next</span><span class="p">);</span>
+
+        <span class="n">next</span><span class="o">-&gt;</span><span class="n">active_mm</span> <span class="o">=</span> <span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">)</span>                           <span class="c1">// from user</span>
+            <span class="n">mmgrab</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span><span class="p">);</span>
+        <span class="k">else</span>
+            <span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                                        <span class="c1">// to user</span>
+        <span class="n">membarrier_switch_mm</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span><span class="p">,</span> <span class="n">next</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">);</span>
+        <span class="cm">/*</span>
+<span class="cm">         * sys_membarrier() requires an smp_mb() between setting</span>
+<span class="cm">         * rq-&gt;curr / membarrier_switch_mm() and returning to userspace.</span>
+<span class="cm">         *</span>
+<span class="cm">         * The below provides this either through switch_mm(), or in</span>
+<span class="cm">         * case &#39;prev-&gt;active_mm == next-&gt;mm&#39; through</span>
+<span class="cm">         * finish_task_switch()&#39;s mmdrop().</span>
+<span class="cm">         */</span>
+        <span class="n">switch_mm_irqs_off</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span><span class="p">,</span> <span class="n">next</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">,</span> <span class="n">next</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">)</span> <span class="p">{</span>                        <span class="c1">// from kernel</span>
+            <span class="cm">/* will mmdrop() in finish_task_switch(). */</span>
+            <span class="n">rq</span><span class="o">-&gt;</span><span class="n">prev_mm</span> <span class="o">=</span> <span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span><span class="p">;</span>
+            <span class="n">prev</span><span class="o">-&gt;</span><span class="n">active_mm</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">rq</span><span class="o">-&gt;</span><span class="n">clock_update_flags</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">RQCF_ACT_SKIP</span><span class="o">|</span><span class="n">RQCF_REQ_SKIP</span><span class="p">);</span>
+
+    <span class="n">prepare_lock_switch</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span> <span class="n">next</span><span class="p">,</span> <span class="n">rf</span><span class="p">);</span>
+
+    <span class="cm">/* Here we just switch the register state and the stack. */</span>
+    <span class="n">switch_to</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">next</span><span class="p">,</span> <span class="n">prev</span><span class="p">);</span>
+    <span class="n">barrier</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="n">finish_task_switch</span><span class="p">(</span><span class="n">prev</span><span class="p">);</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>Then it will call the architecture specific <code class="xref c c-macro docutils literal"><span class="pre">switch_to</span></code>
+implementation to switch the registers state and kernel stack. Note
+that registers are saved on stack and that the stack pointer is saved
+in the task structure:</p>
+<div class="admonition-switch-to highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define switch_to(prev, next, last)               \</span>
+<span class="cp">do {                                              \</span>
+<span class="cp">    ((last) = __switch_to_asm((prev), (next)));   \</span>
+<span class="cp">} while (0)</span>
+
+
+<span class="cm">/*</span>
+<span class="cm"> * %eax: prev task</span>
+<span class="cm"> * %edx: next task</span>
+<span class="cm"> */</span>
+<span class="p">.</span><span class="n">pushsection</span> <span class="p">.</span><span class="n">text</span><span class="p">,</span> <span class="s">&quot;ax&quot;</span>
+<span class="n">SYM_CODE_START</span><span class="p">(</span><span class="n">__switch_to_asm</span><span class="p">)</span>
+    <span class="cm">/*</span>
+<span class="cm">     * Save callee-saved registers</span>
+<span class="cm">     * This must match the order in struct inactive_task_frame</span>
+<span class="cm">     */</span>
+    <span class="n">pushl</span>   <span class="o">%</span><span class="n">ebp</span>
+    <span class="n">pushl</span>   <span class="o">%</span><span class="n">ebx</span>
+    <span class="n">pushl</span>   <span class="o">%</span><span class="n">edi</span>
+    <span class="n">pushl</span>   <span class="o">%</span><span class="n">esi</span>
+    <span class="cm">/*</span>
+<span class="cm">     * Flags are saved to prevent AC leakage. This could go</span>
+<span class="cm">     * away if objtool would have 32bit support to verify</span>
+<span class="cm">     * the STAC/CLAC correctness.</span>
+<span class="cm">     */</span>
+    <span class="n">pushfl</span>
+
+<span class="hll">    <span class="cm">/* switch stack */</span>
+</span><span class="hll">    <span class="n">movl</span>    <span class="o">%</span><span class="n">esp</span><span class="p">,</span> <span class="n">TASK_threadsp</span><span class="p">(</span><span class="o">%</span><span class="n">eax</span><span class="p">)</span>
+</span><span class="hll">    <span class="n">movl</span>    <span class="n">TASK_threadsp</span><span class="p">(</span><span class="o">%</span><span class="n">edx</span><span class="p">),</span> <span class="o">%</span><span class="n">esp</span>
+</span>
+  <span class="cp">#ifdef CONFIG_STACKPROTECTOR</span>
+    <span class="n">movl</span>    <span class="n">TASK_stack_canary</span><span class="p">(</span><span class="o">%</span><span class="n">edx</span><span class="p">),</span> <span class="o">%</span><span class="n">ebx</span>
+    <span class="n">movl</span>    <span class="o">%</span><span class="n">ebx</span><span class="p">,</span> <span class="n">PER_CPU_VAR</span><span class="p">(</span><span class="n">stack_canary</span><span class="p">)</span><span class="o">+</span><span class="n">stack_canary_offset</span>
+  <span class="cp">#endif</span>
+
+  <span class="cp">#ifdef CONFIG_RETPOLINE</span>
+    <span class="cm">/*</span>
+<span class="cm">     * When switching from a shallower to a deeper call stack</span>
+<span class="cm">     * the RSB may either underflow or use entries populated</span>
+<span class="cm">     * with userspace addresses. On CPUs where those concerns</span>
+<span class="cm">     * exist, overwrite the RSB with entries which capture</span>
+<span class="cm">     * speculative execution to prevent attack.</span>
+<span class="cm">     */</span>
+    <span class="n">FILL_RETURN_BUFFER</span> <span class="o">%</span><span class="n">ebx</span><span class="p">,</span> <span class="n">RSB_CLEAR_LOOPS</span><span class="p">,</span> <span class="n">X86_FEATURE_RSB_CTXSW</span>
+    <span class="cp">#endif</span>
+
+    <span class="cm">/* Restore flags or the incoming task to restore AC state. */</span>
+    <span class="n">popfl</span>
+    <span class="cm">/* restore callee-saved registers */</span>
+    <span class="n">popl</span>    <span class="o">%</span><span class="n">esi</span>
+    <span class="n">popl</span>    <span class="o">%</span><span class="n">edi</span>
+    <span class="n">popl</span>    <span class="o">%</span><span class="n">ebx</span>
+    <span class="n">popl</span>    <span class="o">%</span><span class="n">ebp</span>
+
+<span class="hll">    <span class="n">jmp</span>     <span class="n">__switch_to</span>
+</span>  <span class="n">SYM_CODE_END</span><span class="p">(</span><span class="n">__switch_to_asm</span><span class="p">)</span>
+  <span class="p">.</span><span class="n">popsection</span>
+</pre></div>
+</div>
+<p>You can notice that the instruction pointer is not explicitly
+saved. It is not needed because:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a task will always resume in this function</li>
+<li>the <code class="xref c c-func docutils literal"><span class="pre">schedule()</span></code> (<code class="xref c c-func docutils literal"><span class="pre">context_switch()</span></code> is always
+inlined) caller's return address is saved on the kernel stack</li>
+<li>a jmp is used to execute <code class="xref c c-func docutils literal"><span class="pre">__switch_to()</span></code> which is a function
+and when it returns it will pop the original (next task) return
+address from the stack</li>
+</ul>
+</div></blockquote>
+<p>The following screencast uses the debugger to setup a breaking in
+__switch_to_asm and examine the stack during the context switch:</p>
+<p class="admonition-inspecting-task-struct">&nbsp;</p>
+<asciinema-player src="../_images/context_switch.cast"></asciinema-player><div class="section" id="quiz-context-switch">
+<h3>Quiz: context switch<a class="headerlink" href="#quiz-context-switch" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-quiz-context-switch">We are executing a context switch. Select all of the statements that are true.</p>
+<ul class="simple">
+<li>the ESP register is saved in the task structure</li>
+<li>the EIP register is saved in the task structure</li>
+<li>general registers are saved in the task structure</li>
+<li>the ESP register is saved on the stack</li>
+<li>the EIP register is saved on the stack</li>
+<li>general registers are saved on the stack</li>
+</ul>
+</div>
+</div>
+<div class="section" id="blocking-and-waking-up-tasks">
+<h2>Blocking and waking up tasks<a class="headerlink" href="#blocking-and-waking-up-tasks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="task-states">
+<h3>Task states<a class="headerlink" href="#task-states" title="Permalink to this headline">¶</a></h3>
+<p>The following diagram shows to the task (threads) states and the
+possible transitions between them:</p>
+<img alt="../_images/ditaa-0b8cde2be9bbd195ac9dcaeac978a8bbe0d3b805.png" class="admonition-task-states" src="../_images/ditaa-0b8cde2be9bbd195ac9dcaeac978a8bbe0d3b805.png" />
+</div>
+<div class="section" id="blocking-the-current-thread">
+<h3>Blocking the current thread<a class="headerlink" href="#blocking-the-current-thread" title="Permalink to this headline">¶</a></h3>
+<p>Blocking the current thread is an important operation we need to
+perform to implement efficient task scheduling - we want to run other
+threads while I/O operations complete.</p>
+<p>In order to accomplish this the following operations take place:</p>
+<ul class="admonition-blocking-the-current-thread simple">
+<li>Set the current thread state to TASK_UINTERRUPTIBLE or
+TASK_INTERRUPTIBLE</li>
+<li>Add the task to a waiting queue</li>
+<li>Call the scheduler which will pick up a new task from the READY
+queue</li>
+<li>Do the context switch to the new task</li>
+</ul>
+<p>Below are some snippets for the <code class="xref c c-macro docutils literal"><span class="pre">wait_event</span></code>
+implementation. Note that the waiting queue is a list with some extra
+information like a pointer to the task struct.</p>
+<p>Also note that a lot of effort is put into making sure no deadlock can
+occur between <code class="xref c c-macro docutils literal"><span class="pre">wait_event</span></code> and <code class="xref c c-macro docutils literal"><span class="pre">wake_up</span></code>: the task
+is added to the list before checking <code class="xref c c-data docutils literal"><span class="pre">condition</span></code>, signals are
+checked before calling <code class="xref c c-func docutils literal"><span class="pre">schedule()</span></code>.</p>
+<div class="admonition-wait-event highlight-c"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * wait_event - sleep until a condition gets true</span>
+<span class="cm"> * @wq_head: the waitqueue to wait on</span>
+<span class="cm"> * @condition: a C expression for the event to wait for</span>
+<span class="cm"> *</span>
+<span class="cm"> * The process is put to sleep (TASK_UNINTERRUPTIBLE) until the</span>
+<span class="cm"> * @condition evaluates to true. The @condition is checked each time</span>
+<span class="cm"> * the waitqueue @wq_head is woken up.</span>
+<span class="cm"> *</span>
+<span class="cm"> * wake_up() has to be called after changing any variable that could</span>
+<span class="cm"> * change the result of the wait condition.</span>
+<span class="cm"> */</span>
+<span class="cp">#define wait_event(wq_head, condition)            \</span>
+<span class="cp">do {                                              \</span>
+<span class="cp">  might_sleep();                                  \</span>
+<span class="cp">  if (condition)                                  \</span>
+<span class="cp">          break;                                  \</span>
+<span class="cp">  __wait_event(wq_head, condition);               \</span>
+<span class="cp">} while (0)</span>
+
+<span class="cp">#define __wait_event(wq_head, condition)                                  \</span>
+<span class="cp">    (void)___wait_event(wq_head, condition, TASK_UNINTERRUPTIBLE, 0, 0,   \</span>
+<span class="cp">                        schedule())</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * The below macro ___wait_event() has an explicit shadow of the __ret</span>
+<span class="cm"> * variable when used from the wait_event_*() macros.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This is so that both can use the ___wait_cond_timeout() construct</span>
+<span class="cm"> * to wrap the condition.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The type inconsistency of the wait_event_*() __ret variable is also</span>
+<span class="cm"> * on purpose; we use long where we can return timeout values and int</span>
+<span class="cm"> * otherwise.</span>
+<span class="cm"> */</span>
+<span class="cp">#define ___wait_event(wq_head, condition, state, exclusive, ret, cmd)    \</span>
+<span class="cp">({                                                                       \</span>
+<span class="cp">    __label__ __out;                                                     \</span>
+<span class="cp">    struct wait_queue_entry __wq_entry;                                  \</span>
+<span class="cp">    long __ret = ret;       </span><span class="cm">/* explicit shadow */</span><span class="cp">                        \</span>
+<span class="cp">                                                                         \</span>
+<span class="cp">    init_wait_entry(&amp;__wq_entry, exclusive ? WQ_FLAG_EXCLUSIVE : 0);     \</span>
+<span class="cp">    for (;;) {                                                           \</span>
+<span class="cp">        long __int = prepare_to_wait_event(&amp;wq_head, &amp;__wq_entry, state);\</span>
+<span class="cp">                                                                         \</span>
+<span class="cp">        if (condition)                                                   \</span>
+<span class="cp">            break;                                                       \</span>
+<span class="cp">                                                                         \</span>
+<span class="cp">        if (___wait_is_interruptible(state) &amp;&amp; __int) {                  \</span>
+<span class="cp">            __ret = __int;                                               \</span>
+<span class="cp">            goto __out;                                                  \</span>
+<span class="cp">        }                                                                \</span>
+<span class="cp">                                                                         \</span>
+<span class="cp">        cmd;                                                             \</span>
+<span class="cp">    }                                                                    \</span>
+<span class="cp">    finish_wait(&amp;wq_head, &amp;__wq_entry);                                  \</span>
+<span class="cp">   __out:  __ret;                                                        \</span>
+<span class="cp"> })</span>
+
+ <span class="kt">void</span> <span class="nf">init_wait_entry</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_entry</span> <span class="o">*</span><span class="n">wq_entry</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+ <span class="p">{</span>
+    <span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span><span class="p">;</span>
+    <span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">private</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+    <span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">func</span> <span class="o">=</span> <span class="n">autoremove_wake_function</span><span class="p">;</span>
+    <span class="n">INIT_LIST_HEAD</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="kt">long</span> <span class="nf">prepare_to_wait_event</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="k">struct</span> <span class="n">wait_queue_entry</span> <span class="o">*</span><span class="n">wq_entry</span><span class="p">,</span> <span class="kt">int</span> <span class="n">state</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">;</span>
+     <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+     <span class="n">spin_lock_irqsave</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">signal_pending_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">current</span><span class="p">))</span> <span class="p">{</span>
+         <span class="cm">/*</span>
+<span class="cm">          * Exclusive waiter must not fail if it was selected by wakeup,</span>
+<span class="cm">          * it should &quot;consume&quot; the condition we were waiting for.</span>
+<span class="cm">          *</span>
+<span class="cm">          * The caller will recheck the condition and return success if</span>
+<span class="cm">          * we were already woken up, we can not miss the event because</span>
+<span class="cm">          * wakeup locks/unlocks the same wq_head-&gt;lock.</span>
+<span class="cm">          *</span>
+<span class="cm">          * But we need to ensure that set-condition + wakeup after that</span>
+<span class="cm">          * can&#39;t see us, it should wake up another exclusive waiter if</span>
+<span class="cm">          * we fail.</span>
+<span class="cm">          */</span>
+         <span class="n">list_del_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">);</span>
+         <span class="n">ret</span> <span class="o">=</span> <span class="o">-</span><span class="n">ERESTARTSYS</span><span class="p">;</span>
+     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">))</span> <span class="p">{</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">WQ_FLAG_EXCLUSIVE</span><span class="p">)</span>
+                 <span class="n">__add_wait_queue_entry_tail</span><span class="p">(</span><span class="n">wq_head</span><span class="p">,</span> <span class="n">wq_entry</span><span class="p">);</span>
+             <span class="k">else</span>
+                 <span class="n">__add_wait_queue</span><span class="p">(</span><span class="n">wq_head</span><span class="p">,</span> <span class="n">wq_entry</span><span class="p">);</span>
+         <span class="p">}</span>
+         <span class="n">set_current_state</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+     <span class="p">}</span>
+     <span class="n">spin_unlock_irqrestore</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+
+     <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">__add_wait_queue</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="k">struct</span> <span class="n">wait_queue_entry</span> <span class="o">*</span><span class="n">wq_entry</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">__add_wait_queue_entry_tail</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="k">struct</span> <span class="n">wait_queue_entry</span> <span class="o">*</span><span class="n">wq_entry</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">list_add_tail</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="cm">/**</span>
+<span class="cm">  * finish_wait - clean up after waiting in a queue</span>
+<span class="cm">  * @wq_head: waitqueue waited on</span>
+<span class="cm">  * @wq_entry: wait descriptor</span>
+<span class="cm">  *</span>
+<span class="cm">  * Sets current thread back to running state and removes</span>
+<span class="cm">  * the wait descriptor from the given waitqueue if still</span>
+<span class="cm">  * queued.</span>
+<span class="cm">  */</span>
+ <span class="kt">void</span> <span class="nf">finish_wait</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="k">struct</span> <span class="n">wait_queue_entry</span> <span class="o">*</span><span class="n">wq_entry</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">;</span>
+
+     <span class="n">__set_current_state</span><span class="p">(</span><span class="n">TASK_RUNNING</span><span class="p">);</span>
+     <span class="cm">/*</span>
+<span class="cm">      * We can check for list emptiness outside the lock</span>
+<span class="cm">      * IFF:</span>
+<span class="cm">      *  - we use the &quot;careful&quot; check that verifies both</span>
+<span class="cm">      *    the next and prev pointers, so that there cannot</span>
+<span class="cm">      *    be any half-pending updates in progress on other</span>
+<span class="cm">      *    CPU&#39;s that we haven&#39;t seen yet (and that might</span>
+<span class="cm">      *    still change the stack area.</span>
+<span class="cm">      * and</span>
+<span class="cm">      *  - all other users take the lock (ie we can only</span>
+<span class="cm">      *    have _one_ other CPU that looks at or modifies</span>
+<span class="cm">      *    the list).</span>
+<span class="cm">      */</span>
+     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">list_empty_careful</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">))</span> <span class="p">{</span>
+         <span class="n">spin_lock_irqsave</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+         <span class="n">list_del_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">);</span>
+         <span class="n">spin_unlock_irqrestore</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="waking-up-a-task">
+<h3>Waking up a task<a class="headerlink" href="#waking-up-a-task" title="Permalink to this headline">¶</a></h3>
+<p>We can wake-up tasks by using the <code class="xref c c-macro docutils literal"><span class="pre">wake_up</span></code> primitive. The
+following high level operations are performed to wake up a task:</p>
+<ul class="admonition-waking-up-a-task simple">
+<li>Select a task from the waiting queue</li>
+<li>Set the task state to TASK_READY</li>
+<li>Insert the task into the scheduler's READY queue</li>
+<li>On SMP system this is a complex operation: each processor has its
+own queue, queues need to be balanced, CPUs needs to be signaled</li>
+</ul>
+<div class="admonition-wake-up highlight-c"><div class="highlight"><pre><span></span><span class="cp">#define wake_up(x)                        __wake_up(x, TASK_NORMAL, 1, NULL)</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * __wake_up - wake up threads blocked on a waitqueue.</span>
+<span class="cm"> * @wq_head: the waitqueue</span>
+<span class="cm"> * @mode: which threads</span>
+<span class="cm"> * @nr_exclusive: how many wake-one or wake-many threads to wake up</span>
+<span class="cm"> * @key: is directly passed to the wakeup function</span>
+<span class="cm"> *</span>
+<span class="cm"> * If this function wakes up a task, it executes a full memory barrier before</span>
+<span class="cm"> * accessing the task state.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span> <span class="nf">__wake_up</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span>
+               <span class="kt">int</span> <span class="n">nr_exclusive</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__wake_up_common_lock</span><span class="p">(</span><span class="n">wq_head</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">nr_exclusive</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">__wake_up_common_lock</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="n">nr_exclusive</span><span class="p">,</span> <span class="kt">int</span> <span class="n">wake_flags</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">flags</span><span class="p">;</span>
+  <span class="n">wait_queue_entry_t</span> <span class="n">bookmark</span><span class="p">;</span>
+
+  <span class="n">bookmark</span><span class="p">.</span><span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">bookmark</span><span class="p">.</span><span class="n">private</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+  <span class="n">bookmark</span><span class="p">.</span><span class="n">func</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+  <span class="n">INIT_LIST_HEAD</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bookmark</span><span class="p">.</span><span class="n">entry</span><span class="p">);</span>
+
+  <span class="k">do</span> <span class="p">{</span>
+          <span class="n">spin_lock_irqsave</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+          <span class="n">nr_exclusive</span> <span class="o">=</span> <span class="n">__wake_up_common</span><span class="p">(</span><span class="n">wq_head</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">nr_exclusive</span><span class="p">,</span>
+                                          <span class="n">wake_flags</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bookmark</span><span class="p">);</span>
+          <span class="n">spin_unlock_irqrestore</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">bookmark</span><span class="p">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">WQ_FLAG_BOOKMARK</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * The core wakeup function. Non-exclusive wakeups (nr_exclusive == 0) just</span>
+<span class="cm"> * wake everything up. If it&#39;s an exclusive wakeup (nr_exclusive == small +ve</span>
+<span class="cm"> * number) then we wake all the non-exclusive tasks and one exclusive task.</span>
+<span class="cm"> *</span>
+<span class="cm"> * There are circumstances in which we can try to wake a task which has already</span>
+<span class="cm"> * started to run but is not in state TASK_RUNNING. try_to_wake_up() returns</span>
+<span class="cm"> * zero in this (rare) case, and we handle it by continuing to scan the queue.</span>
+<span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">__wake_up_common</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_head</span> <span class="o">*</span><span class="n">wq_head</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span>
+                            <span class="kt">int</span> <span class="n">nr_exclusive</span><span class="p">,</span> <span class="kt">int</span> <span class="n">wake_flags</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span>
+                  <span class="n">wait_queue_entry_t</span> <span class="o">*</span><span class="n">bookmark</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">wait_queue_entry_t</span> <span class="o">*</span><span class="n">curr</span><span class="p">,</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="n">lockdep_assert_held</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">bookmark</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">bookmark</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">WQ_FLAG_BOOKMARK</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">curr</span> <span class="o">=</span> <span class="n">list_next_entry</span><span class="p">(</span><span class="n">bookmark</span><span class="p">,</span> <span class="n">entry</span><span class="p">);</span>
+
+          <span class="n">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bookmark</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">);</span>
+          <span class="n">bookmark</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span>
+          <span class="n">curr</span> <span class="o">=</span> <span class="n">list_first_entry</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">,</span> <span class="n">wait_queue_entry_t</span><span class="p">,</span> <span class="n">entry</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">curr</span><span class="o">-&gt;</span><span class="n">entry</span> <span class="o">==</span> <span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">)</span>
+          <span class="k">return</span> <span class="n">nr_exclusive</span><span class="p">;</span>
+
+    <span class="n">list_for_each_entry_safe_from</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">next</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="p">{</span>
+          <span class="kt">unsigned</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">flags</span><span class="p">;</span>
+          <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">WQ_FLAG_BOOKMARK</span><span class="p">)</span>
+                  <span class="k">continue</span><span class="p">;</span>
+
+          <span class="n">ret</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">func</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">wake_flags</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                  <span class="k">break</span><span class="p">;</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">WQ_FLAG_EXCLUSIVE</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!--</span><span class="n">nr_exclusive</span><span class="p">)</span>
+                  <span class="k">break</span><span class="p">;</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="n">bookmark</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">++</span><span class="n">cnt</span> <span class="o">&gt;</span> <span class="n">WAITQUEUE_WALK_BREAK_CNT</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+                          <span class="p">(</span><span class="o">&amp;</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">entry</span> <span class="o">!=</span> <span class="o">&amp;</span><span class="n">wq_head</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">))</span> <span class="p">{</span>
+                  <span class="n">bookmark</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">=</span> <span class="n">WQ_FLAG_BOOKMARK</span><span class="p">;</span>
+                  <span class="n">list_add_tail</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bookmark</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">);</span>
+                  <span class="k">break</span><span class="p">;</span>
+          <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">nr_exclusive</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">autoremove_wake_function</span><span class="p">(</span><span class="k">struct</span> <span class="n">wait_queue_entry</span> <span class="o">*</span><span class="n">wq_entry</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">mode</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sync</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">default_wake_function</span><span class="p">(</span><span class="n">wq_entry</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sync</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="n">list_del_init_careful</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wq_entry</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">default_wake_function</span><span class="p">(</span><span class="n">wait_queue_entry_t</span> <span class="o">*</span><span class="n">curr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">mode</span><span class="p">,</span> <span class="kt">int</span> <span class="n">wake_flags</span><span class="p">,</span>
+                    <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">WARN_ON_ONCE</span><span class="p">(</span><span class="n">IS_ENABLED</span><span class="p">(</span><span class="n">CONFIG_SCHED_DEBUG</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">wake_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">WF_SYNC</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">try_to_wake_up</span><span class="p">(</span><span class="n">curr</span><span class="o">-&gt;</span><span class="n">private</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">wake_flags</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * try_to_wake_up - wake up a thread</span>
+<span class="cm"> * @p: the thread to be awakened</span>
+<span class="cm"> * @state: the mask of task states that can be woken</span>
+<span class="cm"> * @wake_flags: wake modifier flags (WF_*)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Conceptually does:</span>
+<span class="cm"> *</span>
+<span class="cm"> *   If (@state &amp; @p-&gt;state) @p-&gt;state = TASK_RUNNING.</span>
+<span class="cm"> *</span>
+<span class="cm"> * If the task was not queued/runnable, also place it back on a runqueue.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This function is atomic against schedule() which would dequeue the task.</span>
+<span class="cm"> *</span>
+<span class="cm"> * It issues a full memory barrier before accessing @p-&gt;state, see the comment</span>
+<span class="cm"> * with set_current_state().</span>
+<span class="cm"> *</span>
+<span class="cm"> * Uses p-&gt;pi_lock to serialize against concurrent wake-ups.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Relies on p-&gt;pi_lock stabilizing:</span>
+<span class="cm"> *  - p-&gt;sched_class</span>
+<span class="cm"> *  - p-&gt;cpus_ptr</span>
+<span class="cm"> *  - p-&gt;sched_task_group</span>
+<span class="cm"> * in order to do migration, see its use of select_task_rq()/set_task_cpu().</span>
+<span class="cm"> *</span>
+<span class="cm"> * Tries really hard to only take one task_rq(p)-&gt;lock for performance.</span>
+<span class="cm"> * Takes rq-&gt;lock in:</span>
+<span class="cm"> *  - ttwu_runnable()    -- old rq, unavoidable, see comment there;</span>
+<span class="cm"> *  - ttwu_queue()       -- new rq, for enqueue of the task;</span>
+<span class="cm"> *  - psi_ttwu_dequeue() -- much sadness :-( accounting will kill us.</span>
+<span class="cm"> *</span>
+<span class="cm"> * As a consequence we race really badly with just about everything. See the</span>
+<span class="cm"> * many memory barriers and their comments for details.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Return: %true if @p-&gt;state changes (an actual wakeup was done),</span>
+<span class="cm"> *           %false otherwise.</span>
+<span class="cm"> */</span>
+ <span class="k">static</span> <span class="kt">int</span>
+ <span class="nf">try_to_wake_up</span><span class="p">(</span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">state</span><span class="p">,</span> <span class="kt">int</span> <span class="n">wake_flags</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="p">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="preempting-tasks">
+<h2>Preempting tasks<a class="headerlink" href="#preempting-tasks" title="Permalink to this headline">¶</a></h2>
+<p>Up until this point we look at how context switches occurs voluntary
+between threads. Next we will look at how preemption is handled. We
+will start wight the simpler case where the kernel is configured as
+non preemptive and then we will move to the preemptive kernel case.</p>
+<div class="section" id="non-preemptive-kernel">
+<h3>Non preemptive kernel<a class="headerlink" href="#non-preemptive-kernel" title="Permalink to this headline">¶</a></h3>
+<ul class="admonition-non-preemptive-kernel simple">
+<li>At every tick the kernel checks to see if the current process has
+its time slice consumed</li>
+<li>If that happens a flag is set in interrupt context</li>
+<li>Before returning to userspace the kernel checks this flag and
+calls <code class="xref c c-func docutils literal"><span class="pre">schedule()</span></code> if needed</li>
+<li>In this case tasks are not preempted while running in kernel mode
+(e.g. system call) so there are no synchronization issues</li>
+</ul>
+</div>
+<div class="section" id="preemptive-kernel">
+<h3>Preemptive kernel<a class="headerlink" href="#preemptive-kernel" title="Permalink to this headline">¶</a></h3>
+<p>In this case the current task can be preempted even if we are running
+in kernel mode and executing a system call. This requires using a
+special synchronization primitives: <code class="xref c c-macro docutils literal"><span class="pre">preempt_disable</span></code> and
+<code class="xref c c-macro docutils literal"><span class="pre">preempt_enable</span></code>.</p>
+<p>In order to simplify handling for preemptive kernels and since
+synchronization primitives are needed for the SMP case anyway,
+preemption is disabled automatically when a spinlock is used.</p>
+<p>As before, if we run into a condition that requires the preemption of
+the current task (its time slices has expired) a flag is set. This
+flag is checked whenever the preemption is reactivated, e.g. when
+exiting a critical section through a <code class="xref c c-func docutils literal"><span class="pre">spin_unlock()</span></code> and if
+needed the scheduler is called to select a new task.</p>
+<span class="admonition-preemptive-kernel"></span></div>
+</div>
+<div class="section" id="process-context">
+<h2>Process context<a class="headerlink" href="#process-context" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have examined the implementation of processes and threads
+(tasks), how context switching occurs, how we can block, wake-up and
+preempt tasks, we can finally define what the process context is what
+are its properties:</p>
+<p class="admonition-process-context">The kernel is executing in process context when it is running a
+system call.</p>
+<p>In process context there is a well defined context and we can
+access the current process data with <code class="xref c c-macro docutils literal"><span class="pre">current</span></code></p>
+<p>In process context we can sleep (wait on a condition).</p>
+<p>In process context we can access the user-space (unless we are
+running in a kernel thread context).</p>
+<div class="section" id="kernel-threads">
+<h3>Kernel threads<a class="headerlink" href="#kernel-threads" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-kernel-threads">Sometimes the kernel core or device drivers need to perform blocking
+operations and thus they need to run in process context.</p>
+<p>Kernel threads are used exactly for this and are a special class of
+tasks that don't &quot;userspace&quot; resources (e.g. no address space or
+opened files).</p>
+<p>The following screencast takes a closer look at kernel threads:</p>
+<p class="admonition-inspecting-kernel-threads">&nbsp;</p>
+<asciinema-player src="../_images/kernel_threads.cast"></asciinema-player></div>
+</div>
+<div class="section" id="using-gdb-scripts-for-kernel-inspection">
+<h2>Using gdb scripts for kernel inspection<a class="headerlink" href="#using-gdb-scripts-for-kernel-inspection" title="Permalink to this headline">¶</a></h2>
+<p>The Linux kernel comes with a predefined set of gdb extra commands we
+can use to inspect the kernel during debugging. They will
+automatically be loaded as long gdbinit is properly setup</p>
+<div class="highlight-sh"><div class="highlight"><pre><span></span>ubuntu@so2:/linux/tools/labs$ cat ~/.gdbinit
+add-auto-load-safe-path /linux/scripts/gdb/vmlinux-gdb.py
+</pre></div>
+</div>
+<p>All of the kernel specific commands are prefixed with lx-. You can use
+TAB in gdb to list all of them:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="o">(</span>gdb<span class="o">)</span> lx-
+lx-clk-summary        lx-dmesg              lx-mounts
+lx-cmdline            lx-fdtdump            lx-ps
+lx-configdump         lx-genpd-summary      lx-symbols
+lx-cpus               lx-iomem              lx-timerlist
+lx-device-list-bus    lx-ioports            lx-version
+lx-device-list-class  lx-list-check
+lx-device-list-tree   lx-lsmod
+</pre></div>
+</div>
+<p>The implementation of the commands can be found at
+<cite>script/gdb/linux</cite>. Lets take a closer look at the lx-ps
+implementation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">task_type</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">CachedType</span><span class="p">(</span><span class="s2">&quot;struct task_struct&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">task_lists</span><span class="p">():</span>
+ <span class="n">task_ptr_type</span> <span class="o">=</span> <span class="n">task_type</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span><span class="o">.</span><span class="n">pointer</span><span class="p">()</span>
+ <span class="n">init_task</span> <span class="o">=</span> <span class="n">gdb</span><span class="o">.</span><span class="n">parse_and_eval</span><span class="p">(</span><span class="s2">&quot;init_task&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">address</span>
+ <span class="n">t</span> <span class="o">=</span> <span class="n">g</span> <span class="o">=</span> <span class="n">init_task</span>
+
+ <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+         <span class="k">yield</span> <span class="n">t</span>
+
+         <span class="n">t</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">container_of</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;thread_group&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">],</span>
+                                <span class="n">task_ptr_type</span><span class="p">,</span> <span class="s2">&quot;thread_group&quot;</span><span class="p">)</span>
+         <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">g</span><span class="p">:</span>
+             <span class="k">break</span>
+
+     <span class="n">t</span> <span class="o">=</span> <span class="n">g</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">container_of</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;tasks&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">],</span>
+                                <span class="n">task_ptr_type</span><span class="p">,</span> <span class="s2">&quot;tasks&quot;</span><span class="p">)</span>
+     <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">init_task</span><span class="p">:</span>
+         <span class="k">return</span>
+
+
+ <span class="k">class</span> <span class="nc">LxPs</span><span class="p">(</span><span class="n">gdb</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+ <span class="sd">&quot;&quot;&quot;Dump Linux tasks.&quot;&quot;&quot;</span>
+
+ <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+     <span class="nb">super</span><span class="p">(</span><span class="n">LxPs</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;lx-ps&quot;</span><span class="p">,</span> <span class="n">gdb</span><span class="o">.</span><span class="n">COMMAND_DATA</span><span class="p">)</span>
+
+ <span class="k">def</span> <span class="nf">invoke</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">from_tty</span><span class="p">):</span>
+     <span class="n">gdb</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{:&gt;10} {:&gt;12} {:&gt;7}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;TASK&quot;</span><span class="p">,</span> <span class="s2">&quot;PID&quot;</span><span class="p">,</span> <span class="s2">&quot;COMM&quot;</span><span class="p">))</span>
+     <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_lists</span><span class="p">():</span>
+         <span class="n">gdb</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{} {:^5} {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+             <span class="n">task</span><span class="o">.</span><span class="n">format_string</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+             <span class="n">task</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format_string</span><span class="p">(),</span>
+             <span class="n">task</span><span class="p">[</span><span class="s2">&quot;comm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">string</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="section" id="quiz-kernel-gdb-scripts">
+<h3>Quiz: Kernel gdb scripts<a class="headerlink" href="#quiz-kernel-gdb-scripts" title="Permalink to this headline">¶</a></h3>
+<p class="admonition-quiz-kernel-gdb-scripts">What is the following change of the lx-ps script trying to
+accomplish?</p>
+<div class="highlight-diff"><div class="highlight"><pre><span></span><span class="gh">diff --git a/scripts/gdb/linux/tasks.py b/scripts/gdb/linux/tasks.py</span>
+<span class="gh">index 17ec19e9b5bf..7e43c163832f 100644</span>
+<span class="gd">--- a/scripts/gdb/linux/tasks.py</span>
+<span class="gi">+++ b/scripts/gdb/linux/tasks.py</span>
+<span class="gu">@@ -75,10 +75,13 @@ class LxPs(gdb.Command):</span>
+     def invoke(self, arg, from_tty):
+         gdb.write(&quot;{:&gt;10} {:&gt;12} {:&gt;7}\n&quot;.format(&quot;TASK&quot;, &quot;PID&quot;, &quot;COMM&quot;))
+         for task in task_lists():
+<span class="gd">-            gdb.write(&quot;{} {:^5} {}\n&quot;.format(</span>
+<span class="gi">+            check = task[&quot;mm&quot;].format_string() == &quot;0x0&quot;</span>
+<span class="gi">+            gdb.write(&quot;{} {:^5} {}{}{}\n&quot;.format(</span>
+                 task.format_string().split()[0],
+                 task[&quot;pid&quot;].format_string(),
+<span class="gd">-                task[&quot;comm&quot;].string()))</span>
+<span class="gi">+                &quot;[&quot; if check else &quot;&quot;,</span>
+<span class="gi">+                task[&quot;comm&quot;].string(),</span>
+<span class="gi">+                &quot;]&quot; if check else &quot;&quot;))</span>
+
+
+ LxPs()
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="syscalls.html" class="btn btn-neutral float-left" title="System Calls" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interrupts.html" class="btn btn-neutral float-right" title="Interrupts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The kernel development community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
