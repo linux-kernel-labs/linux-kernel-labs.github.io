@@ -581,7 +581,7 @@ This function is called by the <code class="docutils literal"><span class="pre">
 </div>
 <div class="section" id="creating-a-link">
 <h3>Creating a link<a class="headerlink" href="#creating-a-link" title="Permalink to this headline">¶</a></h3>
-<p>The link creation function (hard link) is indicated by the <code class="docutils literal"><span class="pre">symlink</span></code> field in the <code class="docutils literal"><span class="pre">inode_operations</span></code> structure.
+<p>The link creation function (hard link) is indicated by the <code class="docutils literal"><span class="pre">link</span></code> field in the <code class="docutils literal"><span class="pre">inode_operations</span></code> structure.
 In the minix case, the function is <code class="xref c c-func docutils literal"><span class="pre">minix_link()</span></code>.
 This function is called by the <code class="docutils literal"><span class="pre">link</span></code> system call. Such a function performs the following operations:</p>
 <blockquote>

@@ -332,7 +332,7 @@ implementation:</p>
 <img alt="../_images/ditaa-4b5c1874d3924d9716f26d4893a3e4f313bf1c43.png" src="../_images/ditaa-4b5c1874d3924d9716f26d4893a3e4f313bf1c43.png" />
 <p>Linux uses a different implementation for threads. The basic unit is
 called a task (hence the <code class="xref c c-type docutils literal"><span class="pre">struct</span> <span class="pre">task_struct</span></code>) and it is used
-for both tasks and processes. Instead of embedding resources in the
+for both threads and processes. Instead of embedding resources in the
 task structure it has pointers to these resources.</p>
 <p>Thus, if two threads are the same process will point to the same
 resource structure instance. If two threads are in different processes
