@@ -997,8 +997,7 @@ To work with the kernel modules, we will follow the steps described
 :ref:`above <exercises_summary>`.
 
 Generate the skeleton for the task named **1-2-test-mod** then build the module,
- by running the following command in
-:file:`tools/labs`.
+ by running the following command in :file:`tools/labs`.
 
 .. code-block:: bash
 
