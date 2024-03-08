@@ -155,7 +155,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Recommended Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html#virtual-machine-setup">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
@@ -621,15 +622,16 @@ Filesystem</li>
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
-<p>To solve exercises, you need to perform these steps:</p>
-<blockquote>
-<div><ul class="simple">
+<p>We strongly encourage you to use the setup from <a class="reference external" href="https://gitlab.cs.pub.ro/so2/so2-labs">this repository</a>.</p>
+<dl class="docutils">
+<dt>To solve exercises, you need to perform these steps:</dt>
+<dd><ul class="first last simple">
 <li>prepare skeletons from templates</li>
 <li>build modules</li>
-<li>copy modules to the VM</li>
 <li>start the VM and test the module in the VM.</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 <p>The current lab name is filesystems. See the exercises for the task name.</p>
 <p>The skeleton code is generated from full source examples located in
 <code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
@@ -646,14 +648,13 @@ tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
-<p>Then, copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
-tools/labs $ make boot
+<p>Then, start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make console
 </pre></div>
 </div>
 <p>The modules are placed in /home/root/skels/filesystems/&lt;task_name&gt;.</p>
-<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
-For additional details about connecting to the VM via the network, please check <a class="reference internal" href="../info/vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the Virtual Machine</span></a>.</p>
+<p>You DO NOT need to STOP the VM when rebuilding modules!
+The local <cite>skels</cite> directory is shared with the VM.</p>
 <p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
 </div>
 <div class="admonition warning">

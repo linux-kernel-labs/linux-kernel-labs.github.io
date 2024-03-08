@@ -90,7 +90,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#remarks">Remarks</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#booting-the-virtual-machine">Booting the virtual machine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#kernel-module">1. Kernel module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#printk">2. Printk</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#error">3. Error</a></li>
@@ -172,7 +171,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Useful info</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Virtual Machine Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html">Recommended Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../info/vm.html#virtual-machine-setup">Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../info/extra-vm.html">Customizing the Virtual Machine Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../info/contributing.html">Contributing to linux-kernel-labs</a></li>
 </ul>
@@ -1106,7 +1106,7 @@ eventually test programs;</li>
 If there is no <code class="file docutils literal"><span class="pre">cscope.out</span></code> file, you can generate it using
 the command <strong class="command">make ARCH=x86 cscope</strong>.</li>
 <li>You can find more details about the virtual machine at
-<a class="reference internal" href="../info/vm.html#vm-link"><span class="std std-ref">Virtual Machine Setup</span></a>.</li>
+<a class="reference internal" href="../info/vm.html#vm-link"><span class="std std-ref">Recommended Setup</span></a>.</li>
 </ul>
 </div>
 <div class="admonition important">
@@ -1115,15 +1115,16 @@ the command <strong class="command">make ARCH=x86 cscope</strong>.</li>
 </div>
 <div class="admonition important" id="exercises-summary">
 <p class="first admonition-title">Important</p>
-<p>To solve exercises, you need to perform these steps:</p>
-<blockquote>
-<div><ul class="simple">
+<p>We strongly encourage you to use the setup from <a class="reference external" href="https://gitlab.cs.pub.ro/so2/so2-labs">this repository</a>.</p>
+<dl class="docutils">
+<dt>To solve exercises, you need to perform these steps:</dt>
+<dd><ul class="first last simple">
 <li>prepare skeletons from templates</li>
 <li>build modules</li>
-<li>copy modules to the VM</li>
 <li>start the VM and test the module in the VM.</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 <p>The current lab name is kernel_modules. See the exercises for the task name.</p>
 <p>The skeleton code is generated from full source examples located in
 <code class="file docutils literal"><span class="pre">tools/labs/templates</span></code>. To solve the tasks, start by generating
@@ -1140,14 +1141,13 @@ tools/labs $ <span class="nv">LABS</span><span class="o">=</span>&lt;lab name&gt
 <div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make build
 </pre></div>
 </div>
-<p>Then, copy the modules and start the VM:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make copy
-tools/labs $ make boot
+<p>Then, start the VM:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>tools/labs $ make console
 </pre></div>
 </div>
 <p>The modules are placed in /home/root/skels/kernel_modules/&lt;task_name&gt;.</p>
-<p>Alternatively, we can copy files via <strong class="command">scp</strong>, in order to avoid restarting the VM.
-For additional details about connecting to the VM via the network, please check <a class="reference internal" href="../info/vm.html#vm-interaction-link"><span class="std std-ref">Connecting to the Virtual Machine</span></a>.</p>
+<p>You DO NOT need to STOP the VM when rebuilding modules!
+The local <cite>skels</cite> directory is shared with the VM.</p>
 <p class="last">Review the <a class="reference internal" href="#exercises">Exercises</a> section for more detailed information.</p>
 </div>
 <div class="admonition warning">
@@ -1160,54 +1160,19 @@ To discard the changes, run <code class="docutils literal"><span class="pre">git
 <p class="last">If you already generated the skeleton before <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span></code> you will need to generate it again.</p>
 </div>
 </div>
-<div class="section" id="booting-the-virtual-machine">
-<h3>Booting the virtual machine<a class="headerlink" href="#booting-the-virtual-machine" title="Permalink to this headline">¶</a></h3>
-<p>A summary of the virtual machine infrastructure:</p>
-<ul class="simple">
-<li><code class="file docutils literal"><span class="pre">~/src/linux</span></code> - Linux kernel sources, needed to
-compile modules. The directory contains the file <code class="file docutils literal"><span class="pre">cscope.out</span></code>,
-used for navigation in the source tree.</li>
-<li><code class="file docutils literal"><span class="pre">~/src/linux/tools/labs/qemu</span></code>- scripts and auxiliary
-files used to generate and run the QEMU VM.</li>
-</ul>
-<p>To start the VM, run <strong class="command">make boot</strong> in the directory <code class="file docutils literal"><span class="pre">~/src/linux/tools/labs</span></code>:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~$ <span class="nb">cd</span> ~/src/linux/tools/labs
-student@eg106:~/src/linux/tools/labs$ make boot
-</pre></div>
-</div>
-<p>By default, you will not get a prompt or any graphical interface, but you can connect to
-a console exposed by the virtual machine using <strong class="command">minicom</strong> or <strong class="command">screen</strong>.</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>student@eg106:~/src/linux/tools/labs$ minicom -D serial.pts
-
-&lt;press enter&gt;
-
-qemux86 login:
-Poky <span class="o">(</span>Yocto Project Reference Distro<span class="o">)</span> <span class="m">2</span>.3 qemux86 /dev/hvc0
-</pre></div>
-</div>
-<p>Alternatively, you can start the virtual machine with graphical interface support, using
-the <strong class="command">QEMU_DISPLAY=gtk make boot</strong>.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">To access the virtual machine, at the login prompt, enter the
-username <code class="code docutils literal"><span class="pre">root</span></code>; there is no need to enter a password.
-The virtual machine will start with the permissions of the
-root account.</p>
-</div>
-</div>
 <div class="section" id="kernel-module">
 <h3>1. Kernel module<a class="headerlink" href="#kernel-module" title="Permalink to this headline">¶</a></h3>
 <p>To work with the kernel modules, we will follow the steps described
 <a class="reference internal" href="#exercises-summary"><span class="std std-ref">above</span></a>.</p>
-<p>Generate the skeleton for the task named <strong>1-2-test-mod</strong> then build and
-copy the module to the VM, by running the following commands in
-<code class="file docutils literal"><span class="pre">tools/labs</span></code>.</p>
+<dl class="docutils">
+<dt>Generate the skeleton for the task named <strong>1-2-test-mod</strong> then build the module,</dt>
+<dd>by running the following command in <code class="file docutils literal"><span class="pre">tools/labs</span></code>.</dd>
+</dl>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nv">LABS</span><span class="o">=</span>kernel_modules make skels
 $ make build
-$ make copy
 </pre></div>
 </div>
-<p>These commands will build and copy all the modules in the current
+<p>These command will build all the modules in the current
 lab skeleton.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -1216,8 +1181,7 @@ lab skeleton.</p>
 <code class="file docutils literal"><span class="pre">skels/kernel_modules/3-error-mod/</span></code> and remove the corresponding
 line from <code class="docutils literal"><span class="pre">skels/Kbuild</span></code>.</p>
 </div>
-<p>Start the VM using <strong class="command">make boot</strong>, connect to the serial console
-using <cite>minicom -D serial.pts</cite> and perform the following tasks:</p>
+<p>Start the VM using <strong class="command">make console</strong>, and perform the following tasks:</p>
 <ul class="simple">
 <li>load the kernel module.</li>
 <li>list the kernel modules and check if current module is present</li>
