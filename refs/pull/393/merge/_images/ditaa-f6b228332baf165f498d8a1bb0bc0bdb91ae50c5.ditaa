@@ -1,0 +1,27 @@
+Userspace            Kernel                          Kernel               Userspace
+   T0                  T0                              T1                     T1
+
+   |
+   | syscall   +-------------------+
+   V --------->| Save user regs on |            +-----------------+
+     interrupt | the kernel stack  |            | Save user regs  |
+               +-------------------+            | on kernel stack |
+                        |                       +-----------------+
+                        |schedule()                      |
+                        |                                |schedule()
+                        V                                |
+               +-----------------+                       V
+               |  context_switch |------+       +-----------------+
+               +-----------------+      |       |  context_switch |
+                                        +-----> +-----------------+
+                                                         |
+                                                         V
+                                                +-------------------+
+                                                | Pop user regs     |
+                                                | from kernel stack |
+                                                +-------------------+
+                                                         |
+                                                         | exit syscall
+                                                         +--------------------> |
+                                                                                |
+                                                                                V
