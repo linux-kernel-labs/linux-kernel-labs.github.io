@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="next" title="System Calls" href="syscalls.html" />
+    <link rel="prev" title="Assignment 7 - SO2 Virtual Machine Manager with KVM" href="../so2/assign7-kvm-vmm.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-introduction slide level-2">
+
+<h2>Introduction</h2>
+
+<ul class="simple">
+<li>Basic operating systems terms and concepts</li>
+<li>Overview of the Linux kernel</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-user-vs-kernel slide level-2">
+
+<h2>User vs Kernel</h2>
+
+<ul class="simple">
+<li>Execution modes<ul>
+<li>Kernel mode</li>
+<li>User mode</li>
+</ul>
+</li>
+<li>Memory protection<ul>
+<li>Kernel-space</li>
+<li>User-space</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-typical-operating-system-architecture slide level-2">
+
+<h2>Typical operating system architecture</h2>
+
+<img alt="../_images/ditaa-48374873962ca32ada36c14ab9a83b60f112a1e0.png" src="../_images/ditaa-48374873962ca32ada36c14ab9a83b60f112a1e0.png" />
+
+
+
+
+</article>
+<article class="admonition-monolithic-kernel slide level-2">
+
+<h2>Monolithic kernel</h2>
+
+<img alt="../_images/ditaa-3dc899167df5e16a230c434cf5d6964cb5868482.png" src="../_images/ditaa-3dc899167df5e16a230c434cf5d6964cb5868482.png" />
+
+
+
+
+</article>
+<article class="admonition-micro-kernel slide level-2">
+
+<h2>Micro-kernel</h2>
+
+<img alt="../_images/ditaa-c8a3d93d0109b7be6f608871d16adff4aaa933da.png" src="../_images/ditaa-c8a3d93d0109b7be6f608871d16adff4aaa933da.png" />
+
+
+
+
+</article>
+<article class="admonition-monolithic-kernels-can-be-modular slide level-2">
+
+<h2>Monolithic kernels <em>can</em> be modular</h2>
+
+<ul class="simple">
+<li>Components can enabled or disabled at compile time</li>
+<li>Support of loadable kernel modules (at runtime)</li>
+<li>Organize the kernel in logical, independent subsystems</li>
+<li>Strict interfaces but with low performance overhead: macros,
+inline functions, function pointers</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-hybrid-kernels slide level-2">
+
+<h2>&quot;Hybrid&quot; kernels</h2>
+
+<p>Many operating systems and kernel experts have dismissed the label
+as meaningless, and just marketing. Linus Torvalds said of this
+issue:</p>
+<p>&quot;As to the whole 'hybrid kernel' thing - it's just marketing. It's
+'oh, those microkernels had good PR, how can we try to get good PR
+for our working kernel? Oh, I know, let's use a cool name and try
+to imply that it has all the PR advantages that that other system
+has'.&quot;</p>
+
+
+
+
+</article>
+<article class="admonition-address-space slide level-2">
+
+<h2>Address space</h2>
+
+<ul class="simple">
+<li>Physical address space<ul>
+<li>RAM and peripheral memory</li>
+</ul>
+</li>
+<li>Virtual address space<ul>
+<li>How the CPU sees the memory (when in protected / paging mode)</li>
+<li>Process address space</li>
+<li>Kernel address space</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-user-and-kernel-sharing-the-virtual-address-space slide level-2">
+
+<h2>User and kernel sharing the virtual address space</h2>
+
+<img alt="../_images/ditaa-a5f93e0d17ccdc2ba24828b620d7227f7fc75e33.png" src="../_images/ditaa-a5f93e0d17ccdc2ba24828b620d7227f7fc75e33.png" />
+
+
+
+
+</article>
+<article class="admonition-execution-contexts slide level-2">
+
+<h2>Execution contexts</h2>
+
+<ul class="simple">
+<li>Process context<ul>
+<li>Code that runs in user mode, part of a process</li>
+<li>Code that runs in kernel mode, as a result of a system call
+issued by a process</li>
+</ul>
+</li>
+<li>Interrupt context<ul>
+<li>Code that runs as a result of an interrupt</li>
+<li>Always runs in kernel mode</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-multi-tasking slide level-2">
+
+<h2>Multi-tasking</h2>
+
+<ul class="simple">
+<li>An OS that supports the &quot;simultaneous&quot; execution of multiple processes</li>
+<li>Implemented by fast switching between running processes to allow
+the user to interact with each program</li>
+<li>Implementation:<ul>
+<li>Cooperative</li>
+<li>Preemptive</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-preemptive-kernel slide level-2">
+
+<h2>Preemptive kernel</h2>
+
+<p>Preemptive multitasking and preemptive kernels are different terms.</p>
+<p>A kernel is preemptive if a process can be preempted while running
+in kernel mode.</p>
+<p>However, note that non-preemptive kernels may support preemptive
+multitasking.</p>
+
+
+
+
+</article>
+<article class="admonition-pageable-kernel-memory slide level-2">
+
+<h2>Pageable kernel memory</h2>
+
+<p>A kernel supports pageable kernel memory if parts of kernel memory
+(code, data, stack or dynamically allocated memory) can be swapped
+to disk.</p>
+
+
+
+
+</article>
+<article class="admonition-kernel-stack slide level-2">
+
+<h2>Kernel stack</h2>
+
+<p>Each process has a kernel stack that is used to maintain the
+function call chain and local variables state while it is executing
+in kernel mode, as a result of a system call.</p>
+<p>The kernel stack is small (4KB - 12 KB) so the kernel developer has
+to avoid allocating large structures on stack or recursive calls
+that are not properly bounded.</p>
+
+
+
+
+</article>
+<article class="admonition-portability slide level-2">
+
+<h2>Portability</h2>
+
+<ul class="simple">
+<li>Architecture and machine specific code (C &amp; ASM)</li>
+<li>Independent architecture code (C):<ul>
+<li>kernel core (further split in multiple subsystems)</li>
+<li>device drivers</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-asymmetric-multiprocessing-asmp slide level-2">
+
+<h2>Asymmetric MultiProcessing (ASMP)</h2>
+
+<img alt="../_images/ditaa-cb16db58a2489307b74d4f70256a48c81c65f6c6.png" src="../_images/ditaa-cb16db58a2489307b74d4f70256a48c81c65f6c6.png" />
+
+
+
+
+</article>
+<article class="admonition-symmetric-multiprocessing-smp slide level-2">
+
+<h2>Symmetric MultiProcessing (SMP)</h2>
+
+<img alt="../_images/ditaa-08aff771b3ff7a5525df7b0c090e28c836502788.png" src="../_images/ditaa-08aff771b3ff7a5525df7b0c090e28c836502788.png" />
+
+
+
+
+</article>
+<article class="admonition-cpu-scalability slide level-2">
+
+<h2>CPU Scalability</h2>
+
+<ul class="simple">
+<li>Use lock free algorithms when possible</li>
+<li>Use fine grained locking for high contention areas</li>
+<li>Pay attention to algorithm complexity</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-linux-development-model slide level-2">
+
+<h2>Linux development model</h2>
+
+<ul class="simple">
+<li>Open source, GPLv2 License</li>
+<li>Contributors: companies, academia and independent developers</li>
+<li>Development cycle: 3 – 4 months which consists of a 1 - 2 week
+merge window followed by bug fixing</li>
+<li>Features are only allowed in the merge window</li>
+<li>After the merge window a release candidate is done on a weekly
+basis (rc1, rc2, etc.)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-maintainer-hierarchy slide level-2">
+
+<h2>Maintainer hierarchy</h2>
+
+<ul class="simple">
+<li>Linus Torvalds is the maintainer of the Linux kernel and merges pull
+requests from subsystem maintainers</li>
+<li>Each subsystem has one or more maintainers that accept patches or
+pull requests from developers or device driver maintainers</li>
+<li>Each maintainer has its own git tree, e.g.:<ul>
+<li>Linux Torvalds: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git</li>
+<li>David Miller (networking): git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/</li>
+</ul>
+</li>
+<li>Each subsystem may maintain a -next tree where developers can submit
+patches for the next merge window</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-linux-source-code-layout slide level-2">
+
+<h2>Linux source code layout</h2>
+
+<img alt="../_images/ditaa-f45246aade5ecc7cfb71f7f103a57f95fc7c2b9e.png" src="../_images/ditaa-f45246aade5ecc7cfb71f7f103a57f95fc7c2b9e.png" />
+
+
+
+
+</article>
+<article class="admonition-linux-kernel-architecture slide level-2">
+
+<h2>Linux kernel architecture</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-b9ffae65be16d30be11b5eca188a7a143b1b8227.png"><img alt="../_images/ditaa-b9ffae65be16d30be11b5eca188a7a143b1b8227.png" src="../_images/ditaa-b9ffae65be16d30be11b5eca188a7a143b1b8227.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-arch slide level-2">
+
+<h2>arch</h2>
+
+<ul class="simple">
+<li>Architecture specific code</li>
+<li>May be further sub-divided in machine specific code</li>
+<li>Interfacing with the boot loader and architecture specific
+initialization</li>
+<li>Access to various hardware bits that are architecture or machine
+specific such as interrupt controller, SMP controllers, BUS
+controllers, exceptions and interrupt setup, virtual memory handling</li>
+<li>Architecture optimized functions (e.g. memcpy, string operations,
+etc.)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-device-drivers slide level-2">
+
+<h2>Device drivers</h2>
+
+<ul class="simple">
+<li>Unified device model</li>
+<li>Each subsystem has its own specific driver interfaces</li>
+<li>Many device driver types (TTY, serial, SCSI, fileystem, ethernet,
+USB, framebuffer, input, sound, etc.)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-process-management slide level-2">
+
+<h2>Process management</h2>
+
+<ul class="simple">
+<li>Unix basic process management and POSIX threads support</li>
+<li>Processes and threads are abstracted as tasks</li>
+<li>Operating system level virtualization<ul>
+<li>Namespaces</li>
+<li>Control groups</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-memory-management slide level-2">
+
+<h2>Memory management</h2>
+
+<ul class="simple">
+<li>Management of the physical memory: allocating and freeing memory</li>
+<li>Management of the virtual memory: paging, swapping, demand
+paging, copy on write</li>
+<li>User services: user address space management (e.g. mmap(), brk(),
+shared memory)</li>
+<li>Kernel services: SL*B allocators, vmalloc</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-block-i-o-management slide level-2">
+
+<h2>Block I/O management</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-0a96997f269a7a9cd0cdc9c9125f6e62e549be94.png"><img alt="../_images/ditaa-0a96997f269a7a9cd0cdc9c9125f6e62e549be94.png" src="../_images/ditaa-0a96997f269a7a9cd0cdc9c9125f6e62e549be94.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-virtual-filesystem-switch slide level-2">
+
+<h2>Virtual Filesystem Switch</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-afa57a07e21b1b842554278abe30fea575278452.png"><img alt="../_images/ditaa-afa57a07e21b1b842554278abe30fea575278452.png" src="../_images/ditaa-afa57a07e21b1b842554278abe30fea575278452.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-networking-stack slide level-2">
+
+<h2>Networking stack</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png"><img alt="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png" src="../_images/ditaa-a2ded49c8b739635d6742479583443fb10ad120a.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-linux-security-modules slide level-2">
+
+<h2>Linux Security Modules</h2>
+
+<ul class="simple">
+<li>Hooks to extend the default Linux security model</li>
+<li>Used by several Linux security extensions:<ul>
+<li>Security Enhancened Linux</li>
+<li>AppArmor</li>
+<li>Tomoyo</li>
+<li>Smack</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
