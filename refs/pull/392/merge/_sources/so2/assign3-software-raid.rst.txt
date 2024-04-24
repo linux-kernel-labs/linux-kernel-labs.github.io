@@ -2,7 +2,7 @@
 Assignment 3 - Software RAID
 ===========================
 
-- Deadline: :command:`Monday, 15 May 2024, 23:59`
+- Deadline: :command:`Thursday, 16 May 2024, 23:59`
 - This assignment can be made in teams (max 2). Only one of them must submit the assignment, and the names of the student should be listed in a README file.
 
 Implementing a software RAID module that uses a logical block device that will read and write data from two physical devices,
