@@ -1,0 +1,64 @@
+#controls {
+    text-align: center;
+    width: 100%;
+    margin: 10px;
+    font-size: 1.5em;
+    font-family: sans-serif;
+}
+
+.slides.table > article {
+    display: inline-block;
+}
+
+article.placeholder {
+    background: #ddd;
+}
+
+.slides.table > article {
+    position: absolute;
+    left: 50%;
+    margin-left: -225px;
+}
+
+.slides.table > article.past {
+  transform: translate(-325px);
+  -o-transform: translate(-325px);
+  -moz-transform: translate(-325px);
+  -webkit-transform: translate3d(-325px, 0, 0);
+
+}
+
+.slides.table > article.next {
+  transform: translate(475px);
+  -o-transform: translate(475px);
+  -moz-transform: translate(475px);
+  -webkit-transform: translate3d(475px, 0, 0);
+}
+
+.slides > article.past,
+.slides > article.next {
+    height: 230px;
+    width: 300px;
+
+    margin-top: 60px;
+}
+
+div.presenter_notes {
+	position: absolute;
+	top: 420px;
+	left: 10%;
+	background-color: white;
+	color: black;
+	padding: 1em;
+	width: 80%;
+	font-size: 130%;
+
+	border-radius: 10px;
+	-o-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+div.presenter_notes p.admonition-title {
+	display: none;
+}
