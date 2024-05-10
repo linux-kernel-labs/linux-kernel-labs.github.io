@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Architecture Layer &mdash; The Linux Kernel  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/single.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    
+    
+    <link rel="stylesheet" href="../_static/asciinema-player.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/asciinema-player.js"></script>
+    <script type="text/javascript" src="../_static/common.js"></script>
+    
+    <script type="text/javascript" src="../_static/slides.js"></script>
+    <script type="text/javascript" src="../_static/sync.js"></script>
+    <script type="text/javascript" src="../_static/controller.js"></script>
+    <script type="text/javascript" src="../_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="The Linux Kernel  documentation" href="../index.html" />
+    <link rel="next" title="Virtualization" href="virt.html" />
+    <link rel="prev" title="Network Management" href="networking.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="admonition-introduction slide level-2">
+
+<h2>Introduction</h2>
+
+<ul class="simple">
+<li>Overview of the arch layer</li>
+<li>Overview of the boot process</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-overview-of-the-arch-layer slide level-2">
+
+<h2>Overview of the arch layer</h2>
+
+<a class="reference internal image-reference" href="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png"><img alt="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png" src="../_images/ditaa-ae895f3a8e26b92bf6c6ecbbd71e2c88912d5607.png" style="height: 100%;" /></a>
+
+
+
+
+</article>
+<article class="admonition-bootstrap slide level-2">
+
+<h2>Bootstrap</h2>
+
+<ul class="simple">
+<li>The first kernel code that runs</li>
+<li>Typically runs with the MMU disabled</li>
+<li>Move / Relocate kernel code</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-bootstrap slide level-2">
+
+<h2>Bootstrap</h2>
+
+<ul class="simple">
+<li>The first kernel code that runs</li>
+<li>Typically runs with the MMU disabled</li>
+<li>Copy bootloader arguments and determine kernel run location</li>
+<li>Move / relocate kernel code to final location</li>
+<li>Initial MMU setup - map the kernel</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-memory-setup slide level-2">
+
+<h2>Memory Setup</h2>
+
+<ul class="simple">
+<li>Determine available memory and setup the boot memory allocator</li>
+<li>Manages memory regions before the page allocator is setup</li>
+<li>Bootmem - used a bitmap to track free blocks</li>
+<li>Memblock - deprecates bootmem and adds support for memory ranges<ul>
+<li>Supports both physical and virtual addresses</li>
+<li>support NUMA architectures</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-mmu-management slide level-2">
+
+<h2>MMU management</h2>
+
+<ul class="simple">
+<li>Implements the generic page table manipulation APIs: types,
+accessors, flags</li>
+<li>Implement TLB management APIs: flush, invalidate</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-thread-management slide level-2">
+
+<h2>Thread Management</h2>
+
+<ul class="simple">
+<li>Defines the thread type (struct thread_info) and implements
+functions for allocating threads (if needed)</li>
+<li>Implement <code class="xref c c-func docutils literal"><span class="pre">copy_thread()</span></code> and <code class="xref c c-func docutils literal"><span class="pre">switch_context()</span></code></li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-timer-management slide level-2">
+
+<h2>Timer Management</h2>
+
+<ul class="simple">
+<li>Setup the timer tick and provide a time source</li>
+<li>Mostly transitioned to platform drivers<ul>
+<li>clock_event_device - for scheduling timers</li>
+<li>clocksource - for reading the time</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-irqs-and-exception-management slide level-2">
+
+<h2>IRQs and exception management</h2>
+
+<ul class="simple">
+<li>Define interrupt and exception handlers / entry points</li>
+<li>Setup priorities</li>
+<li>Platform drivers for interrupt controllers</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-system-calls slide level-2">
+
+<h2>System calls</h2>
+
+<ul class="simple">
+<li>Define system call entry point(s)</li>
+<li>Implement user-space access primitives (e.g. copy_to_user)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-platform-drivers slide level-2">
+
+<h2>Platform Drivers</h2>
+
+<ul class="simple">
+<li>Platform and architecture specific drivers</li>
+<li>Bindings to platform device enumeration methods (e.g. device tree
+or ACPI)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-machine-specific-code slide level-2">
+
+<h2>Machine specific code</h2>
+
+<ul class="simple">
+<li>Some architectures use a &quot;machine&quot; / &quot;platform&quot; abstraction</li>
+<li>Typical for architecture used in embedded systems with a lot of
+variety (e.g. ARM, powerPC)</li>
+</ul>
+
+
+
+
+</article>
+<article class="admonition-boot-flow-inspection slide level-2">
+
+<h2>Boot flow inspection</h2>
+
+<asciinema-player src="../_images/boot.cast"></asciinema-player>
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
