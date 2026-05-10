@@ -898,9 +898,6 @@ It implements access to various hardware bits that are architecture or
 machine specific such as interrupt controller, SMP controllers, BUS
 controllers, exceptions and interrupt setup, virtual memory handling.
 
-It also implements architecture optimized functions (e.g. memcpy,
-string operations, etc.)
-
 
 Device drivers
 ..............
